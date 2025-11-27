@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Beautiful Bill's Freaksgiving Extravaganza 2007</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff8c00 0%, #ff6600 50%, #cc5500 100%);
+            font-family: 'Comic Sans MS', 'Papyrus', cursive;
+            color: #4a2511;
+            overflow-x: hidden;
+        }
+
+        .sparkle {
+            position: fixed;
+            pointer-events: none;
+            animation: sparkleFloat 3s infinite;
+        }
+
+        @keyframes sparkleFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .header {
+            background: linear-gradient(180deg, #d2691e 0%, #8b4513 100%);
+            border-bottom: 5px dashed #fff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            color: #ff8c00;
+            text-shadow: 3px 3px 0 #000, 
+                         -1px -1px 0 #fff,
+                         1px -1px 0 #fff,
+                         -1px 1px 0 #fff,
+                         1px 1px 0 #fff;
+            animation: wobble 2s infinite;
+            letter-spacing: 3px;
+        }
+
+        @keyframes wobble {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        .marquee {
+            background: #ffeb3b;
+            padding: 10px;
+            border: 3px solid #ff6600;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: scroll 15s linear infinite;
+            white-space: nowrap;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #d2691e;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .content-box {
+            background: rgba(255, 255, 255, 0.95);
+            border: 5px ridge #8b4513;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(0,0,0,0.7);
+            position: relative;
+        }
+
+        .content-box::before {
+            content: '🦃';
+            position: absolute;
+            top: -30px;
+            left: 20px;
+            font-size: 3em;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h2 {
+            color: #ff6600;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-decoration: underline wavy #ffeb3b;
+            text-shadow: 2px 2px #8b4513;
+        }
+
+        p {
+            font-size: 1.3em;
+            line-height: 1.8;
+            margin: 15px 0;
+            color: #5d4037;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #ffeb3b 0%, #ff9800 100%);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #4a2511;
+        }
+
+        .button {
+            background: linear-gradient(180deg, #ff6600 0%, #cc5500 100%);
+            color: white;
+            padding: 15px 40px;
+            border: 3px solid #ffeb3b;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+            text-shadow: 2px 2px #000;
+        }
+
+        .button:hover {
+            transform: scale(1.1) rotate(-2deg);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+        }
+
+        .counter {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            text-align: center;
+            border: 3px solid #0f0;
+            margin: 20px 0;
+            font-size: 1.2em;
+            box-shadow: 0 0 20px #0f0;
+        }
+
+        .guestbook {
+            background: #fff3e0;
+            border: 3px dashed #ff6600;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .guestbook textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 1.1em;
+            border: 2px solid #ff6600;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .footer {
+            background: #4a2511;
+            color: #ff8c00;
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            border-top: 5px solid #ff6600;
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        .pie-icon {
+            display: inline-block;
+            font-size: 2em;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .welcome-banner {
+            background: repeating-linear-gradient(
+                45deg,
+                #ff6600,
+                #ff6600 20px,
+                #ffeb3b 20px,
+                #ffeb3b 40px
+            );
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            border: 5px solid #8b4513;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 3px 3px #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>✨ Big Beautiful Bill's ✨<br>FREAKSGIVING 2007</h1>
+        <p style="color: #ffeb3b; font-size: 1.5em; margin-top: 10px;">🥧 Where Sass Meets Class & Pumpkin Pie is ALWAYS on the Menu 🥧</p>
+    </div>
+
+    <div class="marquee">
+        <div class="marquee-content">
+            🦃 WELCOME TO THE MOST BOOTYLICIOUS TURKEY DAY CELEBRATION ON THE WORLD WIDE WEB 🦃 Est. 1993 🦃 Over 420,069 Visitors Served! 🦃
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="welcome-banner blink">
+            ⚡ YOU ARE VISITOR #847,392 ⚡
+        </div>
+
+        <div class="content-box">
+            <h2><span class="pie-icon">🥧</span> About Big Beautiful Bill <span class="pie-icon">🥧</span></h2>
+            <p>
+                Honey, let me tell you something - <span class="highlight">Bill</span> doesn't just SERVE Thanksgiving dinner, 
+                he DELIVERS a whole experience! We're talking <span class="highlight">pumpkin pie orange realness</span> 
+                from the tablecloths to the napkins to Bill's famous spray tan!
+            </p>
+            <p>
+                This ain't your grandma's Turkey Day (well, maybe if your grandma was FABULOUS). We're serving 
+                <span class="highlight">presidential portions</span> with <span class="highlight">runway attitude</span>. 
+                Every year since 2001, Bill has been blessing this digital space with the most ICONIC feast east of the Mississippi!
+            </p>
+        </div>
+
+        <div class="content-box">
+            <h2>🎭 The Menu of Champions 🎭</h2>
+            <p>
+                <span class="highlight">★ Turkey so moist it makes grown men cry</span><br>
+                <span class="highlight">★ Stuffing that's actually stuffed with FLAVOR</span><br>
+                <span class="highlight">★ Gravy smoother than Bill's jazz collection</span><br>
+                <span class="highlight">★ Sweet potato casserole that'll make you holler</span><br>
+                <span class="highlight">★ Cranberry sauce that gets SAUCY</span><br>
+                <span class="highlight">★ Pumpkin pie with whipped cream mountains</span>
+            </p>
+            <p style="font-size: 1.5em; text-align: center; margin-top: 20px;">
+                🍽️ <span class="blink">We're eating GOOD tonight, fam!</span> 🍽️
+            </p>
+        </div>
+
+        <div class="counter">
+            <p>⏰ COUNTDOWN TO FREAKSGIVING 2007 ⏰</p>
+            <p style="font-size: 2em; margin-top: 10px;">00:00:00:00</p>
+            <p style="margin-top: 10px;">IT'S HAPPENING RIGHT NOW, BABY!</p>
+        </div>
+
+        <div class="content-box">
+            <h2>📸 Bill's Golden Rules 📸</h2>
+            <p>
+                <strong>Rule #1:</strong> Come HUNGRY, leave HAPPY<br>
+                <strong>Rule #2:</strong> Stretchy pants are MANDATORY<br>
+                <strong>Rule #3:</strong> No turkey shaming allowed<br>
+                <strong>Rule #4:</strong> Seconds are encouraged, thirds are expected<br>
+                <strong>Rule #5:</strong> What happens at Freaksgiving, gets blogged about on MySpace
+            </p>
+        </div>
+
+        <div class="guestbook">
+            <h2 style="text-align: center;">📝 Sign Bill's Guestbook! 📝</h2>
+            <textarea placeholder="Tell Bill how fabulous this website is... (GeoCities users welcome!)"></textarea>
+            <center><button class="button">SUBMIT TO THE FEAST</button></center>
+        </div>
+
+        <center>
+            <button class="button">🎺 PLAY SMOOTH JAZZ 🎺</button>
+            <button class="button">📧 EMAIL BILL 📧</button>
+            <button class="button">🔥 RSVP NOW 🔥</button>
+        </center>
+    </div>
+
+    <div class="footer">
+        <p style="font-size: 1.3em;">Best viewed in Internet Explorer 6.0 at 1024x768 resolution</p>
+        <p style="margin-top: 10px;">© 2007 Big Beautiful Bill's Freaksgiving Empire | All Rights Reserved</p>
+        <p style="margin-top: 10px;">🏆 Winner of GeoCities "Most Delicious Website" Award 2004-2007 🏆</p>
+        <p style="margin-top: 15px; font-size: 0.9em;">
+            <a href="#" style="color: #ffeb3b;">Home</a> | 
+            <a href="#" style="color: #ffeb3b;">About Bill</a> | 
+            <a href="#" style="color: #ffeb3b;">Recipes</a> | 
+            <a href="#" style="color: #ffeb3b;">Photo Gallery</a> | 
+            <a href="#" style="color: #ffeb3b;">Guestbook</a> | 
+            <a href="#" style="color: #ffeb3b;">Web Rings</a>
+        </p>
+        <p style="margin-top: 15px;">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='31'%3E%3Crect fill='%23000' width='88' height='31'/%3E%3Ctext x='44' y='20' font-family='Arial' font-size='12' fill='%230f0' text-anchor='middle'%3EHTML 4.0%3C/text%3E%3C/svg%3E" alt="HTML 4.0" style="margin: 5px;">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='31'%3E%3Crect fill='%23000' width='88' height='31'/%3E%3Ctext x='44' y='20' font-family='Arial' font-size='10' fill='%23ff0' text-anchor='middle'%3EOptimized%3C/text%3E%3C/svg%3E" alt="Optimized" style="margin: 5px;">
+        </p>
+    </div>
+
+    <script>
+        // Sparkle cursor effect
+        document.addEventListener('mousemove', function(e) {
+            if (Math.random() > 0.9) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.textContent = ['✨', '⭐', '🌟', '💫'][Math.floor(Math.random() * 4)];
+                sparkle.style.left = e.pageX + 'px';
+                sparkle.style.top = e.pageY + 'px';
+                sparkle.style.fontSize = Math.random() * 20 + 10 + 'px';
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 3000);
+            }
+        });
+
+        // Button click effects
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Thanks for visiting Big Beautiful Bill\'s Freaksgiving 2007! 🦃🥧');
+            });
+        });
+    </script>
+</body>
+</html>
