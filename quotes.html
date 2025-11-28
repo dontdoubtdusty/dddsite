@@ -2091,31 +2091,9 @@ document.getElementById('quoteOfDayText').textContent = `#${qod.id}: "${qod.text
 document.getElementById('quoteOfDayInfo').textContent = `${qod.game} • ${formatDate(qod.date)}`;
 
 
-function copyQuote(id, text, game, date) {
-    // Format date inline since formatDate might not be in scope
-    let cleanDate = date.replace(/\D/g, '');
-    let day, month, year;
-    
-    if (cleanDate.length === 8) {
-        day = parseInt(cleanDate.slice(0, 2), 10);
-        month = parseInt(cleanDate.slice(2, 4), 10) - 1;
-        year = parseInt(cleanDate.slice(4, 8), 10);
-    } else if (date.includes('/')) {
-        const parts = date.split('/');
-        day = parseInt(parts[0], 10);
-        month = parseInt(parts[1], 10) - 1;
-        year = parseInt(parts[2], 10);
-    }
-    
-    const months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    
-    const formattedDate = `${day} ${months[month]} ${year}`;
-    const fullQuote = `#${id}: "${text}" [${game}] [${formattedDate}]`;
-    navigator.clipboard.writeText(fullQuote).then(() => {
-        console.log('Quote copied to clipboard!');
+
+function copyQuote(text) {
+    navigator.clipboard.writeText(text).then(() => {
     });
 }
 
