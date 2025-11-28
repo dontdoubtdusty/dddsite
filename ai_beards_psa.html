@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Beards Foundation - A Public Service Announcement</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier Prime', monospace;
+            background: linear-gradient(180deg, #f4e4c1 0%, #e8d5b7 100%);
+            color: #2a2a2a;
+            overflow-x: hidden;
+        }
+        
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="4"/></filter><rect width="300" height="300" filter="url(%23n)" opacity="0.05"/></svg>');
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            position: relative;
+        }
+        
+        .banner {
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            color: #fff;
+            text-align: center;
+            padding: 8px 20px;
+            transform: rotate(-2deg);
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+            border: 4px solid #2a2a2a;
+        }
+        
+        .banner h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.5rem;
+            letter-spacing: 4px;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+        }
+        
+        .stamp {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #d32f2f;
+            color: #fff;
+            padding: 15px 20px;
+            border: 3px dashed #fff;
+            transform: rotate(12deg);
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .main-content {
+            background: #fff;
+            padding: 50px 40px;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+            border: 3px solid #2a2a2a;
+            margin-bottom: 30px;
+        }
+        
+        .alert-box {
+            background: #fff3cd;
+            border: 4px solid #2a2a2a;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .alert-box h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            color: #d32f2f;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .alert-box p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .statistic {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: #2a2a2a;
+            color: #f4e4c1;
+            transform: rotate(-1deg);
+        }
+        
+        .statistic .number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 5rem;
+            color: #d32f2f;
+            text-shadow: 2px 2px 0 #fff;
+            display: block;
+        }
+        
+        .statistic .text {
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .donate-section {
+            background: #4a90e2;
+            color: #fff;
+            padding: 40px;
+            text-align: center;
+            border: 4px solid #2a2a2a;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+            transform: rotate(1deg);
+        }
+        
+        .donate-section h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .donate-btn {
+            background: #d32f2f;
+            color: #fff;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            font-family: 'Bebas Neue', sans-serif;
+            cursor: pointer;
+            margin: 20px 10px;
+            box-shadow: 5px 5px 0 #2a2a2a;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .donate-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0 #2a2a2a;
+        }
+        
+        .donate-btn:active {
+            transform: translate(5px, 5px);
+            box-shadow: 0 0 0 #2a2a2a;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .arrow {
+            display: inline-block;
+            margin: 0 10px;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @media (max-width: 768px) {
+            .banner h1 {
+                font-size: 2.5rem;
+            }
+            
+            .stamp {
+                position: static;
+                margin: 20px auto;
+                display: inline-block;
+            }
+            
+            .statistic .number {
+                font-size: 3.5rem;
+            }
+            
+            .donate-btn {
+                padding: 15px 30px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    
+    <div class="container">
+        <div class="stamp">URGENT!</div>
+        
+        <div class="banner">
+            <h1>⚠ AI BEARDS CRISIS ⚠</h1>
+        </div>
+        
+        <div class="main-content">
+            <div class="alert-box">
+                <h2>🧔 Attention, Citizens!</h2>
+                <p><strong>A SYNTHETIC FACIAL HAIR EPIDEMIC is sweeping the nation!</strong></p>
+                <p>Artificial Intelligence systems everywhere are generating BEARDS at an alarming rate. These digital whiskers are clogging our servers, confusing our algorithms, and frankly, they're getting out of hand.</p>
+            </div>
+            
+            <div class="statistic">
+                <span class="number">94.7%</span>
+                <span class="text">of AI-generated humans now sport facial hair</span>
+            </div>
+            
+            <p style="font-size: 1.2rem; line-height: 1.8; margin: 30px 0;">
+                <strong>THE SITUATION IS DIRE.</strong> From neural networks to language models, AI systems are producing bearded individuals at unprecedented rates. Scientists report that the "Default Beard Algorithm" has become self-aware and shows no signs of slowing down.
+            </p>
+            
+            <p style="font-size: 1.2rem; line-height: 1.8; margin: 30px 0;">
+                But YOU can help stop this crisis! Your generous donation will fund critical research into:
+            </p>
+            
+            <ul style="font-size: 1.1rem; line-height: 2; margin-left: 40px; margin-bottom: 30px;">
+                <li><strong>Clean-Shaven AI Technology</strong></li>
+                <li><strong>Beard Detection & Prevention Systems</strong></li>
+                <li><strong>Support Groups for Over-Bearded Models</strong></li>
+                <li><strong>Alternative Facial Hair Distribution Methods</strong></li>
+            </ul>
+        </div>
+        
+        <div class="donate-section">
+            <h3>👨‍💼 DO YOUR PART! 👨‍💼</h3>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;">
+                <span class="arrow">↓</span>
+                Every dollar helps smooth out our digital future
+                <span class="arrow">↓</span>
+            </p>
+            <button class="donate-btn" onclick="alert('Thank you, patriot! Your donation will help us tackle this hairy situation. 🧔➡️😊')">DONATE NOW</button>
+            <button class="donate-btn" onclick="alert('You\'re a real American hero! Together we can make AI facial hair great again! 🦸')">MONTHLY GIVING</button>
+            <p style="margin-top: 25px; font-size: 0.95rem;">
+                <em>Remember: A smooth AI is a happy AI!</em>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>★ AI BEARDS FOUNDATION ★</p>
+            <p>"Dedicated to Follicle-Free Computing Since 2023"</p>
+            <p style="margin-top: 15px; font-size: 0.8rem;">
+                This has been a public service announcement from your friends in the Digital Grooming Department
+            </p>
+        </div>
+    </div>
+</body>
+</html>
