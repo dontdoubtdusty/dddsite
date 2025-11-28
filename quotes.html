@@ -2059,7 +2059,7 @@
             const randomQuote = quotes[randomIndex];
             
             document.getElementById('randomQuoteText').textContent = `#${randomQuote.id}: "${randomQuote.text}"`;
-            document.getElementById('randomQuoteInfo').textContent = `${randomQuote.game} • ${randomQuote.date}`;
+            document.getElementById('randomQuoteInfo').textContent = `${randomQuote.game} • ${formatDate(randomQuote.date)}`;
             document.getElementById('randomQuoteDisplay').classList.remove('hidden');
         });
 
@@ -2088,7 +2088,7 @@ function getQuoteOfTheDay() {
 // After quotes array is loaded:
 const qod = getQuoteOfTheDay();
 document.getElementById('quoteOfDayText').textContent = `#${qod.id}: "${qod.text}"`;
-document.getElementById('quoteOfDayInfo').textContent = `${qod.game} • ${qod.date}`;
+document.getElementById('quoteOfDayInfo').textContent = `${qod.game} • ${formatDate(qod.date)}`;
 
 
 
