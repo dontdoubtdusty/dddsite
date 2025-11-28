@@ -1851,6 +1851,35 @@
 1809: "The lore is that she gets sucked into the cosmic space...time...vagina butthole while she's sleeping dude. She's not wearing shoes while she's sleeping. Silly." [Dragon Ball: The Breakers] [08/04/2024]
 
 `;
+		function formatDate(rawDate) {
+        if (!rawDate) return '';
+
+        let cleanDate = rawDate.replace(/\D/g, '');
+
+        let day, month, year;
+
+        if (cleanDate.length === 8) {
+            // DDMMYYYY
+            day = parseInt(cleanDate.slice(0, 2), 10);
+            month = parseInt(cleanDate.slice(2, 4), 10) - 1;
+            year = parseInt(cleanDate.slice(4, 8), 10);
+        } else if (rawDate.includes('/')) {
+            // DD/MM/YYYY
+            const parts = rawDate.split('/');
+            day = parseInt(parts[0], 10);
+            month = parseInt(parts[1], 10) - 1;
+            year = parseInt(parts[2], 10);
+        } else {
+            return rawDate; // fallback
+        }
+
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        return `${day} ${months[month]} ${year}`;
+    }
 
         const quotes = quotesData.split('\n').map(line => {
             const match = line.match(/^(\d+):\s*"([^"]+)"\s*\[([^\]]+)\]\s*\[([^\]]+)\]/);
@@ -1973,43 +2002,43 @@
         }
 
   function renderQuotes() {
-    const filteredQuotes = filterQuotes();
-    const quotesList = document.getElementById('quotesList');
-    const resultCount = document.getElementById('resultCount');
+        const filteredQuotes = filterQuotes();
+        const quotesList = document.getElementById('quotesList');
+        const resultCount = document.getElementById('resultCount');
 
-    resultCount.textContent = `${filteredQuotes.length} result${filteredQuotes.length !== 1 ? 's' : ''}`;
+        resultCount.textContent = `${filteredQuotes.length} result${filteredQuotes.length !== 1 ? 's' : ''}`;
+        quotesList.innerHTML = '';
 
-    quotesList.innerHTML = '';
+        const displayQuotes = filteredQuotes.slice(0, 50);
 
-    const displayQuotes = filteredQuotes.slice(0, 50);
+        if (displayQuotes.length === 0) {
+            quotesList.innerHTML = '<p class="text-center text-purple-600">No quotes found. Try a different search term!</p>';
+            return;
+        }
 
-    if (displayQuotes.length === 0) {
-        quotesList.innerHTML = '<p class="text-center text-purple-600">No quotes found. Try a different search term!</p>';
-        return;
-    }
+        displayQuotes.forEach(quote => {
+            const div = document.createElement('div');
+            div.className = 'bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition-colors';
 
-    displayQuotes.forEach(quote => {
-        const div = document.createElement('div');
-        div.className = 'bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition-colors';
+            const safeText = quote.text.replace(/'/g, "\\'");
+            const formattedDate = formatDate(quote.date); // <-- Here we format the date
 
-        const safeText = quote.text.replace(/'/g, "\\'");
+            div.innerHTML = `
+                <p class="text-purple-900 mb-2">
+                    <span class="text-purple-600 font-semibold">#${quote.id}:</span>
+                    "${quote.text}"
+                </p>
+                <p class="text-sm text-purple-700 mb-2">${quote.game} • ${formattedDate}</p>
 
-        div.innerHTML = `
-            <p class="text-purple-900 mb-2">
-                <span class="text-purple-600 font-semibold">#${quote.id}:</span>
-                "${quote.text}"
-            </p>
-            <p class="text-sm text-purple-700 mb-2">${quote.game} • ${quote.date}</p>
+                <button
+                    class="px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-xs transition-colors"
+                    onclick="copyQuote('${safeText}')">
+                    Copy Quote
+                </button>
+            `;
 
-            <button
-                class="px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-xs transition-colors"
-                onclick="copyQuote('${safeText}')">
-                Copy Quote
-            </button>
-        `;
-
-        quotesList.appendChild(div);
-    });
+            quotesList.appendChild(div);
+        });
 
     if (filteredQuotes.length > 50) {
         const msg = document.createElement('p');
