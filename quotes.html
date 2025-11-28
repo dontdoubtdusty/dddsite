@@ -2091,10 +2091,12 @@ document.getElementById('quoteOfDayText').textContent = `#${qod.id}: "${qod.text
 document.getElementById('quoteOfDayInfo').textContent = `${qod.game} • ${formatDate(qod.date)}`;
 
 
-
-function copyQuote(text) {
-    navigator.clipboard.writeText(text).then(() => {
-
+function copyQuote(id, text, game, date) {
+    const formattedDate = formatDate(date);
+    const fullQuote = `#${id}: "${text}" [${game}] [${formattedDate}]`;
+    navigator.clipboard.writeText(fullQuote).then(() => {
+        // Optional: Show a brief "Copied!" message
+        console.log('Quote copied to clipboard!');
     });
 }
 
