@@ -3,235 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
-    <title>Big Beautiful Bill's Freaksgiving Extravaganza 2007</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<title>Big Beautiful Bill's Freaksgiving Extravaganza 2007</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body, .guestbook textarea {
-    font-family: 'Comic Neue', cursive;
-}
+    /* Apply Comic Neue consistently */
+    body, h1, h2, h3, h4, h5, h6, p, textarea, button, .marquee-content, .content-box {
+        font-family: 'Comic Neue', cursive;
+    }
 
-        body {
-            background: linear-gradient(135deg, #ff8c00 0%, #ff6600 50%, #cc5500 100%);
-            font-family: 'Comic Sans MS', 'Papyrus', cursive;
-            color: #4a2511;
-            overflow-x: hidden;
-        }
+    body {
+        background: linear-gradient(135deg, #ff8c00 0%, #ff6600 50%, #cc5500 100%);
+        color: #4a2511;
+        overflow-x: hidden;
+    }
 
-        .sparkle {
-            position: fixed;
-            pointer-events: none;
-            animation: sparkleFloat 3s infinite;
-        }
+    .sparkle {
+        position: fixed;
+        pointer-events: none;
+        animation: sparkleFloat 3s infinite;
+    }
 
-        @keyframes sparkleFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
+    @keyframes sparkleFloat {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+    }
 
-        .header {
-            background: linear-gradient(180deg, #d2691e 0%, #8b4513 100%);
-            border-bottom: 5px dashed #fff;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            position: relative;
-        }
+    .header {
+        background: linear-gradient(180deg, #d2691e 0%, #8b4513 100%);
+        border-bottom: 5px dashed #fff;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        position: relative;
+    }
 
-        .header h1 {
-            font-size: 3.5em;
-            color: #ff8c00;
-            text-shadow: 3px 3px 0 #000, 
-                         -1px -1px 0 #fff,
-                         1px -1px 0 #fff,
-                         -1px 1px 0 #fff,
-                         1px 1px 0 #fff;
-            animation: wobble 2s infinite;
-            letter-spacing: 3px;
-        }
+    .header h1 {
+        font-size: 3.5em;
+        color: #ff8c00;
+        text-shadow: 3px 3px 0 #000, 
+                     -1px -1px 0 #fff,
+                     1px -1px 0 #fff,
+                     -1px 1px 0 #fff,
+                     1px 1px 0 #fff;
+        animation: wobble 2s infinite;
+        letter-spacing: 3px;
+    }
 
-        @keyframes wobble {
-            0%, 100% { transform: rotate(-2deg); }
-            50% { transform: rotate(2deg); }
-        }
+    @keyframes wobble {
+        0%, 100% { transform: rotate(-2deg); }
+        50% { transform: rotate(2deg); }
+    }
 
-        .marquee {
-            background: #ffeb3b;
-            padding: 10px;
-            border: 3px solid #ff6600;
-            margin: 20px 0;
-            overflow: hidden;
-        }
+    .marquee {
+        background: #ffeb3b;
+        padding: 10px;
+        border: 3px solid #ff6600;
+        margin: 20px 0;
+        overflow: hidden;
+    }
 
-        .marquee-content {
-            display: inline-block;
-            animation: scroll 15s linear infinite;
-            white-space: nowrap;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #d2691e;
-        }
+    .marquee-content {
+        display: inline-block;
+        animation: scroll 15s linear infinite;
+        white-space: nowrap;
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #d2691e;
+    }
 
-        @keyframes scroll {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
+    @keyframes scroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px;
-        }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px;
+    }
 
-        .content-box {
-            background: rgba(255, 255, 255, 0.95);
-            border: 5px ridge #8b4513;
-            border-radius: 20px;
-            padding: 30px;
-            margin: 20px 0;
-            box-shadow: 0 0 20px rgba(0,0,0,0.7);
-            position: relative;
-        }
+    .content-box {
+        background: rgba(255, 255, 255, 0.95);
+        border: 5px ridge #8b4513;
+        border-radius: 20px;
+        padding: 30px;
+        margin: 20px 0;
+        box-shadow: 0 0 20px rgba(0,0,0,0.7);
+        position: relative;
+    }
 
-        .content-box::before {
-            content: '🦃';
-            position: absolute;
-            top: -30px;
-            left: 20px;
-            font-size: 3em;
-            animation: bounce 1s infinite;
-        }
+    .content-box::before {
+        content: '🦃';
+        position: absolute;
+        top: -30px;
+        left: 20px;
+        font-size: 3em;
+        animation: bounce 1s infinite;
+    }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
 
-        h2 {
-            color: #ff6600;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-decoration: underline wavy #ffeb3b;
-            text-shadow: 2px 2px #8b4513;
-        }
+    h2 {
+        color: #ff6600;
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        text-decoration: underline wavy #ffeb3b;
+        text-shadow: 2px 2px #8b4513;
+    }
 
-        p {
-            font-size: 1.3em;
-            line-height: 1.8;
-            margin: 15px 0;
-            color: #5d4037;
-        }
+    p {
+        font-size: 1.3em;
+        line-height: 1.8;
+        margin: 15px 0;
+        color: #5d4037;
+    }
 
-        .highlight {
-            background: linear-gradient(120deg, #ffeb3b 0%, #ff9800 100%);
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-weight: bold;
-            color: #4a2511;
-        }
+    .highlight {
+        background: linear-gradient(120deg, #ffeb3b 0%, #ff9800 100%);
+        padding: 3px 8px;
+        border-radius: 5px;
+        font-weight: bold;
+        color: #4a2511;
+    }
 
-        .button {
-            background: linear-gradient(180deg, #ff6600 0%, #cc5500 100%);
-            color: white;
-            padding: 15px 40px;
-            border: 3px solid #ffeb3b;
-            border-radius: 50px;
-            font-size: 1.5em;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin: 20px 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: all 0.3s;
-            text-shadow: 2px 2px #000;
-        }
+    .button {
+        background: linear-gradient(180deg, #ff6600 0%, #cc5500 100%);
+        color: white;
+        padding: 15px 40px;
+        border: 3px solid #ffeb3b;
+        border-radius: 50px;
+        font-size: 1.5em;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        margin: 20px 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        transition: all 0.3s;
+        text-shadow: 2px 2px #000;
+    }
 
-        .button:hover {
-            transform: scale(1.1) rotate(-2deg);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
-        }
+    .button:hover {
+        transform: scale(1.1) rotate(-2deg);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+    }
 
-        .counter {
-            background: #000;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
-            padding: 20px;
-            text-align: center;
-            border: 3px solid #0f0;
-            margin: 20px 0;
-            font-size: 1.2em;
-            box-shadow: 0 0 20px #0f0;
-        }
+    .counter {
+        background: #000;
+        color: #0f0;
+        font-family: 'Courier New', monospace; /* Keep monospace for countdown */
+        padding: 20px;
+        text-align: center;
+        border: 3px solid #0f0;
+        margin: 20px 0;
+        font-size: 1.2em;
+        box-shadow: 0 0 20px #0f0;
+    }
 
-        .guestbook {
-            background: #fff3e0;
-            border: 3px dashed #ff6600;
-            padding: 20px;
-            margin: 20px 0;
-        }
+    .guestbook {
+        background: #fff3e0;
+        border: 3px dashed #ff6600;
+        padding: 20px;
+        margin: 20px 0;
+    }
 
-        .guestbook textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            font-family: 'Comic Sans MS', cursive;
-            font-size: 1.1em;
-            border: 2px solid #ff6600;
-            border-radius: 10px;
-            margin: 10px 0;
-        }
+    .guestbook textarea {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        font-size: 1.1em;
+        border: 2px solid #ff6600;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
 
-        .footer {
-            background: #4a2511;
-            color: #ff8c00;
-            text-align: center;
-            padding: 20px;
-            margin-top: 30px;
-            border-top: 5px solid #ff6600;
-        }
+    .footer {
+        background: #4a2511;
+        color: #ff8c00;
+        text-align: center;
+        padding: 20px;
+        margin-top: 30px;
+        border-top: 5px solid #ff6600;
+    }
 
-        .blink {
-            animation: blinker 1s linear infinite;
-        }
+    .blink {
+        animation: blinker 1s linear infinite;
+    }
 
-        @keyframes blinker {
-            50% { opacity: 0; }
-        }
+    @keyframes blinker {
+        50% { opacity: 0; }
+    }
 
-        .pie-icon {
-            display: inline-block;
-            font-size: 2em;
-            animation: spin 3s linear infinite;
-        }
+    .pie-icon {
+        display: inline-block;
+        font-size: 2em;
+        animation: spin 3s linear infinite;
+    }
 
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
+    @keyframes spin {
+        100% { transform: rotate(360deg); }
+    }
 
-        .welcome-banner {
-            background: repeating-linear-gradient(
-                45deg,
-                #ff6600,
-                #ff6600 20px,
-                #ffeb3b 20px,
-                #ffeb3b 40px
-            );
-            padding: 15px;
-            margin: 20px 0;
-            text-align: center;
-            border: 5px solid #8b4513;
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 3px 3px #000;
-        }
-    </style>
+    .welcome-banner {
+        background: repeating-linear-gradient(
+            45deg,
+            #ff6600,
+            #ff6600 20px,
+            #ffeb3b 20px,
+            #ffeb3b 40px
+        );
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+        border: 5px solid #8b4513;
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 3px 3px #000;
+    }
+</style>
 </head>
 <body>
                 <audio id="smoothJazz" controls>
