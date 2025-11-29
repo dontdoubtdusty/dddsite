@@ -17,10 +17,18 @@
             color: #00ffff;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             padding: 40px 20px;
             position: relative;
+        }
+
+        .main-layout {
+            display: flex;
+            gap: 40px;
+            max-width: 1200px;
+            width: 100%;
+            align-items: flex-start;
         }
 
         body::before {
@@ -52,10 +60,89 @@
             border-radius: 15px;
             padding: 40px;
             max-width: 600px;
+            flex: 1;
             text-align: center;
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.1);
             position: relative;
             z-index: 1;
+        }
+
+        .reading-list {
+            background: rgba(10, 20, 40, 0.8);
+            border: 2px solid #ff6600;
+            border-radius: 15px;
+            padding: 30px;
+            width: 350px;
+            box-shadow: 0 0 30px rgba(255, 102, 0, 0.3), inset 0 0 20px rgba(255, 102, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .reading-list h2 {
+            color: #ff6600;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #ff6600;
+            letter-spacing: 1px;
+        }
+
+        .reading-list .subtitle-reading {
+            color: #ffaa00;
+            font-size: 0.75em;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .pamphlet {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .pamphlet:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .pamphlet-title {
+            color: #00ffff;
+            font-size: 0.95em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .pamphlet-code {
+            color: #888;
+            font-size: 0.75em;
+            margin-bottom: 8px;
+        }
+
+        .pamphlet-desc {
+            color: #a0d0ff;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .mandatory {
+            display: inline-block;
+            background: #ff0000;
+            color: white;
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 5px;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         h1 {
@@ -246,57 +333,104 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <audio controls autoplay loop>
-            <source src="jazz-lounge-elevator-music.ogg" type="audio/ogg">
-        </audio>
-        <h1>TRANSPORT IN PROGRESS</h1>
-        <div class="subtitle">Galactic Footwear Corp. - Employee Transfer Protocol</div>
-        
-        <p class="message">
-            Greetings, Footwear Associate #84729.<br><br>
-            
-            You are being hypertransported to the <strong style="color: #ffaa00;">Sector-7 Nebula Market District</strong> flagship location for your scheduled shift. As per your employment contract, clause 47.2, you have been selected for immediate transfer to cover staffing shortages.<br><br>
-            
-            Please remain seated in your corporate transport pod. Do not attempt to exit during hyperspace transit. Your cooperation ensures optimal productivity metrics.<br><br>
-            
-            <em style="color: #888;">Galactic Footwear Corp. thanks you for your continued service.</em>
-        </p>
+    <audio autoplay loop>
+        <source src="jazz-lounge-elevator-music.ogg" type="audio/ogg">
+    </audio>
 
-        <div class="star-chart">
-            <div class="grid"></div>
+    <div class="main-layout">
+        <div class="container">
+			<audio controls autoplay loop>
+				<source src="jazz-lounge-elevator-music.ogg" type="audio/ogg">
+			</audio>
+            <h1>TRANSPORT IN PROGRESS</h1>
+            <div class="subtitle">Galactic Footwear Corp. - Employee Transfer Protocol</div>
             
-            <!-- Background stars -->
-            <div class="star" style="top: 15%; left: 10%; animation-delay: 0s;"></div>
-            <div class="star" style="top: 25%; left: 80%; animation-delay: 0.5s;"></div>
-            <div class="star" style="top: 45%; left: 25%; animation-delay: 1s;"></div>
-            <div class="star" style="top: 60%; left: 70%; animation-delay: 1.5s;"></div>
-            <div class="star" style="top: 75%; left: 40%; animation-delay: 2s;"></div>
-            <div class="star" style="top: 35%; left: 55%; animation-delay: 0.8s;"></div>
-            <div class="star" style="top: 85%; left: 15%; animation-delay: 1.2s;"></div>
-            <div class="star" style="top: 20%; left: 45%; animation-delay: 1.8s;"></div>
-            
-            <!-- Route line -->
-            <svg class="route-line" viewBox="0 0 400 260" preserveAspectRatio="none">
-                <path class="route-path" d="M 0,240 Q 100,200 150,160 T 350,20" />
-            </svg>
-            
-            <!-- Waypoints -->
-            <div class="waypoint origin"></div>
-            <div class="waypoint mid1"></div>
-            <div class="waypoint mid2"></div>
-            <div class="waypoint destination"></div>
-            
-            <!-- Pod -->
-            <div class="pod"></div>
-            
-            <!-- Labels -->
-            <div class="label-text label-origin">Station Omicron-9</div>
-            <div class="label-text label-destination">Sector-7 Market</div>
+            <p class="message">
+                Greetings, Footwear Associate #84729.<br><br>
+                
+                You are being hypertransported to the <strong style="color: #ffaa00;">Sector-7 Nebula Market District</strong> flagship location for your scheduled shift. As per your employment contract, clause 47.2, you have been selected for immediate transfer to cover staffing shortages.<br><br>
+                
+                Please remain seated in your corporate transport pod. Do not attempt to exit during hyperspace transit. Your cooperation ensures optimal productivity metrics.<br><br>
+                
+                <em style="color: #888;">Galactic Footwear Corp. thanks you for your continued service.</em>
+            </p>
+
+            <div class="star-chart">
+                <div class="grid"></div>
+                
+                <!-- Background stars -->
+                <div class="star" style="top: 15%; left: 10%; animation-delay: 0s;"></div>
+                <div class="star" style="top: 25%; left: 80%; animation-delay: 0.5s;"></div>
+                <div class="star" style="top: 45%; left: 25%; animation-delay: 1s;"></div>
+                <div class="star" style="top: 60%; left: 70%; animation-delay: 1.5s;"></div>
+                <div class="star" style="top: 75%; left: 40%; animation-delay: 2s;"></div>
+                <div class="star" style="top: 35%; left: 55%; animation-delay: 0.8s;"></div>
+                <div class="star" style="top: 85%; left: 15%; animation-delay: 1.2s;"></div>
+                <div class="star" style="top: 20%; left: 45%; animation-delay: 1.8s;"></div>
+                
+                <!-- Route line -->
+                <svg class="route-line" viewBox="0 0 400 260" preserveAspectRatio="none">
+                    <path class="route-path" d="M 0,240 Q 100,200 150,160 T 350,20" />
+                </svg>
+                
+                <!-- Waypoints -->
+                <div class="waypoint origin"></div>
+                <div class="waypoint mid1"></div>
+                <div class="waypoint mid2"></div>
+                <div class="waypoint destination"></div>
+                
+                <!-- Pod -->
+                <div class="pod"></div>
+                
+                <!-- Labels -->
+                <div class="label-text label-origin">Station Omicron-9</div>
+                <div class="label-text label-destination">Sector-7 Market</div>
+            </div>
+
+            <div class="label">Hypertransport Status: En Route</div>
+            <div class="eta">ETA: 47 Kiloseconds | Pod ID: PSS-4892-OMEGA</div>
         </div>
 
-        <div class="label">Hypertransport Status: En Route</div>
-        <div class="eta">ETA: 47 Kiloseconds | Pod ID: PSS-4892-OMEGA</div>
+        <div class="reading-list">
+            <h2>APPROVED READING</h2>
+            <div class="subtitle-reading">Educational Materials - Transit Time</div>
+            
+            <div class="pamphlet">
+                <div class="pamphlet-title">Employee Excellence Through Compliance<span class="mandatory">MANDATORY</span></div>
+                <div class="pamphlet-code">Document GFC-101-A</div>
+                <div class="pamphlet-desc">Learn the 47 core principles of workplace productivity. Includes new updates on break time reduction protocols.</div>
+            </div>
+
+            <div class="pamphlet">
+                <div class="pamphlet-title">Shoe Fitting Fundamentals: Level 3</div>
+                <div class="pamphlet-code">Document GFC-203-F</div>
+                <div class="pamphlet-desc">Advanced techniques for customer interaction efficiency. Target time per fitting: 2.3 minutes.</div>
+            </div>
+
+            <div class="pamphlet">
+                <div class="pamphlet-title">Understanding Your Benefits Package</div>
+                <div class="pamphlet-code">Document GFC-HR-891</div>
+                <div class="pamphlet-desc">A comprehensive 200-page guide to your quarterly oxygen ration and sleep pod allocation.</div>
+            </div>
+
+            <div class="pamphlet">
+                <div class="pamphlet-title">Hyperspace Safety & You<span class="mandatory">MANDATORY</span></div>
+                <div class="pamphlet-code">Document GFC-SAFE-022</div>
+                <div class="pamphlet-desc">Critical information about pod emergency protocols. Note: Emergency pods limited to management level 5+.</div>
+            </div>
+
+            <div class="pamphlet">
+                <div class="pamphlet-title">Loyalty Rewards Program Updates</div>
+                <div class="pamphlet-code">Document GFC-LRP-458</div>
+                <div class="pamphlet-desc">Earn points toward employee recognition certificates! 50,000 points = one free beverage voucher.</div>
+            </div>
+
+            <div class="pamphlet">
+                <div class="pamphlet-title">Corporate Vision 2487</div>
+                <div class="pamphlet-code">Document GFC-EXEC-001</div>
+                <div class="pamphlet-desc">CEO Maximillian Profit XIII shares his inspiring vision for the next fiscal quarter's revenue targets.</div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
