@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planetary Shoe Store Transfer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);
+            color: #00ffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent),
+                radial-gradient(1px 1px at 80% 10%, white, transparent),
+                radial-gradient(2px 2px at 90% 60%, white, transparent),
+                radial-gradient(1px 1px at 33% 80%, white, transparent),
+                radial-gradient(2px 2px at 70% 40%, white, transparent);
+            background-size: 200px 200px, 300px 300px, 250px 250px, 400px 400px, 350px 350px, 280px 280px, 220px 220px;
+            animation: stars 60s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes stars {
+            from { transform: translateY(0); }
+            to { transform: translateY(-200px); }
+        }
+
+        .container {
+            background: rgba(10, 20, 40, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ffff;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #ffaa00;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .message {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: #a0d0ff;
+        }
+
+        .star-chart {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(5, 10, 20, 0.6);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.2);
+        }
+
+        .grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .route-line {
+            position: absolute;
+            top: 70px;
+            left: 50px;
+            width: calc(100% - 100px);
+            height: 260px;
+        }
+
+        .route-path {
+            stroke: #00ffff;
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawPath 3s ease-in-out forwards;
+            filter: drop-shadow(0 0 5px #00ffff);
+        }
+
+        @keyframes drawPath {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .waypoint {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #00ffff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #00ffff;
+            animation: pulse-point 2s ease-in-out infinite;
+        }
+
+        .waypoint.origin {
+            top: 240px;
+            left: 20px;
+            background: #ff6600;
+            box-shadow: 0 0 15px #ff6600;
+        }
+
+        .waypoint.mid1 {
+            top: 180px;
+            left: 150px;
+        }
+
+        .waypoint.mid2 {
+            top: 80px;
+            right: 150px;
+        }
+
+        .waypoint.destination {
+            top: 40px;
+            right: 20px;
+            background: #00ff00;
+            box-shadow: 0 0 15px #00ff00;
+            animation: pulse-destination 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-point {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+
+        @keyframes pulse-destination {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.8; }
+        }
+
+        .pod {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ffaa00;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            box-shadow: 0 0 20px #ffaa00;
+            animation: movePod 8s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        @keyframes movePod {
+            0% { top: 240px; left: 20px; }
+            33% { top: 180px; left: 150px; }
+            66% { top: 80px; right: 150px; left: auto; }
+            100% { top: 40px; right: 20px; left: auto; }
+        }
+
+        .label-text {
+            position: absolute;
+            font-size: 0.75em;
+            color: #00ffff;
+            white-space: nowrap;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .label-origin {
+            top: 255px;
+            left: 35px;
+            color: #ff6600;
+        }
+
+        .label-destination {
+            top: 15px;
+            right: 35px;
+            color: #00ff00;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .label {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #ffaa00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .eta {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #a0d0ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TRANSPORT IN PROGRESS</h1>
+        <div class="subtitle">Galactic Footwear Corp. - Employee Transfer Protocol</div>
+        
+        <p class="message">
+            Greetings, Footwear Associate #84729.<br><br>
+            
+            You are being hypertransported to the <strong style="color: #ffaa00;">Sector-7 Nebula Market District</strong> flagship location for your scheduled shift. As per your employment contract, clause 47.2, you have been selected for immediate transfer to cover staffing shortages.<br><br>
+            
+            Please remain seated in your corporate transport pod. Do not attempt to exit during hyperspace transit. Your cooperation ensures optimal productivity metrics.<br><br>
+            
+            <em style="color: #888;">Galactic Footwear Corp. thanks you for your continued service.</em>
+        </p>
+
+        <div class="star-chart">
+            <div class="grid"></div>
+            
+            <!-- Background stars -->
+            <div class="star" style="top: 15%; left: 10%; animation-delay: 0s;"></div>
+            <div class="star" style="top: 25%; left: 80%; animation-delay: 0.5s;"></div>
+            <div class="star" style="top: 45%; left: 25%; animation-delay: 1s;"></div>
+            <div class="star" style="top: 60%; left: 70%; animation-delay: 1.5s;"></div>
+            <div class="star" style="top: 75%; left: 40%; animation-delay: 2s;"></div>
+            <div class="star" style="top: 35%; left: 55%; animation-delay: 0.8s;"></div>
+            <div class="star" style="top: 85%; left: 15%; animation-delay: 1.2s;"></div>
+            <div class="star" style="top: 20%; left: 45%; animation-delay: 1.8s;"></div>
+            
+            <!-- Route line -->
+            <svg class="route-line" viewBox="0 0 400 260" preserveAspectRatio="none">
+                <path class="route-path" d="M 0,240 Q 100,200 150,160 T 350,20" />
+            </svg>
+            
+            <!-- Waypoints -->
+            <div class="waypoint origin"></div>
+            <div class="waypoint mid1"></div>
+            <div class="waypoint mid2"></div>
+            <div class="waypoint destination"></div>
+            
+            <!-- Pod -->
+            <div class="pod"></div>
+            
+            <!-- Labels -->
+            <div class="label-text label-origin">Station Omicron-9</div>
+            <div class="label-text label-destination">Sector-7 Market</div>
+        </div>
+
+        <div class="label">Hypertransport Status: En Route</div>
+        <div class="eta">ETA: 47 Kiloseconds | Pod ID: PSS-4892-OMEGA</div>
+    </div>
+</body>
+</html>
