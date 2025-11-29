@@ -330,6 +330,70 @@
             font-size: 0.9em;
             color: #a0d0ff;
         }
+        .close-btn {
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+        }
+
+        .close-btn:hover {
+            background: #ff8833;
+        }
+
+        #doc-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #doc-container {
+            background: rgba(10, 20, 40, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+        }
+
+        #doc-content h3 {
+            color: #ff6600;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        #doc-content h4 {
+            color: #00ffff;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        #doc-content p, #doc-content li {
+            color: #a0d0ff;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        #doc-content ul, #doc-content ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -339,9 +403,6 @@
 
     <div class="main-layout">
         <div class="container">
-			<audio controls autoplay loop>
-				<source src="jazz-lounge-elevator-music.ogg" type="audio/ogg">
-			</audio>
             <h1>TRANSPORT IN PROGRESS</h1>
             <div class="subtitle">Galactic Footwear Corp. - Employee Transfer Protocol</div>
             
@@ -413,7 +474,7 @@
                 <div class="pamphlet-desc">A comprehensive 200-page guide to your quarterly oxygen ration and sleep pod allocation.</div>
             </div>
 
-            <div class="pamphlet">
+            <div class="pamphlet" onclick="showDocument('safety')" style="cursor: pointer;">
                 <div class="pamphlet-title">Hyperspace Safety & You<span class="mandatory">MANDATORY</span></div>
                 <div class="pamphlet-code">Document GFC-SAFE-022</div>
                 <div class="pamphlet-desc">Critical information about pod emergency protocols. Note: Emergency pods limited to management level 5+.</div>
@@ -432,5 +493,81 @@
             </div>
         </div>
     </div>
+
+    <div id="doc-overlay" onclick="if(event.target === this) closeDocument()">
+        <div id="doc-container">
+            <div id="doc-content"></div>
+            <button class="close-btn" onclick="closeDocument()">CLOSE DOCUMENT</button>
+        </div>
+    </div>
+
+    <script>
+    function showDocument(docId) {
+        const overlay = document.getElementById('doc-overlay');
+        const content = document.getElementById('doc-content');
+        
+        if (docId === 'safety') {
+            content.innerHTML = `
+                <h3>Hyperspace Safety & You</h3>
+                <p><strong>MANDATORY – Document GFC-SAFE-022</strong></p>
+                <p>Issued by GalactiFit Corp.™ Interstellar Footwear Division<br>
+                Clearance Level: Operational Staff (Peon Tier 3)</p>
+                
+                <h4>INTRODUCTION</h4>
+                <p>This document outlines essential hyperspace safety considerations for floor-level personnel. While certain procedures are reserved for employees with expanded responsibilities, it remains important for all staff to possess general awareness.</p>
+                
+                <p>Please return this document to the breakroom filing tray after review. (The tray is located behind the refreshment unit currently awaiting repair.)</p>
+                
+                <h4>1. DEFINING A HYPERSPACE EMERGENCY</h4>
+                <p>A hyperspace emergency may involve:</p>
+                <ul>
+                    <li>Minor spatial distortions</li>
+                    <li>Unexpected gravitational shifts</li>
+                    <li>Atypical customer footfall patterns</li>
+                    <li>Early warnings from the dimensional calibration sensors</li>
+                    <li>Any instance in which upper management initiates expedited movement toward restricted corridors</li>
+                </ul>
+                
+                <h4>2. ABOUT THE EMERGENCY PODS</h4>
+                <p>The facility contains several hyperspace evacuation pods used during high-severity events. These pods are equipped with stabilizing harnesses and automated trajectory plotting systems. Their use is restricted to:</p>
+                <p><strong>Management Level 5+</strong></p>
+                <p>Operational staff are not required to interact with pod systems and should avoid occupying pod staging areas to ensure smooth evacuation workflows.</p>
+                
+                <h4>3. EXPECTED ACTIONS FOR FLOOR STAFF</h4>
+                <p>In the event of a hyperspace irregularity:</p>
+                <ol>
+                    <li><strong>Stay at your assigned station.</strong> Sudden repositioning complicates spatial tracking during fluctuations.</li>
+                    <li><strong>Continue assisting customers as feasible.</strong> Many disturbances resolve within seconds and do not necessitate operational changes.</li>
+                    <li><strong>Maintain product order.</strong> Lightweight items may drift or shift during minor gravitational variances.</li>
+                    <li><strong>Await instructions through standard communication channels.</strong></li>
+                </ol>
+                
+                <h4>4. IF MANAGEMENT MOBILIZES</h4>
+                <p>Occasionally, higher-level staff may need to depart swiftly for procedural duties. This should not be interpreted as a sign to relocate unless you receive direct instruction.</p>
+                <p>Please avoid:</p>
+                <ul>
+                    <li>Entering restricted hallways</li>
+                    <li>Pausing workflow to observe evacuation activity</li>
+                    <li>Attempting to follow individuals into pod bays</li>
+                    <li>Interfering with pod door mechanisms or staging equipment</li>
+                </ul>
+                
+                <h4>5. FINAL NOTES</h4>
+                <p>• Your continued attention to standard procedures contributes greatly to overall store stability.<br>
+                • Emergency pods are managed exclusively by designated personnel.<br>
+                • Most hyperspace disturbances conclude quickly and require no additional action beyond calm adherence to routine.</p>
+                
+                <p><strong>Thank you for reviewing GFC-SAFE-022.</strong><br>
+                For questions, please contact your supervisor during their next scheduled floor appearance.</p>
+            `;
+        }
+        
+        overlay.style.display = 'flex';
+    }
+
+    function closeDocument() {
+        document.getElementById('doc-overlay').style.display = 'none';
+    }
+    </script>
 </body>
 </html>
