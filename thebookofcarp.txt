@@ -1,4 +1,4 @@
-﻿0:"TESTTESTWelcome to the Carp Society. Don't worry, we'll help you get your kids back." [Super Smash Brethren] [11/10/2019]
+﻿0:"Welcome to the Carp Society. Don't worry, we'll help you get your kids back." [Super Smash Brethren] [11/10/2019]
 1: "Literal horse cock." [World of Warcraft] [11/10/2019]
 2: "You gonna piss your pants? Can I watch? Stay where you are I wanna watch." [Deceit] [2019]
 3: "I refuse to play Throne of Lies again until they add Master Chief to Smash." [World of Warcraft] [11/10/2019]
@@ -6,7 +6,7 @@
 5: "Meatlord Mortimer." [The Council] [2019]
 6: "Altruism? More like I'm busy." [World of Warcraft] [11/10/2019]
 7: "That's what you get. Now you get a full paintbrush." [Super Smash Bros. Ultimate on the Nintendo Switch] [2019]
-8: froze you cuck thanks for the 3 dollars [World of Warcraft] [11/10/2019]
+8: "Froze you cuck thanks for the 3 dollars." [World of Warcraft] [11/10/2019]
 9: "I'm inside? No I'm inside. Hehehe." [World of Warcraft] [11/10/2019]
 10: "He's doing the old sneaky." [World of Warcraft] [11/10/2019]
 11: "Who's woo-wooing me right now?" [World of Warcraft] [11/10/2019]
@@ -1010,7 +1010,7 @@
 1009: "Can they do it? Can chat say their ABC's?" [Super Smash Bros. Ultimate] [04052021]
 1010: "I'm gonna burn your tree down girl." [Super Smash Bros. Ultimate] [04052021]
 1011: "can you smell chat,can you smell it." [Roblox] [07052021]
-1012: "Their not the worst we do have Hitler in this Lobby." [Mario Kart 8] [12052021]
+1012: "They're not the worst we do have Hitler in this lobby." [Mario Kart 8] [12052021]
 1013: "I'm gonna go for B, don't follow me or we're going to lose. Oh, now we have TWO Robins so now we're definitely going to lose. So, I'm going for B, good luck." [Hood: Outlaws & Legends] [13052021]
 1014: "Pussy is overrated." [Dragon Ball: Xenoverse 2] [18052021]
 1015: "Hahahaha his name is Pee." [Dragon Ball: Xenoverse 2] [19052021]
@@ -1760,4 +1760,5 @@
 1807: "Get away from me Jeffrey. I'm a free man!" [Dead by Daylight] [08/04/2024]
 1808: "Oh, dude, she's right there? Stuff me." [Dead by Daylight] [08/04/2024]
 1809: "The lore is that she gets sucked into the cosmic space...time...vagina butthole while she's sleeping dude. She's not wearing shoes while she's sleeping. Silly." [Dragon Ball: The Breakers] [08/04/2024]
+
 
