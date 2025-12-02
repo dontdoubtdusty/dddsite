@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Like Mike Championship Bracket</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0e27;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255, 193, 7, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 4.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff6b35 0%, #ffc107 50%, #ff6b35 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.5));
+            }
+            to {
+                filter: drop-shadow(0 0 40px rgba(255, 193, 7, 0.8));
+            }
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .header-description {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.1em;
+            color: #cbd5e1;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        .brackets-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .bracket-section {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 35px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .bracket-section:hover {
+            border-color: rgba(255, 107, 53, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.2);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 107, 53, 0.3);
+        }
+
+        .category-icon {
+            font-size: 2em;
+        }
+
+        .category-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .category-description {
+            font-size: 1em;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .matchup {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .matchup:last-child {
+            margin-bottom: 0;
+        }
+
+        .bracket-connector {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+        }
+
+        .teams-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .bracket-line {
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            margin-left: 10px;
+        }
+
+        .bracket-line::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: rgba(255, 107, 53, 0.4);
+        }
+
+        .bracket-line::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 30px;
+            height: 3px;
+            background: rgba(255, 107, 53, 0.4);
+            transform: translateY(-50%);
+        }
+
+        .winner-box {
+            width: 200px;
+            background: rgba(255, 193, 7, 0.15);
+            border: 3px solid rgba(255, 193, 7, 0.6);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+
+        .winner-content {
+            text-align: center;
+        }
+
+        .winner-label {
+            font-size: 0.8em;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .winner-name {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .winner-icon {
+            font-size: 2em;
+        }
+
+        .team-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 107, 53, 0.1) 50%, transparent 100%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .team-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .team-card:hover {
+            border-color: rgba(255, 107, 53, 0.6);
+            transform: scale(1.02);
+            box-shadow: 0 8px 32px rgba(255, 107, 53, 0.2);
+        }
+
+        .team-card.winner {
+            background: rgba(255, 107, 53, 0.15);
+            border-color: rgba(255, 193, 7, 0.6);
+            border-width: 3px;
+        }
+
+        .winner-badge {
+            display: none;
+        }
+
+        .seed {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: #ff6b35;
+            min-width: 50px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-info {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-name {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .team-detail {
+            font-size: 1em;
+            color: #94a3b8;
+        }
+
+        .winner-badge {
+            font-size: 2.5em;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .vs-divider {
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-text {
+            font-size: 1.1em;
+            color: #64748b;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            
+            .brackets-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .winner-box {
+                width: 150px;
+                padding: 15px;
+            }
+
+            .winner-name {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏀 Like Mike Championship 🏆</h1>
+            <div class="subtitle">Triple Threat Rankings</div>
+            <p class="header-description">Welcome to the definitive showdown between the original Like Mike and its streetball sequel. We're settling this once and for all across four critical categories—from pure quality to the essential Jesse Plemons factor. May the best sneaker movie win.</p>
+        </div>
+
+        <div class="brackets-grid">
+            <!-- Quality Bracket -->
+            <div class="bracket-section">
+                <div class="category-header">
+                    <div class="category-title">Quality</div>
+                </div>
+                <p class="category-description">Critical reception, cultural impact, and overall entertainment value. The metrics that matter.</p>
+                
+                <div class="matchup">
+                    <div class="bracket-connector">
+                        <div class="teams-column">
+                            <div class="team-card winner">
+                                <div class="seed">1</div>
+                                <div class="team-info">
+                                    <div class="team-name">Like Mike</div>
+                                    <div class="team-detail">2002 • The Original</div>
+                                </div>
+                            </div>
+                            
+                            <div class="team-card">
+                                <div class="seed">2</div>
+                                <div class="team-info">
+                                    <div class="team-name">Like Mike 2: Streetball</div>
+                                    <div class="team-detail">2006 • The Sequel</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bracket-line"></div>
+                        <div class="winner-box">
+                            <div class="winner-content">
+                                <div class="winner-label">Winner</div>
+                                <div class="winner-name">Like Mike</div>
+                                <div class="winner-icon">🏆</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Number Bracket -->
+            <div class="bracket-section">
+                <div class="category-header">
+                    <div class="category-title">Number</div>
+                </div>
+                <p class="category-description">Chronological order in the franchise. Sometimes being first is everything.</p>
+                
+                <div class="matchup">
+                    <div class="bracket-connector">
+                        <div class="teams-column">
+                            <div class="team-card winner">
+                                <div class="seed">1</div>
+                                <div class="team-info">
+                                    <div class="team-name">Like Mike</div>
+                                    <div class="team-detail">First in Series</div>
+                                </div>
+                            </div>
+                            
+                            <div class="team-card">
+                                <div class="seed">2</div>
+                                <div class="team-info">
+                                    <div class="team-name">Like Mike 2: Streetball</div>
+                                    <div class="team-detail">Second in Series</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bracket-line"></div>
+                        <div class="winner-box">
+                            <div class="winner-content">
+                                <div class="winner-label">Winner</div>
+                                <div class="winner-name">Like Mike</div>
+                                <div class="winner-icon">🥇</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Title Length Bracket -->
+            <div class="bracket-section">
+                <div class="category-header">
+                    <div class="category-title">Title Length</div>
+                </div>
+                <p class="category-description">Character count analysis. In the game of titles, size matters.</p>
+                
+                <div class="matchup">
+                    <div class="bracket-connector">
+                        <div class="teams-column">
+                            <div class="team-card winner">
+                                <div class="seed">1</div>
+                                <div class="team-info">
+                                    <div class="team-name">Like Mike 2: Streetball</div>
+                                    <div class="team-detail">24 Characters</div>
+                                </div>
+                            </div>
+                            
+                            <div class="team-card">
+                                <div class="seed">2</div>
+                                <div class="team-info">
+                                    <div class="team-name">Like Mike</div>
+                                    <div class="team-detail">9 Characters</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bracket-line"></div>
+                        <div class="winner-box">
+                            <div class="winner-content">
+                                <div class="winner-label">Winner</div>
+                                <div class="winner-name">LM2: Streetball</div>
+                                <div class="winner-icon">📐</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jesse Plemons Characters Bracket -->
+            <div class="bracket-section">
+                <div class="category-header">
+                    <div class="category-title">Jesse Plemons</div>
+                </div>
+                <p class="category-description">Presence of future Emmy-nominated talent. A key performance indicator.</p>
+                
+                <div class="matchup">
+                    <div class="bracket-connector">
+                        <div class="teams-column">
+                            <div class="team-card winner">
+                                <div class="seed">1</div>
+                                <div class="team-info">
+                                    <div class="team-name">Like Mike</div>
+                                    <div class="team-detail">Ox (Teen Bully)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="team-card">
+                                <div class="seed">2</div>
+                                <div class="team-info">
+                                    <div class="team-name">Like Mike 2: Streetball</div>
+                                    <div class="team-detail">No Jesse Plemons</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bracket-line"></div>
+                        <div class="winner-box">
+                            <div class="winner-content">
+                                <div class="winner-label">Winner</div>
+                                <div class="winner-name">Like Mike</div>
+                                <div class="winner-icon">🎬</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">🔥 MARCH MADNESS: LIKE MIKE EDITION 🔥</div>
+        </div>
+    </div>
+</body>
+</html>
