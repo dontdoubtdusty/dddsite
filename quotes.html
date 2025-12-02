@@ -105,274 +105,296 @@
             <div class="space-y-4 max-h-[600px] overflow-y-auto" id="quotesList"></div>
         </div>
     </div>
-	<script>
-	    async function loadQuotes() {
-	        try {
-	            const response = await fetch('thebookofcarp.txt'); 
-	            const text = await response.text();
-	
-	            // Parse it however your page expects.
-	            // If your entries are newline-separated, split them:
-	            const quotesData = text.split('\n').filter(line => line.trim() !== '');
-	
-	            console.log(quotesData);
-	            // Now you can use quotesData however your code did before.
-	        }
-	        catch (error) {
-	            console.error("Error loading quotes file:", error);
-	        }
-	    }
-	
-	    loadQuotes();
-	</script>
+	<!-- 1) Load the quotes file -->
+<script>
+async function loadQuotes() {
+    try {
+        const response = await fetch('thebookofcarp.txt');
+        const text = await response.text();
 
-    <script>
-		function formatDate(rawDate) {
+        // Make this accessible to everything below
+        window.quotesData = text.split('\n').filter(line => line.trim() !== '');
+
+        console.log(`Loaded ${window.quotesData.length} quotes`);
+
+        initQuotes(); // Start the app AFTER file is loaded
+    } 
+    catch (error) {
+        console.error(`Error loading quotes file: ${error}`);
+    }
+}
+
+loadQuotes();
+</script>
+
+
+<!-- 2) All other logic goes inside initQuotes() -->
+<script>
+function initQuotes() {
+
+    // -------------------------------
+    // PARSE QUOTES
+    // -------------------------------
+    const quotes = quotesData.map(line => {
+        const match = line.match(/^(\d+):\s*"([^"]+)"\s*\[([^\]]+)\]\s*\[([^\]]+)\]/);
+        if (match) {
+            return {
+                id: match[1],
+                text: match[2],
+                game: match[3],
+                date: match[4]
+            };
+        }
+        return null;
+    }).filter(Boolean);
+
+    window.quotes = quotes; // make global for QOTD
+
+    document.getElementById('quoteCount').textContent = `Search through ${quotes.length} memorable moments`;
+
+
+    // -------------------------------
+    // DATE FORMATTER
+    // -------------------------------
+    function formatDate(rawDate) {
         if (!rawDate) return '';
 
-        let cleanDate = rawDate.replace(/\D/g, '');
+        let clean = rawDate.replace(/\D/g, '');
+        let d, m, y;
 
-        let day, month, year;
-
-        if (cleanDate.length === 8) {
-            // DDMMYYYY
-            day = parseInt(cleanDate.slice(0, 2), 10);
-            month = parseInt(cleanDate.slice(2, 4), 10) - 1;
-            year = parseInt(cleanDate.slice(4, 8), 10);
+        if (clean.length === 8) {
+            d = parseInt(clean.slice(0, 2));
+            m = parseInt(clean.slice(2, 4)) - 1;
+            y = parseInt(clean.slice(4, 8));
         } else if (rawDate.includes('/')) {
-            // DD/MM/YYYY
-            const parts = rawDate.split('/');
-            day = parseInt(parts[0], 10);
-            month = parseInt(parts[1], 10) - 1;
-            year = parseInt(parts[2], 10);
+            const p = rawDate.split('/');
+            d = parseInt(p[0]);
+            m = parseInt(p[1]) - 1;
+            y = parseInt(p[2]);
         } else {
-            return rawDate; // fallback
+            return rawDate;
         }
 
         const months = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
+            'January','February','March','April','May','June',
+            'July','August','September','October','November','December'
         ];
 
-        return `${day} ${months[month]} ${year}`;
+        return `${d} ${months[m]} ${y}`;
     }
 
-        const quotes = quotesData.split('\n').map(line => {
-            const match = line.match(/^(\d+):\s*"([^"]+)"\s*\[([^\]]+)\]\s*\[([^\]]+)\]/);
-            if (match) {
-                return {
-                    id: match[1],
-                    text: match[2],
-                    game: match[3],
-                    date: match[4]
-                };
-            }
-            return null;
-        }).filter(Boolean);
 
-        const popularTerms = [
-            'poop', 'World of Warcraft', 'Dead by Daylight', 'Fortnite', 
-            'Dragon Ball', 'Mario Kart', 'fuck', 'poopy', 'ass',
-            'Super Smash Bros', 'Roblox', 'Elder Scrolls', 'corn'
-        ];
+    // -------------------------------
+    // POPULAR TERMS
+    // -------------------------------
+    const popularTerms = [
+        'poop', 'World of Warcraft', 'Dead by Daylight', 'Fortnite',
+        'Dragon Ball', 'Mario Kart', 'fuck', 'poopy', 'ass',
+        'Super Smash Bros', 'Roblox', 'Elder Scrolls', 'corn'
+    ];
 
-        let currentSearch = '';
-        let selectedYear = null;
+    let currentSearch = '';
+    let selectedYear = null;
 
-        document.getElementById('quoteCount').textContent = `Search through ${quotes.length} memorable moments`;
 
-        // Get unique years from quotes (only valid years that have already happened)
-        const currentYear = new Date().getFullYear();
-        const years = [...new Set(quotes.map(q => {
-            const match = q.date.match(/\d{4}/);
-            if (match) {
-                const year = parseInt(match[0]);
-                // Only include years between 1900 and current year
-                if (year >= 2018 && year <= currentYear) {
-                    return year.toString();
-                }
-            }
-            return null;
-        }).filter(Boolean))].sort((a, b) => b - a);
+    // -------------------------------
+    // YEAR FILTERS
+    // -------------------------------
+    const currentYear = new Date().getFullYear();
+    const years = [...new Set(quotes.map(q => {
+        const m = q.date.match(/\d{4}/);
+        if (m) {
+            const y = parseInt(m[0]);
+            if (y >= 2018 && y <= currentYear) return y.toString();
+        }
+        return null;
+    }).filter(Boolean))].sort((a, b) => b - a);
 
-        // Populate year filters
-        const yearFiltersContainer = document.getElementById('yearFilters');
-        
-        const allYearsBtn = document.createElement('button');
-        allYearsBtn.textContent = 'All Years';
-        allYearsBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
-        allYearsBtn.onclick = () => {
-            selectedYear = null;
+    const yearFiltersContainer = document.getElementById('yearFilters');
+
+    const allYearsBtn = document.createElement('button');
+    allYearsBtn.textContent = 'All Years';
+    allYearsBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
+    allYearsBtn.onclick = () => {
+        selectedYear = null;
+        updateYearButtons();
+        renderQuotes();
+    };
+    yearFiltersContainer.appendChild(allYearsBtn);
+
+    years.forEach(year => {
+        const btn = document.createElement('button');
+        btn.textContent = year;
+        btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
+        btn.dataset.year = year;
+        btn.onclick = () => {
+            selectedYear = year;
             updateYearButtons();
             renderQuotes();
         };
-        yearFiltersContainer.appendChild(allYearsBtn);
+        yearFiltersContainer.appendChild(btn);
+    });
 
-        years.forEach(year => {
-            const btn = document.createElement('button');
-            btn.textContent = year;
-            btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-            btn.dataset.year = year;
-            btn.onclick = () => {
-                selectedYear = year;
-                updateYearButtons();
-                renderQuotes();
-            };
-            yearFiltersContainer.appendChild(btn);
-        });
+    function updateYearButtons() {
+        const allBtn = yearFiltersContainer.firstChild;
+        const yearBtns = [...yearFiltersContainer.children].slice(1);
 
-        function updateYearButtons() {
-            const allBtn = yearFiltersContainer.firstChild;
-            const yearBtns = Array.from(yearFiltersContainer.children).slice(1);
-            
-            if (selectedYear === null) {
-                allBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
-                yearBtns.forEach(btn => {
-                    btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-                });
-            } else {
-                allBtn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-                yearBtns.forEach(btn => {
-                    if (btn.dataset.year === selectedYear) {
-                        btn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
-                    } else {
-                        btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-                    }
-                });
-            }
+        if (selectedYear === null) {
+            allBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
+            yearBtns.forEach(btn => btn.className =
+                'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors'
+            );
+        } else {
+            allBtn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
+            yearBtns.forEach(btn => {
+                btn.className = (btn.dataset.year === selectedYear)
+                    ? 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors'
+                    : 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
+            });
+        }
+    }
+
+
+    // -------------------------------
+    // POPULAR TERM BUTTONS
+    // -------------------------------
+    const popularContainer = document.getElementById('popularTerms');
+
+    popularTerms.forEach(term => {
+        const btn = document.createElement('button');
+        btn.textContent = term;
+        btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 rounded-full text-sm text-purple-900 transition-colors';
+        btn.onclick = () => {
+            document.getElementById('searchInput').value = term;
+            currentSearch = term;
+            renderQuotes();
+        };
+        popularContainer.appendChild(btn);
+    });
+
+
+    // -------------------------------
+    // QUOTE FILTERING
+    // -------------------------------
+    function filterQuotes() {
+        let out = quotes;
+
+        if (selectedYear !== null) {
+            out = out.filter(q => q.date.includes(selectedYear));
         }
 
-        // Populate popular terms
-        const popularTermsContainer = document.getElementById('popularTerms');
-        popularTerms.forEach(term => {
-            const btn = document.createElement('button');
-            btn.textContent = term;
-            btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 rounded-full text-sm text-purple-900 transition-colors';
-            btn.onclick = () => {
-                document.getElementById('searchInput').value = term;
-                currentSearch = term;
-                renderQuotes();
-            };
-            popularTermsContainer.appendChild(btn);
-        });
-
-        function filterQuotes() {
-            let filtered = quotes;
-            
-            // Filter by year first
-            if (selectedYear !== null) {
-                filtered = filtered.filter(quote => quote.date.includes(selectedYear));
-            }
-            
-            // Then filter by search term
-            if (currentSearch) {
-                const lowerSearch = currentSearch.toLowerCase();
-                filtered = filtered.filter(quote => 
-                    quote.text.toLowerCase().includes(lowerSearch) ||
-                    quote.game.toLowerCase().includes(lowerSearch) ||
-                    quote.date.includes(lowerSearch)
-                );
-            }
-            
-            return filtered;
+        if (currentSearch) {
+            const s = currentSearch.toLowerCase();
+            out = out.filter(q =>
+                q.text.toLowerCase().includes(s) ||
+                q.game.toLowerCase().includes(s) ||
+                q.date.includes(s)
+            );
         }
+        return out;
+    }
 
-  function renderQuotes() {
-        const filteredQuotes = filterQuotes();
-        const quotesList = document.getElementById('quotesList');
+
+    // -------------------------------
+    // RENDER LIST
+    // -------------------------------
+    function renderQuotes() {
+        const filtered = filterQuotes();
+        const list = document.getElementById('quotesList');
         const resultCount = document.getElementById('resultCount');
 
-        resultCount.textContent = `${filteredQuotes.length} result${filteredQuotes.length !== 1 ? 's' : ''}`;
-        quotesList.innerHTML = '';
+        resultCount.textContent = `${filtered.length} result${filtered.length !== 1 ? 's' : ''}`;
+        list.innerHTML = '';
 
-        const displayQuotes = filteredQuotes.slice(0, 50);
+        const display = filtered.slice(0, 50);
 
-        if (displayQuotes.length === 0) {
-            quotesList.innerHTML = '<p class="text-center text-purple-600">No quotes found. Try a different search term!</p>';
+        if (!display.length) {
+            list.innerHTML = '<p class="text-center text-purple-600">No quotes found. Try a different search term!</p>';
             return;
         }
 
-        displayQuotes.forEach(quote => {
+        display.forEach(q => {
             const div = document.createElement('div');
             div.className = 'bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition-colors';
 
-            const safeText = quote.text.replace(/'/g, "\\'");
-            const formattedDate = formatDate(quote.date); // <-- Here we format the date
+            const safe = q.text.replace(/'/g, "\\'");
+            const formatted = formatDate(q.date);
 
             div.innerHTML = `
                 <p class="text-purple-900 mb-2">
-                    <span class="text-purple-600 font-semibold">#${quote.id}:</span>
-                    "${quote.text}"
+                    <span class="text-purple-600 font-semibold">#${q.id}:</span>
+                    "${q.text}"
                 </p>
-                <p class="text-sm text-purple-700 mb-2">${quote.game} • ${formattedDate}</p>
+                <p class="text-sm text-purple-700 mb-2">${q.game} • ${formatted}</p>
 
                 <button
                     class="px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-xs transition-colors"
-                    onclick="copyQuote('${safeText}')">
+                    onclick="copyQuote('${safe}')">
                     Copy Quote
                 </button>
             `;
-
-            quotesList.appendChild(div);
+            list.appendChild(div);
         });
 
-    if (filteredQuotes.length > 50) {
-        const msg = document.createElement('p');
-        msg.className = 'text-center text-purple-600 text-sm';
-        msg.textContent = 'Showing first 50 results. Refine your search to see more.';
-        quotesList.appendChild(msg);
+        if (filtered.length > 50) {
+            const msg = document.createElement('p');
+            msg.className = 'text-center text-purple-600 text-sm';
+            msg.textContent = 'Showing first 50 results. Refine your search to see more.';
+            list.appendChild(msg);
+        }
     }
-}
 
 
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            currentSearch = e.target.value;
-            renderQuotes();
-        });
-
-        document.getElementById('randomBtn').addEventListener('click', () => {
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-            const randomQuote = quotes[randomIndex];
-            
-            document.getElementById('randomQuoteText').textContent = `#${randomQuote.id}: "${randomQuote.text}"`;
-            document.getElementById('randomQuoteInfo').textContent = `${randomQuote.game} • ${formatDate(randomQuote.date)}`;
-            document.getElementById('randomQuoteDisplay').classList.remove('hidden');
-        });
-
-        // Initial render
+    // -------------------------------
+    // SEARCH LISTENER
+    // -------------------------------
+    document.getElementById('searchInput').addEventListener('input', e => {
+        currentSearch = e.target.value;
         renderQuotes();
-    </script>
-	<script>
-function getQuoteOfTheDay() {
-    const now = new Date();
-
-    // Calculate the day-of-year number (1–365/366)
-    const start = new Date(now.getFullYear(), 0, 0);
-    const diff = now - start;
-    const oneDay = 1000 * 60 * 60 * 24;
-    const dayOfYear = Math.floor(diff / oneDay);
-
-    // Combine current year + day into one unique number
-    const seed = now.getFullYear() * 1000 + dayOfYear;
-
-    // Pick quote using modulo so it works with ANY number of quotes
-    const index = seed % quotes.length;
-
-    return quotes[index];
-}
-
-// After quotes array is loaded:
-const qod = getQuoteOfTheDay();
-document.getElementById('quoteOfDayText').textContent = `#${qod.id}: "${qod.text}"`;
-document.getElementById('quoteOfDayInfo').textContent = `${qod.game} • ${formatDate(qod.date)}`;
-
-
-
-function copyQuote(text) {
-    navigator.clipboard.writeText(text).then(() => {
     });
-}
 
+
+    // -------------------------------
+    // RANDOM QUOTE
+    // -------------------------------
+    document.getElementById('randomBtn').addEventListener('click', () => {
+        const r = quotes[Math.floor(Math.random() * quotes.length)];
+        document.getElementById('randomQuoteText').textContent = `#${r.id}: "${r.text}"`;
+        document.getElementById('randomQuoteInfo').textContent = `${r.game} • ${formatDate(r.date)}`;
+        document.getElementById('randomQuoteDisplay').classList.remove('hidden');
+    });
+
+
+    // -------------------------------
+    // QUOTE OF THE DAY
+    // -------------------------------
+    function getQuoteOfTheDay() {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), 0, 0);
+        const diff = now - start;
+        const oneDay = 86400000;
+        const day = Math.floor(diff / oneDay);
+        const seed = now.getFullYear() * 1000 + day;
+        return quotes[seed % quotes.length];
+    }
+
+    const qod = getQuoteOfTheDay();
+    document.getElementById('quoteOfDayText').textContent = `#${qod.id}: "${qod.text}"`;
+    document.getElementById('quoteOfDayInfo').textContent = `${qod.game} • ${formatDate(qod.date)}`;
+
+
+    // -------------------------------
+    // CLIPBOARD
+    // -------------------------------
+    window.copyQuote = function(text) {
+        navigator.clipboard.writeText(text);
+    };
+
+
+    // INITIAL RENDER
+    renderQuotes();
+}
 </script>
+
 </body>
 </html>
