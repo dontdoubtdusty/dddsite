@@ -1,8 +1,8 @@
-﻿0:"Welcome to the Carp Society. Don't worry, we'll help you get your kids back." [Super Smash Brethren] [11/10/2019]
+﻿0: "Welcome to the Carp Society. Don't worry, we'll help you get your kids back." [Super Smash Brethren] [11/10/2019]
 1: "Literal horse cock." [World of Warcraft] [11/10/2019]
 2: "You gonna piss your pants? Can I watch? Stay where you are I wanna watch." [Deceit] [2019]
 3: "I refuse to play Throne of Lies again until they add Master Chief to Smash." [World of Warcraft] [11/10/2019]
-4: "You want jobs? I got fuckin' jobs." - Taskmaster Toad [Super Mama Maker 2] [11/10/2019]
+4: "You want jobs? I got fuckin' jobs. - Taskmaster Toad" [Super Mama Maker 2] [11/10/2019]
 5: "Meatlord Mortimer." [The Council] [2019]
 6: "Altruism? More like I'm busy." [World of Warcraft] [11/10/2019]
 7: "That's what you get. Now you get a full paintbrush." [Super Smash Bros. Ultimate on the Nintendo Switch] [2019]
@@ -136,7 +136,7 @@
 135: "It's been a while since I've seen a beauty like that that didn't try to kill me." [Citadel: Forged with Fire] [05/11/2019]
 136: "How is your lover?" [Citadel: Forged with Fire] [05/11/2019]
 137: "Trees don't grow on porches. Or maybe they do. Hmmm." [California Orange Tree Simulator]
-138: AthosJulii: Gottem [Citadel: Forged with Fire] [05/11/2019]
+
 139: "I wouldn't kill YOUR pet bear. There's a difference. I mean I COULDN'T kill your pet bear." [Citadel: Forged with Fire] [05/11/2019]
 140: "Put all the BONES away put all the MEAT away..." [Citadel: Forged with Fire] [05/11/2019]
 141: "Lions are adorable? PROVE IT!" [Citadel: Forged with Fire] [05/11/2019]
@@ -155,7 +155,7 @@
 154: "Is this what Death Stranding is about chat? Crying babies?" [Throne of Lies: The Online Game of Deceit] [06/11/2019]
 155: "I worry about the future all the time. I revel in the past baby!" [Throne of Lies: The Online Game of Deceit] [06/11/2019]
 156: "If he gets off before I do, I can't host him can I?" [Throne of Lies: The Online Game of Deceit] [06/11/2019]
-157: "The baby isn't a plant? It probably would depend on who you ask."
+157: "The baby isn't a plant? It probably would depend on who you ask." [The Jackbox Party Pack 6] [06/11/2019]
 158: "Ahahaha! I don't get the pants! Ahaha!" [The Jackbox Party Pack 6] [06/11/2019]
 159: "Ramsey you're a genius!" [Citadel: Forged with Fire] [07/11/2019]
 160: "He's concentrating so hard he's ripping through his pants." [Citadel: Forged with Fire] [07/11/2019]
@@ -1760,5 +1760,6 @@
 1807: "Get away from me Jeffrey. I'm a free man!" [Dead by Daylight] [08/04/2024]
 1808: "Oh, dude, she's right there? Stuff me." [Dead by Daylight] [08/04/2024]
 1809: "The lore is that she gets sucked into the cosmic space...time...vagina butthole while she's sleeping dude. She's not wearing shoes while she's sleeping. Silly." [Dragon Ball: The Breakers] [08/04/2024]
+
 
 
