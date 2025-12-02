@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silly Reasons to Live Advent Calendar</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            background: 
+                linear-gradient(180deg, rgba(10,40,20,0.7) 0%, rgba(5,20,10,0.85) 50%, rgba(0,40,25,0.75) 100%),
+                url('https://i.imgur.com/kST5rQz.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .snowflake {
+            position: fixed; top: -10px; z-index: 1; user-select: none;
+            animation: fall linear infinite;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        @keyframes fall { to { transform: translateY(100vh); } }
+        h1 {
+            font-size: 2.5em; margin: 20px 0 10px; text-align: center;
+            color: #a3ffb3;
+            text-shadow: 2px 2px 8px rgba(0,60,20,0.9), 0 0 20px rgba(80,200,120,0.6);
+        }
+        .subtitle {
+            font-size: 1.2em; margin-bottom: 30px; text-align: center;
+            color: #d8ffd8; font-style: italic;
+        }
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 15px; max-width: 1000px; width: 100%; padding: 20px;
+        }
+        .calendar-box {
+            position: relative; width: 100%; aspect-ratio: 1;
+            perspective: 1000px; cursor: pointer;
+        }
+        .calendar-box.locked { cursor: not-allowed; opacity: 0.6; }
+        .lock-icon { position: absolute; top: 10px; right: 10px; font-size: 1.2em; }
+        .box-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .calendar-box.flipped .box-inner { transform: rotateX(180deg); }
+        .box-front, .box-back {
+            position: absolute; width: 100%; height: 100%; border-radius: 10px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); backface-visibility: hidden;
+        }
+        .box-front {
+            background: linear-gradient(135deg, #1d5f3a 0%, #2d8f5a 100%);
+            border: 3px solid #9fffc7;
+        }
+        .box-number {
+            font-size: 3em; font-weight: bold; color: #fff;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+        }
+        .box-back {
+            background: linear-gradient(135deg, #0a2816 0%, #1a4528 100%);
+            border: 3px solid #4ae28c;
+            transform: rotateX(180deg);
+        }
+        .draft-title { font-size: 0.9em; font-weight: bold; color: #c0ff8a; text-align: center; margin-bottom: 6px; line-height: 1.2; }
+        .sets { font-size: 0.7em; color: #98ffcf; text-align: center; margin-bottom: 6px; font-style: italic; line-height: 1.2; }
+        .description { font-size: 0.65em; color: #7fffd4; text-align: center; line-height: 1.25; overflow-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>🎄 Silly Reasons to Live Advent Calendar 🎄</h1>
+    <p class="subtitle">A daily dose of nonsense from niche corners of the internet</p>
+    <div class="calendar-grid" id="calendar"></div>
+
+    <script>
+        const horrors = [
+            { title: "Staying Alive for the Frog Wearing a Cowboy Hat", sets: "From the sub where people post amphibians in tiny outfits", description: "He deserves to know you saw him tip his hat." },
+            { title: "That One Guy Who Rates Spoons Online", sets: "A legendary figure in utensil-review circles", description: "You can't quit before he finally uploads Fork Tier List." },
+            { title: "The Duck Who Solves Crimes", sets: "Fan-favorite mascot of a microfandom with 83 members", description: "Justice requires your continued existence." },
+            { title: "Daily Photos of a Rock Getting Slightly Wetter", sets: "An entire subreddit dedicated to moisture increments", description: "Tomorrow could be the wettest yet." },
+            { title: "The Man Who Trains His Roomba for Battle", sets: "Niche robotics community hero", description: "He needs witnesses when the Roomba finally wins." },
+            { title: "The Cat That Looks Like a Tax Accountant", sets: "Beloved by a financial-meme Discord", description: "Someone must appreciate his tiny briefcase." },
+            { title: "People Who Speedrun Making Sandwiches", sets: "Hyper-niche competitive cooking", description: "They just discovered a new bread-skip glitch." },
+            { title: "The Snail That Does Daily Motivational Posts", sets: "A community dedicated to slow encouragement", description: "He typed a whole paragraph today. Slowly." },
+            { title: "A Tumblr Thread About a Possum Who Thinks He's a Wizard", sets: "Years of chaotic lore", description: "You're needed for arcane possum updates." },
+            { title: "The Guy Who Reviews Elevators", sets: "A cult classic YouTube niche", description: "He just teased a freight elevator season finale." },
+            { title: "Dogs Wearing Pajamas Community", sets: "Wholesome chaos", description: "You have to see tonight's pajama drop." },
+            { title: "People Who Pretend to Be Crabs", sets: "A roleplay forum nobody understands", description: "They're molting soon. Big event." },
+            { title: "The Fanbase Devoted to One Very Polite Goose", sets: "Obsessively courteous bird content", description: "He bowed to a child today. Gorgeous stuff." },
+            { title: "Obscure Soup Enthusiasts", sets: "Thousands of users discussing broth", description: "Someone claimed to find Soup #74. Controversy beckons." },
+            { title: "The Man Who Makes Medieval Memes", sets: "Deep-cut manuscript humor", description: "He just found a drawing of a knight eating cheese weirdly." },
+            { title: "Spreadsheet Aesthetics Community", sets: "Where conditional formatting inspires awe", description: "A color-coded masterpiece drops tomorrow." },
+            { title: "Fans of the Guy Who Does Weather Reports for His Ferrets", sets: "Microclimates + tiny mammals", description: "Winter Coat Advisory issued soon." },
+            { title: "Someone's 12-Year Long Minecraft Tunnel Project", sets: "A saga too far to abandon", description: "He's only 40 million blocks from daylight." },
+            { title: "People Who Draw Dinosaurs as Business Executives", sets: "Corporate paleoart niche", description: "A new CFO-raptor sketch is rumored." },
+            { title: "The Goldfish Who Predicts Video Game Releases", sets: "Shockingly accurate, statistically questionable", description: "He hasn't been wrong in a month." },
+            { title: "Obscure Snack Taste-Testers", sets: "One man just found a 1998 Dorito", description: "He goes live tomorrow." },
+            { title: "Lizards Wearing Hats", sets: "Not the same as the frog hats community—totally different vibe", description: "Today's hat might be a beret." },
+            { title: "The Ongoing Saga of a Bodega Cat", sets: "Drama. Politics. Cat naps.", description: "Season 5 just started." },
+            { title: "People Who Collect Badly Photoshopped Dragons", sets: "Charmingly awful", description: "A rare blurry one is about to drop." },
+            { title: "The Annual Ranking of Squirrels by Roundness", sets: "An internet tradition", description: "This year's contenders are unbelievable." }
+        ];
+
+        const calendar = document.getElementById('calendar');
+        function createSnowflake() {
+            const s = document.createElement('div');
+            s.className = 'snowflake'; s.textContent = '❄';
+            s.style.left = Math.random()*100 + '%';
+            s.style.fontSize = (Math.random()*0.5 + 0.6) + 'em';
+            s.style.animationDuration = (Math.random()*3 + 2) + 's';
+            document.body.appendChild(s);
+            setTimeout(() => s.remove(), 5000);
+        }
+        setInterval(createSnowflake, 200);
+
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+        const currentDay = now.getDate();
+
+        function isUnlocked(day) {
+            if (currentYear > 2025 || (currentYear === 2025 && currentMonth > 11)) return true;
+            if (currentYear === 2025 && currentMonth === 11) return currentDay >= day;
+            return false;
+        }
+
+        for (let i = 1; i <= 25; i++) {
+            const h = horrors[i-1];
+            const unlocked = isUnlocked(i);
+            const box = document.createElement('div');
+            box.className = 'calendar-box' + (unlocked ? '' : ' locked');
+            box.innerHTML = `
+                <div class="box-inner">
+                    <div class="box-front">
+                        ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
+                        <div class="box-number">${i}</div>
+                    </div>
+                    <div class="box-back">
+                        <div class="draft-title">${h.title}</div>
+                        <div class="sets">${h.sets}</div>
+                        <div class="description">${h.description}</div>
+                    </div>
+                </div>`;
+            if (unlocked) {
+                box.addEventListener('click', function() { this.classList.toggle('flipped'); });
+            }
+            calendar.appendChild(box);
+        }
+    </script>
+</body>
+</html>
