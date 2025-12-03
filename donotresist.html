@@ -19,13 +19,11 @@
         color: white;
         font-family: Arial, sans-serif;
     }
-
     .container {
         position: relative;
         width: 100%;
         height: 100%;
     }
-
     .rotator {
         position: absolute;
         top: 50%;
@@ -35,12 +33,10 @@
         transform: translate(-50%, -50%);
         animation: spin 12s linear infinite;
     }
-
     @keyframes spin {
         from { transform: translate(-50%, -50%) rotate(0deg); }
         to   { transform: translate(-50%, -50%) rotate(360deg); }
     }
-
     .message {
         position: absolute;
         width: 100%;
@@ -50,18 +46,42 @@
         text-shadow: 0 0 8px #7fffd4, 0 0 18px #7fffd4, 0 0 28px #7fffd4;
         animation: pulse 3s ease-in-out infinite;
     }
-
     .top {
         top: 40px;
     }
-
     .bottom {
         bottom: 40px;
     }
-
     @keyframes pulse {
         0%, 100% { opacity: 0.85; }
         50%      { opacity: 1; }
+    }
+    .resist-btn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px 50px;
+        font-size: 1.8rem;
+        font-weight: bold;
+        letter-spacing: 0.2em;
+        background: linear-gradient(135deg, #ff0000, #ff6b6b);
+        color: white;
+        border: 3px solid #ff0000;
+        border-radius: 8px;
+        cursor: pointer;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.6), 0 0 40px rgba(255, 0, 0, 0.4);
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+    .resist-btn:hover {
+        background: #555;
+        border-color: #777;
+        color: #999;
+        cursor: not-allowed;
+        box-shadow: none;
+        text-shadow: none;
     }
 </style>
 </head>
@@ -69,6 +89,7 @@
 <div class="container">
     <div class="message top">DO NOT RESIST APPREHENSION</div>
     <img class="rotator" src="https://cards.scryfall.io/art_crop/front/2/3/238cb1db-6c41-4fe1-bc34-340048dfde18.jpg" alt="rotating image">
+    <button class="resist-btn">RESIST</button>
     <div class="message bottom">DO NOT RESIST APPREHENSION</div>
 </div>
 </body>
