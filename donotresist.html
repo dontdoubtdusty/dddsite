@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>STARPORT SECURITY</title>
+<title>Hypnotic Rotation</title>
 <style>
     body {
         margin: 0;
@@ -41,16 +41,17 @@
         position: absolute;
         width: 100%;
         text-align: center;
-        font-size: 2rem;
+        font-size: clamp(1.2rem, 4vw, 2rem);
         letter-spacing: 0.15em;
         text-shadow: 0 0 8px #7fffd4, 0 0 18px #7fffd4, 0 0 28px #7fffd4;
         animation: pulse 3s ease-in-out infinite;
+        padding: 0 20px;
     }
     .top {
-        top: 40px;
+        top: clamp(20px, 5vh, 40px);
     }
     .bottom {
-        bottom: 40px;
+        bottom: clamp(20px, 5vh, 40px);
     }
     @keyframes pulse {
         0%, 100% { opacity: 0.85; }
@@ -87,7 +88,7 @@
 </head>
 <body>
 <div class="container">
-    <div class="message top">YOU ARE A SUSPECT IN AN ONGOING INVESTIGATION</div>
+    <div class="message top">DO NOT RESIST APPREHENSION</div>
     <img class="rotator" src="https://cards.scryfall.io/art_crop/front/2/3/238cb1db-6c41-4fe1-bc34-340048dfde18.jpg" alt="rotating image">
     <button class="resist-btn">RESIST</button>
     <div class="message bottom">DO NOT RESIST APPREHENSION</div>
