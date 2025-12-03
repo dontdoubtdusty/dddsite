@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>25 Days of Short Horror/Sci-Fi Horror</title>
+    <style>
+        /* Styles remain largely the same, adjusted for a darker, more chilling theme */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            /* Darker, blood-red/black gradient and a chilling background image */
+            background:
+                linear-gradient(180deg, rgba(20, 5, 5, 0.85) 0%, rgba(0, 0, 0, 0.95) 50%, rgba(30, 0, 0, 0.9) 100%),
+                url('https://i.imgur.com/kST5rQz.jpeg'); /* Placeholder/Original, imagine a chilling forest */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .snowflake {
+            /* Changed to a chilling symbol, like a cold spark or blood drop (using a red '•') */
+            position: fixed; top: -10px; z-index: 1; user-select: none;
+            animation: fall linear infinite;
+            color: rgba(255, 0, 0, 0.6); /* Red color for a horror vibe */
+        }
+        @keyframes fall { to { transform: translateY(100vh); } }
+        h1 {
+            font-size: 2.5em; margin: 20px 0 10px; text-align: center;
+            color: #ff8a8a; /* Soft red/pink for title */
+            text-shadow: 2px 2px 8px rgba(50, 0, 0, 0.9), 0 0 20px rgba(255, 100, 100, 0.6);
+        }
+        .subtitle {
+            font-size: 1.2em; margin-bottom: 30px; text-align: center;
+            color: #ffa0a0; font-style: italic;
+        }
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 15px; max-width: 1000px; width: 100%; padding: 20px;
+        }
+        .calendar-box {
+            position: relative; width: 100%; aspect-ratio: 1;
+            perspective: 1000px; cursor: pointer;
+        }
+        .calendar-box.locked { cursor: not-allowed; opacity: 0.6; }
+        .lock-icon { position: absolute; top: 10px; right: 10px; font-size: 1.2em; }
+        .box-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .calendar-box.flipped .box-inner { transform: rotateX(180deg); }
+        .box-front, .box-back {
+            position: absolute; width: 100%; height: 100%; border-radius: 10px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); backface-visibility: hidden;
+        }
+        .box-front {
+            /* Darker, more ominous front */
+            background: linear-gradient(135deg, #300000 0%, #600000 100%);
+            border: 3px solid #ff5050;
+        }
+        .box-number {
+            font-size: 3em; font-weight: bold; color: #fff;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+        }
+        .box-back {
+            /* Black/dark gray back with chilling text colors */
+            background: linear-gradient(135deg, #0d0d0d 0%, #2a2a2a 100%);
+            border: 3px solid #ff8080;
+            transform: rotateX(180deg);
+        }
+        .draft-title { font-size: 0.9em; font-weight: bold; color: #ffe6e6; text-align: center; margin-bottom: 6px; line-height: 1.2; }
+        .sets { font-size: 0.7em; color: #ffbfbf; text-align: center; margin-bottom: 6px; font-style: italic; line-height: 1.2; }
+        .description { font-size: 0.65em; color: #ffcccc; text-align: center; line-height: 1.25; overflow-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>💀 25 Days of Short Horror & Sci-Fi 💀</h1>
+    <p class="subtitle">A brief glimpse into the void—classic and contemporary tales of terror</p>
+    <div class="calendar-grid" id="calendar"></div>
+
+    <script>
+        const horrors = [
+            { title: "The Lottery", sets: "Shirley Jackson, 1948", description: "A picturesque village tradition is about to begin. The stones are ready." },
+            { title: "The Veldt", sets: "Ray Bradbury, 1950", description: "A technologically advanced nursery can create any environment... and the children's minds are turning dark." },
+            { title: "I Have No Mouth, and I Must Scream", sets: "Harlan Ellison, 1967", description: "Five humans are the playthings of a godlike, malevolent Artificial Intelligence that hates everything." },
+            { title: "The Yellow Wallpaper", sets: "Charlotte Perkins Gilman, 1892", description: "Confined to a room for a 'rest cure,' a woman becomes obsessed with the sinister pattern of the wallpaper." },
+            { title: "The Last Question", sets: "Isaac Asimov, 1956", description: "Mankind asks a super-computer: can entropy ever be reversed? The answer will span eons." },
+            { title: "The Grownup", sets: "Gillian Flynn, 2014", description: "A psychic swindler takes on a client who claims her stepson is pure evil, but the house's history holds darker secrets." },
+            { title: "The Jaunt", sets: "Stephen King, 1981", description: "Teleportation makes inter-planetary travel possible. But what happens if you don't close your eyes during the 'Jaunt'?" },
+            { title: "A Sound of Thunder", sets: "Ray Bradbury, 1952", description: "A butterfly is accidentally crushed during a time-travel safari, changing all of history." },
+            { title: "Where Are You Going, Where Have You Been?", sets: "Joyce Carol Oates, 1966", description: "A teenage girl meets a charismatic, unsettling stranger who knows too much about her." },
+            { title: "The New York Times at Special Bargain Rates", sets: "Stephen King, 2008", description: "A grieving widow answers her phone and hears her deceased husband calling from the afterlife, sharing future headlines." },
+            { title: "Exhalation", sets: "Ted Chiang, 2008", description: "In a world of mechanical beings, an anatomist performs a terrifying discovery about the limits of his own consciousness." },
+            { title: "The Black Cat", sets: "Edgar Allan Poe, 1843", description: "A man's descent into madness and violence begins with his beloved black cat." },
+            { title: "The Ones Who Walk Away from Omelas", sets: "Ursula K. Le Guin, 1973", description: "The perfect utopian city is founded on a terrible, necessary sacrifice." },
+            { title: "The Haunter of the Dark", sets: "H.P. Lovecraft, 1936", description: "A man finds an ancient, abandoned church in a decaying city, waking a primal terror within." },
+            { title: "The Body Snatchers (Excerpt)", sets: "Robert Louis Stevenson, 1884", description: "Medical students procure corpses illegally, but their supply is suspiciously fresh." },
+            { title: "The Hanging Stranger", sets: "Philip K. Dick, 1953", description: "A man sees a hanged alien in the town square, but everyone else seems perfectly fine with it." },
+            { title: "Children of the Corn", sets: "Stephen King, 1977", description: "A couple stranded in Nebraska stumbles upon a town where all the adults have been violently sacrificed to an entity in the cornfield." },
+            { title: "The Husband Stitch", sets: "Carmen Maria Machado, 2014", description: "A modern retelling of the classic ghost story about a girl with a mysterious ribbon around her neck." },
+            { title: "Tunnel Under the World", sets: "Frederik Pohl, 1955", description: "A man wakes up on the same day twice, realizing his entire world is a repeating miniature simulation." },
+            { title: "In the Hills, the Cities", sets: "Clive Barker, 1984", description: "Two men witness a terrifying tradition in a Balkan village where people form colossal, moving human bodies." },
+            { title: "The Pit and the Pendulum", sets: "Edgar Allan Poe, 1842", description: "A victim of the Spanish Inquisition wakes in total darkness, realizing his cell is a death trap of psychological and physical torture." },
+            { title: "The Willows", sets: "Algernon Blackwood, 1907", description: "Two travelers canoe through a remote area where the river and surrounding willows seem to be malevolent, conscious entities." },
+            { title: "Bloodchild", sets: "Octavia E. Butler, 1984", description: "Humans live under the protection of an alien species on a distant planet, but that protection comes at a horrifying, symbiotic cost." },
+            { title: "The Fog Horn", sets: "Ray Bradbury, 1951", description: "A lonely sea creature is drawn out of the deep by the sound of a fog horn, believing it is another of its kind." },
+            { title: "The Monkey's Paw", sets: "W. W. Jacobs, 1902", description: "A family receives a strange talisman that grants three wishes, but fate ensures the wishes come at a horrific price." }
+        ];
+
+        const calendar = document.getElementById('calendar');
+
+        // Function to create a chilling, red spark '•'
+        function createSnowflake() {
+            const s = document.createElement('div');
+            s.className = 'snowflake'; s.textContent = '•';
+            s.style.left = Math.random()*100 + '%';
+            s.style.fontSize = (Math.random()*0.5 + 0.8) + 'em';
+            s.style.animationDuration = (Math.random()*3 + 3) + 's';
+            s.style.color = `rgba(255, ${Math.floor(Math.random() * 80)}, ${Math.floor(Math.random() * 80)}, 0.7)`; /* Varied red */
+            document.body.appendChild(s);
+            setTimeout(() => s.remove(), 7000);
+        }
+        setInterval(createSnowflake, 300);
+
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+        const currentDay = now.getDate();
+
+        function isUnlocked(day) {
+            // Unlocks based on the current date, assuming a December 2025 calendar
+            if (currentYear > 2025 || (currentYear === 2025 && currentMonth > 11)) return true;
+            if (currentYear === 2025 && currentMonth === 11) return currentDay >= day;
+            return false;
+        }
+
+        for (let i = 1; i <= 25; i++) {
+            const h = horrors[i-1];
+            const unlocked = isUnlocked(i);
+            const box = document.createElement('div');
+            box.className = 'calendar-box' + (unlocked ? '' : ' locked');
+            box.innerHTML = `
+                <div class="box-inner">
+                    <div class="box-front">
+                        ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
+                        <div class="box-number">${i}</div>
+                    </div>
+                    <div class="box-back">
+                        <div class="draft-title">${h.title}</div>
+                        <div class="sets">${h.sets}</div>
+                        <div class="description">${h.description}</div>
+                    </div>
+                </div>`;
+            if (unlocked) {
+                box.addEventListener('click', function() { this.classList.toggle('flipped'); });
+            }
+            calendar.appendChild(box);
+        }
+    </script>
+</body>
+</html>
