@@ -295,7 +295,7 @@ function initQuotes() {
     }
 
 
-    // -------------------------------
+// -------------------------------
     // RENDER LIST
     // -------------------------------
     function renderQuotes() {
@@ -313,7 +313,31 @@ function initQuotes() {
             return;
         }
 
-        display.forEach(q => {
+        display.forEach((q, index) => {
+            // Check for missing quotes before this one
+            if (index > 0) {
+                const prevId = parseInt(display[index - 1].id);
+                const currId = parseInt(q.id);
+                
+                if (currId - prevId > 1) {
+                    const missingDiv = document.createElement('div');
+                    missingDiv.className = 'bg-purple-50/50 p-3 rounded-lg border border-dashed border-purple-300 text-center';
+                    
+                    const missingCount = currId - prevId - 1;
+                    const missingNumbers = [];
+                    for (let i = prevId + 1; i < currId; i++) {
+                        missingNumbers.push(i);
+                    }
+                    
+                    missingDiv.innerHTML = `
+                        <p class="text-purple-500 text-sm italic">
+                            Missing quote${missingCount > 1 ? 's' : ''}: #${missingNumbers.join(', #')}
+                        </p>
+                    `;
+                    list.appendChild(missingDiv);
+                }
+            }
+
             const div = document.createElement('div');
             div.className = 'bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition-colors';
 
