@@ -306,12 +306,29 @@ function initQuotes() {
         resultCount.textContent = `${filtered.length} result${filtered.length !== 1 ? 's' : ''}`;
         list.innerHTML = '';
 
-        const display = filtered.slice(0, 50);
+        const perPage = 50;
+        const startIdx = currentPage * perPage;
+        const endIdx = startIdx + perPage;
+        const display = filtered.slice(startIdx, endIdx);
+
+        // Update pagination controls
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageInfo = document.getElementById('pageInfo');
+
+        prevBtn.disabled = currentPage === 0;
+        nextBtn.disabled = endIdx >= filtered.length;
+
+        const totalPages = Math.ceil(filtered.length / perPage);
+        pageInfo.textContent = `Page ${currentPage + 1} of ${totalPages}`;
 
         if (!display.length) {
             list.innerHTML = '<p class="text-center text-purple-600">No quotes found. Try a different search term!</p>';
+            document.getElementById('pagination').style.display = 'none';
             return;
         }
+
+        document.getElementById('pagination').style.display = 'flex';
 
         display.forEach((q, index) => {
             // Check for missing quotes before this one
@@ -359,13 +376,6 @@ function initQuotes() {
             `;
             list.appendChild(div);
         });
-
-        if (filtered.length > 50) {
-            const msg = document.createElement('p');
-            msg.className = 'text-center text-purple-600 text-sm';
-            msg.textContent = 'Showing first 50 results. Refine your search to see more.';
-            list.appendChild(msg);
-        }
     }
 
 
