@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hypnotic Rotation</title>
+<style>
+    body {
+        margin: 0;
+        background: black;
+        background-image: url('https://blogs-images.forbes.com/startswithabang/files/2016/02/mess-1200x965.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        color: white;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .rotator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 350px;
+        height: 350px;
+        transform: translate(-50%, -50%);
+        animation: spin 12s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to   { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .message {
+        position: absolute;
+        bottom: 40px;
+        width: 100%;
+        text-align: center;
+        font-size: 2rem;
+        letter-spacing: 0.15em;
+        text-shadow: 0 0 8px #7fffd4, 0 0 18px #7fffd4, 0 0 28px #7fffd4;
+        animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 0.85; }
+        50%      { opacity: 1; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <img class="rotator" src="https://cards.scryfall.io/art_crop/front/2/3/238cb1db-6c41-4fe1-bc34-340048dfde18.jpg" alt="rotating image">
+    <div class="message">DO NOT RESIST APPREHENSION</div>
+</div>
+</body>
+</html>
