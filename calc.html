@@ -175,6 +175,28 @@
             margin-left: 20px;
             color: #555;
         }
+        .quote-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+/* Left column gets more width */
+.left-side {
+    flex: 2;
+}
+
+/* Right column stays fixed width */
+.right-side {
+    flex: 1;
+    position: sticky;
+    top: 20px;   /* keeps the quote box visible when scrolling */
+}
+.right-side .live-quote {
+    width: 100%;
+}
+
     </style>
 </head>
 <body>
@@ -185,122 +207,124 @@
         </div>
 
         <div class="form-content">
-            <form id="quoteForm">
-                <div class="form-section">
-                    <h2>Basic Information</h2>
-                    
-                    <div class="form-group">
-                        <label for="squareFeet">Square Footage</label>
-                        <select id="squareFeet" required>
-                            <option value="">Select square footage range</option>
-                    
-                            <option value="1499">1 - 1499 Sq. ft</option>
-                            <option value="1999">1500 - 1999 Sq. ft</option>
-                            <option value="2499">2000 - 2499 Sq. ft</option>
-                            <option value="2999">2500 - 2999 Sq. ft</option>
-                            <option value="3499">3000 - 3499 Sq. ft</option>
-                            <option value="3999">3500 - 3999 Sq. ft</option>
-                            <option value="4499">4000 - 4499 Sq. ft</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="bedrooms">Bedrooms</label>
-                        <select id="bedrooms">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5+</option>
-                        </select>
-                    </div>
-                    
-                    
-                    <div class="form-group">
-                        <label for="bathrooms">Bathrooms</label>
-                        <select id="bathrooms">
-                            <option value="0.5">0.5</option>
-                            <option value="1">1</option>
-                            <option value="1.5">1.5</option>
-                            <option value="2">2</option>
-                            <option value="2.5">2.5</option>
-                            <option value="3">3+</option>
-                        </select>
-                    </div>
-
-
-                    <div class="form-group">
-                        <label for="hourlyRate">Hourly Rate ($)</label>
-                        <input type="number" id="hourlyRate" min="25" max="90" value="50" step="5">
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2>Condition Adjustments</h2>
-                    
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="pets">
-                            <label for="pets">Pets in home (+0.5 hours)</label>
+            <div class="left-side">
+                <form id="quoteForm">
+                    <div class="form-section">
+                        <h2>Basic Information</h2>
+                        
+                        <div class="form-group">
+                            <label for="squareFeet">Square Footage</label>
+                            <select id="squareFeet" required>
+                                <option value="">Select square footage range</option>
+                        
+                                <option value="1499">1 - 1499 Sq. ft</option>
+                                <option value="1999">1500 - 1999 Sq. ft</option>
+                                <option value="2499">2000 - 2499 Sq. ft</option>
+                                <option value="2999">2500 - 2999 Sq. ft</option>
+                                <option value="3499">3000 - 3499 Sq. ft</option>
+                                <option value="3999">3500 - 3999 Sq. ft</option>
+                                <option value="4499">4000 - 4499 Sq. ft</option>
+                            </select>
                         </div>
-
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="clutter">
-                            <label for="clutter">Heavy clutter/soil (+1 hour)</label>
+    
+                        <div class="form-group">
+                            <label for="bedrooms">Bedrooms</label>
+                            <select id="bedrooms">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5+</option>
+                            </select>
                         </div>
-
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="deepClean">
-                            <label for="deepClean">First-time/deep clean (×1.5 multiplier)</label>
+                        
+                        
+                        <div class="form-group">
+                            <label for="bathrooms">Bathrooms</label>
+                            <select id="bathrooms">
+                                <option value="0.5">0.5</option>
+                                <option value="1">1</option>
+                                <option value="1.5">1.5</option>
+                                <option value="2">2</option>
+                                <option value="2.5">2.5</option>
+                                <option value="3">3+</option>
+                            </select>
                         </div>
-
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="moveInOut">
-                            <label for="moveInOut">Move-in/move-out (×2.0 multiplier)</label>
+    
+    
+                        <div class="form-group">
+                            <label for="hourlyRate">Hourly Rate ($)</label>
+                            <input type="number" id="hourlyRate" min="25" max="90" value="50" step="5">
                         </div>
                     </div>
-                </div>
-
-                <div class="form-section">
-                    <h2>Add-ons</h2>
-                    
-                    <div class="addons-grid">
-                        <div class="addon-item">
-                            <input type="checkbox" id="oven">
-                            <label for="oven">Inside Oven (+$30)</label>
-                        </div>
-
-                        <div class="addon-item">
-                            <input type="checkbox" id="fridge">
-                            <label for="fridge">Inside Fridge (+$28)</label>
-                        </div>
-
-                        <div class="addon-item">
-                            <input type="checkbox" id="trash">
-                            <label for="trash">Trash Takeout (+$25)</label>
+    
+                    <div class="form-section">
+                        <h2>Condition Adjustments</h2>
+                        
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="pets">
+                                <label for="pets">Pets in home (+0.5 hours)</label>
+                            </div>
+    
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="clutter">
+                                <label for="clutter">Heavy clutter/soil (+1 hour)</label>
+                            </div>
+    
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="deepClean">
+                                <label for="deepClean">First-time/deep clean (×1.5 multiplier)</label>
+                            </div>
+    
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="moveInOut">
+                                <label for="moveInOut">Move-in/move-out (×2.0 multiplier)</label>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label for="windows">Interior Windows (count)</label>
-                        <input type="number" id="windows" min="0" value="0">
+    
+                    <div class="form-section">
+                        <h2>Add-ons</h2>
+                        
+                        <div class="addons-grid">
+                            <div class="addon-item">
+                                <input type="checkbox" id="oven">
+                                <label for="oven">Inside Oven (+$30)</label>
+                            </div>
+    
+                            <div class="addon-item">
+                                <input type="checkbox" id="fridge">
+                                <label for="fridge">Inside Fridge (+$28)</label>
+                            </div>
+    
+                            <div class="addon-item">
+                                <input type="checkbox" id="trash">
+                                <label for="trash">Trash Takeout (+$25)</label>
+                            </div>
+                        </div>
+    
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label for="windows">Interior Windows (count)</label>
+                            <input type="number" id="windows" min="0" value="0">
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-section">
-                    <h2>Frequency</h2>
-                    
-                    <div class="form-group">
-                        <label for="frequency">Cleaning Frequency</label>
-                        <select id="frequency">
-                            <option value="onetime">One-time (0% discount)</option>
-                            <option value="biweekly">Bi-weekly (7.5% discount)</option>
-                            <option value="weekly">Weekly (12.5% discount)</option>
-                        </select>
+    
+                    <div class="form-section">
+                        <h2>Frequency</h2>
+                        
+                        <div class="form-group">
+                            <label for="frequency">Cleaning Frequency</label>
+                            <select id="frequency">
+                                <option value="onetime">One-time (0% discount)</option>
+                                <option value="biweekly">Bi-weekly (7.5% discount)</option>
+                                <option value="weekly">Weekly (12.5% discount)</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-            </form>
-
+                </form>
+            </div>
+<div class="right-side">
             <div class="live-quote">
                 <div class="quote-label">Estimated Quote</div>
                 <div class="quote-amount" id="liveQuote">$0.00</div>
@@ -323,6 +347,7 @@
                     </div>
                 </div>
             </div>
+</div>
 
             <div class="info-box">
                 <h4>Quick Reference</h4>
