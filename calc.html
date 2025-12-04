@@ -252,12 +252,7 @@
                                 <option value="3">3+</option>
                             </select>
                         </div>
-    
-    
-                        <div class="form-group">
-                            <label for="hourlyRate">Hourly Rate ($)</label>
-                            <input type="number" id="hourlyRate" min="25" max="90" value="50" step="5">
-                        </div>
+
                     </div>
     
                     <div class="form-section">
@@ -366,7 +361,7 @@
             const sqFt = parseFloat(document.getElementById('squareFeet').value) || 0;
             const bathrooms = parseFloat(document.getElementById('bathrooms').value) || 0;
             const bedrooms = parseFloat(document.getElementById('bedrooms').value) || 0;
-            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 50;
+            const hourlyRate = 50;
             let baseHours = 0;
 
             if (sqFt === 1499) baseHours = 1.5;     // 1 - 1499 sq ft
