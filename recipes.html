@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Beautiful Bill's Top Recipes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        nav {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #764ba2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><rect fill="%23f0e68c" width="1200" height="400"/><circle fill="%23fff" cx="200" cy="150" r="80" opacity="0.3"/><circle fill="%23fff" cx="600" cy="200" r="100" opacity="0.3"/><circle fill="%23fff" cx="1000" cy="180" r="90" opacity="0.3"/></svg>');
+            background-size: cover;
+            background-position: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+            border-radius: 10px;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f5f5dc, #fffacd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .recipe-content {
+            padding: 1.5rem;
+        }
+
+        .recipe-content h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .recipe-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .rating {
+            color: #ffa500;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🥔 Big Beautiful Bill's Top Recipes 🥔</h1>
+        <p>A distinguished collection of holiday favorites — all refined, all timeless, and all leading back to one extraordinary dish.</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#recipes">Recipes</a></li>
+            <li><a href="#about">About Bill</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h2>Discover the Elegance of Holiday Flavor</h2>
+            <p>A celebration of the season’s finest dishes — curated with care, crafted with intention, and grounded firmly in the noble mashed potato.</p>
+        </div>
+
+        <h2 style="margin-bottom: 2rem; color: #667eea;">Featured Recipes</h2>
+        
+        <div class="recipe-grid">
+
+            <div class="recipe-card">
+                <div class="recipe-image">🥔</div>
+                <div class="recipe-content">
+                    <h3>Classic Creamy Mashed Potatoes</h3>
+                    <p>A cornerstone of American comfort. Smooth, confident, and gracefully understated.</p>
+                    <div class="recipe-meta">
+                        <span>⏱️ 30 mins</span>
+                        <span>👥 6 servings</span>
+                        <span class="rating">⭐⭐⭐⭐⭐</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recipe-card">
+                <div class="recipe-image">🧈</div>
+                <div class="recipe-content">
+                    <h3>Garlic Butter Mashed Potatoes</h3>
+                    <p>Roasted garlic and slow-melted butter create a warm, velvet finish — smooth as late-night jazz.</p>
+                    <div class="recipe-meta">
+                        <span>⏱️ 35 mins</span>
+                        <span>👥 6 servings</span>
+                        <span class="rating">⭐⭐⭐⭐⭐</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recipe-card">
+                <div class="recipe-image">🧀</div>
+                <div class="recipe-content">
+                    <h3>Cheddar-Infused Mashed Potatoes</h3>
+                    <p>A bold harmony of sharp cheddar and creamy potato, rounding out like a brass section in its prime.</p>
+                    <div class="recipe-meta">
+                        <span>⏱️ 40 mins</span>
+                        <span>👥 8 servings</span>
+                        <span class="rating">⭐⭐⭐⭐⭐</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recipe-card">
+                <div class="recipe-image">🌿</div>
+                <div class="recipe-content">
+                    <h3>Herb-Lifted Mashed Potatoes</h3>
+                    <p>Rosemary and thyme add gentle sophistication — presidential in presence, comforting in spirit.</p>
+                    <div class="recipe-meta">
+                        <span>⏱️ 35 mins</span>
+                        <span>👥 6 servings</span>
+                        <span class="rating">⭐⭐⭐⭐⭐</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recipe-card">
+                <div class="recipe-image">🥛</div>
+                <div class="recipe-content">
+                    <h3>Sour Cream & Chive Mashed Potatoes</h3>
+                    <p>Bright, composed, and confidently cool — the diplomat of the holiday table.</p>
+                    <div class="recipe-meta">
+                        <span>⏱️ 30 mins</span>
+                        <span>👥 6 servings</span>
+                        <span class="rating">⭐⭐⭐⭐⭐</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recipe-card">
+                <div class="recipe-image">🔥</div>
+                <div class="recipe-content">
+                    <h3>Chipotle-Kissed Mashed Potatoes</h3>
+                    <p>A quiet note of smoke and heat, smooth as a saxophone solo drifting through midnight air.</p>
+                    <div class="recipe-meta">
+                        <span>⏱️ 35 mins</span>
+                        <span>👥 6 servings</span>
+                        <span class="rating">⭐⭐⭐⭐⭐</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: #f9f9f9; padding: 2rem; border-radius: 10px; text-align: center;">
+            <h2 style="color: #667eea; margin-bottom: 1rem;">About Big Beautiful Bill</h2>
+            <p style="font-size: 1.1rem; max-width: 700px; margin: 0 auto;">
+                With decades of culinary devotion, Bill has shaped a holiday repertoire worthy of any table in the land.  
+                Though the feast may offer many paths, he discovered one that rises above the rest — elegant, steadfast,  
+                and beloved across generations: the mashed potato.  
+                <br><br>
+                <em>"A nation is held together by many things — but a truly fine mashed potato does more than its fair share."</em>  
+                — Big Beautiful Bill
+            </p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Big Beautiful Bill's Top Recipes. Crafted with dignity, grace, and a generous scoop of mashed potatoes.</p>
+        <p>Follow Bill: 🥔 @BigBeautifulBill on all platforms</p>
+    </footer>
+</body>
+</html>
