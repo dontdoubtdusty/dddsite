@@ -29,7 +29,7 @@
     { "item": "Microfiber rags (a lot)", "checked": false },
     { "item": "Nitrile gloves", "checked": false },
     { "item": "Paper towel (windows + bathroom)", "checked": false },
-    { "item": "Husky bag", "checked": false, "context": "Likely a large, durable bag for transporting supplies." },
+    { "item": "Husky bag", "checked": false },
     { "item": "Masks", "checked": false }
   ]
 }
