@@ -58,7 +58,7 @@
   <script>
     async function loadChecklist() {
       try {
-        const response = await fetch('cleaningchecklist.json'); // adjust path if needed
+        const response = await fetch('checklistitems.json'); // adjust path if needed
         const data = await response.json();
 
         const container = document.getElementById('checklist-container');
