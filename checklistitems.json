@@ -1,0 +1,35 @@
+{
+  "ChemicalsAndCleaners": [
+    { "item": "Lysol toilet gel", "checked": false },
+    { "item": "Clorox toilet wand", "checked": false },
+    { "item": "Ajax soap", "checked": false },
+    { "item": "Magic Eraser (HDX)", "checked": false, "context": "Check for the heavy-duty (HDX) version." },
+    { "item": "Mr. Clean Floor cleaner", "checked": false },
+    { "item": "Easy-Off for oven", "checked": false },
+    { "item": "Zep SS cleaner (Stainless Steel)", "checked": false },
+    { "item": "Method daily granite cleaner", "checked": false },
+    { "item": "Febreze", "checked": false },
+    { "item": "All purpose neutral pH cleaner", "checked": false, "context": "Important for safe use on most floors/surfaces." },
+    { "item": "Zep shower tub + tile scrubbing bubbles", "checked": false }
+  ],
+  "ToolsAndEquipment": [
+    { "item": "Shower squeegee", "checked": false },
+    { "item": "Non-scratch sponge", "checked": false },
+    { "item": "Angled scrub brush", "checked": false, "context": "Useful for grout and tight corners." },
+    { "item": "Scraper - plastic", "checked": false, "context": "To prevent damage when scraping surfaces." },
+    { "item": "Swiffer 6ft duster", "checked": false, "context": "For reaching high areas." },
+    { "item": "Spin mop", "checked": false },
+    { "item": "6qt ProTeam HEPA vacuum", "checked": false, "context": "A backpack vacuum with a high-efficiency particulate air filter." },
+    { "item": "SOS pads (for oven only)", "checked": false, "context": "Strictly limit use to inside the oven." }
+  ],
+  "AccessoriesAndProtectiveGear": [
+    { "item": "Trash bags", "checked": false },
+    { "item": "Shoe covers (fresh each time)", "checked": false, "context": "Disposable covers for cleanliness." },
+    { "item": "Painters cups (1 for rags, 1 for trash)", "checked": false, "context": "Used as separate containers while working." },
+    { "item": "Microfiber rags (a lot)", "checked": false },
+    { "item": "Nitrile gloves", "checked": false },
+    { "item": "Paper towel (windows + bathroom)", "checked": false },
+    { "item": "Husky bag", "checked": false, "context": "Likely a large, durable bag for transporting supplies." },
+    { "item": "Masks", "checked": false }
+  ]
+}
