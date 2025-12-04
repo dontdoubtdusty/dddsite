@@ -5,203 +5,217 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cleaning Service Quote Estimator</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #6b7ded 0%, #8458b3 100%);
+        min-height: 100vh;
+        padding: 20px;
+        line-height: 1.6;
+    }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 24px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+        overflow: hidden;
+    }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
+    .header {
+        background: linear-gradient(135deg, #6b7ded 0%, #8458b3 100%);
+        color: #fff;
+        padding: 40px 30px;
+        text-align: center;
+    }
 
-        .header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
+    .header h1 {
+        font-size: 2.1em;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
 
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
+    .header p {
+        opacity: 0.92;
+        font-size: 1.1em;
+    }
 
-        .form-content {
-            padding: 40px;
-            display: flex;
-        }
+    .form-content {
+        padding: 40px;
+        display: flex;
+    }
 
-        .form-section {
-            margin-bottom: 30px;
-        }
+    .form-section {
+        margin-bottom: 30px;
+    }
 
-        .form-section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.3em;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
-        }
+    .form-section h2 {
+        color: #6b7ded;
+        margin-bottom: 20px;
+        font-size: 1.3em;
+        font-weight: 600;
+        border-bottom: 2px solid #f3f3f3;
+        padding-bottom: 10px;
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-        }
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 500;
+        font-size: 0.95em;
+    }
 
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s;
-        }
+    input[type="number"],
+    select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid #e4e4e4;
+        border-radius: 10px;
+        font-size: 1em;
+        transition: all 0.25s ease;
+        background: #fafafa;
+    }
 
-        input[type="number"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+    input[type="number"]:focus,
+    select:focus {
+        outline: none;
+        border-color: #6b7ded;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(107, 125, 237, 0.15);
+    }
 
+    .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
 
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.95em;
+    }
 
-        input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
+    input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: #6b7ded;
+    }
 
-        .addons-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
+    .addons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
 
-        .addon-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
+    .addon-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        background: #f6f7fb;
+        border-radius: 10px;
+        border: 1px solid #ececec;
+        transition: background 0.2s ease;
+    }
 
-        .live-quote {
-            width: 200px;       /* pick whatever size you want */
-            flex-grow: 0;
-            margin-top: 30px;
-            padding: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            color: white;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
+    .addon-item:hover {
+        background: #eef0fa;
+    }
 
+    .live-quote {
+        width: 200px;
+        margin-top: 30px;
+        padding: 30px;
+        background: linear-gradient(135deg, #6b7ded 0%, #8458b3 100%);
+        border-radius: 18px;
+        color: #fff;
+        text-align: center;
+        box-shadow: 0 12px 40px rgba(107, 125, 237, 0.35);
+    }
 
-        .quote-label {
-            font-size: 1.2em;
-            opacity: 0.9;
-            margin-bottom: 10px;
-        }
+    .quote-label {
+        font-size: 1.2em;
+        opacity: 0.92;
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
 
-        .quote-amount {
-            font-size: 3.5em;
-            font-weight: bold;
-            margin: 10px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
+    .quote-amount {
+        font-size: 3.3em;
+        font-weight: 700;
+        margin: 10px 0;
+        text-shadow: 1px 2px 4px rgba(0,0,0,0.25);
+    }
 
-        .quote-details {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid rgba(255,255,255,0.3);
-        }
+    .quote-details {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid rgba(255,255,255,0.28);
+    }
 
-        .detail-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            font-size: 1em;
-            opacity: 0.95;
-        }
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 1em;
+        opacity: 0.95;
+    }
 
-        .info-box {
-            background: #e8f4f8;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
+    .info-box {
+        background: #eaf5ff;
+        border-left: 4px solid #6b7ded;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 8px;
+    }
 
-        .info-box h4 {
-            color: #667eea;
-            margin-bottom: 10px;
-        }
+    .info-box h4 {
+        color: #6b7ded;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
 
-        .info-box ul {
-            margin-left: 20px;
-            color: #555;
-        }
-        .quote-layout {
-            display: flex;
-            gap: 30px;
-            align-items: flex-start;
-            margin-top: 20px;
-        }
-        
-        /* Left column gets more width */
-        .left-side {
-            flex: 2;
-        }
-        
-        /* Right column stays fixed width */
-        .right-side {
-            flex: 1;
-            position: sticky;
-            top: 20px;   /* keeps the quote box visible when scrolling */
-        }
-        .right-side .live-quote {
-            width: 100%;
-        }
+    .info-box ul {
+        margin-left: 20px;
+        color: #555;
+    }
 
-    </style>
+    .quote-layout {
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
+        margin-top: 20px;
+    }
+
+    .left-side {
+        flex: 2;
+    }
+
+    .right-side {
+        flex: 1;
+        position: sticky;
+        top: 20px;
+    }
+
+    .right-side .live-quote {
+        width: 100%;
+    }
+</style>
+
 </head>
 <body>
     <div class="container">
