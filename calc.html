@@ -370,7 +370,10 @@
             const finalPrice = basePrice + addonsTotal - discountAmount;
 
             document.getElementById('liveQuote').textContent = '$' + finalPrice.toFixed(2);
-            document.getElementById('totalHours').textContent = estimatedHours.toFixed(2) + ' hours';
+            
+            const roundedHours = Math.ceil(estimatedHours);
+            document.getElementById('totalHours').textContent = `${roundedHours} hours`;
+
             document.getElementById('basePrice').textContent = '$' + basePrice.toFixed(2);
             document.getElementById('addonsPrice').textContent = '$' + addonsTotal.toFixed(2);
             document.getElementById('discount').textContent = '-$' + discountAmount.toFixed(2);
