@@ -201,14 +201,29 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="bathrooms">Number of Bathrooms</label>
-                        <input type="number" id="bathrooms" min="0" step="0.5" value="0">
+                        <label>Bathrooms</label>
+                        <div class="checkbox-group">
+                            <label><input type="radio" name="bathrooms" value="0.5"> 0.5</label>
+                            <label><input type="radio" name="bathrooms" value="1"> 1</label>
+                            <label><input type="radio" name="bathrooms" value="1.5"> 1.5</label>
+                            <label><input type="radio" name="bathrooms" value="2"> 2</label>
+                            <label><input type="radio" name="bathrooms" value="2.5"> 2.5</label>
+                            <label><input type="radio" name="bathrooms" value="3"> 3+</label>
+                        </div>
                     </div>
 
+
                     <div class="form-group">
-                        <label for="bedrooms">Number of Bedrooms</label>
-                        <input type="number" id="bedrooms" min="0" max="5" value="0">
+                        <label>Bedrooms</label>
+                        <div class="checkbox-group">
+                            <label><input type="radio" name="bedrooms" value="1"> 1</label>
+                            <label><input type="radio" name="bedrooms" value="2"> 2</label>
+                            <label><input type="radio" name="bedrooms" value="3"> 3</label>
+                            <label><input type="radio" name="bedrooms" value="4"> 4</label>
+                            <label><input type="radio" name="bedrooms" value="5"> 5+</label>
+                        </div>
                     </div>
+
 
                     <div class="form-group">
                         <label for="hourlyRate">Hourly Rate ($)</label>
@@ -329,8 +344,8 @@
 
         function calculateQuote() {
             const sqFt = parseFloat(document.getElementById('squareFeet').value) || 0;
-            const bathrooms = parseFloat(document.getElementById('bathrooms').value) || 0;
-            const bedrooms = parseFloat(document.getElementById('bedrooms').value) || 0;
+            const bathrooms = parseFloat(document.querySelector('input[name="bathrooms"]:checked')?.value || 0);
+            const bedrooms = parseFloat(document.querySelector('input[name="bedrooms"]:checked')?.value || 0);
             const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 50;
             let baseHours = 0;
 
