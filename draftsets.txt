@@ -1,1 +1,129 @@
-
+<script>
+        // Creative draft mashup pairings
+        const draftMashups = [
+            { 
+                title: "Graveyard Gladiators",
+                sets: "Innistrad: Midnight Hunt × Amonkhet",
+                description: "Flashback meets Embalm in a recursive nightmare"
+            },
+            { 
+                title: "Artifact Aristocrats",
+                sets: "Kamigawa: Neon Dynasty × Kaladesh",
+                description: "Sacrifice artifacts for value in a high-tech wasteland"
+            },
+            { 
+                title: "Enchantment Overload",
+                sets: "Theros Beyond Death × Wilds of Eldraine",
+                description: "Constellation meets Bargain in an endless saga"
+            },
+            { 
+                title: "Combat Tricks Casino",
+                sets: "Rivals of Ixalan × Strixhaven",
+                description: "Every attack is a gamble with ascend and magecraft"
+            },
+            { 
+                title: "Modal Madness",
+                sets: "Kaldheim × Zendikar Rising",
+                description: "MDFCs everywhere - flexibility at maximum"
+            },
+            { 
+                title: "Sacrifice City",
+                sets: "War of the Spark × Dominaria United",
+                description: "Aristocrats heaven with endless fodder and payoffs"
+            },
+            { 
+                title: "Go Wide Paradise",
+                sets: "March of the Machine × Throne of Eldraine",
+                description: "Token generators meet anthem effects and adventure"
+            },
+            { 
+                title: "Spell Velocity",
+                sets: "Modern Horizons 2 × Streets of New Capenna",
+                description: "Cast three spells a turn or fall behind"
+            },
+            { 
+                title: "Greed Rewarded",
+                sets: "Murders at Karlov Manor × Bloomburrow",
+                description: "Collect clues and trigger gifts for massive card advantage"
+            },
+            { 
+                title: "Multicolor Mayhem",
+                sets: "Khans of Tarkir × Ikoria",
+                description: "Three-color wedges meet mutate for maximum complexity"
+            },
+            { 
+                title: "Counter Control",
+                sets: "The Brothers' War × Dominaria",
+                description: "Proliferate meets historic in a grindy value fest"
+            },
+            { 
+                title: "Exile Matters",
+                sets: "Eldritch Moon × Commander Legends",
+                description: "Flashback, foretell, and emerge from the void"
+            },
+            { 
+                title: "Aggro Express",
+                sets: "Shadows over Innistrad × Core Set 2021",
+                description: "Madness meets straightforward beatdown"
+            },
+            { 
+                title: "Lifegain Extravaganza",
+                sets: "Foundations × Outlaws of Thunder Junction",
+                description: "Healing triggers into plot timing tricks"
+            },
+            { 
+                title: "Tempo Town",
+                sets: "Crimson Vow × Ixalan",
+                description: "Disturb meets explore for endless two-for-ones"
+            },
+            { 
+                title: "Ramp to Bombs",
+                sets: "Core Set 2019 × Phyrexia: All Will Be One",
+                description: "Classic green ramp into toxic finishers"
+            },
+            { 
+                title: "Tribal Warfare",
+                sets: "Modern Horizons 3 × Lorwyn",
+                description: "Deep tribal synergies meet modern power level"
+            },
+            { 
+                title: "Equipment Matters",
+                sets: "Lost Caverns of Ixalan × Throne of Eldraine",
+                description: "Craft meets adventure in a grindy midrange format"
+            },
+            { 
+                title: "Spellslinger's Dream",
+                sets: "Duskmourn × Guilds of Ravnica",
+                description: "Eerie triggers meet jump-start recursion"
+            },
+            { 
+                title: "+1/+1 Counters Galore",
+                sets: "Aether Revolt × War of the Spark",
+                description: "Energy meets proliferate for exponential growth"
+            },
+            { 
+                title: "Reanimator Heaven",
+                sets: "Core Set 2020 × Murders at Karlov Manor",
+                description: "Classic graveyard strategies meet disguise tricks"
+            },
+            { 
+                title: "Flash Speed",
+                sets: "Foundations × Modern Horizons 2",
+                description: "Instant speed everything - always keep mana up"
+            },
+            { 
+                title: "Land Matters",
+                sets: "Battle for Zendikar × Core Set 2021",
+                description: "Landfall meets ramp in a grindy attrition war"
+            },
+            { 
+                title: "Ping Paradise",
+                sets: "Outlaws of Thunder Junction × Ravnica Allegiance",
+                description: "Plot into spectacle for maximum reach damage"
+            },
+            { 
+                title: "Value Engine",
+                sets: "Bloomburrow × Strixhaven",
+                description: "Gift triggers meet learn/lesson for endless resources"
+            }
+        ];
