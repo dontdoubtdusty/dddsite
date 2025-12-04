@@ -206,8 +206,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="kitchens">Number of Kitchens</label>
-                        <input type="number" id="kitchens" min="0" max="5" value="0">
+                        <label for="bedrooms">Number of bedrooms</label>
+                        <input type="number" id="bedrooms" min="0" max="5" value="0">
                     </div>
 
                     <div class="form-group">
@@ -330,10 +330,10 @@
         function calculateQuote() {
             const sqFt = parseFloat(document.getElementById('squareFeet').value) || 0;
             const bathrooms = parseFloat(document.getElementById('bathrooms').value) || 0;
-            const kitchens = parseFloat(document.getElementById('kitchens').value) || 0;
+            const bedrooms = parseFloat(document.getElementById('bedrooms').value) || 0;
             const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 50;
 
-            let estimatedHours = (sqFt / 1200) + (bathrooms * 0.3) + (kitchens * 0.3);
+            let estimatedHours = (sqFt / 1200) + (bathrooms * 0.3) + (bedrooms * 0.3);
 
             if (document.getElementById('pets').checked) {
                 estimatedHours += 0.5;
