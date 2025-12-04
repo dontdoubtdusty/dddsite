@@ -212,45 +212,89 @@
     <div class="calendar-grid" id="calendar"></div>
 
     <script>
-        // Load draft mashups from draftsets.txt
-let draftMashups = [];
+    // Load draft mashups
+    let draftMashups = [];
 
-async function loadDraftMashups() {
-    try {
-        const response = await fetch('draftsets.txt');
-        const text = await response.text();
-        
-        // Parse the text file - adjust parsing logic based on your file format
-        // Example assumes format like:
-        // Title
-        // Sets: Set1 × Set2
-        // Description text
-        // (blank line between entries)
-        
-        const entries = text.trim().split('\n\n');
-        draftMashups = entries.map(entry => {
-            const lines = entry.split('\n');
-            return {
-                title: lines[0].trim(),
-                sets: lines[1].replace('Sets: ', '').trim(),
-                description: lines[2].trim()
-            };
-        });
-        
-        console.log(`Loaded ${draftMashups.length} draft mashups`);
+    async function loadDraftMashups() {
+        const response = await fetch('draftsets.json');
+        draftMashups = await response.json();
         return draftMashups;
-    } catch (error) {
-        console.error('Error loading draft mashups:', error);
-        // Fallback to empty array or show error to user
-        return [];
     }
-}
 
-// Call this when your page loads
-loadDraftMashups().then(() => {
-    // Your code that uses draftMashups can go here
-    // or trigger any UI updates
-});
-    </script>
+    const calendar = document.getElementById('calendar');
+
+    // Create snowflakes
+    function createSnowflake() {
+        const snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
+        snowflake.textContent = '❄';
+        snowflake.style.left = Math.random() * 100 + '%';
+        snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        snowflake.style.fontSize = (Math.random() * 0.5 + 0.5) + 'em';
+        snowflake.style.opacity = Math.random() * 0.6 + 0.4;
+        document.body.appendChild(snowflake);
+        
+        setTimeout(() => {
+            snowflake.remove();
+        }, 5000);
+    }
+
+    // Generate snowflakes periodically
+    setInterval(createSnowflake, 200);
+
+    // Get current date
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const currentDay = now.getDate();
+
+    // Check if a day should be unlocked (December 2025)
+    function isUnlocked(day) {
+        if (currentYear > 2025 || (currentYear === 2025 && currentMonth === 11)) {
+            return currentDay >= day;
+        }
+        if (currentYear > 2025 || (currentYear === 2025 && currentMonth > 11)) {
+            return true;
+        }
+        return false;
+    }
+
+    // Create calendar boxes
+    async function initializeCalendar() {
+        await loadDraftMashups();
+        
+        for (let i = 1; i <= 25; i++) {
+            const mashup = draftMashups[i - 1];
+            const unlocked = isUnlocked(i);
+            
+            const box = document.createElement('div');
+            box.className = 'calendar-box' + (unlocked ? '' : ' locked');
+            
+            box.innerHTML = `
+                <div class="box-inner">
+                    <div class="box-front">
+                        ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
+                        <div class="box-number">${i}</div>
+                    </div>
+                    <div class="box-back">
+                        <div class="draft-title">${mashup.title}</div>
+                        <div class="sets">${mashup.sets}</div>
+                        <div class="description">${mashup.description}</div>
+                    </div>
+                </div>
+            `;
+            
+            if (unlocked) {
+                box.addEventListener('click', function() {
+                    this.classList.toggle('flipped');
+                });
+            }
+            
+            calendar.appendChild(box);
+        }
+    }
+
+    initializeCalendar();
+</script>
 </body>
 </html>
