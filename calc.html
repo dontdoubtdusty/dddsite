@@ -215,6 +215,23 @@
     .right-side .live-quote {
         width: 100%;
     }
+    @media (max-width: 780px) {
+    .form-content {
+        flex-direction: column;
+        gap: 25px;
+        padding: 20px;
+    }
+
+    .right-side {
+        position: static;   /* turns off sticky on mobile */
+        width: 100%;
+    }
+
+    .right-side .live-quote {
+        width: 100%;        /* full width on mobile */
+    }
+}
+
 </style>
 
 </head>
