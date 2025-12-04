@@ -17,10 +17,10 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 20px; /* spacing between columns */
+      gap: 20px;
     }
     .section {
-      flex: 1; /* each section takes equal width */
+      flex: 1;
       min-width: 250px;
       border: 1px solid #ccc;
       padding: 15px;
@@ -51,84 +51,76 @@
 <body>
   <h1>📝 Detailed Cleaning Supplies List</h1>
 
-  <div class="sections">
-    <!-- Chemicals and Cleaners -->
-    <div class="section">
-      <h2>🧪 Chemicals and Cleaners</h2>
-      <ul>
-        <li><input type="checkbox"> Lysol toilet gel</li>
-        <li><input type="checkbox"> Clorox toilet wand</li>
-        <li><input type="checkbox"> Ajax soap</li>
-        <li>
-          <input type="checkbox"> Magic Eraser (HDX)
-          <div class="context">Check for the heavy-duty (HDX) version.</div>
-        </li>
-        <li><input type="checkbox"> Mr. Clean Floor cleaner</li>
-        <li><input type="checkbox"> Easy-Off for oven</li>
-        <li><input type="checkbox"> Zep SS cleaner (Stainless Steel)</li>
-        <li><input type="checkbox"> Method daily granite cleaner</li>
-        <li><input type="checkbox"> Febreze</li>
-        <li>
-          <input type="checkbox"> All purpose neutral pH cleaner
-          <div class="context">Important for safe use on most floors/surfaces.</div>
-        </li>
-        <li><input type="checkbox"> Zep shower tub + tile scrubbing bubbles</li>
-      </ul>
-    </div>
-
-    <!-- Tools and Equipment -->
-    <div class="section">
-      <h2>🛠️ Tools and Equipment</h2>
-      <ul>
-        <li><input type="checkbox"> Shower squeegee</li>
-        <li><input type="checkbox"> Non-scratch sponge</li>
-        <li>
-          <input type="checkbox"> Angled scrub brush
-          <div class="context">Useful for grout and tight corners.</div>
-        </li>
-        <li>
-          <input type="checkbox"> Scraper - plastic
-          <div class="context">To prevent damage when scraping surfaces.</div>
-        </li>
-        <li>
-          <input type="checkbox"> Swiffer 6ft duster
-          <div class="context">For reaching high areas.</div>
-        </li>
-        <li><input type="checkbox"> Spin mop</li>
-        <li>
-          <input type="checkbox"> 6qt ProTeam HEPA vacuum
-          <div class="context">A backpack vacuum with a high-efficiency particulate air filter.</div>
-        </li>
-        <li>
-          <input type="checkbox"> SOS pads (for oven only)
-          <div class="context">Strictly limit use to inside the oven.</div>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Accessories and Protective Gear -->
-    <div class="section">
-      <h2>🧤 Accessories and Protective Gear</h2>
-      <ul>
-        <li><input type="checkbox"> Trash bags</li>
-        <li>
-          <input type="checkbox"> Shoe covers (fresh each time)
-          <div class="context">Disposable covers for cleanliness.</div>
-        </li>
-        <li>
-          <input type="checkbox"> Painters cups (1 for rags, 1 for trash)
-          <div class="context">Used as separate containers while working.</div>
-        </li>
-        <li><input type="checkbox"> Microfiber rags (a lot)</li>
-        <li><input type="checkbox"> Nitrile gloves</li>
-        <li><input type="checkbox"> Paper towel (windows + bathroom)</li>
-        <li>
-          <input type="checkbox"> Husky bag
-          <div class="context">Likely a large, durable bag for transporting supplies.</div>
-        </li>
-        <li><input type="checkbox"> Masks</li>
-      </ul>
-    </div>
+  <div class="sections" id="checklist-container">
+    <!-- Sections will be injected here -->
   </div>
+
+  <script>
+    async function loadChecklist() {
+      try {
+        const response = await fetch('cleaningchecklist.json'); // adjust path if needed
+        const data = await response.json();
+
+        const container = document.getElementById('checklist-container');
+
+        // Helper to build each section
+        function buildSection(title, items) {
+          const section = document.createElement('div');
+          section.className = 'section';
+
+          const h2 = document.createElement('h2');
+          h2.textContent = title;
+          section.appendChild(h2);
+
+          const ul = document.createElement('ul');
+          items.forEach((itemObj, index) => {
+            const li = document.createElement('li');
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.id = title + '-' + index;
+            cb.checked = itemObj.checked;
+
+            // Save state back to localStorage (or later, to server)
+            cb.addEventListener('change', () => {
+              itemObj.checked = cb.checked;
+              // For now, persist locally
+              localStorage.setItem(cb.id, cb.checked);
+            });
+
+            // Restore from localStorage if available
+            const saved = localStorage.getItem(cb.id);
+            if (saved !== null) {
+              cb.checked = saved === 'true';
+            }
+
+            li.appendChild(cb);
+            li.appendChild(document.createTextNode(itemObj.item));
+
+            if (itemObj.context) {
+              const contextDiv = document.createElement('div');
+              contextDiv.className = 'context';
+              contextDiv.textContent = itemObj.context;
+              li.appendChild(contextDiv);
+            }
+
+            ul.appendChild(li);
+          });
+
+          section.appendChild(ul);
+          return section;
+        }
+
+        // Build all sections
+        container.appendChild(buildSection('🧪 Chemicals and Cleaners', data.ChemicalsAndCleaners));
+        container.appendChild(buildSection('🛠️ Tools and Equipment', data.ToolsAndEquipment));
+        container.appendChild(buildSection('🧤 Accessories and Protective Gear', data.AccessoriesAndProtectiveGear));
+
+      } catch (err) {
+        console.error('Error loading checklist:', err);
+      }
+    }
+
+    loadChecklist();
+  </script>
 </body>
 </html>
