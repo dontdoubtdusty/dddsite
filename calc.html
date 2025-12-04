@@ -353,12 +353,15 @@
             const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 50;
             let baseHours = 0;
 
-            if (sqFt === 750) baseHours = 1.5;      // Under 1,000 sq ft
-            if (sqFt === 1250) baseHours = 2.5;     // 1,000–1,500 sq ft
-            if (sqFt === 1750) baseHours = 3.0;     // 1,500–2,000 sq ft
-            if (sqFt === 2500) baseHours = 4.0;     // 2,000–3,000 sq ft
-            if (sqFt === 3500) baseHours = 5.0;     // 3,000+ sq ft
+            if (sqFt === 1499) baseHours = 1.5;     // 1 - 1499 sq ft
+            if (sqFt === 1999) baseHours = 2.0;     // 1500 - 1999 sq ft
+            if (sqFt === 2499) baseHours = 2.5;     // 2000 - 2499 sq ft
+            if (sqFt === 2999) baseHours = 3.0;     // 2500 - 2999 sq ft
+            if (sqFt === 3499) baseHours = 3.5;     // 3000 - 3499 sq ft
+            if (sqFt === 3999) baseHours = 4.0;     // 3500 - 3999 sq ft
+            if (sqFt === 4499) baseHours = 4.5;     // 4000 - 4499 sq ft
 
+            
             let estimatedHours = baseHours + (bathrooms * 0.3) + (bedrooms * 0.3);
 
             if (document.getElementById('pets').checked) {
