@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleaning Service Quote Estimator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .form-content {
+            padding: 40px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .addons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .addon-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .live-quote {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .quote-label {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .quote-amount {
+            font-size: 3.5em;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .quote-details {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 1em;
+            opacity: 0.95;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧹 Cleaning Service Quote</h1>
+            <p>Get an instant estimate for your cleaning needs</p>
+        </div>
+
+        <div class="form-content">
+            <form id="quoteForm">
+                <div class="form-section">
+                    <h2>Basic Information</h2>
+                    
+                    <div class="form-group">
+                        <label for="squareFeet">Square Footage</label>
+                        <select id="squareFeet" required>
+                            <option value="">Select square footage range</option>
+                            <option value="750">Under 1,000 sq ft</option>
+                            <option value="1250">1,000 - 1,500 sq ft</option>
+                            <option value="1750">1,500 - 2,000 sq ft</option>
+                            <option value="2500">2,000 - 3,000 sq ft</option>
+                            <option value="3500">3,000+ sq ft</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bathrooms">Number of Bathrooms</label>
+                        <input type="number" id="bathrooms" min="0" step="0.5" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kitchens">Number of Kitchens</label>
+                        <input type="number" id="kitchens" min="0" max="5" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hourlyRate">Hourly Rate ($)</label>
+                        <input type="number" id="hourlyRate" min="25" max="90" value="50" step="5">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Condition Adjustments</h2>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pets">
+                            <label for="pets">Pets in home (+0.5 hours)</label>
+                        </div>
+
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="clutter">
+                            <label for="clutter">Heavy clutter/soil (+1 hour)</label>
+                        </div>
+
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="deepClean">
+                            <label for="deepClean">First-time/deep clean (×1.5 multiplier)</label>
+                        </div>
+
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="moveInOut">
+                            <label for="moveInOut">Move-in/move-out (×2.0 multiplier)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Add-ons</h2>
+                    
+                    <div class="addons-grid">
+                        <div class="addon-item">
+                            <input type="checkbox" id="oven">
+                            <label for="oven">Inside Oven (+$30)</label>
+                        </div>
+
+                        <div class="addon-item">
+                            <input type="checkbox" id="fridge">
+                            <label for="fridge">Inside Fridge (+$28)</label>
+                        </div>
+
+                        <div class="addon-item">
+                            <input type="checkbox" id="laundry">
+                            <label for="laundry">Laundry (+$30)</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="windows">Interior Windows (count)</label>
+                        <input type="number" id="windows" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Frequency</h2>
+                    
+                    <div class="form-group">
+                        <label for="frequency">Cleaning Frequency</label>
+                        <select id="frequency">
+                            <option value="onetime">One-time (0% discount)</option>
+                            <option value="biweekly">Bi-weekly (7.5% discount)</option>
+                            <option value="weekly">Weekly (12.5% discount)</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+            <div class="live-quote">
+                <div class="quote-label">Estimated Quote</div>
+                <div class="quote-amount" id="liveQuote">$0.00</div>
+                <div class="quote-details" id="quoteDetails">
+                    <div class="detail-item">
+                        <span>Estimated Hours:</span>
+                        <span id="totalHours">0</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Base Price:</span>
+                        <span id="basePrice">$0</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Add-ons:</span>
+                        <span id="addonsPrice">$0</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Frequency Discount:</span>
+                        <span id="discount">$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>Quick Reference</h4>
+                <ul>
+                    <li>Standard maintenance clean: 1,200 sq ft/hour</li>
+                    <li>Deep clean: 600 sq ft/hour</li>
+                    <li>Move-in/move-out: 500 sq ft/hour</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('quoteForm');
+        const inputs = form.querySelectorAll('input, select');
+
+        inputs.forEach(input => {
+            input.addEventListener('change', calculateQuote);
+            input.addEventListener('input', calculateQuote);
+        });
+
+        calculateQuote();
+
+        function calculateQuote() {
+            const sqFt = parseFloat(document.getElementById('squareFeet').value) || 0;
+            const bathrooms = parseFloat(document.getElementById('bathrooms').value) || 0;
+            const kitchens = parseFloat(document.getElementById('kitchens').value) || 0;
+            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 50;
+
+            let estimatedHours = (sqFt / 1200) + (bathrooms * 0.3) + (kitchens * 0.3);
+
+            if (document.getElementById('pets').checked) {
+                estimatedHours += 0.5;
+            }
+
+            if (document.getElementById('clutter').checked) {
+                estimatedHours += 1;
+            }
+
+            if (document.getElementById('deepClean').checked) {
+                estimatedHours *= 1.5;
+            }
+
+            if (document.getElementById('moveInOut').checked) {
+                estimatedHours *= 2.0;
+            }
+
+            const basePrice = estimatedHours * hourlyRate;
+
+            let addonsTotal = 0;
+            if (document.getElementById('oven').checked) addonsTotal += 30;
+            if (document.getElementById('fridge').checked) addonsTotal += 28;
+            if (document.getElementById('laundry').checked) addonsTotal += 30;
+            
+            const windows = parseFloat(document.getElementById('windows').value) || 0;
+            addonsTotal += windows * 6.5;
+
+            const frequency = document.getElementById('frequency').value;
+            let discountPercent = 0;
+            if (frequency === 'weekly') discountPercent = 0.125;
+            if (frequency === 'biweekly') discountPercent = 0.075;
+
+            const discountAmount = (basePrice + addonsTotal) * discountPercent;
+            const finalPrice = basePrice + addonsTotal - discountAmount;
+
+            document.getElementById('liveQuote').textContent = '$' + finalPrice.toFixed(2);
+            document.getElementById('totalHours').textContent = estimatedHours.toFixed(2) + ' hours';
+            document.getElementById('basePrice').textContent = '$' + basePrice.toFixed(2);
+            document.getElementById('addonsPrice').textContent = '$' + addonsTotal.toFixed(2);
+            document.getElementById('discount').textContent = '-$' + discountAmount.toFixed(2);
+        }
+    </script>
+</body>
+</html>
