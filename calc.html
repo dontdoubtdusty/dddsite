@@ -397,7 +397,8 @@
 
             document.getElementById('liveQuote').textContent = '$' + finalPrice.toFixed(2);
             
-            const roundedHours = Math.ceil(estimatedHours);
+            const roundedHours = Math.ceil(estimatedHours * 2) / 2;
+
             document.getElementById('totalHours').textContent = `${roundedHours} hours`;
 
             document.getElementById('basePrice').textContent = '$' + basePrice.toFixed(2);
