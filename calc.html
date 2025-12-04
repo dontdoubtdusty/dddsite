@@ -411,13 +411,15 @@
             if (frequency === 'weekly') discountPercent = 0.125;
             if (frequency === 'biweekly') discountPercent = 0.075;
 
+            const roundedHours = Math.ceil(estimatedHours * 2) / 2;
+            const basePrice = roundedHours * hourlyRate;
+
             const discountAmount = (basePrice + addonsTotal) * discountPercent;
             const finalPrice = basePrice + addonsTotal - discountAmount;
 
             document.getElementById('liveQuote').textContent = '$' + finalPrice.toFixed(2);
             
-            const roundedHours = Math.ceil(estimatedHours * 2) / 2;
-            const basePrice = roundedHours * hourlyRate;
+
 
             document.getElementById('totalHours').textContent = `${roundedHours} hours`;
 
