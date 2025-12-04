@@ -396,7 +396,7 @@
                 estimatedHours *= 2.0;
             }
 
-            const basePrice = estimatedHours * hourlyRate;
+
 
             let addonsTotal = 0;
             if (document.getElementById('oven').checked) addonsTotal += 30;
@@ -417,6 +417,7 @@
             document.getElementById('liveQuote').textContent = '$' + finalPrice.toFixed(2);
             
             const roundedHours = Math.ceil(estimatedHours * 2) / 2;
+            const basePrice = roundedHours * hourlyRate;
 
             document.getElementById('totalHours').textContent = `${roundedHours} hours`;
 
