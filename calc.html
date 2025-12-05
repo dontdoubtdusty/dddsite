@@ -410,7 +410,7 @@
             if (sqFt === 4499) baseHours = 4.5;     // 4000 - 4499 sq ft
 
             
-            let estimatedHours = baseHours + (bathrooms * 0.5) + (bedrooms * 0.5);
+            let estimatedHours = baseHours + (bathrooms * 0.75) + (bedrooms * 0.75);
 
             if (document.getElementById('pets').checked) {
                 estimatedHours += 0.5;
@@ -441,7 +441,7 @@
 
             const frequency = document.getElementById('frequency').value;
             let discountPercent = 0;
-            if (frequency === 'weekly') discountPercent = 0.125;
+            if (frequency === 'weekly') discountPercent = 0.15;
             if (frequency === 'biweekly') discountPercent = 0.075;
 
             const roundedHours = Math.ceil(estimatedHours * 2) / 2;
