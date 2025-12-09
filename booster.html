@@ -468,11 +468,6 @@
         };
 
         const shrekEmojis = ['🧅','🐸','🐴','🐉','👹','🍪','👑','🪄','🌳','🏰','🐱','🥛','🌅','🎤','💃','🛡️','🔥','🌌','🍻','😂'];
-        
-        document.querySelectorAll('.card-art').forEach(card => {
-            const randomEmoji = shrekEmojis[Math.floor(Math.random() * shrekEmojis.length)];
-            card.setAttribute('data-emoji', randomEmoji);
-        });
 
         function random(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -591,7 +586,7 @@
                             <div class="card-rarity ${rarityClass}">${item.rarity}</div>
                             <div class="card-name">${item.name}</div>
                         </div>
-                        <div class="card-art"></div>
+                        <div class="card-art" data-emoji="${pick(shrekEmojis)}"></div>
                         <div class="card-stats">
                             <div class="stat-line">
                                 <span class="stat-label">${item.stat1}</span>
