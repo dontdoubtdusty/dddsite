@@ -375,9 +375,7 @@
             mix-blend-mode: screen;
         }
         
-        .flip-card.flipped .holographic-shine.rarity-rare,
-        .flip-card.flipped .holographic-shine.rarity-epic,
-        .flip-card.flipped .holographic-shine.rarity-legendary {
+        .flip-card.flipped .holographic-shine.is-holo {
             opacity: 0.3;
             transition: opacity 0.5s ease 0.7s;    
         }
@@ -611,6 +609,8 @@
                     break;
             }
             
+            const isHolographic = Math.random() < 0.08; // 8% chance (roughly 1 in 2.5 packs of 6 cards)
+
             return {
                 rarity,
                 name,
@@ -623,7 +623,8 @@
                 comparison,
                 gold,
                 silver,
-                copper
+                copper,
+                isHolographic
             };
         }
 
@@ -640,7 +641,7 @@
             
             card.innerHTML = `
                 <div class="card-border ${rarityClass}">
-                    <div class="holographic-shine rarity-${rarityClass}"></div>
+                    <div class="holographic-shine ${item.isHolographic ? 'is-holo' : ''}"></div>
                     <div class="card-content">
                         <div class="card-header">
                             <div class="card-rarity ${rarityClass}">${item.rarity}</div>
