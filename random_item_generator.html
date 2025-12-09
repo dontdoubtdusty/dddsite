@@ -297,6 +297,46 @@
         .card-back::after {
             content: none !important;
         }    
+        .flip-card {
+            width: 220px;
+            height: 340px;
+            perspective: 1200px;
+            cursor: pointer;
+        }
+        
+        .flip-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.7s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .flip-card.flipped .flip-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flip-front,
+        .flip-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* CRITICAL */
+            border-radius: 12px;
+        }
+        
+        /* Card Back */
+        .flip-back {
+            background-image: url("https://cdn.funkypigeon.com/supplier_back_images/cardback_danilo_shrek_p.jpg");
+            background-size: cover;
+            background-position: center;
+        }
+        
+        /* Card Front (your generated card) */
+        .flip-front {
+            transform: rotateY(180deg); /* CRITICAL */
+        }
+
     </style>
 </head>
 <body>
@@ -525,28 +565,52 @@
             generatedItems.forEach((item, i) => {
                 const rarityClass = item.rarity.toLowerCase();
         
-                const back = document.createElement("div");
-                back.className = `card-back rarity-${rarityClass}`;
-                back.style.opacity = "0";
-                back.style.transform = "translate(0,0) rotate(0deg)";
-                back.style.position = "absolute";
-                back.style.transition = "all 0.7s ease";
-        
-                back.onclick = () => {
-                    if (!backsRevealed) {
-                        backsRevealed = true;
+                // wrapper for flipping
+            const wrapper = document.createElement("div");
+            wrapper.className = `flip-card rarity-${rarityClass}`;
+            wrapper.style.position = "absolute";
+            wrapper.style.opacity = "0";
+            wrapper.style.transform = "translate(0,0) rotate(0deg)";
+            wrapper.style.transition = "all 0.7s ease";
+            
+            // inner rotating div
+            const inner = document.createElement("div");
+            inner.className = "flip-inner";
+            
+            // back side (Shrek)
+            const flipBack = document.createElement("div");
+            flipBack.className = "flip-back";
+            
+            // front side (generated card)
+            const flipFront = document.createElement("div");
+            flipFront.className = "flip-front";
+            flipFront.appendChild(createCard(item, 0));  // your card front HTML
+            
+            // assemble
+            inner.appendChild(flipBack);
+            inner.appendChild(flipFront);
+            wrapper.appendChild(inner);
+            backWrapper.appendChild(wrapper);
+            
+            // flip behavior
+            wrapper.onclick = () => {
+                wrapper.classList.add("flipped");
+            
+                if (!backsRevealed) {
+                    backsRevealed = true;
+                    setTimeout(() => {
                         revealFromBacks(container);
-                    }
-                };
-        
-                backWrapper.appendChild(back);
-        
-                // Fan animation
-                setTimeout(() => {
-                    back.style.opacity = "1";
-                    back.style.transform =
-                        `translate(${positions[i].x}px, ${positions[i].y}px) rotate(${positions[i].r}deg)`;
-                }, 50 + i * 120);
+                    }, 650);
+                }
+            };
+            
+            // Fan animation
+            setTimeout(() => {
+                wrapper.style.opacity = "1";
+                wrapper.style.transform =
+                    `translate(${positions[i].x}px, ${positions[i].y}px) rotate(${positions[i].r}deg)`;
+            }, 50 + i * 120);
+
             });
         }
         
