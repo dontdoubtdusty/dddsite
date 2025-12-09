@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Item Generator</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #d4af37;
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 600px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+        }
+        h1 {
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        .item-display {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #555;
+            border-radius: 5px;
+            padding: 25px;
+            margin: 20px 0;
+            min-height: 150px;
+            color: #fff;
+            line-height: 1.8;
+        }
+        .rarity {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .common { color: #9d9d9d; }
+        .uncommon { color: #1eff00; }
+        .rare { color: #0070dd; }
+        .epic { color: #a335ee; }
+        .legendary { color: #ff8000; }
+        .name {
+            font-size: 1.3em;
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+        .stats {
+            margin: 10px 0;
+            color: #00ff00;
+        }
+        .description {
+            margin: 10px 0;
+            color: #aaa;
+            font-style: italic;
+        }
+        .value {
+            margin-top: 15px;
+            color: #d4af37;
+            font-weight: bold;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #d4af37 0%, #f2d06b 100%);
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #000;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.6);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .file-info {
+            color: #888;
+            font-size: 0.9em;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚔️ Random Item Generator ⚔️</h1>
+        <div class="item-display" id="itemDisplay">
+            <p style="text-align: center; color: #888;">Click the button below to generate a random item!</p>
+        </div>
+        <button onclick="generateItem()">Generate New Item</button>
+        <div class="file-info">
+            Place .txt files in the /names/ folder in your repo
+        </div>
+    </div>
+
+    <script>
+        // Sample data structure - replace with your actual file contents
+        const data = {
+            rarities: ['COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY'],
+            prefixes: ['Money', 'Crystal', 'Shadow', 'Ancient', 'Blessed', 'Cursed', 'Ethereal', 'Flaming', 'Frozen', 'Golden'],
+            items: ['Darts', 'Sword', 'Shield', 'Amulet', 'Ring', 'Helmet', 'Boots', 'Gauntlets', 'Cloak', 'Staff'],
+            suffixes: ['of Glory', 'of Doom', 'of the Phoenix', 'of Destiny', 'of Power', 'of Wisdom', 'of Shadows', 'of Light', 'of Chaos', 'of Order'],
+            stats: ['NOM', 'SHAME', 'GLORY', 'POWER', 'SPEED', 'WISDOM', 'CHAOS', 'ORDER', 'LUCK', 'GRIT'],
+            comparisons: ['chocolate', 'velvet', 'marble', 'glass', 'steel', 'silk', 'smoke', 'lightning', 'water', 'fire', 'ice', 'stone', 'wood', 'gold']
+        };
+
+        function getRarityClass(rarity) {
+            return rarity.toLowerCase();
+        }
+
+        function random(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function pick(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        function generateItem() {
+            const rarity = pick(data.rarities);
+            const name = `${pick(data.prefixes)} ${pick(data.items)} ${pick(data.suffixes)}`;
+            
+            const stat1 = pick(data.stats);
+            const stat1Value = random(-5, 20);
+            const stat1Sign = stat1Value >= 0 ? '+' : '';
+            
+            let stat2 = pick(data.stats);
+            while (stat2 === stat1) {
+                stat2 = pick(data.stats);
+            }
+            const stat2Value = random(-5, 20);
+            const stat2Sign = stat2Value >= 0 ? '+' : '';
+            
+            const comparison = pick(data.comparisons);
+            
+            const gold = random(0, 999);
+            const silver = random(0, 99);
+            const copper = random(0, 99);
+            
+            const rarityClass = getRarityClass(rarity);
+            
+            const html = `
+                <div class="rarity ${rarityClass}">[${rarity}]</div>
+                <div class="name">${name}</div>
+                <div class="stats">${stat1Sign}${stat1Value} ${stat1}; ${stat2Sign}${stat2Value} ${stat2}</div>
+                <div class="description">It looks kind of like ${comparison}.</div>
+                <div class="value">Market value: ${gold} gold, ${silver} silver, ${copper} copper</div>
+            `;
+            
+            document.getElementById('itemDisplay').innerHTML = html;
+        }
+
+        // Load data from files when available
+        async function loadDataFromFiles() {
+            const files = ['rarities', 'prefixes', 'items', 'suffixes', 'stats', 'comparisons'];
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(`names/${file}.txt`);
+                    if (response.ok) {
+                        const text = await response.text();
+                        data[file] = text.split('\n').filter(line => line.trim());
+                    }
+                } catch (e) {
+                    console.log(`Could not load ${file}.txt, using defaults`);
+                }
+            }
+        }
+
+        // Initialize
+        loadDataFromFiles();
+    </script>
+</body>
+</html>
