@@ -458,27 +458,73 @@
             }, 800);
         });
         
+        let generatedItems = [];
+
         function showCardBacks() {
             const container = document.getElementById("packContainer");
         
-            const stack = document.createElement("div");
-            stack.className = "card-back-stack";
-            stack.innerHTML = `
-                <div class="card-back"></div>
-                <div class="card-back"></div>
-                <div class="card-back"></div>
-            `;
+            // Create items early so we know rarity
+            generatedItems = [];
+            for (let i = 0; i < 5; i++) {
+                generatedItems.push(generateItem());
+            }
         
-            stack.onclick = () => {
-                if (!backsRevealed) {
-                    backsRevealed = true;
-                    stack.remove();
-                    openPack();
-                }
-            };
+            container.innerHTML = "";
         
-            container.appendChild(stack);
+            const positions = [
+                { x: -260, y: -20, r: -8 },
+                { x: -130, y: 10,  r: -4 },
+                { x:   0,  y: 20,  r: 0 },
+                { x: 130,  y: 10,  r: 4 },
+                { x: 260,  y: -20, r: 8 }
+            ];
+        
+            // Make a wrapper for animation
+            const backWrapper = document.createElement("div");
+            backWrapper.style.position = "relative";
+            backWrapper.style.width = "100%";
+            backWrapper.style.height = "380px";
+            backWrapper.style.display = "flex";
+            backWrapper.style.alignItems = "center";
+            backWrapper.style.justifyContent = "center";
+            container.appendChild(backWrapper);
+        
+            generatedItems.forEach((item, i) => {
+                const rarityClass = item.rarity.toLowerCase();
+        
+                const back = document.createElement("div");
+                back.className = `card-back rarity-${rarityClass}`;
+                back.style.opacity = "0";
+                back.style.transform = "translate(0,0) rotate(0deg)";
+                back.style.position = "absolute";
+                back.style.transition = "all 0.7s ease";
+        
+                back.onclick = () => {
+                    if (!backsRevealed) {
+                        backsRevealed = true;
+                        revealFromBacks(container);
+                    }
+                };
+        
+                backWrapper.appendChild(back);
+        
+                // Fan animation
+                setTimeout(() => {
+                    back.style.opacity = "1";
+                    back.style.transform =
+                        `translate(${positions[i].x}px, ${positions[i].y}px) rotate(${positions[i].r}deg)`;
+                }, 50 + i * 120);
+            });
         }
+        
+        function revealFromBacks(container) {
+            container.innerHTML = "";
+            generatedItems.forEach((item, i) => {
+                const card = createCard(item, i * 0.15);
+                container.appendChild(card);
+            });
+        }
+
 
 
         function openPack() {
