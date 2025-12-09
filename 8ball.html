@@ -185,6 +185,16 @@
         </button>
     </div>
     
+    <div id="displayQuestion" style="
+        color: white;
+        font-size: 1.3em;
+        font-style: italic;
+        margin-bottom: 30px;
+        text-align: center;
+        min-height: 30px;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    "></div>
+    
     <div class="ball-container" onclick="shakeBall()">
         <div class="ball" id="ball">
             <div class="number-8">8</div>
@@ -244,6 +254,12 @@
             const answerEl = document.getElementById('answer');
             const quotePanel = document.getElementById('quotePanel');
             const quoteText = document.getElementById('quoteText');
+            const displayQuestion = document.getElementById('displayQuestion');
+            
+            // Only proceed if there's a question displayed
+            if (!displayQuestion.textContent.trim()) {
+                return; // Don't shake if no question was asked
+            }
             
             // Hide current answer and quote
             answerEl.classList.remove('visible');
@@ -272,9 +288,13 @@
 
         function askQuestion() {
             const questionInput = document.getElementById('question');
+            const displayQuestion = document.getElementById('displayQuestion');
             
             // Only shake if there's a question
             if (questionInput.value.trim()) {
+                // Display the question
+                displayQuestion.textContent = '"' + questionInput.value + '"';
+                
                 shakeBall();
                 questionInput.value = ''; // Clear the question box
             }
