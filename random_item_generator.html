@@ -439,8 +439,10 @@
         
         /* When hovering, combine the float with the lift */
         .flip-card.idle-float.can-flip:hover {
-            animation: none; /* Pause the float animation */
-            transform: translateY(-20px) scale(1.08);
+            /* REMOVE: animation: none; */
+            transform: translateY(-20px) scale(1.08); 
+            /* The base animation will continue running the float, 
+               but the transform applied here will take precedence */
         }
 
     </style>
