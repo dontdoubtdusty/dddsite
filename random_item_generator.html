@@ -31,7 +31,8 @@
             justify-content: center;
             flex-wrap: wrap;
             margin-bottom: 30px;
-            min-height: 500px;
+            /* Height increased to accommodate card movement */
+            min-height: 500px; 
         }
         .card {
             width: 220px;
@@ -253,7 +254,7 @@
             width: 220px;
             height: 340px;
         
-            background-image: url("https://i.imgur.com/7l1R4Hn.png"); /* Using a more reliable image */
+            background-image: url("https://i.imgur.com/7l1R4Hn.png");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -296,23 +297,24 @@
         .card-back::after {
             content: none !important;
         }    
+        /* CARD FLIP/PLACEMENT/HOVER RULES */
         .flip-card {
             width: 220px;
             height: 340px;
             perspective: 1200px;
             cursor: default;
-            /* Base stacking order and transition for smooth movement */
-            position: absolute; 
-            z-index: 10; 
-            transition: all 0.7s ease; 
+            position: absolute; /* Essential for z-index and positioning */
+            z-index: 10; /* Base stacking order */
+        }
+        
+        .flip-card.can-flip {
+            cursor: pointer; /* Change cursor when ready to flip */
         }
 
-        .flip-card.can-flip {
-            cursor: pointer;
-        }
+        /* Hover effect to lift card above others */
         .flip-card.can-flip:hover {
-            z-index: 100; /* Stacks above other cards */
-            /* Only apply lift (Y) and scale, allowing the inline X/Y translate and Rotate to persist */
+            z-index: 100; /* Bring to front */
+            /* Lift and scale the card without overriding its final x/y/rotation */
             transform: translateY(-20px) scale(1.08); 
         }
 
@@ -333,20 +335,20 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            backface-visibility: hidden; /* CRITICAL */
+            backface-visibility: hidden; 
             border-radius: 12px;
         }
         
         /* Card Back */
         .flip-back {
-            background-image: url("https://i.imgur.com/7l1R4Hn.png"); /* Using a more reliable image */
+            background-image: url("https://i.imgur.com/7l1R4Hn.png"); 
             background-size: cover;
             background-position: center;
         }
         
         /* Card Front (your generated card) */
         .flip-front {
-            transform: rotateY(180deg); /* CRITICAL */
+            transform: rotateY(180deg); 
         }
 
     </style>
@@ -556,48 +558,62 @@
         
             container.innerHTML = "";
         
-            const positions = [
+            // 1. FAN POSITIONS (Staggered/Rotated)
+            const fanPositions = [
                 { x: -260, y: -20, r: -8 },
                 { x: -130, y: 10,  r: -4 },
                 { x:   0,  y: 20,  r: 0 },
                 { x: 130,  y: 10,  r: 4 },
                 { x: 260,  y: -20, r: 8 }
             ];
+
+            // 2. FINAL POSITIONS (Straight line, no rotation)
+            const finalPositions = [
+                { x: -440, y: 0, r: 0 },
+                { x: -220, y: 0, r: 0 },
+                { x:   0,  y: 0, r: 0 },
+                { x: 220,  y: 0, r: 0 },
+                { x: 440,  y: 0, r: 0 }
+            ];
         
             // Make a wrapper for animation
             const backWrapper = document.createElement("div");
             backWrapper.style.position = "relative";
             backWrapper.style.width = "100%";
-            backWrapper.style.height = "380px";
+            // Increased height to accommodate the movement
+            backWrapper.style.height = "450px"; 
             backWrapper.style.display = "flex";
             backWrapper.style.alignItems = "center";
             backWrapper.style.justifyContent = "center";
             container.appendChild(backWrapper);
             
-            // Define the total delay for all cards to finish spreading (5 * 120ms interval + a buffer)
-            const PLACEMENT_DELAY = 1500; 
+            // Timing constants
+            const FAN_SPREAD_INTERVAL = 120; // Time between cards starting their fan spread
+            const FAN_SPREAD_DURATION = 700; // CSS transition duration
+            const PLACEMENT_DURATION = 500; // Time for the final placement movement
+            
+            // Calculate when the fan spread stage ends
+            const FAN_END_TIME = (generatedItems.length * FAN_SPREAD_INTERVAL) + FAN_SPREAD_DURATION; 
+            // Calculate when everything is done and flipping should be enabled
+            const FINAL_PLACEMENT_END_TIME = FAN_END_TIME + PLACEMENT_DURATION + 100; // Added small buffer
         
             generatedItems.forEach((item, i) => {
                 const rarityClass = item.rarity.toLowerCase();
         
-                // wrapper for flipping
                 const wrapper = document.createElement("div");
                 wrapper.className = `flip-card rarity-${rarityClass}`;
                 wrapper.style.position = "absolute";
                 wrapper.style.opacity = "0";
-                // Start position before the spread animation
+                // Start position before ANY animation
                 wrapper.style.transform = "translate(0,0) rotate(0deg)"; 
-                wrapper.style.transition = "all 0.7s ease";
+                wrapper.style.transition = `all ${FAN_SPREAD_DURATION/1000}s ease`; // Convert ms to seconds
                 
-                // inner rotating div
                 const inner = document.createElement("div");
                 inner.className = "flip-inner";
                 
-                // back side
                 const flipBack = document.createElement("div");
                 flipBack.className = "flip-back";
                 
-                // front side
                 const flipFront = document.createElement("div");
                 flipFront.className = "flip-front";
                 flipFront.appendChild(createCard(item, 0)); 
@@ -608,40 +624,48 @@
                 wrapper.appendChild(inner);
                 backWrapper.appendChild(wrapper);
                 
-                // NEW: Flip behavior function
+                // Flip behavior function (remains the same)
                 const flipCard = () => {
-                    // Only flip if the card has the 'can-flip' class
                     if (!wrapper.classList.contains('can-flip')) return;
                     
-                    // Prevent subsequent flips on the same card
                     wrapper.removeEventListener('click', flipCard); 
                     wrapper.classList.add("flipped");
                 
                     if (!backsRevealed) {
                         backsRevealed = true;
-                        // You can adjust this to a "Reveal All" button later if desired
                     }
                 };
-
-                // Attach the event listener
                 wrapper.addEventListener("click", flipCard);
                 
-                // Fan animation: Start the spread after a small staggered delay
+                // === STAGE 1: FAN SPREAD ===
                 setTimeout(() => {
                     wrapper.style.opacity = "1";
-                    // Move the card to its final spread-out position
+                    // Apply fan position
                     wrapper.style.transform =
-                        `translate(${positions[i].x}px, ${positions[i].y}px) rotate(${positions[i].r}deg)`;
-                }, 50 + i * 120);
+                        `translate(${fanPositions[i].x}px, ${fanPositions[i].y}px) rotate(${fanPositions[i].r}deg)`;
+                }, 50 + i * FAN_SPREAD_INTERVAL);
+                
+                // === STAGE 2: FINAL PLACEMENT ===
+                setTimeout(() => {
+                    // Set the transition duration for the final, slower move
+                    wrapper.style.transition = `all ${PLACEMENT_DURATION/1000}s ease-in-out`;
+                    // Apply final position (overwrite fan position)
+                    wrapper.style.transform =
+                        `translate(${finalPositions[i].x}px, ${finalPositions[i].y}px) rotate(${finalPositions[i].r}deg)`;
+                }, FAN_END_TIME);
+
 
             });
         
-            // NEW: After the cards are done spreading, enable the flip mechanism
+            // === STAGE 3: ENABLE FLIPPING ===
+            // Enable flipping after the final placement is complete
             setTimeout(() => {
                 document.querySelectorAll('.flip-card').forEach(card => {
                     card.classList.add('can-flip');
+                    // Reset the transition to the quick 0.7s move needed for Z-index/hover
+                    card.style.transition = `all 0.7s ease`; 
                 });
-            }, PLACEMENT_DELAY);
+            }, FINAL_PLACEMENT_END_TIME);
         }
         
         function revealFromBacks(container) {
