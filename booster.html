@@ -706,7 +706,16 @@
                         backsRevealed = true;
                     }
                 };
-                wrapper.addEventListener("click", flipCard);
+                
+                // Auto-flip common and uncommon cards
+                if (rarityClass === 'common' || rarityClass === 'uncommon') {
+                    setTimeout(() => {
+                        wrapper.classList.add("flipped");
+                    }, FINAL_PLACEMENT_END_TIME + 300 + (i * 200)); // Stagger the auto-flips
+                } else {
+                    // Only rare, epic, and legendary can be clicked
+                    wrapper.addEventListener("click", flipCard);
+                }
                 
                 // === STAGE 1: FAN SPREAD ===
                 setTimeout(() => {
