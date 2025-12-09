@@ -301,7 +301,10 @@
             width: 220px;
             height: 340px;
             perspective: 1200px;
-            cursor: pointer;
+            cursor: default;
+            
+        .flip-card.can-flip {
+            cursor: pointer; /* NEW: Override to show clickable cursor when ready to flip */
         }
         
         .flip-inner {
@@ -562,56 +565,75 @@
             backWrapper.style.justifyContent = "center";
             container.appendChild(backWrapper);
         
+            // --- NEW: Define the total delay for all cards to finish spreading ---
+            // 5 cards * 120ms interval + a buffer for the transition (0.7s)
+            const PLACEMENT_DELAY = 1500; 
+
             generatedItems.forEach((item, i) => {
                 const rarityClass = item.rarity.toLowerCase();
         
                 // wrapper for flipping
-            const wrapper = document.createElement("div");
-            wrapper.className = `flip-card rarity-${rarityClass}`;
-            wrapper.style.position = "absolute";
-            wrapper.style.opacity = "0";
-            wrapper.style.transform = "translate(0,0) rotate(0deg)";
-            wrapper.style.transition = "all 0.7s ease";
-            
-            // inner rotating div
-            const inner = document.createElement("div");
-            inner.className = "flip-inner";
-            
-            // back side (Shrek)
-            const flipBack = document.createElement("div");
-            flipBack.className = "flip-back";
-            
-            // front side (generated card)
-            const flipFront = document.createElement("div");
-            flipFront.className = "flip-front";
-            flipFront.appendChild(createCard(item, 0));  // your card front HTML
-            
-            // assemble
-            inner.appendChild(flipBack);
-            inner.appendChild(flipFront);
-            wrapper.appendChild(inner);
-            backWrapper.appendChild(wrapper);
-            
-            // flip behavior
-            wrapper.onclick = () => {
-                wrapper.classList.add("flipped");
-            
-                if (!backsRevealed) {
-                    backsRevealed = true;
-                    setTimeout(() => {
-                        revealFromBacks(container);
-                    }, 650);
-                }
-            };
-            
-            // Fan animation
-            setTimeout(() => {
-                wrapper.style.opacity = "1";
-                wrapper.style.transform =
-                    `translate(${positions[i].x}px, ${positions[i].y}px) rotate(${positions[i].r}deg)`;
-            }, 50 + i * 120);
+                const wrapper = document.createElement("div");
+                wrapper.className = `flip-card rarity-${rarityClass}`;
+                wrapper.style.position = "absolute";
+                wrapper.style.opacity = "0";
+                // Start position before the spread animation
+                wrapper.style.transform = "translate(0,0) rotate(0deg)"; 
+                wrapper.style.transition = "all 0.7s ease";
+                
+                // inner rotating div
+                const inner = document.createElement("div");
+                inner.className = "flip-inner";
+                
+                // back side (Shrek)
+                const flipBack = document.createElement("div");
+                flipBack.className = "flip-back";
+                
+                // front side (generated card)
+                const flipFront = document.createElement("div");
+                flipFront.className = "flip-front";
+                flipFront.appendChild(createCard(item, 0));  // your card front HTML
+                
+                // assemble
+                inner.appendChild(flipBack);
+                inner.appendChild(flipFront);
+                wrapper.appendChild(inner);
+                backWrapper.appendChild(wrapper);
+                
+                // NEW: Flip behavior function
+                const flipCard = () => {
+                    // Only flip if the card has the 'can-flip' class (meaning placement is done)
+                    if (!wrapper.classList.contains('can-flip')) return;
+                    
+                    // Prevent subsequent flips on the same card
+                    wrapper.removeEventListener('click', flipCard); 
+                    wrapper.classList.add("flipped");
+                
+                    if (!backsRevealed) {
+                        backsRevealed = true;
+                        // You can adjust this to a "Reveal All" button later if desired
+                    }
+                };
+
+                // Attach the event listener
+                wrapper.addEventListener("click", flipCard);
+                
+                // Fan animation: Start the spread after a small staggered delay
+                setTimeout(() => {
+                    wrapper.style.opacity = "1";
+                    // Move the card to its final spread-out position
+                    wrapper.style.transform =
+                        `translate(${positions[i].x}px, ${positions[i].y}px) rotate(${positions[i].r}deg)`;
+                }, 50 + i * 120);
 
             });
+
+            // NEW: After the cards are done spreading, enable the flip mechanism
+            setTimeout(() => {
+                document.querySelectorAll('.flip-card').forEach(card => {
+                    card.classList.add('can-flip');
+                });
+            }, PLACEMENT_DELAY);
         }
         
         function revealFromBacks(container) {
