@@ -301,10 +301,16 @@
             height: 340px;
             perspective: 1200px;
             cursor: default; /* ADDED: Default to non-clickable until placed */
+            position: absolute; /* Already set implicitly or explicitly, but crucial for z-index */
+            z-index: 10; /* Give all cards a base z-index. A value of 10 is usually safe. */
+            /* Add a small transition for a smooth elevation effect */
+            transition: all 0.7s ease, z-index 0s;
         }
-        
+
         .flip-card.can-flip {
             cursor: pointer; /* NEW: Override to show clickable cursor when ready to flip */
+            z-index: 100; /* A high number to ensure it stacks above all other cards (100 > 10) */
+            transform: translate(-10px, -30px) scale(1.08) rotate(0deg) !important; /* Optional: Slight lift and scale for better visual feedback */
         }
 
         .flip-inner {
