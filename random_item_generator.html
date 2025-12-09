@@ -757,6 +757,7 @@
             setTimeout(() => {
                 document.querySelectorAll('.flip-card').forEach(card => {
                     card.classList.add('can-flip');
+                    card.classList.add('idle-float'); // Add the floating animation
                     // Reset the transition to the quick 0.7s move needed for Z-index/hover
                     card.style.transition = `all 0.7s ease`; 
                 });
