@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Item Generator</title>
+    <title>Booster Pack Generator</title>
     <style>
         body {
             font-family: 'Courier New', monospace;
@@ -16,184 +16,219 @@
             padding: 20px;
         }
         .container {
-            background: rgba(0, 0, 0, 0.8);
-            border: 3px solid #d4af37;
-            border-radius: 10px;
-            padding: 40px;
-            max-width: 600px;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+            max-width: 1400px;
+            width: 100%;
         }
         h1 {
             color: #d4af37;
             text-align: center;
             margin-bottom: 30px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            font-size: 2.5em;
         }
-        .item-display {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #555;
-            border-radius: 5px;
-            padding: 25px;
-            margin: 20px 0;
-            min-height: 150px;
-            color: #fff;
-            line-height: 1.8;
+        .pack-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            min-height: 500px;
+        }
+        .card {
+            width: 220px;
+            height: 340px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            border-radius: 12px;
+            padding: 0;
             position: relative;
-            overflow: visible;
-            transition: all 0.3s ease, box-shadow 0.8s ease;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
         }
-        .item-display.animate {
-            animation: itemReveal 0.5s ease-out;
+        .card:hover {
+            transform: translateY(-10px) scale(1.05);
         }
-        @keyframes itemReveal {
+        .card.reveal {
+            animation: cardReveal 0.6s ease-out;
+        }
+        @keyframes cardReveal {
             0% {
                 opacity: 0;
-                transform: scale(0.9);
+                transform: rotateY(90deg) scale(0.8);
             }
             100% {
                 opacity: 1;
-                transform: scale(1);
+                transform: rotateY(0deg) scale(1);
             }
         }
-        .glow-effect {
+        .card-border {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
+            border-radius: 12px;
+            padding: 3px;
             pointer-events: none;
-            opacity: 1;
-            border-radius: 5px;
         }
-        .glow-effect.active {
-            animation: glowPulse 0.8s ease-out;
+        .card-border.common { background: linear-gradient(135deg, #9d9d9d, #7a7a7a); }
+        .card-border.uncommon { background: linear-gradient(135deg, #1eff00, #15c900); }
+        .card-border.rare { background: linear-gradient(135deg, #0070dd, #005bb5); }
+        .card-border.epic { background: linear-gradient(135deg, #a335ee, #8a2ac7); }
+        .card-border.legendary { background: linear-gradient(135deg, #ff8000, #cc6600); }
+        .card-content {
+            position: relative;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            border-radius: 10px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
         }
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 0.6; }
-        }
-        .rarity {
-            font-weight: bold;
-            font-size: 1.2em;
+        .card-header {
+            text-align: center;
             margin-bottom: 10px;
         }
-        .common { color: #9d9d9d; }
-        .uncommon { color: #1eff00; }
-        .rare { color: #0070dd; }
-        .epic { color: #a335ee; }
-        .legendary { color: #ff8000; }
-        .name {
-            font-size: 1.3em;
+        .card-rarity {
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .card-rarity.common { color: #9d9d9d; }
+        .card-rarity.uncommon { color: #1eff00; }
+        .card-rarity.rare { color: #0070dd; }
+        .card-rarity.epic { color: #a335ee; }
+        .card-rarity.legendary { color: #ff8000; }
+        .card-name {
+            font-size: 1.1em;
+            font-weight: bold;
             color: #ffd700;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            line-height: 1.2;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .stats {
-            margin: 10px 0;
+        .card-art {
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.3) 100%);
+            border: 2px solid #444;
+            border-radius: 8px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-art::before {
+            content: '⚔️';
+            opacity: 0.3;
+            font-size: 1.5em;
+        }
+        .card-stats {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #555;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+        }
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
             color: #00ff00;
+            margin: 3px 0;
         }
-        .description {
-            margin: 10px 0;
+        .stat-label {
             color: #aaa;
-            font-style: italic;
         }
-        .value {
-            margin-top: 15px;
+        .card-description {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #555;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.75em;
+            color: #ccc;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        .card-value {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 6px;
+            text-align: center;
+            font-size: 0.8em;
             color: #d4af37;
             font-weight: bold;
         }
         button {
-            width: 100%;
-            padding: 15px;
+            display: block;
+            margin: 0 auto;
+            padding: 18px 40px;
             background: linear-gradient(135deg, #d4af37 0%, #f2d06b 100%);
             border: none;
-            border-radius: 5px;
-            font-size: 18px;
+            border-radius: 8px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
             color: #000;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
         }
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.6);
+            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.6);
         }
         button:active {
             transform: translateY(0);
         }
-        .file-info {
-            color: #888;
+        .placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
             font-size: 0.9em;
             text-align: center;
-            margin-top: 20px;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚔️ Random Item Generator ⚔️</h1>
-        <div class="item-display" id="itemDisplay">
-            <p style="text-align: center; color: #888;">Click the button below to generate a random item!</p>
+        <h1>🃏 Booster Pack Generator 🃏</h1>
+        <div class="pack-container" id="packContainer">
+            <div class="placeholder">Click the button below to open your booster pack!</div>
         </div>
-        <button onclick="generateItem()">Generate New Item</button>
-        <div class="file-info">
-            Place .txt files in the /names/ folder in your repo
-        </div>
+        <button onclick="openPack()">Open Booster Pack</button>
     </div>
 
     <script>
-        // Sample data structure - replace with your actual file contents
         const data = {
             rarities: ['COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY'],
             
-            // Common/Uncommon prefixes (neutral/weak)
             commonPrefixes: ['Worn', 'Old', 'Simple', 'Basic', 'Plain', 'Crude', 'Rusty', 'Dull', 'Chipped', 'Tarnished'],
             uncommonPrefixes: ['Sturdy', 'Fine', 'Quality', 'Polished', 'Sharp', 'Reinforced', 'Balanced', 'Crafted', 'Solid', 'Reliable'],
-            
-            // Rare/Epic prefixes (positive/powerful)
             rarePrefixes: ['Blessed', 'Enhanced', 'Superior', 'Enchanted', 'Radiant', 'Gleaming', 'Masterwork', 'Exquisite', 'Pristine', 'Glorious'],
             epicPrefixes: ['Ancient', 'Divine', 'Celestial', 'Eternal', 'Supreme', 'Mythic', 'Transcendent', 'Ascendant', 'Hallowed', 'Majestic'],
             
             items: ['Darts', 'Sword', 'Shield', 'Amulet', 'Ring', 'Helmet', 'Boots', 'Gauntlets', 'Cloak', 'Staff', 'Blade', 'Axe', 'Bow', 'Wand', 'Orb'],
             
-            // Rare+ suffixes with "of the"
             rareSuffixes: ['of the Wolf', 'of the Bear', 'of the Eagle', 'of the Serpent', 'of the Tiger', 'of the Dragon', 'of the Phoenix', 'of the Lion'],
             epicSuffixes: ['of the Warlock', 'of the Paladin', 'of the Archmage', 'of the Berserker', 'of the Assassin', 'of the Champion', 'of the Warlord', 'of the Sage'],
             
-            // Legendary name parts
             legendaryPart1: ['Void', 'Star', 'Soul', 'Death', 'Life', 'Storm', 'Shadow', 'Light', 'Frost', 'Flame', 'Blood', 'Dawn', 'Dusk', 'Moon', 'Sun'],
             legendaryPart2: ['bringer', 'reaver', 'render', 'fang', 'claw', 'seeker', 'fury', 'bane', 'heart', 'breaker', 'singer', 'caller', 'weaver', 'forged'],
             
             stats: ['NOM', 'SHAME', 'GLORY', 'POWER', 'SPEED', 'WISDOM', 'CHAOS', 'ORDER', 'LUCK', 'GRIT'],
             comparisons: ['chocolate', 'velvet', 'marble', 'glass', 'steel', 'silk', 'smoke', 'lightning', 'water', 'fire', 'ice', 'stone', 'wood', 'gold']
         };
-
-        function getRarityClass(rarity) {
-            return rarity.toLowerCase();
-        }
-
-        function getRarityColor(rarity) {
-            const colors = {
-                'COMMON': '#9d9d9d',
-                'UNCOMMON': '#1eff00',
-                'RARE': '#0070dd',
-                'EPIC': '#a335ee',
-                'LEGENDARY': '#ff8000'
-            };
-            return colors[rarity];
-        }
-
-        function createGlowEffect(rarity, intensity = 1) {
-            const display = document.getElementById('itemDisplay');
-            const color = getRarityColor(rarity);
-            
-            const glow = document.createElement('div');
-            glow.className = 'glow-effect active';
-            glow.style.boxShadow = `inset 0 0 ${60 * intensity}px ${color}, 0 0 ${30 * intensity}px ${color}`;
-            
-            display.appendChild(glow);
-            
-            setTimeout(() => glow.remove(), 800);
-        }
 
         function random(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -206,17 +241,16 @@
         function pickRarity() {
             const roll = Math.random() * 100;
             
-            if (roll < 50) return 'COMMON';           // 50%
-            if (roll < 75) return 'UNCOMMON';         // 25%
-            if (roll < 90) return 'RARE';             // 15%
-            if (roll < 97) return 'EPIC';             // 7%
-            return 'LEGENDARY';                        // 3%
+            if (roll < 50) return 'COMMON';
+            if (roll < 75) return 'UNCOMMON';
+            if (roll < 90) return 'RARE';
+            if (roll < 97) return 'EPIC';
+            return 'LEGENDARY';
         }
 
         function generateItem() {
             const rarity = pickRarity();
             
-            // Generate name based on rarity
             let name;
             switch(rarity) {
                 case 'COMMON':
@@ -249,7 +283,6 @@
             
             const comparison = pick(data.comparisons);
             
-            // Calculate value based on rarity
             let gold, silver, copper;
             switch(rarity) {
                 case 'COMMON':
@@ -279,43 +312,74 @@
                     break;
             }
             
-            const rarityClass = getRarityClass(rarity);
+            return {
+                rarity,
+                name,
+                stat1,
+                stat1Value,
+                stat1Sign,
+                stat2,
+                stat2Value,
+                stat2Sign,
+                comparison,
+                gold,
+                silver,
+                copper
+            };
+        }
+
+        function createCard(item, delay) {
+            const rarityClass = item.rarity.toLowerCase();
             
-            // Create visual effects based on rarity
-            const display = document.getElementById('itemDisplay');
-            display.classList.remove('animate');
-            void display.offsetWidth; // Trigger reflow
-            display.classList.add('animate');
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.animationDelay = `${delay}s`;
             
-            switch(rarity) {
-                case 'COMMON':
-                    // No glow for common
-                    break;
-                case 'UNCOMMON':
-                    createGlowEffect(rarity, 0.5);
-                    break;
-                case 'RARE':
-                    createGlowEffect(rarity, 1);
-                    break;
-                case 'EPIC':
-                    createGlowEffect(rarity, 1.5);
-                    break;
-                case 'LEGENDARY':
-                    createGlowEffect(rarity, 2);
-                    // Extra glow burst for legendary
-                    setTimeout(() => createGlowEffect(rarity, 2), 400);
-                    break;
-            }
+            setTimeout(() => {
+                card.classList.add('reveal');
+            }, delay * 1000);
             
-            const html = `
-                <div class="rarity ${rarityClass}">[${rarity}]</div>
-                <div class="name">${name}</div>
-                <div class="stats">${stat1Sign}${stat1Value} ${stat1}; ${stat2Sign}${stat2Value} ${stat2}</div>
-                <div class="description">It looks kind of like ${comparison}.</div>
-                <div class="value">Market value: ${gold} gold, ${silver} silver, ${copper} copper</div>
+            card.innerHTML = `
+                <div class="card-border ${rarityClass}">
+                    <div class="card-content">
+                        <div class="card-header">
+                            <div class="card-rarity ${rarityClass}">${item.rarity}</div>
+                            <div class="card-name">${item.name}</div>
+                        </div>
+                        <div class="card-art"></div>
+                        <div class="card-stats">
+                            <div class="stat-line">
+                                <span class="stat-label">${item.stat1}</span>
+                                <span>${item.stat1Sign}${item.stat1Value}</span>
+                            </div>
+                            <div class="stat-line">
+                                <span class="stat-label">${item.stat2}</span>
+                                <span>${item.stat2Sign}${item.stat2Value}</span>
+                            </div>
+                        </div>
+                        <div class="card-description">
+                            It looks kind of like ${item.comparison}.
+                        </div>
+                        <div class="card-value">
+                            ${item.gold}g ${item.silver}s ${item.copper}c
+                        </div>
+                    </div>
+                </div>
             `;
             
-            document.getElementById('itemDisplay').innerHTML = html;
+            return card;
+        }
+
+        function openPack() {
+            const container = document.getElementById('packContainer');
+            container.innerHTML = '';
+            
+            // Generate 5 cards
+            for (let i = 0; i < 5; i++) {
+                const item = generateItem();
+                const card = createCard(item, i * 0.15);
+                container.appendChild(card);
+            }
         }
 
         // Load data from files when available
@@ -342,7 +406,6 @@
             }
         }
 
-        // Initialize
         loadDataFromFiles();
     </script>
 </body>
