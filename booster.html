@@ -693,26 +693,28 @@
             const container = document.getElementById("packContainer");
         
             generatedItems = [];
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 6; i++) {
                 generatedItems.push(generateItem());
             }
         
             container.innerHTML = "";
         
             const fanPositions = [
-                { x: -260, y: -20, r: -8 },
-                { x: -130, y: 10,  r: -4 },
-                { x:   0,  y: 20,  r: 0 },
-                { x: 130,  y: 10,  r: 4 },
-                { x: 260,  y: -20, r: 8 }
+                { x: -325, y: -25, r: -10 },
+                { x: -195, y: -5, r: -6 },
+                { x: -65, y: 10, r: -2 },
+                { x: 65, y: 10, r: 2 },
+                { x: 195, y: -5, r: 6 },
+                { x: 325, y: -25, r: 10 }
             ];
 
             const finalPositions = [
-                { x: -480, y: -30, r: -3 },  // outer cards slightly lower and rotated
-                { x: -240, y: -10, r: -1.5 },
-                { x:   0,  y: 0, r: 0 },     // center card is the highest
-                { x: 240,  y: -10, r: 1.5 },
-                { x: 480,  y: -30, r: 3 }
+                { x: -600, y: -35, r: -4 },
+                { x: -360, y: -15, r: -2 },
+                { x: -120, y: 0, r: -1 },
+                { x: 120, y: 0, r: 1 },
+                { x: 360, y: -15, r: 2 },
+                { x: 600, y: -35, r: 4 }
             ];
         
             const backWrapper = document.createElement("div");
