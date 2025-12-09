@@ -167,6 +167,43 @@
             color: #d4af37;
             font-weight: bold;
         }
+        .coin-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .coin {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            border: 2px solid;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .coin.gold {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border-color: #b8860b;
+            color: #000;
+        }
+        
+        .coin.silver {
+            background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+            border-color: #808080;
+            color: #000;
+        }
+        
+        .coin.copper {
+            background: linear-gradient(135deg, #b87333, #cd7f32);
+            border-color: #8b4513;
+            color: #000;
+        }
         button {
             display: block;
             margin: 0 auto;
@@ -662,7 +699,11 @@
                             It looks kind of like ${item.comparison}.
                         </div>
                         <div class="card-value">
-                            ${item.gold}g ${item.silver}s ${item.copper}c
+                            <div class="coin-container">
+                                <div class="coin gold">${item.gold}</div>
+                                <div class="coin silver">${item.silver}</div>
+                                <div class="coin copper">${item.copper}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
