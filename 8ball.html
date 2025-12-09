@@ -279,7 +279,16 @@
 
                 // Show random quote from Book of Carp
                 if (carpQuotes.length > 0) {
-                    const randomQuote = carpQuotes[Math.floor(Math.random() * carpQuotes.length)];
+                    let randomQuote = carpQuotes[Math.floor(Math.random() * carpQuotes.length)];
+                    
+                    // Extract text between first and last quotation marks
+                    const firstQuote = randomQuote.indexOf('"');
+                    const lastQuote = randomQuote.lastIndexOf('"');
+                    
+                    if (firstQuote !== -1 && lastQuote !== -1 && firstQuote !== lastQuote) {
+                        randomQuote = randomQuote.substring(firstQuote + 1, lastQuote);
+                    }
+                    
                     quoteText.textContent = randomQuote;
                     quotePanel.classList.add('visible');
                 }
