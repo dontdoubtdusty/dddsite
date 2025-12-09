@@ -111,9 +111,25 @@
         // Sample data structure - replace with your actual file contents
         const data = {
             rarities: ['COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY'],
-            prefixes: ['Money', 'Crystal', 'Shadow', 'Ancient', 'Blessed', 'Cursed', 'Ethereal', 'Flaming', 'Frozen', 'Golden'],
-            items: ['Darts', 'Sword', 'Shield', 'Amulet', 'Ring', 'Helmet', 'Boots', 'Gauntlets', 'Cloak', 'Staff'],
-            suffixes: ['of Glory', 'of Doom', 'of the Phoenix', 'of Destiny', 'of Power', 'of Wisdom', 'of Shadows', 'of Light', 'of Chaos', 'of Order'],
+            
+            // Common/Uncommon prefixes (neutral/weak)
+            commonPrefixes: ['Worn', 'Old', 'Simple', 'Basic', 'Plain', 'Crude', 'Rusty', 'Dull', 'Chipped', 'Tarnished'],
+            uncommonPrefixes: ['Sturdy', 'Fine', 'Quality', 'Polished', 'Sharp', 'Reinforced', 'Balanced', 'Crafted', 'Solid', 'Reliable'],
+            
+            // Rare/Epic prefixes (positive/powerful)
+            rarePrefixes: ['Blessed', 'Enhanced', 'Superior', 'Enchanted', 'Radiant', 'Gleaming', 'Masterwork', 'Exquisite', 'Pristine', 'Glorious'],
+            epicPrefixes: ['Ancient', 'Divine', 'Celestial', 'Eternal', 'Supreme', 'Mythic', 'Transcendent', 'Ascendant', 'Hallowed', 'Majestic'],
+            
+            items: ['Darts', 'Sword', 'Shield', 'Amulet', 'Ring', 'Helmet', 'Boots', 'Gauntlets', 'Cloak', 'Staff', 'Blade', 'Axe', 'Bow', 'Wand', 'Orb'],
+            
+            // Rare+ suffixes with "of the"
+            rareSuffixes: ['of the Wolf', 'of the Bear', 'of the Eagle', 'of the Serpent', 'of the Tiger', 'of the Dragon', 'of the Phoenix', 'of the Lion'],
+            epicSuffixes: ['of the Warlock', 'of the Paladin', 'of the Archmage', 'of the Berserker', 'of the Assassin', 'of the Champion', 'of the Warlord', 'of the Sage'],
+            
+            // Legendary name parts
+            legendaryPart1: ['Void', 'Star', 'Soul', 'Death', 'Life', 'Storm', 'Shadow', 'Light', 'Frost', 'Flame', 'Blood', 'Dawn', 'Dusk', 'Moon', 'Sun'],
+            legendaryPart2: ['bringer', 'reaver', 'render', 'fang', 'claw', 'seeker', 'fury', 'bane', 'heart', 'breaker', 'singer', 'caller', 'weaver', 'forged'],
+            
             stats: ['NOM', 'SHAME', 'GLORY', 'POWER', 'SPEED', 'WISDOM', 'CHAOS', 'ORDER', 'LUCK', 'GRIT'],
             comparisons: ['chocolate', 'velvet', 'marble', 'glass', 'steel', 'silk', 'smoke', 'lightning', 'water', 'fire', 'ice', 'stone', 'wood', 'gold']
         };
@@ -130,9 +146,38 @@
             return array[Math.floor(Math.random() * array.length)];
         }
 
+        function pickRarity() {
+            const roll = Math.random() * 100;
+            
+            if (roll < 50) return 'COMMON';           // 50%
+            if (roll < 75) return 'UNCOMMON';         // 25%
+            if (roll < 90) return 'RARE';             // 15%
+            if (roll < 97) return 'EPIC';             // 7%
+            return 'LEGENDARY';                        // 3%
+        }
+
         function generateItem() {
-            const rarity = pick(data.rarities);
-            const name = `${pick(data.prefixes)} ${pick(data.items)} ${pick(data.suffixes)}`;
+            const rarity = pickRarity();
+            
+            // Generate name based on rarity
+            let name;
+            switch(rarity) {
+                case 'COMMON':
+                    name = `${pick(data.commonPrefixes)} ${pick(data.items)}`;
+                    break;
+                case 'UNCOMMON':
+                    name = `${pick(data.uncommonPrefixes)} ${pick(data.items)}`;
+                    break;
+                case 'RARE':
+                    name = `${pick(data.rarePrefixes)} ${pick(data.items)} ${pick(data.rareSuffixes)}`;
+                    break;
+                case 'EPIC':
+                    name = `${pick(data.epicPrefixes)} ${pick(data.items)} ${pick(data.epicSuffixes)}`;
+                    break;
+                case 'LEGENDARY':
+                    name = `${pick(data.legendaryPart1)}${pick(data.legendaryPart2)}`;
+                    break;
+            }
             
             const stat1 = pick(data.stats);
             const stat1Value = random(-5, 20);
@@ -147,9 +192,35 @@
             
             const comparison = pick(data.comparisons);
             
-            const gold = random(0, 999);
-            const silver = random(0, 99);
-            const copper = random(0, 99);
+            // Calculate value based on rarity
+            let gold, silver, copper;
+            switch(rarity) {
+                case 'COMMON':
+                    gold = 0;
+                    silver = random(0, 5);
+                    copper = random(0, 99);
+                    break;
+                case 'UNCOMMON':
+                    gold = random(0, 2);
+                    silver = random(0, 99);
+                    copper = random(0, 99);
+                    break;
+                case 'RARE':
+                    gold = random(3, 25);
+                    silver = random(0, 99);
+                    copper = random(0, 99);
+                    break;
+                case 'EPIC':
+                    gold = random(26, 150);
+                    silver = random(0, 99);
+                    copper = random(0, 99);
+                    break;
+                case 'LEGENDARY':
+                    gold = random(151, 999);
+                    silver = random(0, 99);
+                    copper = random(0, 99);
+                    break;
+            }
             
             const rarityClass = getRarityClass(rarity);
             
@@ -166,7 +237,14 @@
 
         // Load data from files when available
         async function loadDataFromFiles() {
-            const files = ['rarities', 'prefixes', 'items', 'suffixes', 'stats', 'comparisons'];
+            const files = [
+                'rarities', 
+                'commonPrefixes', 'uncommonPrefixes', 'rarePrefixes', 'epicPrefixes',
+                'items', 
+                'rareSuffixes', 'epicSuffixes',
+                'legendaryPart1', 'legendaryPart2',
+                'stats', 'comparisons'
+            ];
             
             for (const file of files) {
                 try {
