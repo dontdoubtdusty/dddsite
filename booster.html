@@ -411,10 +411,10 @@
 
         @keyframes cardFloat {
             0%, 100% {
-                transform: translateY(0px);
+                transform: translate(var(--final-x), var(--final-y)) translateY(0px) rotate(var(--final-r));
             }
             50% {
-                transform: translateY(-10px);
+                transform: translate(var(--final-x), var(--final-y)) translateY(-10px) rotate(var(--final-r));
             }
         }
     </style>
