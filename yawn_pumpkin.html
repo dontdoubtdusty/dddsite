@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yawn Pumpkin</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b4e 50%, #4a2c6f 100%);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            color: #ffa500;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+
+        .pumpkin-container {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .pumpkin-container:hover {
+            transform: scale(1.05);
+        }
+
+        .pumpkin {
+            width: 300px;
+            height: 300px;
+            position: relative;
+        }
+
+        .pumpkin-body {
+            fill: #ff8c00;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+        }
+
+        .eye {
+            fill: #000;
+            transition: all 0.3s ease;
+        }
+
+        .mouth {
+            fill: #000;
+            transition: all 0.5s ease;
+        }
+
+        .yawn-level {
+            margin-top: 30px;
+            font-size: 1.5em;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .sleep-meter {
+            width: 300px;
+            height: 30px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            margin: 20px auto;
+            overflow: hidden;
+            border: 3px solid #ffa500;
+        }
+
+        .sleep-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a, #ffeb3b);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 15px;
+        }
+
+        .instructions {
+            color: #ffa500;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .zzz {
+            position: absolute;
+            font-size: 2em;
+            color: #fff;
+            opacity: 0;
+            animation: float-up 2s ease-out forwards;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(10deg);
+                opacity: 0;
+            }
+        }
+
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎃 The Sleepy Pumpkin 🎃</h1>
+        <p class="instructions">Click the pumpkin to make it yawn!</p>
+        
+        <div class="pumpkin-container" id="pumpkinContainer">
+            <svg class="pumpkin" viewBox="0 0 200 200">
+                <!-- Pumpkin body -->
+                <ellipse class="pumpkin-body" cx="100" cy="100" rx="80" ry="85"/>
+                <path class="pumpkin-body" d="M 100 15 Q 100 10 95 15 Q 90 20 95 25" fill="#228b22"/>
+                
+                <!-- Eyes -->
+                <ellipse class="eye eye-left" cx="70" cy="80" rx="12" ry="15" id="eyeLeft"/>
+                <ellipse class="eye eye-right" cx="130" cy="80" rx="12" ry="15" id="eyeRight"/>
+                
+                <!-- Mouth -->
+                <path class="mouth" id="mouth" d="M 60 120 Q 100 130 140 120"/>
+            </svg>
+        </div>
+
+        <div class="sleep-meter">
+            <div class="sleep-fill" id="sleepFill"></div>
+        </div>
+        <div class="yawn-level" id="yawnLevel">Sleepiness: 0%</div>
+    </div>
+
+    <script>
+        let yawnCount = 0;
+        const maxYawns = 10;
+        const pumpkin = document.getElementById('pumpkinContainer');
+        const mouth = document.getElementById('mouth');
+        const eyeLeft = document.getElementById('eyeLeft');
+        const eyeRight = document.getElementById('eyeRight');
+        const yawnLevel = document.getElementById('yawnLevel');
+        const sleepFill = document.getElementById('sleepFill');
+
+        // Create stars
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            document.body.appendChild(star);
+        }
+
+        function createZZZ() {
+            const zzz = document.createElement('div');
+            zzz.className = 'zzz';
+            zzz.textContent = 'Z';
+            zzz.style.left = (pumpkin.offsetLeft + Math.random() * 100 - 50) + 'px';
+            zzz.style.top = (pumpkin.offsetTop - 50) + 'px';
+            document.body.appendChild(zzz);
+            
+            setTimeout(() => zzz.remove(), 2000);
+        }
+
+        function yawn() {
+            yawnCount++;
+            const percentage = Math.min((yawnCount / maxYawns) * 100, 100);
+            
+            // Animate mouth opening (yawn)
+            mouth.style.transform = 'scaleY(2)';
+            mouth.setAttribute('d', 'M 60 120 Q 100 150 140 120');
+            
+            // Squint eyes
+            eyeLeft.setAttribute('ry', '5');
+            eyeRight.setAttribute('ry', '5');
+            
+            // Create Z's
+            createZZZ();
+            setTimeout(createZZZ, 300);
+            setTimeout(createZZZ, 600);
+            
+            // Update sleep meter
+            sleepFill.style.width = percentage + '%';
+            yawnLevel.textContent = `Sleepiness: ${Math.round(percentage)}%`;
+            
+            // Return to normal after yawn
+            setTimeout(() => {
+                mouth.style.transform = 'scaleY(1)';
+                if (percentage < 100) {
+                    mouth.setAttribute('d', 'M 60 120 Q 100 130 140 120');
+                    eyeLeft.setAttribute('ry', '15');
+                    eyeRight.setAttribute('ry', '15');
+                } else {
+                    // Fully asleep
+                    mouth.setAttribute('d', 'M 60 130 Q 100 135 140 130');
+                    eyeLeft.setAttribute('ry', '2');
+                    eyeRight.setAttribute('ry', '2');
+                    yawnLevel.textContent = '😴 Fast Asleep! 😴';
+                }
+            }, 800);
+        }
+
+        pumpkin.addEventListener('click', yawn);
+    </script>
+</body>
+</html>
