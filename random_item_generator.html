@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -254,7 +253,7 @@
             width: 220px;
             height: 340px;
         
-            background-image: url("https://cdn.funkypigeon.com/supplier_back_images/cardback_danilo_shrek_p.jpg");
+            background-image: url("https://i.imgur.com/7l1R4Hn.png"); /* Using a more reliable image */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -301,12 +300,13 @@
             width: 220px;
             height: 340px;
             perspective: 1200px;
-            cursor: default;
-            
+            cursor: default; /* ADDED: Default to non-clickable until placed */
+        }
+        
         .flip-card.can-flip {
             cursor: pointer; /* NEW: Override to show clickable cursor when ready to flip */
         }
-        
+
         .flip-inner {
             width: 100%;
             height: 100%;
@@ -330,7 +330,7 @@
         
         /* Card Back */
         .flip-back {
-            background-image: url("https://cdn.funkypigeon.com/supplier_back_images/cardback_danilo_shrek_p.jpg");
+            background-image: url("https://i.imgur.com/7l1R4Hn.png"); /* Using a more reliable image */
             background-size: cover;
             background-position: center;
         }
@@ -347,7 +347,7 @@
         <h1>🃏 Booster Pack Generator 🃏</h1>
         <div class="pack-container" id="packContainer">
             <div id="sealedPack" class="sealed-pack">
-                <img src="https://opengameart.org/sites/default/files/card%20back%20black.png" alt="Booster Pack" class="pack-image">
+                <img src="https://i.imgur.com/7l1R4Hn.png" alt="Booster Pack" class="pack-image">
             <div class="click-text">Click to open</div>
             </div>
 </div>
@@ -564,11 +564,10 @@
             backWrapper.style.alignItems = "center";
             backWrapper.style.justifyContent = "center";
             container.appendChild(backWrapper);
-        
-            // --- NEW: Define the total delay for all cards to finish spreading ---
-            // 5 cards * 120ms interval + a buffer for the transition (0.7s)
+            
+            // Define the total delay for all cards to finish spreading (5 * 120ms interval + a buffer)
             const PLACEMENT_DELAY = 1500; 
-
+        
             generatedItems.forEach((item, i) => {
                 const rarityClass = item.rarity.toLowerCase();
         
@@ -585,14 +584,14 @@
                 const inner = document.createElement("div");
                 inner.className = "flip-inner";
                 
-                // back side (Shrek)
+                // back side
                 const flipBack = document.createElement("div");
                 flipBack.className = "flip-back";
                 
-                // front side (generated card)
+                // front side
                 const flipFront = document.createElement("div");
                 flipFront.className = "flip-front";
-                flipFront.appendChild(createCard(item, 0));  // your card front HTML
+                flipFront.appendChild(createCard(item, 0)); 
                 
                 // assemble
                 inner.appendChild(flipBack);
@@ -602,7 +601,7 @@
                 
                 // NEW: Flip behavior function
                 const flipCard = () => {
-                    // Only flip if the card has the 'can-flip' class (meaning placement is done)
+                    // Only flip if the card has the 'can-flip' class
                     if (!wrapper.classList.contains('can-flip')) return;
                     
                     // Prevent subsequent flips on the same card
@@ -627,7 +626,7 @@
                 }, 50 + i * 120);
 
             });
-
+        
             // NEW: After the cards are done spreading, enable the flip mechanism
             setTimeout(() => {
                 document.querySelectorAll('.flip-card').forEach(card => {
@@ -643,7 +642,6 @@
                 container.appendChild(card);
             });
         }
-
 
 
         function openPack() {
