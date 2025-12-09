@@ -413,18 +413,34 @@
         }
 
         /* Idle floating animation for cards */
+        @keyframes holo-shine {
+            0% {
+                background-position: 100% 0;
+            }
+            100% {
+                background-position: 0% 0;
+            }
+        }
+
+        /* Idle floating animation for cards */
         @keyframes cardFloat {
             0%, 100% {
                 transform: translateY(0px);
             }
             50% {
-                transform: translateY(-8px);
+                transform: translateY(-10px);
             }
         }
         
         /* Apply floating animation when cards are in place */
         .flip-card.idle-float {
             animation: cardFloat 3s ease-in-out infinite;
+        }
+        
+        /* When hovering, combine the float with the lift */
+        .flip-card.idle-float.can-flip:hover {
+            animation: none; /* Pause the float animation */
+            transform: translateY(-20px) scale(1.08);
         }
 
     </style>
