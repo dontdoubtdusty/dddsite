@@ -631,11 +631,11 @@
             ];
 
             const finalPositions = [
-                { x: -480, y: 0, r: 0 },  // was -440
-                { x: -240, y: 0, r: 0 },  // was -220
-                { x:   0,  y: 0, r: 0 },
-                { x: 240,  y: 0, r: 0 },  // was 220
-                { x: 480,  y: 0, r: 0 }   // was 440
+                { x: -480, y: -30, r: -3 },  // outer cards slightly lower and rotated
+                { x: -240, y: -10, r: -1.5 },
+                { x:   0,  y: 0, r: 0 },     // center card is the highest
+                { x: 240,  y: -10, r: 1.5 },
+                { x: 480,  y: -30, r: 3 }
             ];
         
             const backWrapper = document.createElement("div");
