@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic 8-Ball</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .instruction {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .ball-container {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .ball {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 100px 100px, #2d2d2d, #000000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                inset -20px -20px 50px rgba(0,0,0,0.8),
+                inset 20px 20px 50px rgba(255,255,255,0.1),
+                0 20px 50px rgba(0,0,0,0.5);
+            transition: transform 0.1s ease;
+            position: relative;
+        }
+
+        .ball.shaking {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg) translateX(0); }
+            10% { transform: rotate(-10deg) translateX(-10px); }
+            20% { transform: rotate(10deg) translateX(10px); }
+            30% { transform: rotate(-10deg) translateX(-10px); }
+            40% { transform: rotate(10deg) translateX(10px); }
+            50% { transform: rotate(-10deg) translateX(-10px); }
+            60% { transform: rotate(10deg) translateX(10px); }
+            70% { transform: rotate(-10deg) translateX(-10px); }
+            80% { transform: rotate(10deg) translateX(10px); }
+            90% { transform: rotate(-5deg) translateX(-5px); }
+        }
+
+        .window {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                inset 0 0 20px rgba(0,0,0,0.5),
+                0 0 20px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer {
+            color: white;
+            font-size: 0.9em;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .answer.visible {
+            opacity: 1;
+        }
+
+        .quote-panel {
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 90%;
+            min-height: 100px;
+            display: none;
+        }
+
+        .quote-panel.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quote-text {
+            font-size: 1.1em;
+            font-style: italic;
+            color: #333;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .quote-label {
+            font-size: 0.9em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .number-8 {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 4em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.5),
+                0 0 10px rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>🔮 Magic 8-Ball 🔮</h1>
+    <p class="instruction">Ask a yes/no question!</p>
+    
+    <div style="margin-bottom: 30px; text-align: center;">
+        <input type="text" id="question" placeholder="Enter your question..." style="
+            width: 400px;
+            max-width: 90vw;
+            padding: 15px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 15px;
+        ">
+        <br>
+        <button onclick="askQuestion()" style="
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            Ask the 8-Ball
+        </button>
+    </div>
+    
+    <div class="ball-container" onclick="shakeBall()">
+        <div class="ball" id="ball">
+            <div class="number-8">8</div>
+            <div class="window">
+                <div class="answer" id="answer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quote-panel" id="quotePanel">
+        <div class="quote-label">From The Book of Carp:</div>
+        <div class="quote-text" id="quoteText"></div>
+    </div>
+
+    <script>
+        let carpQuotes = [];
+        const answers = [
+            "It is certain",
+            "Without a doubt",
+            "Yes definitely",
+            "You may rely on it",
+            "As I see it, yes",
+            "Most likely",
+            "Outlook good",
+            "Yes",
+            "Signs point to yes",
+            "Reply hazy, try again",
+            "Ask again later",
+            "Better not tell you now",
+            "Cannot predict now",
+            "Concentrate and ask again",
+            "Don't count on it",
+            "My reply is no",
+            "My sources say no",
+            "Outlook not so good",
+            "Very doubtful"
+        ];
+
+        function shakeBall() {
+            const ball = document.getElementById('ball');
+            const answerEl = document.getElementById('answer');
+            const quotePanel = document.getElementById('quotePanel');
+            const quoteText = document.getElementById('quoteText');
+            
+            // Hide current answer and quote
+            answerEl.classList.remove('visible');
+            quotePanel.classList.remove('visible');
+            
+            // Add shaking animation
+            ball.classList.add('shaking');
+            
+            // Remove animation class after it completes
+            setTimeout(() => {
+                ball.classList.remove('shaking');
+                
+                // Show random answer
+                const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
+                answerEl.textContent = randomAnswer;
+                answerEl.classList.add('visible');
+
+                // Show random quote from Book of Carp
+                if (carpQuotes.length > 0) {
+                    const randomQuote = carpQuotes[Math.floor(Math.random() * carpQuotes.length)];
+                    quoteText.textContent = randomQuote;
+                    quotePanel.classList.add('visible');
+                }
+            }, 500);
+        }
+
+        function askQuestion() {
+            const questionInput = document.getElementById('question');
+            
+            // Only shake if there's a question
+            if (questionInput.value.trim()) {
+                shakeBall();
+                questionInput.value = ''; // Clear the question box
+            }
+        }
+
+        // Allow pressing Enter to ask question
+        document.getElementById('question').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
