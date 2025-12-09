@@ -299,7 +299,7 @@
             </div>
 </div>
 
-        <button onclick="openPack()">Open Booster Pack</button>
+        <button onclick="resetPack()">Open Booster Pack</button>
     </div>
 
     <script>
@@ -585,6 +585,35 @@
                 }
             }
         }
+
+        function resetPack() {
+            packOpened = false;
+            backsRevealed = false;
+            generatedItems = [];
+        
+            const container = document.getElementById("packContainer");
+            container.innerHTML = `
+                <div id="sealedPack" class="sealed-pack">
+                    <img src="https://i.imgur.com/7l1R4Hn.png" alt="Booster Pack" class="pack-image">
+                    <div class="click-text">Click to open</div>
+                </div>
+            `;
+        
+            // Reattach the click listener to the fresh sealed pack
+            document.getElementById("sealedPack").addEventListener("click", () => {
+                if (packOpened) return;
+        
+                packOpened = true;
+                const sealed = document.getElementById("sealedPack");
+                sealed.classList.add("pack-opening");
+        
+                setTimeout(() => {
+                    sealed.remove();
+                    showCardBacks();
+                }, 800);
+            });
+        }
+
 
         loadDataFromFiles();
     </script>
