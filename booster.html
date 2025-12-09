@@ -549,6 +549,7 @@
             
             stats: ['NOM', 'SHAME', 'GLORY', 'POWER', 'SPEED', 'WISDOM', 'CHAOS', 'ORDER', 'LUCK', 'GRIT'],
             comparisons: ['chocolate', 'velvet', 'marble', 'glass', 'steel', 'silk', 'smoke', 'lightning', 'water', 'fire', 'ice', 'stone', 'wood', 'gold'],
+            descriptions: [],
 
             spellPrefixes: [
               "Shrek's", "Fiona's", "Donkey's", "Dragon's", "Mongo's", "Gingy's", "Farquaad's",
@@ -696,7 +697,7 @@
                             </div>
                         </div>
                         <div class="card-description">
-                            It looks kind of like ${item.comparison}.
+                            ${data.descriptions.length > 0 ? pick(data.descriptions) : `It looks kind of like ${item.comparison}.`}
                         </div>
                         <div class="card-value">
                             <div class="coin-container">
@@ -872,7 +873,7 @@
                 'items',    
                 'rareSuffixes', 'epicSuffixes',
                 'legendaryPart1', 'legendaryPart2',
-                'stats', 'comparisons'
+                'stats', 'comparisons', 'descriptions'
             ];
             
             for (const file of files) {
