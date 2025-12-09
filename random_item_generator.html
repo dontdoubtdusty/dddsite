@@ -31,8 +31,7 @@
             justify-content: center;
             flex-wrap: wrap;
             margin-bottom: 30px;
-            /* Height increased to accommodate card movement */
-            min-height: 500px; 
+            min-height: 500px;
         }
         .card {
             width: 220px;
@@ -239,7 +238,6 @@
             100% { opacity: 0; transform: scale(1.2) rotate(8deg); }
         }
         
-        /* Stack of card backs */
         .card-back-stack {
             width: 220px;
             height: 340px;
@@ -296,25 +294,39 @@
         .card-back::after {
             content: none !important;
         }    
-        /* CARD FLIP/PLACEMENT/HOVER RULES */
+        
+        /* --- CARD FLIP/PLACEMENT/HOVER RULES (FIXED) --- */
         .flip-card {
             width: 220px;
             height: 340px;
             perspective: 1200px;
             cursor: default;
-            position: absolute; 
-            z-index: 10; 
+            position: absolute;    
+            z-index: 10;
+            /* Define CSS Variables to store the final computed position */
+            --final-x: 0px; 
+            --final-y: 0px; 
+            --final-r: 0deg; 
         }
         
         .flip-card.can-flip {
-            cursor: pointer; /* Change cursor when ready to flip */
+            cursor: pointer;
+        }
+
+        /* Apply floating animation when cards are in place */
+        .flip-card.idle-float {
+            /* Ensure the float animation uses its own transform */
+            animation: cardFloat 3s ease-in-out infinite;
+            /* Combine the final static position with the float */
+            transform: translate(var(--final-x), var(--final-y)) rotate(var(--final-r));
         }
 
         /* Hover effect to lift card above others */
         .flip-card.can-flip:hover {
-            z-index: 100; /* Bring to front */
-            /* Only apply lift (Y) and scale, allowing the final position to persist */
-            transform: translateY(-20px) scale(1.08); 
+            z-index: 100;
+            /* The key fix: Re-apply the static position (CSS variables) + the lift/scale */
+            transform: translate(var(--final-x), var(--final-y)) translateY(-20px) scale(1.08) rotate(var(--final-r));
+            animation: none; /* Temporarily stop the idle-float animation on hover */
         }
 
         .flip-inner {
@@ -334,20 +346,18 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            backface-visibility: hidden; 
+            backface-visibility: hidden;    
             border-radius: 12px;
         }
         
-        /* Card Back */
         .flip-back {
-            background-image: url('./cardbackshr.png'); 
+            background-image: url('./cardbackshr.png');    
             background-size: cover;
             background-position: center;
         }
         
-        /* Card Front (your generated card) */
         .flip-front {
-            transform: rotateY(180deg); 
+            transform: rotateY(180deg);    
         }
         /* --- HOLOGRAPHIC SHINE EFFECT (NEW BLOCK) --- */
         .holographic-shine {
@@ -357,24 +367,20 @@
             right: 0;
             bottom: 0;
             pointer-events: none;
-            opacity: 0; /* Hidden by default */
+            opacity: 0;
             border-radius: 10px;
             z-index: 10;
             
-            /* ADD THESE BLEND MODES */
-            mix-blend-mode: screen; /* This creates the bright, shiny effect */
-            /* OR try: screen, overlay, hard-light - experiment to see what looks best! */
+            mix-blend-mode: screen;
         }
         
-        /* Only apply opacity to Rare, Epic, and Legendary when flipped */
         .flip-card.flipped .holographic-shine.rarity-rare,
         .flip-card.flipped .holographic-shine.rarity-epic,
         .flip-card.flipped .holographic-shine.rarity-legendary {
-            opacity: 0.3; /* Adjust this to control intensity */
-            transition: opacity 0.5s ease 0.7s; 
+            opacity: 0.3;
+            transition: opacity 0.5s ease 0.7s;    
         }
         
-        /* Define the moving rainbow effect */
         .holographic-shine {
             background: linear-gradient(
                 90deg,
@@ -393,16 +399,7 @@
             background-position: 100% 0;
             animation: holo-shine 15s linear infinite;
         }
-            /* Make the background span 500% the width */
-            background-size: 500% 100%;
-            /* Start the background off-screen to the right */
-            background-position: 100% 0;
-            
-            /* Apply the animation to move the gradient */
-            animation: holo-shine 15s linear infinite;
-        }
         
-        /* Animation Keyframes: Shift the background from right (100%) to left (0%) */
         @keyframes holo-shine {
             0% {
                 background-position: 100% 0;
@@ -412,17 +409,6 @@
             }
         }
 
-        /* Idle floating animation for cards */
-        @keyframes holo-shine {
-            0% {
-                background-position: 100% 0;
-            }
-            100% {
-                background-position: 0% 0;
-            }
-        }
-
-        /* Idle floating animation for cards */
         @keyframes cardFloat {
             0%, 100% {
                 transform: translateY(0px);
@@ -431,20 +417,6 @@
                 transform: translateY(-10px);
             }
         }
-        
-        /* Apply floating animation when cards are in place */
-        .flip-card.idle-float {
-            animation: cardFloat 3s ease-in-out infinite;
-        }
-        
-        /* When hovering, combine the float with the lift */
-        .flip-card.idle-float.can-flip:hover {
-            /* REMOVE: animation: none; */
-            transform: translateY(-20px) scale(1.08); 
-            /* The base animation will continue running the float, 
-               but the transform applied here will take precedence */
-        }
-
     </style>
 </head>
 <body>
@@ -455,7 +427,7 @@
                 <img src='./cardbackshr.png' alt="Booster Pack" class="pack-image">
             <div class="click-text">Click to open</div>
             </div>
-</div>
+        </div>
 
         <button onclick="resetPack()">Open Booster Pack</button>
     </div>
@@ -631,7 +603,6 @@
             packOpened = true;
             const sealed = document.getElementById("sealedPack");
         
-            // Animate the pack tearing/fading out
             sealed.classList.add("pack-opening");
         
             setTimeout(() => {
@@ -645,7 +616,6 @@
         function showCardBacks() {
             const container = document.getElementById("packContainer");
         
-            // Create items early so we know rarity
             generatedItems = [];
             for (let i = 0; i < 5; i++) {
                 generatedItems.push(generateItem());
@@ -653,7 +623,6 @@
         
             container.innerHTML = "";
         
-            // 1. FAN POSITIONS (Staggered/Rotated)
             const fanPositions = [
                 { x: -260, y: -20, r: -8 },
                 { x: -130, y: 10,  r: -4 },
@@ -662,7 +631,6 @@
                 { x: 260,  y: -20, r: 8 }
             ];
 
-            // 2. FINAL POSITIONS (Straight line, no rotation)
             const finalPositions = [
                 { x: -440, y: 0, r: 0 },
                 { x: -220, y: 0, r: 0 },
@@ -671,26 +639,21 @@
                 { x: 440,  y: 0, r: 0 }
             ];
         
-            // Make a wrapper for animation
             const backWrapper = document.createElement("div");
             backWrapper.style.position = "relative";
             backWrapper.style.width = "100%";
-            // Increased height to accommodate the movement
-            backWrapper.style.height = "450px"; 
+            backWrapper.style.height = "450px";
             backWrapper.style.display = "flex";
             backWrapper.style.alignItems = "center";
             backWrapper.style.justifyContent = "center";
             container.appendChild(backWrapper);
             
-            // Timing constants
-            const FAN_SPREAD_INTERVAL = 120; // Time between cards starting their fan spread
-            const FAN_SPREAD_DURATION = 700; // CSS transition duration
-            const PLACEMENT_DURATION = 500; // Time for the final placement movement
+            const FAN_SPREAD_INTERVAL = 120;
+            const FAN_SPREAD_DURATION = 700;
+            const PLACEMENT_DURATION = 500;
             
-            // Calculate when the fan spread stage ends
-            const FAN_END_TIME = (generatedItems.length * FAN_SPREAD_INTERVAL) + FAN_SPREAD_DURATION; 
-            // Calculate when everything is done and flipping should be enabled
-            const FINAL_PLACEMENT_END_TIME = FAN_END_TIME + PLACEMENT_DURATION + 100; // Added small buffer
+            const FAN_END_TIME = (generatedItems.length * FAN_SPREAD_INTERVAL) + FAN_SPREAD_DURATION;
+            const FINAL_PLACEMENT_END_TIME = FAN_END_TIME + PLACEMENT_DURATION + 100;
         
             generatedItems.forEach((item, i) => {
                 const rarityClass = item.rarity.toLowerCase();
@@ -699,9 +662,8 @@
                 wrapper.className = `flip-card rarity-${rarityClass}`;
                 wrapper.style.position = "absolute";
                 wrapper.style.opacity = "0";
-                // Start position before ANY animation
-                wrapper.style.transform = "translate(0,0) rotate(0deg)"; 
-                wrapper.style.transition = `all ${FAN_SPREAD_DURATION/1000}s ease`; // Convert ms to seconds
+                wrapper.style.transform = "translate(0,0) rotate(0deg)";
+                wrapper.style.transition = `all ${FAN_SPREAD_DURATION/1000}s ease`;
                 
                 const inner = document.createElement("div");
                 inner.className = "flip-inner";
@@ -711,19 +673,17 @@
                 
                 const flipFront = document.createElement("div");
                 flipFront.className = "flip-front";
-                flipFront.appendChild(createCard(item, 0)); 
+                flipFront.appendChild(createCard(item, 0));    
                 
-                // assemble
                 inner.appendChild(flipBack);
                 inner.appendChild(flipFront);
                 wrapper.appendChild(inner);
                 backWrapper.appendChild(wrapper);
                 
-                // Flip behavior function (remains the same)
                 const flipCard = () => {
                     if (!wrapper.classList.contains('can-flip')) return;
                     
-                    wrapper.removeEventListener('click', flipCard); 
+                    wrapper.removeEventListener('click', flipCard);    
                     wrapper.classList.add("flipped");
                 
                     if (!backsRevealed) {
@@ -735,49 +695,39 @@
                 // === STAGE 1: FAN SPREAD ===
                 setTimeout(() => {
                     wrapper.style.opacity = "1";
-                    // Apply fan position
                     wrapper.style.transform =
                         `translate(${fanPositions[i].x}px, ${fanPositions[i].y}px) rotate(${fanPositions[i].r}deg)`;
                 }, 50 + i * FAN_SPREAD_INTERVAL);
                 
                 // === STAGE 2: FINAL PLACEMENT ===
                 setTimeout(() => {
-                    // Set the transition duration for the final, slower move
                     wrapper.style.transition = `all ${PLACEMENT_DURATION/1000}s ease-in-out`;
-                    // Apply final position (overwrite fan position)
+
+                    // Set CSS variables for the final position/rotation
+                    wrapper.style.setProperty('--final-x', `${finalPositions[i].x}px`);
+                    wrapper.style.setProperty('--final-y', `${finalPositions[i].y}px`);
+                    wrapper.style.setProperty('--final-r', `${finalPositions[i].r}deg`);
+
+                    // Apply final position using explicit transform for this step
                     wrapper.style.transform =
                         `translate(${finalPositions[i].x}px, ${finalPositions[i].y}px) rotate(${finalPositions[i].r}deg)`;
                 }, FAN_END_TIME);
-
-
             });
         
             // === STAGE 3: ENABLE FLIPPING ===
-            // Enable flipping after the final placement is complete
             setTimeout(() => {
                 document.querySelectorAll('.flip-card').forEach(card => {
                     card.classList.add('can-flip');
-                    card.classList.add('idle-float'); // Add the floating animation
-                    // Reset the transition to the quick 0.7s move needed for Z-index/hover
-                    card.style.transition = `all 0.7s ease`; 
+                    card.classList.add('idle-float');
+                    card.style.transition = `all 0.7s ease`;    
                 });
             }, FINAL_PLACEMENT_END_TIME);
         }
         
-        function revealFromBacks(container) {
-            container.innerHTML = "";
-            generatedItems.forEach((item, i) => {
-                const card = createCard(item, i * 0.15);
-                container.appendChild(card);
-            });
-        }
-
-
         function openPack() {
             const container = document.getElementById('packContainer');
             container.innerHTML = '';
             
-            // Generate 5 cards
             for (let i = 0; i < 5; i++) {
                 const item = generateItem();
                 const card = createCard(item, i * 0.15);
@@ -785,12 +735,11 @@
             }
         }
 
-        // Load data from files when available
         async function loadDataFromFiles() {
             const files = [
-                'rarities', 
+                'rarities',    
                 'commonPrefixes', 'uncommonPrefixes', 'rarePrefixes', 'epicPrefixes',
-                'items', 
+                'items',    
                 'rareSuffixes', 'epicSuffixes',
                 'legendaryPart1', 'legendaryPart2',
                 'stats', 'comparisons'
@@ -817,12 +766,11 @@
             const container = document.getElementById("packContainer");
             container.innerHTML = `
                 <div id="sealedPack" class="sealed-pack">
-                    <img src="https://i.imgur.com/7l1R4Hn.png" alt="Booster Pack" class="pack-image">
+                    <img src="./shrekpack.jpg" alt="Booster Pack" class="pack-image">
                     <div class="click-text">Click to open</div>
                 </div>
             `;
         
-            // Reattach the click listener to the fresh sealed pack
             document.getElementById("sealedPack").addEventListener("click", () => {
                 if (packOpened) return;
         
