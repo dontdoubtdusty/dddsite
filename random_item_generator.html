@@ -198,6 +198,72 @@
             text-align: center;
             padding: 20px;
         }
+        .sealed-pack {
+            position: relative;
+            width: 260px;
+            height: 360px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: packPulse 1.6s ease-in-out infinite;
+        }
+        
+        .pack-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease, opacity 0.5s ease;
+        }
+        
+        .click-text {
+            margin-top: 10px;
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px black;
+        }
+        
+        @keyframes packPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        .pack-opening {
+            animation: openPackAnim 0.8s ease forwards;
+        }
+        
+        @keyframes openPackAnim {
+            0% { opacity: 1; transform: scale(1) rotate(0); }
+            100% { opacity: 0; transform: scale(1.2) rotate(8deg); }
+        }
+        
+        /* Stack of card backs */
+        .card-back-stack {
+            width: 220px;
+            height: 340px;
+            position: relative;
+            margin: auto;
+            cursor: pointer;
+        }
+        
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #3a3a3a 0%, #1b1b1b 100%);
+            border-radius: 12px;
+            border: 3px solid #444;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        
+        .card-back:nth-child(1) { transform: rotate(-3deg) translateY(-6px); }
+        .card-back:nth-child(2) { transform: rotate(2deg) translateY(-3px); }
+        .card-back:nth-child(3) { transform: rotate(-1deg); }
+            
     </style>
 </head>
 <body>
@@ -373,6 +439,47 @@
             
             return card;
         }
+
+        let packOpened = false;
+        let backsRevealed = false;
+        
+        document.getElementById("sealedPack").addEventListener("click", () => {
+            if (packOpened) return;
+        
+            packOpened = true;
+            const sealed = document.getElementById("sealedPack");
+        
+            // Animate the pack tearing/fading out
+            sealed.classList.add("pack-opening");
+        
+            setTimeout(() => {
+                sealed.remove();
+                showCardBacks();
+            }, 800);
+        });
+        
+        function showCardBacks() {
+            const container = document.getElementById("packContainer");
+        
+            const stack = document.createElement("div");
+            stack.className = "card-back-stack";
+            stack.innerHTML = `
+                <div class="card-back"></div>
+                <div class="card-back"></div>
+                <div class="card-back"></div>
+            `;
+        
+            stack.onclick = () => {
+                if (!backsRevealed) {
+                    backsRevealed = true;
+                    stack.remove();
+                    openPack();
+                }
+            };
+        
+            container.appendChild(stack);
+        }
+
 
         function openPack() {
             const container = document.getElementById('packContainer');
