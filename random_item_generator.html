@@ -356,23 +356,26 @@
             left: 0;
             right: 0;
             bottom: 0;
-            pointer-events: none; /* Allows clicks to pass through to the card */
+            pointer-events: none;
             opacity: 0; /* Hidden by default */
             border-radius: 10px;
             z-index: 10;
+            
+            /* ADD THESE BLEND MODES */
+            mix-blend-mode: color-dodge; /* This creates the bright, shiny effect */
+            /* OR try: screen, overlay, hard-light - experiment to see what looks best! */
         }
         
         /* Only apply opacity to Rare, Epic, and Legendary when flipped */
         .flip-card.flipped .holographic-shine.rarity-rare,
         .flip-card.flipped .holographic-shine.rarity-epic,
         .flip-card.flipped .holographic-shine.rarity-legendary {
-            opacity: 0.5; /* BOOSTED OPACITY for clear visibility */
+            opacity: 0.6; /* Adjust this to control intensity */
             transition: opacity 0.5s ease 0.7s; 
         }
         
         /* Define the moving rainbow effect */
         .holographic-shine {
-            /* Create a very long, multi-colored gradient */
             background: linear-gradient(
                 90deg,
                 rgba(255, 0, 0, 1) 0%,
@@ -386,6 +389,10 @@
                 rgba(200, 30, 150, 1) 80%,
                 rgba(255, 0, 0, 1) 100%
             );
+            background-size: 500% 100%;
+            background-position: 100% 0;
+            animation: holo-shine 15s linear infinite;
+        }
             /* Make the background span 500% the width */
             background-size: 500% 100%;
             /* Start the background off-screen to the right */
