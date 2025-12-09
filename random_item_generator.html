@@ -303,8 +303,8 @@
             height: 340px;
             perspective: 1200px;
             cursor: default;
-            position: absolute; /* Essential for z-index and positioning */
-            z-index: 10; /* Base stacking order */
+            position: absolute; 
+            z-index: 10; 
         }
         
         .flip-card.can-flip {
@@ -314,7 +314,7 @@
         /* Hover effect to lift card above others */
         .flip-card.can-flip:hover {
             z-index: 100; /* Bring to front */
-            /* Lift and scale the card without overriding its final x/y/rotation */
+            /* Only apply lift (Y) and scale, allowing the final position to persist */
             transform: translateY(-20px) scale(1.08); 
         }
 
@@ -349,6 +349,61 @@
         /* Card Front (your generated card) */
         .flip-front {
             transform: rotateY(180deg); 
+        }
+        /* --- HOLOGRAPHIC SHINE EFFECT (NEW BLOCK) --- */
+        .holographic-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none; /* Allows clicks to pass through to the card */
+            opacity: 0; /* Hidden by default */
+            border-radius: 10px;
+        }
+        
+        /* Only apply opacity to Rare, Epic, and Legendary when flipped */
+        .flip-card.flipped .holographic-shine.rarity-rare,
+        .flip-card.flipped .holographic-shine.rarity-epic,
+        .flip-card.flipped .holographic-shine.rarity-legendary {
+            opacity: 0.15; /* Subtly visible */
+            /* Add a transition to make the shine appear smoothly on flip */
+            transition: opacity 0.5s ease 0.7s; 
+        }
+        
+        /* Define the moving rainbow effect */
+        .holographic-shine {
+            /* Create a very long, multi-colored gradient */
+            background: linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 1) 0%,
+                rgba(255, 154, 0, 1) 10%,
+                rgba(208, 222, 33, 1) 20%,
+                rgba(79, 220, 74, 1) 30%,
+                rgba(63, 218, 216, 1) 40%,
+                rgba(47, 201, 226, 1) 50%,
+                rgba(28, 110, 218, 1) 60%,
+                rgba(100, 20, 200, 1) 70%,
+                rgba(200, 30, 150, 1) 80%,
+                rgba(255, 0, 0, 1) 100%
+            );
+            /* Make the background span 500% the width */
+            background-size: 500% 100%;
+            /* Start the background off-screen to the right */
+            background-position: 100% 0;
+            
+            /* Apply the animation to move the gradient */
+            animation: holo-shine 15s linear infinite;
+        }
+        
+        /* Animation Keyframes: Shift the background from right (100%) to left (0%) */
+        @keyframes holo-shine {
+            0% {
+                background-position: 100% 0;
+            }
+            100% {
+                background-position: 0% 0;
+            }
         }
 
     </style>
@@ -499,6 +554,8 @@
             card.innerHTML = `
                 <div class="card-border ${rarityClass}">
                     <div class="card-content">
+                        <div class="holographic-shine ${rarityClass}"></div> 
+
                         <div class="card-header">
                             <div class="card-rarity ${rarityClass}">${item.rarity}</div>
                             <div class="card-name">${item.name}</div>
