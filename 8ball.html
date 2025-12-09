@@ -100,6 +100,45 @@
             opacity: 1;
         }
 
+        .quote-panel {
+            margin-top: 40px;
+            background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 90%;
+            min-height: 100px;
+            display: none;
+            border: 2px solid #c4b5fd;
+        }
+
+        .quote-panel.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quote-text {
+            font-size: 1.1em;
+            font-style: italic;
+            color: #4c1d95;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .quote-label {
+            font-size: 0.9em;
+            color: #6d28d9;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
         .number-8 {
             position: absolute;
             top: 30px;
@@ -155,96 +194,60 @@
         </div>
     </div>
 
+    <div class="quote-panel" id="quotePanel">
+        <div class="quote-label">From The Book of Carp:</div>
+        <div class="quote-text" id="quoteText"></div>
+    </div>
+
     <script>
+        let carpQuotes = [];
+
+        // Fetch quotes from thebookofcarp.txt
+        async function loadQuotes() {
+            try {
+                const response = await fetch('thebookofcarp.txt');
+                const text = await response.text();
+                carpQuotes = text.split('\n').filter(line => line.trim() !== '');
+            } catch (error) {
+                console.error('Error loading quotes:', error);
+                carpQuotes = ['The Book of Carp could not be loaded.'];
+            }
+        }
+
+        // Load quotes when page loads
+        loadQuotes();
+
         const answers = [
-    "It is certain",
-    "Oh, that's definitely a yes",
-    "Definitely, but only if you say please",
-    "Yes. Yes indeed. Quite.",
-    "Yeah I guess",
-    "FUCK YEAH",
-    "Of course",
-    "Yuuuup",
-    "Totally",
-    "I suppose",
-    "Heh, yeah",
-    "Abso-fuckin-lutely",
-    "Yupperino",
-    "It's obviously yes",
-    "That's gonna be a big thumbs up from me bud",
-    "Sure why not",
-    "Yaaaaaasssss queen",
-    "SeemsGood",
-    "Haha, oh yeah",
-    "Without a doubt",
-    "Yes definitely",
-    "You may rely on it",
-    "Fo sho, yo",
-    "10-4",
-    "Oooooh yeah",
-    "As I see it, yes",
-    "Positively and absolutely",
-    "Most likely",
-    "Outlook good",
-    "I wasn't really listening, but yes",
-    "Yes",
-    "Signs point to yes",
-    "Reply hazy try again",
-    "The real answer is the friends we made along the way",
-    "Ask again later",
-    "Wouldn't you like to know",
-    "What is that supposed to mean",
-    "Sandstorm by Darude",
-    "S",
-    "Ask Ellie",
-    "Depends on who's asking",
-    "TBD",
-    "Better not tell you now",
-    "Eh",
-    "CORN",
-    "That's a good question",
-    "Cannot predict now",
-    "Lmao",
-    "No...I mean yes...Well...Ask again later.",
-    "Ask again when the moon is full",
-    "Does a bear shit in the woods?",
-    "Concentrate and ask again",
-    "Don't count on it",
-    "My reply is no",
-    "No, $username, mayonnaise is not an instrument",
-    "My sources say no",
-    "No frickin way",
-    "NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
-    "Outlook not so good",
-    "Very doubtful",
-    "Not a snowball's chance in hell",
-    "Not gonna happen buddy",
-    "Negative",
-    "Absolutely not, why would you even consider that",
-    "Case is not compelling",
-    "wtf no lol",
-    "Of course not, are you insane?",
-    "Hahaha. No.",
-    "Mayhaps",
-    "That's a thumbs down",
-    "Well since you asked so nicely, no",
-    "Fat chance",
-    "Your guess is as good as mine",
-    "NAYETH",
-    "Never in a million, billion, trillion years",
-    "Nah",
-    "Naaaah man",
-    "Signs point to no",
-    "The odds are not in your favor",
-    "No, and don't ask me again"
-];
+            "It is certain",
+            "Without a doubt",
+            "Yes definitely",
+            "You may rely on it",
+            "As I see it, yes",
+            "Most likely",
+            "Outlook good",
+            "Yes",
+            "Signs point to yes",
+            "Reply hazy, try again",
+            "Ask again later",
+            "Better not tell you now",
+            "Cannot predict now",
+            "Concentrate and ask again",
+            "Don't count on it",
+            "My reply is no",
+            "My sources say no",
+            "Outlook not so good",
+            "Very doubtful"
+        ];
 
         function shakeBall() {
             const ball = document.getElementById('ball');
             const answerEl = document.getElementById('answer');
+            const quotePanel = document.getElementById('quotePanel');
+            const quoteText = document.getElementById('quoteText');
             
-            // Hide current answer
+            // Hide current answer and quote
             answerEl.classList.remove('visible');
+            quotePanel.classList.remove('visible');
             
             // Add shaking animation
             ball.classList.add('shaking');
@@ -257,6 +260,13 @@
                 const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
                 answerEl.textContent = randomAnswer;
                 answerEl.classList.add('visible');
+
+                // Show random quote from Book of Carp
+                if (carpQuotes.length > 0) {
+                    const randomQuote = carpQuotes[Math.floor(Math.random() * carpQuotes.length)];
+                    quoteText.textContent = randomQuote;
+                    quotePanel.classList.add('visible');
+                }
             }, 500);
         }
 
