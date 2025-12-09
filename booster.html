@@ -650,11 +650,11 @@
                         <div class="card-stats">
                             <div class="stat-line">
                                 <span class="stat-label">${item.stat1}</span>
-                                <span>${item.stat1Sign}${item.stat1Value}</span>
+                                <span style="color: ${item.stat1Value >= 0 ? '#00ff00' : '#ff0000'}">${item.stat1Sign}${item.stat1Value}</span>
                             </div>
                             <div class="stat-line">
                                 <span class="stat-label">${item.stat2}</span>
-                                <span>${item.stat2Sign}${item.stat2Value}</span>
+                                <span style="color: ${item.stat2Value >= 0 ? '#00ff00' : '#ff0000'}">${item.stat2Sign}${item.stat2Value}</span>
                             </div>
                         </div>
                         <div class="card-description">
