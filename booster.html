@@ -73,7 +73,11 @@
         }
         .card-border.common { background: linear-gradient(135deg, #9d9d9d, #7a7a7a); }
         .card-border.uncommon { background: linear-gradient(135deg, #1eff00, #15c900); }
-        .card-border.rare { background: linear-gradient(135deg, #0070dd, #005bb5); }
+        .card-border.rare { 
+            background: linear-gradient(135deg, #0070dd, #005bb5, #0070dd, #005bb5);
+            background-size: 400% 400%;
+            animation: rareGlow 3s ease infinite;
+        }
         .card-border.epic { 
             background: linear-gradient(135deg, #a335ee, #8a2ac7, #a335ee, #8a2ac7);
             background-size: 400% 400%;
@@ -283,6 +287,15 @@
         @keyframes openPackAnim {
             0% { opacity: 1; transform: scale(1) rotate(0); }
             100% { opacity: 0; transform: scale(1.2) rotate(8deg); }
+        }
+
+        @keyframes rareGlow {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
         }
 
         @keyframes epicGlow {
