@@ -224,7 +224,7 @@ document.getElementById("dice-container").addEventListener("click", () => {
   
   // 🔹 Start the shake
   const diceContainer = document.getElementById("dice-container");
-  diceContainer.classList.add("shaking");
+  cube.classList.add("shaking");
 
   // 🔹 Create swampy particles
   for (let i = 0; i < 15; i++) {
@@ -252,7 +252,7 @@ document.getElementById("dice-container").addEventListener("click", () => {
 
   // 🔹 After shake finishes, remove the class and roll the cube
   setTimeout(() => {
-    diceContainer.classList.remove("shaking");
+    cube.classList.remove("shaking");
 
     const { x, y, value } = randomRotation();
 
