@@ -100,6 +100,19 @@
     .left   { transform: rotateY(-90deg)  translateZ(75px);  background: purple; }
     .top    { transform: rotateX(90deg)   translateZ(75px);  background: orange; }
     .bottom { transform: rotateX(-90deg)  translateZ(75px);  background: pink;   }
+
+    @keyframes shake {
+      0%   { transform: translateX(0) translateY(0); }
+      25%  { transform: translateX(-6px) translateY(3px); }
+      50%  { transform: translateX(5px) translateY(-4px); }
+      75%  { transform: translateX(-4px) translateY(5px); }
+      100% { transform: translateX(0) translateY(0); }
+    }
+    
+    .shaking {
+      animation: shake 0.3s ease;
+    }
+
   </style>
 </head>
 <body>
@@ -181,21 +194,34 @@ function randomRotation() {
 }
 
 document.getElementById("dice-container").addEventListener("click", () => {
-  const { x, y, value } = randomRotation();
+  
+  // 🔹 Start the shake
+  const diceContainer = document.getElementById("dice-container");
+  diceContainer.classList.add("shaking");
 
-  cube.style.transition = "none";
-  cube.style.transform = "none";
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      cube.style.transition = "transform 1s";
-      cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
-    });
-  });
-
+  // 🔹 After shake finishes, remove the class and roll the cube
   setTimeout(() => {
-    result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-  }, 1000);
+    diceContainer.classList.remove("shaking");
+
+    const { x, y, value } = randomRotation();
+
+    // your spin reset (if you have the spin fix)
+    cube.style.transition = "none";
+    cube.style.transform = "none";
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        cube.style.transition = "transform 1s";
+        cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+      });
+    });
+
+    setTimeout(() => {
+      result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
+    }, 1000);
+  }, 300); // shake lasts 0.3s
+});
+
 });
 
   </script>
