@@ -6,13 +6,12 @@
   <style>
     body {
       display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
+      justify-content: center;
       align-items: center;
-      padding-top: 50px;
       height: 100vh;
       margin: 0;
       background: #111;
+      position: relative;
     }
     #dice-container {
       width: 150px;
@@ -124,7 +123,7 @@
       </div>
     </div>
   </div>
-  <div id="result" style="color: white; font-size: 24px; font-weight: bold; margin-top: 20px; text-align: center;"></div>
+  <div id="result" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 24px; font-weight: bold; text-align: center;"></div>
   <script>
     const cube = document.getElementById("cube");
 const result = document.getElementById("result");
