@@ -252,25 +252,25 @@ document.getElementById("dice-container").addEventListener("click", () => {
 
   // 🔹 After shake finishes, remove the class and roll the cube
   setTimeout(() => {
-    cube.classList.remove("shaking");
+  cube.classList.remove("shaking");  // Remove shake FIRST
 
-    const { x, y, value } = randomRotation();
+  const { x, y, value } = randomRotation();
 
-    // your spin reset (if you have the spin fix)
-    cube.style.transition = "none";
-    cube.style.transform = "none";
+  // your spin reset (if you have the spin fix)
+  cube.style.transition = "none";
+  cube.style.transform = "none";
 
+  requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        cube.style.transition = "transform 1s";
-        cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
-      });
+      cube.style.transition = "transform 1s";
+      cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
     });
+  });
 
-    setTimeout(() => {
-      result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-    }, 1000);
-  }, 300); // shake lasts 0.3s
+  setTimeout(() => {
+    result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
+  }, 1000);
+}, 300); // shake lasts 0.3s
 });
 
   </script>
