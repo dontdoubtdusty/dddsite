@@ -118,6 +118,27 @@
     .shaking {
       animation: shake 0.3s ease;
     }
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, #7cfc00, #228b22);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: float-up 2s ease-out forwards;
+      opacity: 0.7;
+    }
+    
+    @keyframes float-up {
+      0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-200px) translateX(var(--drift)) scale(0);
+        opacity: 0;
+      }
+    }
 
   </style>
 </head>
@@ -204,6 +225,30 @@ document.getElementById("dice-container").addEventListener("click", () => {
   // 🔹 Start the shake
   const diceContainer = document.getElementById("dice-container");
   diceContainer.classList.add("shaking");
+
+  // 🔹 Create swampy particles
+  for (let i = 0; i < 15; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    // Random starting position around the dice
+    const startX = Math.random() * 150;
+    const startY = Math.random() * 150;
+    particle.style.left = startX + 'px';
+    particle.style.top = startY + 'px';
+    
+    // Random horizontal drift
+    const drift = (Math.random() - 0.5) * 100;
+    particle.style.setProperty('--drift', `${drift}px`);
+    
+    // Random delay for staggered effect
+    particle.style.animationDelay = `${Math.random() * 0.3}s`;
+    
+    diceContainer.appendChild(particle);
+    
+    // Remove particle after animation
+    setTimeout(() => particle.remove(), 2300);
+  }
 
   // 🔹 After shake finishes, remove the class and roll the cube
   setTimeout(() => {
