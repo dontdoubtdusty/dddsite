@@ -630,14 +630,51 @@
             }
             
             const stat1 = pick(data.stats);
-            const stat1Value = random(-5, 20);
+            let stat1Value, stat2Value;
+            
+            // Set stat ranges based on rarity
+            switch(rarity) {
+                case 'COMMON':
+                    stat1Value = random(-3, 8);
+                    break;
+                case 'UNCOMMON':
+                    stat1Value = random(-2, 12);
+                    break;
+                case 'RARE':
+                    stat1Value = random(5, 18);
+                    break;
+                case 'EPIC':
+                    stat1Value = random(10, 25);
+                    break;
+                case 'LEGENDARY':
+                    stat1Value = random(15, 35);
+                    break;
+            }
             const stat1Sign = stat1Value >= 0 ? '+' : '';
             
             let stat2 = pick(data.stats);
             while (stat2 === stat1) {
                 stat2 = pick(data.stats);
             }
-            const stat2Value = random(-5, 20);
+            
+            // Same ranges for stat2
+            switch(rarity) {
+                case 'COMMON':
+                    stat2Value = random(-3, 8);
+                    break;
+                case 'UNCOMMON':
+                    stat2Value = random(-2, 12);
+                    break;
+                case 'RARE':
+                    stat2Value = random(5, 18);
+                    break;
+                case 'EPIC':
+                    stat2Value = random(10, 25);
+                    break;
+                case 'LEGENDARY':
+                    stat2Value = random(15, 35);
+                    break;
+            }
             const stat2Sign = stat2Value >= 0 ? '+' : '';
             
             const comparison = pick(data.comparisons);
