@@ -2,14 +2,15 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>3D CSS Dice</title>
+  <title>Test Dice</title>
   <style>
     body {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: #202020;
+      margin: 0;
+      background: #111;
     }
 
     #dice-container {
@@ -24,60 +25,58 @@
       height: 100%;
       position: relative;
       transform-style: preserve-3d;
-      transition: transform 1s cubic-bezier(.25,.72,.39,1.21);
+      transition: transform 1s;
     }
 
     .face {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
+      width: 150px;
+      height: 150px;
+      border: 2px solid white;
+      font-size: 40px;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .front  { transform: rotateY(   0deg) translateZ(75px); background-image: url("face1.png"); }
-    .back   { transform: rotateY( 180deg) translateZ(75px); background-image: url("face6.png"); }
-    .right  { transform: rotateY(  90deg) translateZ(75px); background-image: url("face3.png"); }
-    .left   { transform: rotateY( -90deg) translateZ(75px); background-image: url("face4.png"); }
-    .top    { transform: rotateX(  90deg) translateZ(75px); background-image: url("face5.png"); }
-    .bottom { transform: rotateX( -90deg) translateZ(75px); background-image: url("face2.png"); }
+    .front  { transform: rotateY(0deg)    translateZ(75px);  background: red;    }
+    .back   { transform: rotateY(180deg)  translateZ(75px);  background: blue;   }
+    .right  { transform: rotateY(90deg)   translateZ(75px);  background: green;  }
+    .left   { transform: rotateY(-90deg)  translateZ(75px);  background: purple; }
+    .top    { transform: rotateX(90deg)   translateZ(75px);  background: orange; }
+    .bottom { transform: rotateX(-90deg)  translateZ(75px);  background: pink;   }
   </style>
 </head>
+
 <body>
 
   <div id="dice-container">
     <div id="cube">
-      <div class="face front"></div>
-      <div class="face back"></div>
-      <div class="face right"></div>
-      <div class="face left"></div>
-      <div class="face top"></div>
-      <div class="face bottom"></div>
+      <div class="face front">1</div>
+      <div class="face back">6</div>
+      <div class="face right">3</div>
+      <div class="face left">4</div>
+      <div class="face top">5</div>
+      <div class="face bottom">2</div>
     </div>
   </div>
 
-  <audio id="rollSound" src="roll.mp3"></audio>
-  <audio id="landSound" src="land.mp3"></audio>
-
   <script>
     const cube = document.getElementById("cube");
-    const rollSound = document.getElementById("rollSound");
-    const landSound = document.getElementById("landSound");
 
     function randomRotation() {
       return {
-        x: (Math.floor(Math.random() * 4) * 90) + 720, // at least 2 full spins
+        x: (Math.floor(Math.random() * 4) * 90) + 720,
         y: (Math.floor(Math.random() * 4) * 90) + 720
       };
     }
 
     document.getElementById("dice-container").addEventListener("click", () => {
-      rollSound.currentTime = 0;
-      rollSound.play();
-
       const { x, y } = randomRotation();
-
       cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+    });
+  </script>
 
-      setTimeout(() => {
-        landSound.currentTime = 0
+</body>
+</html>
