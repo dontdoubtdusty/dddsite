@@ -92,18 +92,37 @@
       </div>
     </div>
   </div>
+  <div id="result" style="color: white; font-size: 24px; font-weight: bold; margin-top: 20px; text-align: center;"></div>
   <script>
     const cube = document.getElementById("cube");
-    function randomRotation() {
-      return {
-        x: (Math.floor(Math.random() * 4) * 90) + 720,
-        y: (Math.floor(Math.random() * 4) * 90) + 720
-      };
-    }
-    document.getElementById("dice-container").addEventListener("click", () => {
-      const { x, y } = randomRotation();
-      cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
-    });
+const result = document.getElementById("result");
+
+function randomRotation() {
+  const rotations = [
+    { x: 0, y: 0, value: 1 },      // front
+    { x: 0, y: 180, value: 6 },    // back
+    { x: 0, y: 90, value: 3 },     // right
+    { x: 0, y: -90, value: 4 },    // left
+    { x: -90, y: 0, value: 5 },    // top
+    { x: 90, y: 0, value: 2 }      // bottom
+  ];
+  
+  const choice = rotations[Math.floor(Math.random() * rotations.length)];
+  return {
+    x: choice.x + 720,
+    y: choice.y + 720,
+    value: choice.value
+  };
+}
+
+document.getElementById("dice-container").addEventListener("click", () => {
+  const { x, y, value } = randomRotation();
+  cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+  
+  setTimeout(() => {
+    result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
+  }, 1000);
+});
   </script>
 </body>
 </html>
