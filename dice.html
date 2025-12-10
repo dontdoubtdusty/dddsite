@@ -42,12 +42,38 @@
       height: 100%;
       object-fit: contain;
     }
-    .face.one { grid-template: 1fr / 1fr; }
-    .face.two { grid-template: 1fr 1fr / 1fr; }
-    .face.three { grid-template: 1fr 1fr 1fr / 1fr; }
-    .face.four { grid-template: 1fr 1fr / 1fr 1fr; }
-    .face.five { grid-template: 1fr 1fr 1fr / 1fr 1fr; }
-    .face.six { grid-template: 1fr 1fr 1fr / 1fr 1fr; }
+    .face.one { 
+      grid-template: 1fr / 1fr; 
+      place-items: center;
+    }
+    
+    .face.two { 
+      grid-template: 1fr 1fr / 1fr; 
+      place-items: center;
+    }
+    
+    .face.three { 
+      grid-template: 1fr 1fr 1fr / 1fr; 
+      place-items: center;
+    }
+    
+    .face.four { 
+      grid-template: 1fr 1fr / 1fr 1fr; 
+    }
+    
+    .face.five { 
+      display: grid;
+      grid-template-areas: 
+        "a . b"
+        ". c ."
+        "d . e";
+      grid-template-rows: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    
+    .face.six { 
+      grid-template: 1fr 1fr 1fr / 1fr 1fr; 
+    }
     .front  { transform: rotateY(0deg)    translateZ(75px);  background: red;    }
     .back   { transform: rotateY(180deg)  translateZ(75px);  background: blue;   }
     .right  { transform: rotateY(90deg)   translateZ(75px);  background: green;  }
@@ -82,12 +108,16 @@
         <img src="shrek_PNG.png" alt="">
       </div>
       <div class="face top five">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-      </div>
+      <img src="shrek_PNG.png" alt="">
+      <div></div>
+      <img src="shrek_PNG.png" alt="">
+      <div></div>
+      <img src="shrek_PNG.png" alt="">
+      <div></div>
+      <img src="shrek_PNG.png" alt="">
+      <div></div>
+      <img src="shrek_PNG.png" alt="">
+    </div>
       <div class="face bottom two">
         <img src="shrek_PNG.png" alt="">
         <img src="shrek_PNG.png" alt="">
