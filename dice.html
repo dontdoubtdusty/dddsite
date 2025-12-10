@@ -80,11 +80,20 @@
       grid-template-columns: 1fr 1fr 1fr;
     }
     
-    .face.six { 
-      grid-template: 1fr 1fr 1fr / 1fr 1fr;
-      padding: 5px;
-      gap: 2px;
+    .face.six {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      padding: 8px;
+      gap: 3px;
     }
+    
+    .face.six img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
     .front  { transform: rotateY(0deg)    translateZ(75px);  background: red;    }
     .back   { transform: rotateY(180deg)  translateZ(75px);  background: blue;   }
     .right  { transform: rotateY(90deg)   translateZ(75px);  background: green;  }
