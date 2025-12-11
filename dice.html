@@ -330,7 +330,7 @@
       clearTimeout(fadeTimeout);
       fadeTimeout = setTimeout(() => {
         rollsList.style.opacity = '0';
-      }, 5000);
+      }, 3000);
     }
 
     db.ref('rolls').limitToLast(10).on('value', (snapshot) => {
