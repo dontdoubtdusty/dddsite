@@ -373,13 +373,6 @@
           
           const diceContainer = document.getElementById("dice-container");
           
-          // 🔹 CLEAR the transform BEFORE shaking
-          cube.style.transition = "none";
-          cube.style.transform = "none";
-          
-          // Force a reflow so the browser registers the cleared transform
-          cube.offsetHeight;
-          
           // NOW apply the shake
           cube.classList.add("shaking");
         
