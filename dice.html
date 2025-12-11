@@ -151,12 +151,12 @@
     }
     
 
-    .front  { transform: rotateY(0deg)    translateZ(75px);  background: white;    }
-    .back   { transform: rotateY(180deg)  translateZ(75px);  background: white;   }
-    .right  { transform: rotateY(90deg)   translateZ(75px);  background: white;  }
-    .left   { transform: rotateY(-90deg)  translateZ(75px);  background: white; }
-    .top    { transform: rotateX(90deg)   translateZ(75px);  background: white; }
-    .bottom { transform: rotateX(-90deg)  translateZ(75px);  background: white;   }
+    .front  { transform: rotateY(0deg)    translateZ(75px);  background: #e8f5e9;    }
+    .back   { transform: rotateY(180deg)  translateZ(75px);  background: #e8f5e9;   }
+    .right  { transform: rotateY(90deg)   translateZ(75px);  background: #e8f5e9;  }
+    .left   { transform: rotateY(-90deg)  translateZ(75px);  background: #e8f5e9; }
+    .top    { transform: rotateX(90deg)   translateZ(75px);  background: #e8f5e9; }
+    .bottom { transform: rotateX(-90deg)  translateZ(75px);  background: #e8f5e9;   }
 
     .tint-red img { filter: sepia(100%) saturate(500%) hue-rotate(-50deg) brightness(0.8); }
     .tint-blue img { filter: sepia(100%) saturate(500%) hue-rotate(180deg) brightness(0.9); }
@@ -406,12 +406,16 @@
           }
         
           // 🔹 After shake finishes, remove the class and roll the cube
+          let totalSpins = 0;
+
           setTimeout(() => {
             cube.classList.remove("shaking");
+            
+            totalSpins += 720; // Add 2 more full rotations each roll
             const { x, y, value } = randomRotation();
             
             cube.style.transition = "transform 1s";
-            cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+            cube.style.transform = `rotateX(${x + totalSpins}deg) rotateY(${y + totalSpins}deg)`;
         
             setTimeout(() => {
               // Play BODY.wav when it lands
