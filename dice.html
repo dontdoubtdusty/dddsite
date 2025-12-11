@@ -404,20 +404,12 @@
             cube.classList.remove("shaking");
             const { x, y, value } = randomRotation();
             
-            // Add spins to current rotation to get to target
-            currentRotationX += 1080; // 3 full spins
-            currentRotationY += 1080;
-            
-            // Calculate the target face position continuing from current rotation
-            const targetX = currentRotationX + (x % 360);
-            const targetY = currentRotationY + (y % 360);
+            // Add spins and go directly to the target face angle
+            currentRotationX += 1080 + x; // 3 full spins + target angle
+            currentRotationY += 1080 + y;
             
             cube.style.transition = "transform 1s";
-            cube.style.transform = `rotateX(${targetX}deg) rotateY(${targetY}deg)`;
-            
-            // Update current rotation for next roll
-            currentRotationX = targetX;
-            currentRotationY = targetY;
+            cube.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
           
             setTimeout(() => {
               // Play BODY.wav when it lands
