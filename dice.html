@@ -348,12 +348,8 @@
       return `${character}${number}`;
     }
     
-    // Generate or retrieve a user ID
-    let userId = localStorage.getItem('shrek-dice-user-id');
-    if (!userId) {
-      userId = generateUsername();
-      localStorage.setItem('shrek-dice-user-id', userId);
-    }
+    // Generate a new user ID each time the page loads
+    let userId = generateUsername();
     
     let allRolls = [];
     let fadeTimeout;
