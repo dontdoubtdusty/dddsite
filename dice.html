@@ -53,6 +53,7 @@
       background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4) 0%, transparent 70%);
       border-radius: 50%;
       transition: all 0.1s;
+      opacity: 0;
     }
     
     #dice-container.tossing {
@@ -60,29 +61,41 @@
     }
 
     #dice-container.tossing::after {
-      animation: shadowShrink 1.8s ease-in-out;
-    }     
+      /* 👇 Change the animation name here */
+      animation: shadowAnimate 1.8s ease-in-out; 
+    }
 
-    @keyframes shadowShrink {
+    @keyframes shadowAnimate {
+      /* Start: Shadow is invisible, simulating it sitting on the surface */
       0% {
-        width: 120px;
-        opacity: 0.4;
+        opacity: 0;
+        transform: translateX(-50%) scale(1);
       }
-      25% {
-        width: 60px;
-        opacity: 0.15;
+      
+      /* 0.1% - 5%: Shadow quickly appears as the dice lifts off */
+      0.1% { 
+        opacity: 0.8; /* Make it quickly visible */
       }
+    
+      5% {
+        opacity: 0.8; 
+        transform: translateX(-50%) scale(0.6); /* Shrink slightly as it lifts */
+      }
+    
+      /* 5% - 95%: The existing 'shadowShrink' behavior (shrinking/moving as it flies) */
       50% {
-        width: 40px;
-        opacity: 0.1;
+        transform: translateX(-50%) scale(0.3); /* Smallest in the middle of the toss */
       }
-      75% {
-        width: 80px;
-        opacity: 0.25;
+      
+      95% {
+        opacity: 0.8; 
+        transform: translateX(-50%) scale(0.6); /* Grows as it comes back down */
       }
+      
+      /* 95% - 100%: Shadow quickly disappears as the dice lands */
       100% {
-        width: 120px;
-        opacity: 0.4;
+        opacity: 0; /* Make it disappear on landing */
+        transform: translateX(-50%) scale(1); /* Back to resting size */
       }
     }
     #cube {
