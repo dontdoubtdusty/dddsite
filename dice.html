@@ -321,7 +321,7 @@
         // Fade out after 30 seconds
         fadeTimeout = setTimeout(() => {
           rollsList.style.opacity = '0';
-        }, 30000);
+        }, 5000);
       }
   
       db.ref('rolls').limitToLast(10).on('value', (snapshot) => {
