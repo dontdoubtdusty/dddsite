@@ -283,18 +283,18 @@
         cube.style.transition = "none";
         cube.style.transform = currentTransform; // Keep current rotation, don't go to "none"
         
-        // Play BODY.wav right before the dice starts rolling
-        const bodySound = new Audio('BODY.wav');
-        bodySound.play();
-        
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             cube.style.transition = "transform 1s";
             cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
           });
         });
-      
+    
         setTimeout(() => {
+          // Play BODY.wav when it lands
+          const bodySound = new Audio('BODY.wav');
+          bodySound.play();
+          
           result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
         }, 1000);
       }, 300); // shake lasts 0.3s
