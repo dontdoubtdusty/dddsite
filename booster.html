@@ -541,6 +541,29 @@
                 opacity: 0.8;
             }
         }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .pack-container {
+                overflow-x: auto;
+                overflow-y: visible;
+                justify-content: flex-start;
+                padding: 0 50vw;
+                scroll-snap-type: x proximity;
+            }
+            
+            .flip-card {
+                scroll-snap-align: center;
+            }
+            
+            body {
+                overflow-x: hidden;
+            }
+            
+            .container {
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
 <body>
