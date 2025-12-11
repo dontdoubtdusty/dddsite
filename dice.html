@@ -254,68 +254,64 @@
     }
     
     document.getElementById("dice-container").addEventListener("click", () => {
-      
-      result.textContent = "";  // Clear the result immediately when clicked
-      
-      // Play SOME.wav when clicked
-      const someSound = new Audio('SOME.wav');
-      someSound.play();
-      
-      // 🔹 Start the shake
-      const diceContainer = document.getElementById("dice-container");
-      cube.classList.add("shaking");
-    
-      // 🔹 Create swampy particles
-      for (let i = 0; i < 15; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
+        result.textContent = "";
         
-        // Random starting position around the dice
-        const startX = Math.random() * 150;
-        const startY = Math.random() * 150;
-        particle.style.left = startX + 'px';
-        particle.style.top = startY + 'px';
+        const someSound = new Audio('SOME.wav');
+        someSound.play();
         
-        // Random horizontal drift
-        const drift = (Math.random() - 0.5) * 100;
-        particle.style.setProperty('--drift', `${drift}px`);
+        const diceContainer = document.getElementById("dice-container");
         
-        // Random delay for staggered effect
-        particle.style.animationDelay = `${Math.random() * 0.3}s`;
-        
-        diceContainer.appendChild(particle);
-        
-        // Remove particle after animation
-        setTimeout(() => particle.remove(), 2300);
-      }
-    
-      // 🔹 After shake finishes, remove the class and roll the cube
-      setTimeout(() => {
-        cube.classList.remove("shaking");  // Remove shake FIRST
-        const { x, y, value } = randomRotation();
-        
-        // Store current rotation values before resetting
-        const currentTransform = cube.style.transform;
-        // Reset transition but keep the current position
+        // 🔹 CLEAR the transform BEFORE shaking
         cube.style.transition = "none";
-        cube.style.transform = currentTransform; // Keep current rotation, don't go to "none"
+        cube.style.transform = "none";
         
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            cube.style.transition = "transform 1s";
-            cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
-          });
-        });
-    
-        setTimeout(() => {
-          // Play BODY.wav when it lands
-          const bodySound = new Audio('BODY.wav');
-          bodySound.play();
+        // Force a reflow so the browser registers the cleared transform
+        cube.offsetHeight;
+        
+        // NOW apply the shake
+        cube.classList.add("shaking");
+      
+        // 🔹 Create swampy particles
+        for (let i = 0; i < 15; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
           
-          result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-        }, 1000);
-      }, 300); // shake lasts 0.3s
-    });
+          // Random starting position around the dice
+          const startX = Math.random() * 150;
+          const startY = Math.random() * 150;
+          particle.style.left = startX + 'px';
+          particle.style.top = startY + 'px';
+          
+          // Random horizontal drift
+          const drift = (Math.random() - 0.5) * 100;
+          particle.style.setProperty('--drift', `${drift}px`);
+          
+          // Random delay for staggered effect
+          particle.style.animationDelay = `${Math.random() * 0.3}s`;
+          
+          diceContainer.appendChild(particle);
+          
+          // Remove particle after animation
+          setTimeout(() => particle.remove(), 2300);
+        }
+      
+        // 🔹 After shake finishes, remove the class and roll the cube
+        setTimeout(() => {
+          cube.classList.remove("shaking");
+          const { x, y, value } = randomRotation();
+          
+          cube.style.transition = "transform 1s";
+          cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+      
+          setTimeout(() => {
+            // Play BODY.wav when it lands
+            const bodySound = new Audio('BODY.wav');
+            bodySound.play();
+            
+            result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
+          }, 1000);
+        }, 300);
+      });
 
   </script>
 </body>
