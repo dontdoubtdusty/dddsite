@@ -386,6 +386,7 @@
             bodySound.play();
             
             result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
+            saveRoll(value);
           }, 1000);
         }, 300);
       });
