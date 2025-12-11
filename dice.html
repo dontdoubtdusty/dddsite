@@ -120,13 +120,16 @@
     }
     .particle {
       position: absolute;
-      width: 8px;
-      height: 8px;
-      background: radial-gradient(circle, #7cfc00, #228b22);
+      width: 20px;        /* Bigger size */
+      height: 20px;       /* Bigger size */
+      background: radial-gradient(circle, #90ff00 0%, #7cfc00 30%, #228b22 100%);  /* More gradient layers for bubble effect */
       border-radius: 50%;
       pointer-events: none;
       animation: float-up 2s ease-out forwards;
-      opacity: 0.7;
+      opacity: 0.8;
+      box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.3),   /* Inner shadow for depth */
+                  inset 3px 3px 8px rgba(255, 255, 255, 0.4),  /* Highlight for shine */
+                  0 0 10px rgba(124, 252, 0, 0.5);              /* Outer glow */
     }
     
     @keyframes float-up {
