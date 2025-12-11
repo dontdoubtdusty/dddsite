@@ -256,12 +256,9 @@ document.getElementById("dice-container").addEventListener("click", () => {
 
   const { x, y, value } = randomRotation();
 
-  // Store current rotation values before resetting
-  const currentTransform = cube.style.transform;
-
-    // Reset transition but keep the current position
-    cube.style.transition = "none";
-    cube.style.transform = currentTransform; // Keep current rotation, don't go to "none"
+        // your spin reset (if you have the spin fix)
+        cube.style.transition = "none";
+        cube.style.transform = "none";
     
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
