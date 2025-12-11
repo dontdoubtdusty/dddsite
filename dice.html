@@ -151,12 +151,12 @@
     }
     
 
-    .front  { transform: rotateY(0deg)    translateZ(75px);  background: #c8e6c9; }
-    .back   { transform: rotateY(180deg)  translateZ(75px);  background: #c8e6c9; }
-    .right  { transform: rotateY(90deg)   translateZ(75px);  background: #c8e6c9; }
-    .left   { transform: rotateY(-90deg)  translateZ(75px);  background: #c8e6c9; }
-    .top    { transform: rotateX(90deg)   translateZ(75px);  background: #c8e6c9; }
-    .bottom { transform: rotateX(-90deg)  translateZ(75px);  background: #c8e6c9; }
+    .front  { transform: rotateY(0deg)    translateZ(75px);  background: #689f38; }
+    .back   { transform: rotateY(180deg)  translateZ(75px);  background: #689f38; }
+    .right  { transform: rotateY(90deg)   translateZ(75px);  background: #689f38; }
+    .left   { transform: rotateY(-90deg)  translateZ(75px);  background: #689f38; }
+    .top    { transform: rotateX(90deg)   translateZ(75px);  background: #689f38; }
+    .bottom { transform: rotateX(-90deg)  translateZ(75px);  background: #689f38; }
 
 
     .tint-red img { filter: sepia(100%) saturate(500%) hue-rotate(-50deg) brightness(0.8); }
@@ -301,6 +301,7 @@
   <script>
     const cube = document.getElementById("cube");
     const result = document.getElementById("result");
+    const diceContainer = document.getElementById("dice-container");
 
     const firebaseConfig = {
       databaseURL: "https://shrek-dice-default-rtdb.firebaseio.com/"
@@ -309,11 +310,12 @@
     const db = firebase.database();
 
     let allRolls = [];
-
     let fadeTimeout;
-    // Initialize these to 0 so the math works on the first roll
+    
+    // Global tracking variables
     let currentRotationX = 0;
     let currentRotationY = 0;
+    let isRolling = false; // Lock to prevent double clicks
 
     function displayRolls() {
       const rollsList = document.getElementById('rolls-list');
@@ -348,82 +350,87 @@
       const rotations = [
         { x: 0, y: 0, value: 1 },    // front
         { x: 0, y: 180, value: 6 },  // back
-        { x: 0, y: 90, value: 4 },   // To show LEFT (4), rotate Y +90
-        { x: 0, y: -90, value: 3 },  // To show RIGHT (3), rotate Y -90
+        { x: 0, y: 90, value: 4 },   // right
+        { x: 0, y: -90, value: 3 },  // left
         { x: -90, y: 0, value: 5 },  // top
         { x: 90, y: 0, value: 2 }    // bottom
       ];
-      
-      const choice = rotations[Math.floor(Math.random() * rotations.length)];
-      return {
-        x: choice.x,
-        y: choice.y,
-        value: choice.value
-      };
+      return rotations[Math.floor(Math.random() * rotations.length)];
     }
     
-    document.getElementById("dice-container").addEventListener("click", () => {
-        // Prevent double clicking while spinning
-        if (cube.style.transition.includes('transform')) return;
-
-        result.textContent = "";
-        
-        const someSound = new Audio('SOME.wav');
-        someSound.play().catch(e => console.log("Audio play failed (user interaction needed first)"));
-        
-        const diceContainer = document.getElementById("dice-container");
-        
-        cube.classList.add("shaking");
-        
-        // Swampy particles
-        for (let i = 0; i < 15; i++) {
+    // Helper to generate particles
+    function spawnParticles() {
+      for (let i = 0; i < 15; i++) {
           const particle = document.createElement('div');
           particle.className = 'particle';
-          
           const startX = Math.random() * 150;
           const startY = Math.random() * 150;
           particle.style.left = startX + 'px';
           particle.style.top = startY + 'px';
-          
           const drift = (Math.random() - 0.5) * 100;
           particle.style.setProperty('--drift', `${drift}px`);
-          
           particle.style.animationDelay = `${Math.random() * 0.3}s`;
-          
           diceContainer.appendChild(particle);
           setTimeout(() => particle.remove(), 2300);
         }
+    }
 
+    diceContainer.addEventListener("click", () => {
+        if (isRolling) return; // Stop if already spinning
+        isRolling = true;
+
+        result.textContent = "";
+        
+        // 1. SOUND & PARTICLES
+        const someSound = new Audio('SOME.wav');
+        someSound.play().catch(e => console.log("Audio play failed"));
+        spawnParticles();
+        
+        // 2. SHAKE START
+        cube.classList.add("shaking");
+        
+        // 3. AFTER SHAKE (300ms) -> TUMBLE PHASE
         setTimeout(() => {
           cube.classList.remove("shaking");
-          const { x, y, value } = randomRotation();
-          
-          // --- THE FIX IS HERE ---
-          // Calculate the offset needed to reach the target from the current position
-          // We modulo 360 to find where we currently are "visually", then subtract that from the target
-          const xOffset = x - (currentRotationX % 360);
-          const yOffset = y - (currentRotationY % 360);
 
-          // Add 3 full spins (1080) PLUS the calculated offset
-          currentRotationX += 1080 + xOffset;
-          currentRotationY += 1080 + yOffset;
-          
-          cube.style.transition = "transform 1s cubic-bezier(0.25, 0.1, 0.25, 1)"; // Added bezier for smoother landing
+          // Add a random "Tumble" spin (between 360 and 720 degrees)
+          // This ensures visually chaotic movement before targeting
+          currentRotationX += Math.random() * 360 + 360;
+          currentRotationY += Math.random() * 360 + 360;
+
+          // Use 'linear' for the tumble so it looks like it's maintaining speed
+          cube.style.transition = "transform 0.5s linear";
           cube.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
-        
+
+          // 4. AFTER TUMBLE (500ms) -> LANDING PHASE
           setTimeout(() => {
-            const bodySound = new Audio('BODY.wav');
-            bodySound.play().catch(e => console.log("Audio play failed"));
+            const { x, y, value } = randomRotation();
             
-            result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-            saveRoll(value);
+            // Calculate mathematical offset to land correctly
+            const xOffset = x - (currentRotationX % 360);
+            const yOffset = y - (currentRotationY % 360);
+            
+            // Add 2 extra spins (720) + the offset for the landing
+            currentRotationX += 720 + xOffset;
+            currentRotationY += 720 + yOffset;
 
-            // Allow clicking again by slightly resetting transition string (optional cleanliness)
-            setTimeout(() => { cube.style.transition = ""; }, 100);
+            // Use 'cubic-bezier' for a nice slow-down landing effect
+            cube.style.transition = "transform 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
+            cube.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
 
-          }, 1000);
-        }, 300);
-      });
+            // 5. FINISH
+            setTimeout(() => {
+              const bodySound = new Audio('BODY.wav');
+              bodySound.play().catch(e => console.log("Audio play failed"));
+              
+              result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
+              saveRoll(value);
+              isRolling = false; // Unlock clicking
+            }, 1000); // Wait for the 1s landing animation
+
+          }, 450); // Slight overlap with previous time (500ms) prevents stutter
+        }, 300); // Wait for Shake
+    });
 </script>
 </body>
 </html>
