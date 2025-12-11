@@ -43,9 +43,49 @@
       cursor: pointer;
       transition: transform 0.1s;
     }
+
+    #dice-container::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 20px;
+      background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4) 0%, transparent 70%);
+      border-radius: 50%;
+      transition: all 0.1s;
+    }
     
     #dice-container.tossing {
       animation: diceToss 1.8s ease-in-out;
+    }
+
+    #dice-container.tossing::after {
+      animation: shadowShrink 1.8s ease-in-out;
+    }     
+
+    @keyframes shadowShrink {
+      0% {
+        width: 120px;
+        opacity: 0.4;
+      }
+      25% {
+        width: 60px;
+        opacity: 0.15;
+      }
+      50% {
+        width: 40px;
+        opacity: 0.1;
+      }
+      75% {
+        width: 80px;
+        opacity: 0.25;
+      }
+      100% {
+        width: 120px;
+        opacity: 0.4;
+      }
     }
     #cube {
       width: 100%;
