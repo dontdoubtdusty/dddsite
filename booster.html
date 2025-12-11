@@ -559,21 +559,32 @@
             }
             
             .pack-container {
-                overflow-x: scroll;
-                overflow-y: visible;
-                justify-content: flex-start;
-                padding-left: 50vw;
-                padding-right: 50vw;
-                scroll-snap-type: x mandatory;
-                -webkit-overflow-scrolling: touch;
-                min-height: 300px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 15px;
+                justify-items: center;
+                align-items: start;
+                min-height: auto;
+                padding: 10px;
             }
             
             .card,
             .flip-card {
                 width: 140px;
                 height: 220px;
-                scroll-snap-align: center;
+                position: relative !important;
+                transform: none !important;
+                animation: none !important;
+            }
+            
+            .flip-card.idle-float {
+                animation: none !important;
+                transform: none !important;
+            }
+            
+            .flip-card.can-flip:hover {
+                transform: translateY(-10px) scale(1.05) !important;
             }
             
             .card-name {
