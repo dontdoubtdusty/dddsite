@@ -334,13 +334,25 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Username generator
+    function generateUsername() {
+      const part1 = ['Swampy', 'Grumpy', 'Slimy', 'Muddy', 'Stinky', 'Smelly', 'Mossy', 'Grimy', 'Crusty', 'Funky'];
+      const part2 = ['Ogre', 'Donkey', 'Pudding', 'Fiona', 'Dragon', 'Shrek', 'Farquaad', 'Onion', 'Layers', 'Swamp'];
+      
+      const name1 = part1[Math.floor(Math.random() * part1.length)];
+      const name2 = part2[Math.floor(Math.random() * part2.length)];
+      const number = Math.floor(Math.random() * 1000);
+      
+      return `${name1}${name2}${number}`;
+    }
+    
     // Generate or retrieve a user ID
     let userId = localStorage.getItem('shrek-dice-user-id');
     if (!userId) {
-      userId = 'User' + Math.floor(Math.random() * 10000);
+      userId = generateUsername();
       localStorage.setItem('shrek-dice-user-id', userId);
     }
-
+    
     let allRolls = [];
     let fadeTimeout;
     
