@@ -149,13 +149,21 @@
       height: 100%;
       object-fit: contain;
     }
+    
 
-    .front  { transform: rotateY(0deg)    translateZ(75px);  background: red;    }
-    .back   { transform: rotateY(180deg)  translateZ(75px);  background: blue;   }
-    .right  { transform: rotateY(90deg)   translateZ(75px);  background: green;  }
-    .left   { transform: rotateY(-90deg)  translateZ(75px);  background: purple; }
-    .top    { transform: rotateX(90deg)   translateZ(75px);  background: orange; }
-    .bottom { transform: rotateX(-90deg)  translateZ(75px);  background: pink;   }
+    .front  { transform: rotateY(0deg)    translateZ(75px);  background: white;    }
+    .back   { transform: rotateY(180deg)  translateZ(75px);  background: white;   }
+    .right  { transform: rotateY(90deg)   translateZ(75px);  background: white;  }
+    .left   { transform: rotateY(-90deg)  translateZ(75px);  background: white; }
+    .top    { transform: rotateX(90deg)   translateZ(75px);  background: white; }
+    .bottom { transform: rotateX(-90deg)  translateZ(75px);  background: white;   }
+
+    .tint-red img { filter: sepia(100%) saturate(500%) hue-rotate(-50deg) brightness(0.8); }
+    .tint-blue img { filter: sepia(100%) saturate(500%) hue-rotate(180deg) brightness(0.9); }
+    .tint-green img { filter: sepia(100%) saturate(500%) hue-rotate(60deg) brightness(1); }
+    .tint-purple img { filter: sepia(100%) saturate(500%) hue-rotate(260deg) brightness(0.9); }
+    .tint-orange img { filter: sepia(100%) saturate(500%) hue-rotate(10deg) brightness(1.1); }
+    .tint-pink img { filter: sepia(100%) saturate(300%) hue-rotate(300deg) brightness(1.2); }
 
     #result {
       position: absolute;
@@ -231,35 +239,35 @@
 <body>
   <div id="dice-container">
     <div id="cube">
-      <div class="face front one">
+      <div class="face front one tint-red">
         <img src="shrek_PNG.png" alt="">
       </div>
-      <div class="face back six">
+      <div class="face back six tint-blue">
         <img src="shrek_PNG.png" alt="">
         <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-      </div>
-      <div class="face right three">
-        <img src="shrek_PNG.png" alt="">
-        <div></div>
-        <div></div>
-        <div></div>
-        <img src="shrek_PNG.png" alt="">
-        <div></div>
-        <div></div>
-        <div></div>
-        <img src="shrek_PNG.png" alt="">
-      </div>
-      <div class="face left four">
         <img src="shrek_PNG.png" alt="">
         <img src="shrek_PNG.png" alt="">
         <img src="shrek_PNG.png" alt="">
         <img src="shrek_PNG.png" alt="">
       </div>
-      <div class="face top five">
+      <div class="face right three tint-green">
+        <img src="shrek_PNG.png" alt="">
+        <div></div>
+        <div></div>
+        <div></div>
+        <img src="shrek_PNG.png" alt="">
+        <div></div>
+        <div></div>
+        <div></div>
+        <img src="shrek_PNG.png" alt="">
+      </div>
+      <div class="face left four tint-purple">
+        <img src="shrek_PNG.png" alt="">
+        <img src="shrek_PNG.png" alt="">
+        <img src="shrek_PNG.png" alt="">
+        <img src="shrek_PNG.png" alt="">
+      </div>
+      <div class="face top five tint-orange">
       <img src="shrek_PNG.png" alt="">
       <div></div>
       <img src="shrek_PNG.png" alt="">
@@ -270,7 +278,7 @@
       <div></div>
       <img src="shrek_PNG.png" alt="">
     </div>
-      <div class="face bottom two">
+      <div class="face bottom two tint-pink">
       <img src="shrek_PNG.png" alt="">
       <div></div>
       <div></div>
