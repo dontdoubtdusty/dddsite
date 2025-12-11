@@ -272,125 +272,120 @@
   <div id="result"></div>
   <div id="rolls-list" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%); color: #7cfc00; font-size: 16px; font-family: Arial; text-align: center; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); width: 300px;"></div>
   <script>
-    const cube = document.getElementById("cube");
-    const result = document.getElementById("result");
-
-    let allRolls = [];
-
-    async function loadRolls() {
-      try {
-        const data = await window.storage.get('dice-rolls', true);
-        allRolls = data ? JSON.parse(data.value) : [];
-        displayRolls();
-      } catch (e) {
-        allRolls = [];
+      const cube = document.getElementById("cube");
+      const result = document.getElementById("result");
+  
+      const firebaseConfig = {
+        databaseURL: "https://shrek-dice-default-rtdb.firebaseio.com/"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+  
+      let allRolls = [];
+  
+      function displayRolls() {
+        let html = '';
+        allRolls.slice(-5).reverse().forEach(roll => {
+          const timeAgo = Math.floor((Date.now() - roll.time) / 1000);
+          html += `<div>${roll.value} SHREK${roll.value === 1 ? '' : 'S'} (${timeAgo}s ago)</div>`;
+        });
+        document.getElementById('rolls-list').innerHTML = html;
       }
-    }
-    
-    async function saveRoll(value) {
-      const roll = {
-        value: value,
-        time: Date.now()
-      };
-      allRolls.push(roll);
-      // Keep only last 10 rolls
-      if (allRolls.length > 10) allRolls.shift();
-      
-      await window.storage.set('dice-rolls', JSON.stringify(allRolls), true);
-      displayRolls();
-    }
-    
-    function displayRolls() {
-      let html = '';
-      allRolls.slice(-5).reverse().forEach(roll => {
-        const timeAgo = Math.floor((Date.now() - roll.time) / 1000);
-        html += `<div>${roll.value} SHREK${roll.value === 1 ? '' : 'S'} (${timeAgo}s ago)</div>`;
+  
+      db.ref('rolls').limitToLast(10).on('value', (snapshot) => {
+        allRolls = [];
+        snapshot.forEach(child => {
+          allRolls.push(child.val());
+        });
+        displayRolls();
       });
-      document.getElementById('rolls-list').innerHTML = html;
-    }
-    
-    loadRolls();
-    setInterval(loadRolls, 2000); // Refresh every 2 seconds
-    
-    function randomRotation() {
-      const rotations = [
-        { x: 0, y: 0, value: 1 },      // front
-        { x: 0, y: 180, value: 6 },    // back
-        { x: 0, y: 90, value: 4 },     // right
-        { x: 0, y: -90, value: 3 },    // left
-        { x: -90, y: 0, value: 5 },    // top
-        { x: 90, y: 0, value: 2 }      // bottom
-      ];
+  
+      function saveRoll(value) {
+        const roll = { value: value, time: Date.now() };
+        db.ref('rolls').push(roll);
+      }
       
-      const choice = rotations[Math.floor(Math.random() * rotations.length)];
-      return {
-        x: choice.x + 720,
-        y: choice.y + 720,
-        value: choice.value
-      };
-    }
-    
-    document.getElementById("dice-container").addEventListener("click", () => {
-        result.textContent = "";
+      function randomRotation() {
+        const rotations = [
+          { x: 0, y: 0, value: 1 },      // front
+          { x: 0, y: 180, value: 6 },    // back
+          { x: 0, y: 90, value: 4 },     // right
+          { x: 0, y: -90, value: 3 },    // left
+          { x: -90, y: 0, value: 5 },    // top
+          { x: 90, y: 0, value: 2 }      // bottom
+        ];
         
-        const someSound = new Audio('SOME.wav');
-        someSound.play();
-        
-        const diceContainer = document.getElementById("dice-container");
-        
-        // 🔹 CLEAR the transform BEFORE shaking
-        cube.style.transition = "none";
-        cube.style.transform = "none";
-        
-        // Force a reflow so the browser registers the cleared transform
-        cube.offsetHeight;
-        
-        // NOW apply the shake
-        cube.classList.add("shaking");
+        const choice = rotations[Math.floor(Math.random() * rotations.length)];
+        return {
+          x: choice.x + 720,
+          y: choice.y + 720,
+          value: choice.value
+        };
+      }
       
-        // 🔹 Create swampy particles
-        for (let i = 0; i < 15; i++) {
-          const particle = document.createElement('div');
-          particle.className = 'particle';
+      document.getElementById("dice-container").addEventListener("click", () => {
+          result.textContent = "";
           
-          // Random starting position around the dice
-          const startX = Math.random() * 150;
-          const startY = Math.random() * 150;
-          particle.style.left = startX + 'px';
-          particle.style.top = startY + 'px';
+          const someSound = new Audio('SOME.wav');
+          someSound.play();
           
-          // Random horizontal drift
-          const drift = (Math.random() - 0.5) * 100;
-          particle.style.setProperty('--drift', `${drift}px`);
+          const diceContainer = document.getElementById("dice-container");
           
-          // Random delay for staggered effect
-          particle.style.animationDelay = `${Math.random() * 0.3}s`;
+          // 🔹 CLEAR the transform BEFORE shaking
+          cube.style.transition = "none";
+          cube.style.transform = "none";
           
-          diceContainer.appendChild(particle);
+          // Force a reflow so the browser registers the cleared transform
+          cube.offsetHeight;
           
-          // Remove particle after animation
-          setTimeout(() => particle.remove(), 2300);
-        }
-      
-        // 🔹 After shake finishes, remove the class and roll the cube
-        setTimeout(() => {
-          cube.classList.remove("shaking");
-          const { x, y, value } = randomRotation();
-          
-          cube.style.transition = "transform 1s";
-          cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
-      
-          setTimeout(() => {
-            // Play BODY.wav when it lands
-            const bodySound = new Audio('BODY.wav');
-            bodySound.play();
+          // NOW apply the shake
+          cube.classList.add("shaking");
+        
+          // 🔹 Create swampy particles
+          for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
             
-            result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-            saveRoll(value);
-          }, 1000);
-        }, 300);
-      });
-
+            // Random starting position around the dice
+            const startX = Math.random() * 150;
+            const startY = Math.random() * 150;
+            particle.style.left = startX + 'px';
+            particle.style.top = startY + 'px';
+            
+            // Random horizontal drift
+            const drift = (Math.random() - 0.5) * 100;
+            particle.style.setProperty('--drift', `${drift}px`);
+            
+            // Random delay for staggered effect
+            particle.style.animationDelay = `${Math.random() * 0.3}s`;
+            
+            diceContainer.appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => particle.remove(), 2300);
+          }
+        
+          // 🔹 After shake finishes, remove the class and roll the cube
+          setTimeout(() => {
+            cube.classList.remove("shaking");
+            const { x, y, value } = randomRotation();
+            
+            cube.style.transition = "transform 1s";
+            cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+        
+            setTimeout(() => {
+              // Play BODY.wav when it lands
+              const bodySound = new Audio('BODY.wav');
+              bodySound.play();
+              
+              result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
+              saveRoll(value);
+            }, 1000);
+          }, 300);
+        });
   </script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </body>
 </html>
