@@ -334,6 +334,13 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Generate or retrieve a user ID
+    let userId = localStorage.getItem('shrek-dice-user-id');
+    if (!userId) {
+      userId = 'User' + Math.floor(Math.random() * 10000);
+      localStorage.setItem('shrek-dice-user-id', userId);
+    }
+
     let allRolls = [];
     let fadeTimeout;
     
@@ -347,7 +354,8 @@
       let html = '';
       allRolls.slice(-5).reverse().forEach(roll => {
         const timeAgo = Math.floor((Date.now() - roll.time) / 1000);
-        html += `<div>${roll.value} SHREK${roll.value === 1 ? '' : 'S'} (${timeAgo}s ago)</div>`;
+        const userName = roll.user || 'Someone';
+        html += `<div>${userName} rolled ${roll.value} SHREK${roll.value === 1 ? '' : 'S'} (${timeAgo}s ago)</div>`;
       });
       rollsList.innerHTML = html;
       
@@ -367,7 +375,11 @@
     });
 
     function saveRoll(value) {
-      const roll = { value: value, time: Date.now() };
+      const roll = { 
+        value: value, 
+        time: Date.now(),
+        user: userId 
+      };
       db.ref('rolls').push(roll);
     }
     
