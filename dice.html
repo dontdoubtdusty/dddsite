@@ -270,7 +270,7 @@
     </div>
   </div>
   <div id="result"></div>
-  <div id="rolls-list" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%); color: #7cfc00; font-size: 16px; font-family: Arial; text-align: center; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); width: 300px;"></div>
+  <div id="rolls-list" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%); color: #7cfc00; font-size: 16px; font-family: Arial; text-align: center; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); width: 300px; transition: opacity 2s;"></div>
   
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -287,13 +287,27 @@
   
       let allRolls = [];
   
+      let fadeTimeout;
+
       function displayRolls() {
+        const rollsList = document.getElementById('rolls-list');
         let html = '';
         allRolls.slice(-5).reverse().forEach(roll => {
           const timeAgo = Math.floor((Date.now() - roll.time) / 1000);
           html += `<div>${roll.value} SHREK${roll.value === 1 ? '' : 'S'} (${timeAgo}s ago)</div>`;
         });
-        document.getElementById('rolls-list').innerHTML = html;
+        rollsList.innerHTML = html;
+        
+        // Show the list
+        rollsList.style.opacity = '1';
+        
+        // Clear any existing timeout
+        clearTimeout(fadeTimeout);
+        
+        // Fade out after 30 seconds
+        fadeTimeout = setTimeout(() => {
+          rollsList.style.opacity = '0';
+        }, 30000);
       }
   
       db.ref('rolls').limitToLast(10).on('value', (snapshot) => {
