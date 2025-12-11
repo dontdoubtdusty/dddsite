@@ -49,31 +49,24 @@
       pointer-events: none;
       animation: swampPulse 8s ease-in-out infinite alternate;
     }
-    
-    @keyframes swampFloat {
-      0%, 100% {
-        background-position: 0% 0%, 10% 20%, 30% 10%, 50% 40%, 70% 30%,
-                             20% 60%, 80% 70%, 40% 80%, 90% 50%, 60% 90%;
-      }
-      50% {
-        background-position: 100% 100%, 90% 80%, 70% 90%, 50% 60%, 30% 70%,
-                             80% 40%, 20% 30%, 60% 20%, 10% 50%, 40% 10%;
-      }
-    }
-    
-    @keyframes swampPulse {
-      0% {
-        opacity: 0.5;
-      }
-      100% {
-        opacity: 0.8;
-      }
-    }
     #dice-container {
       width: 150px;
       height: 150px;
       perspective: 800px;
       cursor: pointer;
+      position: relative;
+    }
+    #dice-container::after {
+      content: '';
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(ellipse, rgba(0, 0, 0, 0.6) 0%, transparent 70%);
+      bottom: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      filter: blur(15px);
+      pointer-events: none;
     }
     #cube {
       width: 100%;
@@ -81,16 +74,20 @@
       position: relative;
       transform-style: preserve-3d;
       transition: transform 1s;
+      filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.8));
     }
     .face {
       position: absolute;
       width: 150px;
       height: 150px;
-      border: 2px solid white;
+      border: 3px solid rgba(255, 255, 255, 0.4);
+      border-right-color: rgba(0, 0, 0, 0.3);
+      border-bottom-color: rgba(0, 0, 0, 0.3);
       display: grid;
       padding: 8px;
       gap: 3px;
       box-sizing: border-box;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
     }
     .face img {
       width: 100%;
@@ -150,12 +147,30 @@
       object-fit: contain;
     }
 
-    .front  { transform: rotateY(0deg)    translateZ(75px);  background: red;    }
-    .back   { transform: rotateY(180deg)  translateZ(75px);  background: blue;   }
-    .right  { transform: rotateY(90deg)   translateZ(75px);  background: green;  }
-    .left   { transform: rotateY(-90deg)  translateZ(75px);  background: purple; }
-    .top    { transform: rotateX(90deg)   translateZ(75px);  background: orange; }
-    .bottom { transform: rotateX(-90deg)  translateZ(75px);  background: pink;   }
+    .front  { 
+      transform: rotateY(0deg) translateZ(75px);  
+      background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+    }
+    .back   { 
+      transform: rotateY(180deg) translateZ(75px);  
+      background: linear-gradient(135deg, #4444ff 0%, #0000cc 100%);
+    }
+    .right  { 
+      transform: rotateY(90deg) translateZ(75px);  
+      background: linear-gradient(135deg, #44ff44 0%, #00cc00 100%);
+    }
+    .left   { 
+      transform: rotateY(-90deg) translateZ(75px);  
+      background: linear-gradient(135deg, #cc44ff 0%, #8800cc 100%);
+    }
+    .top    { 
+      transform: rotateX(90deg) translateZ(75px);  
+      background: linear-gradient(135deg, #ffaa44 0%, #cc6600 100%);
+    }
+    .bottom { 
+      transform: rotateX(-90deg) translateZ(75px);  
+      background: linear-gradient(135deg, #ff44aa 0%, #cc0066 100%);
+    }
 
     #result {
       position: absolute;
@@ -168,6 +183,27 @@
       font-family: 'Arial Black', sans-serif;
       text-align: center;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+    }
+
+    @keyframes swampFloat {
+      0%, 100% {
+        background-position: 0% 0%, 10% 20%, 30% 10%, 50% 40%, 70% 30%,
+                             20% 60%, 80% 70%, 40% 80%, 90% 50%, 60% 90%;
+      }
+      50% {
+        background-position: 100% 100%, 90% 80%, 70% 90%, 50% 60%, 30% 70%,
+                             80% 40%, 20% 30%, 60% 20%, 10% 50%, 40% 10%;
+      }
+    }
+
+    @keyframes swampPulse {
+      0% {
+        opacity: 0.5;
+      }
+      100% {
+        opacity: 0.8;
+      }
     }
 
     @keyframes shake {
@@ -189,16 +225,16 @@
     }
     .particle {
       position: absolute;
-      width: 20px;        /* Bigger size */
-      height: 20px;       /* Bigger size */
-      background: radial-gradient(circle, #90ff00 0%, #7cfc00 30%, #228b22 100%);  /* More gradient layers for bubble effect */
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #90ff00 0%, #7cfc00 30%, #228b22 100%);
       border-radius: 50%;
       pointer-events: none;
       animation: float-up 2s ease-out forwards;
       opacity: 0.8;
-      box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.3),   /* Inner shadow for depth */
-                  inset 3px 3px 8px rgba(255, 255, 255, 0.4),  /* Highlight for shine */
-                  0 0 10px rgba(124, 252, 0, 0.5);              /* Outer glow */
+      box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.3),
+                  inset 3px 3px 8px rgba(255, 255, 255, 0.4),
+                  0 0 10px rgba(124, 252, 0, 0.5);
     }
     
     @keyframes float-up {
