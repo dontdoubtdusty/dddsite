@@ -544,16 +544,73 @@
 
         /* Mobile adjustments */
         @media (max-width: 768px) {
-            .pack-container {
-                overflow-x: auto;
-                overflow-y: visible;
-                justify-content: flex-start;
-                padding: 0 50vw;
-                scroll-snap-type: x proximity;
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
             }
             
+            .sealed-pack {
+                width: 200px;
+                height: 280px;
+            }
+            
+            .pack-image {
+                max-width: 200px;
+            }
+            
+            .pack-container {
+                overflow-x: scroll;
+                overflow-y: visible;
+                justify-content: flex-start;
+                padding-left: 50vw;
+                padding-right: 50vw;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                min-height: 300px;
+            }
+            
+            .card,
             .flip-card {
+                width: 140px;
+                height: 220px;
                 scroll-snap-align: center;
+            }
+            
+            .card-name {
+                font-size: 0.85em;
+                min-height: 35px;
+            }
+            
+            .card-art {
+                height: 90px;
+                font-size: 2em;
+            }
+            
+            .card-stats {
+                font-size: 0.7em;
+                padding: 6px;
+            }
+            
+            .card-description {
+                font-size: 0.65em;
+                padding: 6px;
+            }
+            
+            .card-value {
+                font-size: 0.7em;
+                padding: 4px;
+            }
+            
+            .coin {
+                width: 28px;
+                height: 28px;
+                font-size: 0.7em;
+            }
+            
+            .card-back,
+            .flip-back {
+                width: 140px;
+                height: 220px;
             }
             
             body {
@@ -561,7 +618,12 @@
             }
             
             .container {
-                overflow-x: auto;
+                overflow: visible;
+            }
+            
+            button {
+                font-size: 16px;
+                padding: 14px 30px;
             }
         }
     </style>
