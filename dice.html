@@ -411,19 +411,24 @@
           setTimeout(() => {
             cube.classList.remove("shaking");
             
-            totalSpins += 720; // Add 2 more full rotations each roll
-            const { x, y, value } = randomRotation();
-            
+            // First: Do the same spin animation every time (3 full rotations)
             cube.style.transition = "transform 1s";
-            cube.style.transform = `rotateX(${x + totalSpins}deg) rotateY(${y + totalSpins}deg)`;
-        
+            cube.style.transform = `rotateX(1080deg) rotateY(1080deg)`;
+            
+            // After the spin, rotate to the correct face
             setTimeout(() => {
-              // Play BODY.wav when it lands
-              const bodySound = new Audio('BODY.wav');
-              bodySound.play();
+              const { x, y, value } = randomRotation();
+              cube.style.transition = "transform 0.5s";
+              cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
               
-              result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-              saveRoll(value);
+              setTimeout(() => {
+                // Play BODY.wav when it lands
+                const bodySound = new Audio('BODY.wav');
+                bodySound.play();
+                
+                result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
+                saveRoll(value);
+              }, 500);
             }, 1000);
           }, 300);
         });
