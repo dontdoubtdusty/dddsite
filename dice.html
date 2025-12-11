@@ -101,6 +101,19 @@
     .top    { transform: rotateX(90deg)   translateZ(75px);  background: orange; }
     .bottom { transform: rotateX(-90deg)  translateZ(75px);  background: pink;   }
 
+    #result {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #7cfc00;
+      font-size: 24px;
+      font-weight: bold;
+      font-family: Impact, sans-serif;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
     @keyframes shake {
       0%   { transform: translateX(0) translateY(0) rotateZ(0deg); }
       10%  { transform: translateX(-4px) translateY(2px) rotateZ(-2deg); }
@@ -200,7 +213,7 @@
     </div>
     </div>
   </div>
-  <div id="result" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: #7cfc00; font-size: 24px; font-weight: bold; font-family: Impact, sans-serif; text-align: center; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);"></div>
+  <div id="result"></div>
   <script>
     const cube = document.getElementById("cube");
 const result = document.getElementById("result");
