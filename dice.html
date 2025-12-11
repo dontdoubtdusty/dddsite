@@ -336,14 +336,12 @@
 
     // Username generator
     function generateUsername() {
-      const part1 = ['Swampy', 'Grumpy', 'Slimy', 'Muddy', 'Stinky', 'Smelly', 'Mossy', 'Grimy', 'Crusty', 'Funky'];
-      const part2 = ['Ogre', 'Donkey', 'Pudding', 'Fiona', 'Dragon', 'Shrek', 'Farquaad', 'Onion', 'Layers', 'Swamp'];
+      const characters = ['Shrek', 'Fiona', 'Donkey', 'Puss', 'Farquaad', 'Dragon', 'Gingy', 'Pinocchio', 'BigBadWolf', 'ThreeLittlePigs', 'ThreeBlindMice'];
       
-      const name1 = part1[Math.floor(Math.random() * part1.length)];
-      const name2 = part2[Math.floor(Math.random() * part2.length)];
-      const number = Math.floor(Math.random() * 1000);
+      const character = characters[Math.floor(Math.random() * characters.length)];
+      const number = Math.floor(Math.random() * 100);
       
-      return `${name1}${name2}${number}`;
+      return `${character}${number}`;
     }
     
     // Generate or retrieve a user ID
