@@ -14,41 +14,7 @@
       position: relative;
       overflow: hidden;
     }
-    body::before {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(3px 3px at 15% 20%, rgba(124, 252, 0, 0.4), transparent),
-        radial-gradient(2px 2px at 45% 60%, rgba(144, 238, 144, 0.3), transparent),
-        radial-gradient(4px 4px at 75% 35%, rgba(107, 142, 35, 0.5), transparent),
-        radial-gradient(2px 2px at 25% 80%, rgba(173, 255, 47, 0.3), transparent),
-        radial-gradient(3px 3px at 85% 70%, rgba(154, 205, 50, 0.4), transparent),
-        radial-gradient(2px 2px at 55% 15%, rgba(124, 252, 0, 0.3), transparent),
-        radial-gradient(5px 5px at 10% 45%, rgba(85, 107, 47, 0.6), transparent),
-        radial-gradient(3px 3px at 90% 25%, rgba(107, 142, 35, 0.4), transparent),
-        radial-gradient(2px 2px at 35% 90%, rgba(173, 255, 47, 0.3), transparent),
-        radial-gradient(4px 4px at 65% 50%, rgba(128, 128, 0, 0.5), transparent);
-      background-size: 300% 300%, 250% 250%, 400% 400%, 350% 350%, 280% 280%, 
-                       320% 320%, 450% 450%, 290% 290%, 380% 380%, 310% 310%;
-      background-position: 0% 0%;
-      animation: swampFloat 20s ease-in-out infinite;
-      opacity: 0.6;
-      pointer-events: none;
-    }
-    body::after {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(ellipse at 30% 40%, rgba(34, 139, 34, 0.15) 0%, transparent 50%),
-                  radial-gradient(ellipse at 70% 60%, rgba(107, 142, 35, 0.1) 0%, transparent 50%),
-                  radial-gradient(ellipse at 50% 80%, rgba(85, 107, 47, 0.2) 0%, transparent 40%);
-      opacity: 0.7;
-      pointer-events: none;
-      animation: swampPulse 8s ease-in-out infinite alternate;
-    }
+    
     
     @keyframes swampFloat {
       0%, 100% {
