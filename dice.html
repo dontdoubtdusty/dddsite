@@ -271,35 +271,35 @@
 <body>
   <div id="dice-container">
     <div id="cube">
-      <div class="face front one tint-red">
+      <div class="face front one">
         <img src="shrek_PNG.png" alt="">
       </div>
-      <div class="face back six tint-blue">
+      <div class="face back six">
         <img src="shrek_PNG.png" alt="">
         <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-      </div>
-      <div class="face right three tint-green">
-        <img src="shrek_PNG.png" alt="">
-        <div></div>
-        <div></div>
-        <div></div>
-        <img src="shrek_PNG.png" alt="">
-        <div></div>
-        <div></div>
-        <div></div>
-        <img src="shrek_PNG.png" alt="">
-      </div>
-      <div class="face left four tint-purple">
         <img src="shrek_PNG.png" alt="">
         <img src="shrek_PNG.png" alt="">
         <img src="shrek_PNG.png" alt="">
         <img src="shrek_PNG.png" alt="">
       </div>
-      <div class="face top five tint-orange">
+      <div class="face right three">
+        <img src="shrek_PNG.png" alt="">
+        <div></div>
+        <div></div>
+        <div></div>
+        <img src="shrek_PNG.png" alt="">
+        <div></div>
+        <div></div>
+        <div></div>
+        <img src="shrek_PNG.png" alt="">
+      </div>
+      <div class="face left four">
+        <img src="shrek_PNG.png" alt="">
+        <img src="shrek_PNG.png" alt="">
+        <img src="shrek_PNG.png" alt="">
+        <img src="shrek_PNG.png" alt="">
+      </div>
+      <div class="face top five">
       <img src="shrek_PNG.png" alt="">
       <div></div>
       <img src="shrek_PNG.png" alt="">
@@ -310,7 +310,7 @@
       <div></div>
       <img src="shrek_PNG.png" alt="">
     </div>
-      <div class="face bottom two tint-pink">
+      <div class="face bottom two">
       <img src="shrek_PNG.png" alt="">
       <div></div>
       <div></div>
@@ -364,6 +364,26 @@
     let currentRotationX = 0;
     let currentRotationY = 0;
     let isRolling = false; // Lock to prevent double clicks
+
+    // Shuffle and assign colors to faces
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+    
+    const colors = shuffleArray(['tint-red', 'tint-blue', 'tint-green', 'tint-purple', 'tint-orange', 'tint-pink']);
+    
+    // Apply random colors to faces
+    document.querySelector('.face.front.one').classList.add(colors[0]);
+    document.querySelector('.face.back.six').classList.add(colors[1]);
+    document.querySelector('.face.right.three').classList.add(colors[2]);
+    document.querySelector('.face.left.four').classList.add(colors[3]);
+    document.querySelector('.face.top.five').classList.add(colors[4]);
+    document.querySelector('.face.bottom.two').classList.add(colors[5]);
 
     function displayRolls() {
       const rollsList = document.getElementById('rolls-list');
