@@ -310,6 +310,8 @@
       let allRolls = [];
   
       let fadeTimeout;
+      let currentRotationX = 0;
+      let currentRotationY = 0;
 
       function displayRolls() {
         const rollsList = document.getElementById('rolls-list');
@@ -404,31 +406,33 @@
             // Remove particle after animation
             setTimeout(() => particle.remove(), 2300);
           }
-        
           // 🔹 After shake finishes, remove the class and roll the cube
-          let totalSpins = 0;
-
           setTimeout(() => {
             cube.classList.remove("shaking");
+            const { x, y, value } = randomRotation();
             
-            // First: Do the same spin animation every time (3 full rotations)
+            // Add spins to current rotation to get to target
+            currentRotationX += 1080; // 3 full spins
+            currentRotationY += 1080;
+            
+            // Calculate the target face position continuing from current rotation
+            const targetX = currentRotationX + (x % 360);
+            const targetY = currentRotationY + (y % 360);
+            
             cube.style.transition = "transform 1s";
-            cube.style.transform = `rotateX(1080deg) rotateY(1080deg)`;
+            cube.style.transform = `rotateX(${targetX}deg) rotateY(${targetY}deg)`;
             
-            // After the spin, rotate to the correct face
+            // Update current rotation for next roll
+            currentRotationX = targetX;
+            currentRotationY = targetY;
+          
             setTimeout(() => {
-              const { x, y, value } = randomRotation();
-              cube.style.transition = "transform 0.5s";
-              cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+              // Play BODY.wav when it lands
+              const bodySound = new Audio('BODY.wav');
+              bodySound.play();
               
-              setTimeout(() => {
-                // Play BODY.wav when it lands
-                const bodySound = new Audio('BODY.wav');
-                bodySound.play();
-                
-                result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-                saveRoll(value);
-              }, 500);
+              result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
+              saveRoll(value);
             }, 1000);
           }, 300);
         });
