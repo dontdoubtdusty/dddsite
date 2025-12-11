@@ -69,11 +69,17 @@
         opacity: 0.8;
       }
     }
+    
     #dice-container {
       width: 150px;
       height: 150px;
       perspective: 800px;
       cursor: pointer;
+      transition: transform 0.1s;
+    }
+    
+    #dice-container.tossing {
+      animation: diceToss 1.8s ease-in-out;
     }
     #cube {
       width: 100%;
@@ -97,6 +103,7 @@
       height: 100%;
       object-fit: contain;
     }
+    
     .face.one { 
       grid-template: 1fr / 1fr; 
       place-items: center;
@@ -232,6 +239,24 @@
       100% {
         transform: translateY(-200px) translateX(var(--drift)) scale(0);
         opacity: 0;
+      }
+    }
+
+    @keyframes diceToss {
+      0% {
+        transform: translateY(0) scale(1);
+      }
+      25% {
+        transform: translateY(-80px) scale(1.1);
+      }
+      50% {
+        transform: translateY(-100px) scale(1.15);
+      }
+      75% {
+        transform: translateY(-60px) scale(1.05);
+      }
+      100% {
+        transform: translateY(0) scale(1);
       }
     }
 
@@ -388,6 +413,7 @@
         
         // 2. SHAKE START
         cube.classList.add("shaking");
+        diceContainer.classList.add("tossing");
         
         // 3. AFTER SHAKE (300ms) -> TUMBLE PHASE
         setTimeout(() => {
@@ -425,7 +451,9 @@
               
               result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
               saveRoll(value);
-              isRolling = false; // Unlock clicking
+              diceContainer.classList.remove("tossing");
+              isRolling = false;
+              
             }, 1000); // Wait for the 1s landing animation
 
           }, 450); // Slight overlap with previous time (500ms) prevents stutter
