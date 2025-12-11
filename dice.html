@@ -216,80 +216,89 @@
   <div id="result"></div>
   <script>
     const cube = document.getElementById("cube");
-const result = document.getElementById("result");
-
-function randomRotation() {
-  const rotations = [
-    { x: 0, y: 0, value: 1 },      // front
-    { x: 0, y: 180, value: 6 },    // back
-    { x: 0, y: 90, value: 4 },     // right
-    { x: 0, y: -90, value: 3 },    // left
-    { x: -90, y: 0, value: 5 },    // top
-    { x: 90, y: 0, value: 2 }      // bottom
-  ];
-  
-  const choice = rotations[Math.floor(Math.random() * rotations.length)];
-  return {
-    x: choice.x + 720,
-    y: choice.y + 720,
-    value: choice.value
-  };
-}
-
-document.getElementById("dice-container").addEventListener("click", () => {
-
-  result.textContent = "";  // Clear the result immediately when clicked
-  
-  // 🔹 Start the shake
-  const diceContainer = document.getElementById("dice-container");
-  cube.classList.add("shaking");
-
-  // 🔹 Create swampy particles
-  for (let i = 0; i < 15; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
+    const result = document.getElementById("result");
     
-    // Random starting position around the dice
-    const startX = Math.random() * 150;
-    const startY = Math.random() * 150;
-    particle.style.left = startX + 'px';
-    particle.style.top = startY + 'px';
+    function randomRotation() {
+      const rotations = [
+        { x: 0, y: 0, value: 1 },      // front
+        { x: 0, y: 180, value: 6 },    // back
+        { x: 0, y: 90, value: 4 },     // right
+        { x: 0, y: -90, value: 3 },    // left
+        { x: -90, y: 0, value: 5 },    // top
+        { x: 90, y: 0, value: 2 }      // bottom
+      ];
+      
+      const choice = rotations[Math.floor(Math.random() * rotations.length)];
+      return {
+        x: choice.x + 720,
+        y: choice.y + 720,
+        value: choice.value
+      };
+    }
     
-    // Random horizontal drift
-    const drift = (Math.random() - 0.5) * 100;
-    particle.style.setProperty('--drift', `${drift}px`);
+    document.getElementById("dice-container").addEventListener("click", () => {
+      
+      result.textContent = "";  // Clear the result immediately when clicked
+      
+      // Play SOME.wav when clicked
+      const someSound = new Audio('SOME.wav');
+      someSound.play();
+      
+      // 🔹 Start the shake
+      const diceContainer = document.getElementById("dice-container");
+      cube.classList.add("shaking");
     
-    // Random delay for staggered effect
-    particle.style.animationDelay = `${Math.random() * 0.3}s`;
+      // 🔹 Create swampy particles
+      for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // Random starting position around the dice
+        const startX = Math.random() * 150;
+        const startY = Math.random() * 150;
+        particle.style.left = startX + 'px';
+        particle.style.top = startY + 'px';
+        
+        // Random horizontal drift
+        const drift = (Math.random() - 0.5) * 100;
+        particle.style.setProperty('--drift', `${drift}px`);
+        
+        // Random delay for staggered effect
+        particle.style.animationDelay = `${Math.random() * 0.3}s`;
+        
+        diceContainer.appendChild(particle);
+        
+        // Remove particle after animation
+        setTimeout(() => particle.remove(), 2300);
+      }
     
-    diceContainer.appendChild(particle);
-    
-    // Remove particle after animation
-    setTimeout(() => particle.remove(), 2300);
-  }
-
-  // 🔹 After shake finishes, remove the class and roll the cube
-  setTimeout(() => {
-  cube.classList.remove("shaking");  // Remove shake FIRST
-
-  const { x, y, value } = randomRotation();
-
-        // your spin reset (if you have the spin fix)
+      // 🔹 After shake finishes, remove the class and roll the cube
+      setTimeout(() => {
+        cube.classList.remove("shaking");  // Remove shake FIRST
+        const { x, y, value } = randomRotation();
+        
+        // Store current rotation values before resetting
+        const currentTransform = cube.style.transform;
+        // Reset transition but keep the current position
         cube.style.transition = "none";
-        cube.style.transform = "none";
+        cube.style.transform = currentTransform; // Keep current rotation, don't go to "none"
+        
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            cube.style.transition = "transform 1s";
+            cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+          });
+        });
     
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        cube.style.transition = "transform 1s";
-        cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
-      });
+        setTimeout(() => {
+          // Play BODY.wav when it lands
+          const bodySound = new Audio('BODY.wav');
+          bodySound.play();
+          
+          result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
+        }, 1000);
+      }, 300); // shake lasts 0.3s
     });
-
-  setTimeout(() => {
-    result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-  }, 1000);
-}, 300); // shake lasts 0.3s
-});
 
   </script>
 </body>
