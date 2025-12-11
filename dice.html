@@ -237,6 +237,8 @@ function randomRotation() {
 }
 
 document.getElementById("dice-container").addEventListener("click", () => {
+
+  result.textContent = "";  // Clear the result immediately when clicked
   
   // 🔹 Start the shake
   const diceContainer = document.getElementById("dice-container");
