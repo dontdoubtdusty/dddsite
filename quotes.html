@@ -149,11 +149,13 @@
         </div>
 
         <!-- Results -->
-        <div class="parchment rounded-lg p-6 shadow-lg">
-            <p class="text-purple-900 mb-4 font-semibold" id="resultCount"></p>
-            
-            <div class="space-y-4 max-h-[600px] overflow-y-auto" id="quotesList"></div>
-        </div>
+		<div class="parchment rounded-lg p-6 shadow-lg">
+		    <p class="text-purple-900 mb-4 font-semibold" id="resultCount"></p>
+		    
+		    <div class="space-y-4 max-h-[600px] overflow-y-auto" id="quotesList"></div>
+		    
+		    <div id="paginationContainer"></div>
+		</div>
     </div>
 	<!-- 1) Load the quotes file -->
 <script>
@@ -482,7 +484,8 @@ function initQuotes() {
 		    paginationDiv.appendChild(prevBtn);
 		    paginationDiv.appendChild(pageInfo);
 		    paginationDiv.appendChild(nextBtn);
-		    list.appendChild(paginationDiv);
+		    document.getElementById('paginationContainer').innerHTML = '';
+			document.getElementById('paginationContainer').appendChild(paginationDiv);
 		}
     }
 
