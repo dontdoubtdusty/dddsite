@@ -294,7 +294,10 @@ function initQuotes() {
     ];
 
     let currentSearch = '';
-    let selectedYear = null;
+	let selectedYear = null;
+	let currentPage = 1;
+	const itemsPerPage = 50;
+	
 
 
     // -------------------------------
@@ -316,10 +319,11 @@ function initQuotes() {
     allYearsBtn.textContent = 'All Years';
     allYearsBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
     allYearsBtn.onclick = () => {
-        selectedYear = null;
-        updateYearButtons();
-        renderQuotes();
-    };
+	    selectedYear = null;
+	    currentPage = 1;
+	    updateYearButtons();
+	    renderQuotes();
+	};
     yearFiltersContainer.appendChild(allYearsBtn);
 
     years.forEach(year => {
@@ -328,10 +332,11 @@ function initQuotes() {
         btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
         btn.dataset.year = year;
         btn.onclick = () => {
-            selectedYear = year;
-            updateYearButtons();
-            renderQuotes();
-        };
+		    selectedYear = year;
+		    currentPage = 1;
+		    updateYearButtons();
+		    renderQuotes();
+		};
         yearFiltersContainer.appendChild(btn);
     });
 
@@ -406,7 +411,10 @@ function initQuotes() {
         resultCount.textContent = `${filtered.length} result${filtered.length !== 1 ? 's' : ''}`;
         list.innerHTML = '';
 
-        const display = filtered.slice(0, 50);
+        const totalPages = Math.ceil(filtered.length / itemsPerPage);
+		const startIdx = (currentPage - 1) * itemsPerPage;
+		const endIdx = startIdx + itemsPerPage;
+		const display = filtered.slice(startIdx, endIdx);
 
         if (!display.length) {
             list.innerHTML = '<p class="text-center text-purple-600">No quotes found. Try a different search term!</p>';
@@ -436,12 +444,46 @@ function initQuotes() {
             list.appendChild(div);
         });
 
-        if (filtered.length > 50) {
-            const msg = document.createElement('p');
-            msg.className = 'text-center text-purple-600 text-sm';
-            msg.textContent = 'Showing first 50 results. Refine your search to see more.';
-            list.appendChild(msg);
-        }
+        if (totalPages > 1) {
+		    const paginationDiv = document.createElement('div');
+		    paginationDiv.className = 'flex justify-center items-center gap-3 mt-6';
+		    
+		    // Previous button
+		    const prevBtn = document.createElement('button');
+		    prevBtn.textContent = '← Previous';
+		    prevBtn.className = `px-4 py-2 rounded-lg transition-colors ${currentPage === 1 ? 'bg-purple-200 text-purple-400 cursor-not-allowed' : 'bg-purple-400 hover:bg-purple-500 text-white'}`;
+		    prevBtn.disabled = currentPage === 1;
+		    prevBtn.onclick = () => {
+		        if (currentPage > 1) {
+		            currentPage--;
+		            renderQuotes();
+		            document.getElementById('quotesList').scrollIntoView({ behavior: 'smooth' });
+		        }
+		    };
+		    
+		    // Page info
+		    const pageInfo = document.createElement('span');
+		    pageInfo.className = 'text-purple-900 font-semibold';
+		    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+		    
+		    // Next button
+		    const nextBtn = document.createElement('button');
+		    nextBtn.textContent = 'Next →';
+		    nextBtn.className = `px-4 py-2 rounded-lg transition-colors ${currentPage === totalPages ? 'bg-purple-200 text-purple-400 cursor-not-allowed' : 'bg-purple-400 hover:bg-purple-500 text-white'}`;
+		    nextBtn.disabled = currentPage === totalPages;
+		    nextBtn.onclick = () => {
+		        if (currentPage < totalPages) {
+		            currentPage++;
+		            renderQuotes();
+		            document.getElementById('quotesList').scrollIntoView({ behavior: 'smooth' });
+		        }
+		    };
+		    
+		    paginationDiv.appendChild(prevBtn);
+		    paginationDiv.appendChild(pageInfo);
+		    paginationDiv.appendChild(nextBtn);
+		    list.appendChild(paginationDiv);
+		}
     }
 
 
@@ -449,9 +491,10 @@ function initQuotes() {
     // SEARCH LISTENER
     // -------------------------------
     document.getElementById('searchInput').addEventListener('input', e => {
-        currentSearch = e.target.value;
-        renderQuotes();
-    });
+	    currentSearch = e.target.value;
+	    currentPage = 1; // Reset to first page
+	    renderQuotes();
+	});
 
 
     // -------------------------------
