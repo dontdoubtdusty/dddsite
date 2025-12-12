@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shrek Tarot Card Reader</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            color: #f4e4c1;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #d4c5a9;
+        }
+        
+        .deck-container {
+            perspective: 1000px;
+            margin: 40px 0;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .card-pile {
+            width: 150px;
+            height: 250px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .card-back {
+            width: 150px;
+            height: 250px;
+            background: linear-gradient(145deg, #8b4513, #654321);
+            border: 3px solid #f4e4c1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.3s;
+        }
+        
+        .card-pile:hover .card-back {
+            transform: translateY(-5px);
+        }
+        
+        .card-animated {
+            width: 150px;
+            height: 250px;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: all 1s;
+        }
+        
+        .card-face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            border: 3px solid #f4e4c1;
+        }
+        
+        .card-face-back {
+            background: linear-gradient(145deg, #8b4513, #654321);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+        }
+        
+        .card-face-front {
+            background: linear-gradient(145deg, #f4e4c1, #e8d7b5);
+            transform: rotateY(180deg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #2d5016;
+        }
+        
+        .card-face-front.reversed {
+            transform: rotateY(180deg) rotate(180deg);
+        }
+        
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            color: #4a7c2c;
+            margin-bottom: 10px;
+        }
+        
+        .card-symbol {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+        
+        .drawn-card {
+            background: linear-gradient(145deg, #f4e4c1, #e8d7b5);
+            padding: 30px;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+            color: #2d5016;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transform: translateY(100%);
+            transition: transform 0.5s ease-out;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        
+        .drawn-card.show {
+            transform: translateY(0);
+        }
+        
+        .card-name {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #4a7c2c;
+            font-weight: bold;
+        }
+        
+        .card-orientation {
+            font-size: 1.2em;
+            color: #8b4513;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
+        .card-meaning {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #3d3d3d;
+        }
+        
+        button {
+            background: #8b4513;
+            color: #f4e4c1;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: all 0.3s;
+            font-family: 'Georgia', serif;
+        }
+        
+        button:hover {
+            background: #654321;
+            transform: scale(1.05);
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Shrek Tarot</h1>
+        <p class="subtitle">What wisdom does the swamp hold for you today?</p>
+        
+        <div id="deckArea">
+            <p style="font-size: 1.1em; margin-bottom: 20px;">Click the deck to draw a card...</p>
+            <div class="deck-container">
+                <div class="card-pile" id="cardPile" onclick="drawCard()">
+                    <div class="card-back">🧅</div>
+                    <div class="card-back" style="top: -2px; left: -2px; opacity: 0.8;"></div>
+                    <div class="card-back" style="top: -4px; left: -4px; opacity: 0.6;"></div>
+                </div>
+                <div id="animatedCard" class="card-animated" style="display: none;">
+                    <div class="card-face card-face-back">🧅</div>
+                    <div class="card-face card-face-front" id="cardFront">
+                        <div class="card-title" id="cardTitle"></div>
+                        <div class="card-symbol">🧅</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="result" class="drawn-card">
+            <div class="card-name" id="cardName"></div>
+            <div class="card-orientation" id="cardOrientation"></div>
+            <div class="card-meaning" id="cardMeaning"></div>
+            <button onclick="resetDeck()">Draw Another Card</button>
+        </div>
+    </div>
+
+    <script>
+        const tarotCards = [
+            {
+                name: "The Ogre",
+                upright: "Embracing your true self, finding strength in authenticity, accepting what makes you different, protective instincts",
+                reversed: "Isolation by choice, pushing others away, refusing help, stubbornness blocking growth"
+            },
+            {
+                name: "The Swamp",
+                upright: "Finding sanctuary in solitude, creating your own peaceful space, contentment with simplicity, home and comfort",
+                reversed: "Stagnation, refusing to leave your comfort zone, becoming too withdrawn, missing opportunities"
+            },
+            {
+                name: "The Princess",
+                upright: "Breaking free from expectations, true beauty within, transformation and self-discovery, finding your voice",
+                reversed: "Trapped by others' expectations, hiding your true nature, conforming to please others, losing yourself"
+            },
+            {
+                name: "The Donkey",
+                upright: "Loyal friendship, unwavering optimism, comic relief in hard times, persistence despite rejection",
+                reversed: "Annoying persistence, ignoring boundaries, false cheerfulness, talking too much without listening"
+            },
+            {
+                name: "The Dragon",
+                upright: "Fierce protection of loved ones, unexpected alliances, hidden strength, passionate devotion",
+                reversed: "Destructive anger, jealousy consuming you, guarding the wrong things, misplaced aggression"
+            },
+            {
+                name: "The Lord's Castle",
+                upright: "Overcompensation for insecurity, appearance over substance, false power structures, questioning authority",
+                reversed: "True tyranny, abuse of power, ego run rampant, oppression of the weak"
+            },
+            {
+                name: "The Fairy Godmother",
+                upright: "False promises, manipulation disguised as help, societal pressure to conform, recognizing toxic positivity",
+                reversed: "Pure manipulation, exploiting others' dreams, controlling through false hope, complete deception"
+            },
+            {
+                name: "The Onion",
+                upright: "Layers of complexity, the importance of depth, peeling back defenses, understanding that things are complicated",
+                reversed: "Overanalyzing, creating unnecessary complexity, hiding behind too many layers, confusion"
+            },
+            {
+                name: "The Quest",
+                upright: "Embarking on a journey, unlikely companions, adventure awaits, stepping beyond your boundaries",
+                reversed: "Lost purpose, wandering aimlessly, companionship turned sour, avoiding your true path"
+            },
+            {
+                name: "The Mirror",
+                upright: "Self-reflection, seeing truth clearly, accepting reality, honest self-assessment",
+                reversed: "Denial of truth, avoiding self-examination, vanity, seeing only what you want to see"
+            },
+            {
+                name: "The Gingerbread Man",
+                upright: "Resilience despite trauma, maintaining sweetness through hardship, survival, finding joy in adversity",
+                reversed: "Bitterness from past wounds, inability to heal, victimhood, letting trauma define you"
+            },
+            {
+                name: "The Potion",
+                upright: "Transformation, change is possible, new perspectives, temporary solutions revealing deeper truths",
+                reversed: "False change, superficial transformation, relying on quick fixes, avoiding real work"
+            },
+            {
+                name: "The Wishing Star",
+                upright: "Hope and dreams, believing in possibilities, faith in magic, aspirations guiding your path",
+                reversed: "Unrealistic expectations, wishing without action, false hope, disappointment in dreams deferred"
+            },
+            {
+                name: "The Three Bears",
+                upright: "Found family, unlikely community, acceptance from unexpected places, strength in diversity",
+                reversed: "Forced conformity, toxic group dynamics, losing individuality in the crowd, false belonging"
+            },
+            {
+                name: "The Cat in Boots",
+                upright: "Charm and charisma, strategic thinking, using your gifts wisely, redemption is possible",
+                reversed: "Manipulation, using charm for selfish ends, past catching up with you, fake loyalty"
+            },
+            {
+                name: "The Muffin Man",
+                upright: "Simple pleasures, community connections, finding purpose in service, sweetness in everyday life",
+                reversed: "Lost in routine, meaningless repetition, forgotten by society, isolation in plain sight"
+            },
+            {
+                name: "The Poison Apple",
+                upright: "Recognizing danger in beauty, seeing through deception, avoiding temptation, learning from others' mistakes",
+                reversed: "Falling for false promises, choosing the easy path, ignoring red flags, toxic temptation"
+            },
+            {
+                name: "The Wedding",
+                upright: "True union, commitment beyond appearances, love conquering all, celebration of authentic connection",
+                reversed: "Marriage of convenience, forced commitment, wrong partner, social pressure over true love"
+            },
+            {
+                name: "The Mob",
+                upright: "Awakening to injustice, collective action, standing up to authority, the power of community",
+                reversed: "Mob mentality, persecution of the different, fear-driven action, dangerous groupthink"
+            },
+            {
+                name: "The Happily Ever After",
+                upright: "Finding your own ending, accepting imperfect happiness, love in unexpected forms, contentment",
+                reversed: "Chasing fairy tale perfection, dissatisfaction with reality, needing others' approval for happiness"
+            },
+            {
+                name: "The Outhouse",
+                upright: "Humor in dark times, not taking things too seriously, finding dignity in humble circumstances, bathroom humor",
+                reversed: "Crude behavior, lacking refinement when needed, inappropriate responses, too much time in the toilet"
+            },
+            {
+                name: "The Far Far Away",
+                upright: "Journey to new worlds, leaving the familiar, facing society, stepping into the spotlight",
+                reversed: "Culture shock, not fitting in anywhere, homesickness, rejected by both worlds"
+            }
+        ];
+
+        function drawCard() {
+            const pile = document.getElementById('cardPile');
+            const animatedCard = document.getElementById('animatedCard');
+            const cardFront = document.getElementById('cardFront');
+            
+            if (animatedCard.style.display !== 'none') return;
+            
+            const card = tarotCards[Math.floor(Math.random() * tarotCards.length)];
+            const isReversed = Math.random() < 0.5;
+            
+            // Hide pile
+            pile.style.display = 'none';
+            
+            // Set card content
+            document.getElementById('cardTitle').textContent = card.name;
+            
+            // Apply reversed class if needed
+            if (isReversed) {
+                cardFront.classList.add('reversed');
+            } else {
+                cardFront.classList.remove('reversed');
+            }
+            
+            // Show and animate card
+            animatedCard.style.display = 'block';
+            animatedCard.style.transform = 'translateX(0) translateY(0) rotateY(0deg)';
+            
+            // Pull out
+            setTimeout(() => {
+                animatedCard.style.transform = 'translateX(200px) translateY(0) rotateY(0deg)';
+            }, 100);
+            
+            // Flip
+            setTimeout(() => {
+                animatedCard.style.transform = 'translateX(200px) translateY(0) rotateY(180deg)';
+            }, 1100);
+            
+            // Show meaning
+            setTimeout(() => {
+                const resultPanel = document.getElementById('result');
+                document.getElementById('cardName').textContent = card.name;
+                document.getElementById('cardOrientation').textContent = isReversed ? '(Reversed)' : '(Upright)';
+                document.getElementById('cardMeaning').textContent = isReversed ? card.reversed : card.upright;
+                
+                resultPanel.classList.add('show');
+            }, 2100);
+        }
+
+        function resetDeck() {
+            const pile = document.getElementById('cardPile');
+            const animatedCard = document.getElementById('animatedCard');
+            const resultPanel = document.getElementById('result');
+            
+            resultPanel.classList.remove('show');
+            
+            setTimeout(() => {
+                animatedCard.style.display = 'none';
+                animatedCard.style.transform = 'translateX(0) translateY(0) rotateY(0deg)';
+                pile.style.display = 'block';
+            }, 500);
+        }
+    </script>
+</body>
+</html>
