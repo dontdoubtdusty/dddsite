@@ -80,9 +80,12 @@
 	</div>
 
 
-        <p class="text-purple-700 text-center mb-8" id="quoteCount">
-            Search through quotes
-        </p>
+        <p class="text-purple-700 text-center mb-2" id="quoteCount">
+		    Search through quotes
+		</p>
+		<p class="text-purple-600 text-center mb-8 text-sm italic" id="lostCount">
+		    
+		</p>
 		<p class="text-purple-600 text-center mb-8 text-sm">
 		    <a href="thebookofcarp.html" class="hover:text-purple-900 underline">What is the Book of Carp?</a>
 		</p>
@@ -202,7 +205,8 @@ function initQuotes() {
 
     window.quotes = quotes; // make global for QOTD
 
-    document.getElementById('quoteCount').textContent = `Search through ${quotes.length} memorable moments`;
+    document.getElementById('quoteCount').textContent = `Search through 1708 memorable moments`;
+	document.getElementById('lostCount').textContent = `101 lost to the depths of time`;
 
 
     // -------------------------------
