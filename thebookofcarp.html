@@ -27,6 +27,30 @@
       font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
       line-height: 1.8;
     }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        background: 
+            radial-gradient(circle at 50% 20%, rgba(167, 139, 250, 0.15) 0%, transparent 40%),
+            radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 35%),
+            radial-gradient(circle at 80% 60%, rgba(167, 139, 250, 0.08) 0%, transparent 30%);
+        animation: subtleGlow 8s ease-in-out infinite alternate;
+    }
+    
+    @keyframes subtleGlow {
+        0% {
+            opacity: 0.6;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
     
     .page {
       max-width: 700px;
