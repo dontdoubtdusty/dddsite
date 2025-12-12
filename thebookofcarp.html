@@ -7,17 +7,17 @@
   <style>
     body {
       background: 
-        radial-gradient(ellipse at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 70%, rgba(167, 139, 250, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 30%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(167, 139, 250, 0.22) 0%, transparent 50%),
         linear-gradient(180deg, 
-          #3d2952 0%,
-          #4a3566 15%,
-          #5a4478 35%,
-          #6b5389 55%,
-          #7c629a 75%,
-          #8b71ab 100%),
+          rgba(61, 41, 82, 0.85) 0%,
+          rgba(74, 53, 102, 0.85) 15%,
+          rgba(90, 68, 120, 0.85) 35%,
+          rgba(107, 83, 137, 0.85) 55%,
+          rgba(124, 98, 154, 0.85) 75%,
+          rgba(139, 113, 171, 0.85) 100%),
         url('elven_bg.jpg');
-      background-blend-mode: screen, screen, screen, normal;
+      background-blend-mode: screen, screen, normal, normal;
       background-size: auto, auto, auto, cover;
       background-position: center;
       background-attachment: fixed;
@@ -138,6 +138,14 @@
       font-size: 0.95rem;
       font-style: italic;
     }
+
+    .bg-credit {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.75rem;
+      margin-top: 16px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
     
     @media (max-width: 600px) {
       .tome { 
@@ -176,6 +184,9 @@
         <a href="quotes.html">Here begin the Sayings</a>
       </div>
     </div>
+      <div class="bg-credit">
+        Background art by Jeff Todd @ Dungeon Master Resources on Facebook
+      </div>
   </div>
 </body>
 </html>
