@@ -383,9 +383,18 @@
       const rollsList = document.getElementById('rolls-list');
       let html = '';
       allRolls.slice(-5).reverse().forEach(roll => {
-        const timeAgo = Math.floor((Date.now() - roll.time) / 1000);
+        const seconds = Math.floor((Date.now() - roll.time) / 1000);
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        
+        let timeAgo = '';
+        if (hours > 0) timeAgo += `${hours} hour${hours > 1 ? 's' : ''} `;
+        if (minutes > 0) timeAgo += `${minutes} minute${minutes > 1 ? 's' : ''} `;
+        if (secs > 0 || timeAgo === '') timeAgo += `${secs} second${secs !== 1 ? 's' : ''}`;
+        timeAgo = timeAgo.trim();
         const userName = roll.user || 'Someone';
-        html += `<div>${userName} rolled ${roll.value} SHREK${roll.value === 1 ? '' : 'S'} (${timeAgo}s ago)</div>`;
+        html += `<div>${userName} rolled ${roll.value} SHREK${roll.value === 1 ? '' : 'S'} (${timeAgo} ago)</div>`;
       });
       rollsList.innerHTML = html;
       
