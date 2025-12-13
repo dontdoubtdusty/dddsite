@@ -126,43 +126,42 @@
             margin: 10px 0;
         }
         
-        .drawn-card {
-            background: linear-gradient(145deg, #f4e4c1, #e8d7b5);
-            padding: 30px;
-            border-radius: 15px 15px 0 0;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-            color: #2d5016;
+        .tooltip {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            transform: translateY(100%);
-            transition: transform 0.5s ease-out;
-            max-height: 50vh;
-            overflow-y: auto;
+            background: linear-gradient(145deg, #f4e4c1, #e8d7b5);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            color: #2d5016;
+            max-width: 400px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            border: 2px solid #8b4513;
         }
         
-        .drawn-card.show {
-            transform: translateY(0);
+        .tooltip.show {
+            opacity: 1;
         }
         
-        .card-name {
-            font-size: 2.5em;
-            margin-bottom: 20px;
+        .tooltip-name {
+            font-size: 1.5em;
+            margin-bottom: 10px;
             color: #4a7c2c;
             font-weight: bold;
         }
         
-        .card-orientation {
-            font-size: 1.2em;
+        .tooltip-orientation {
+            font-size: 1em;
             color: #8b4513;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-style: italic;
         }
         
-        .card-meaning {
-            font-size: 1.2em;
-            line-height: 1.6;
+        .tooltip-meaning {
+            font-size: 1em;
+            line-height: 1.4;
             color: #3d3d3d;
         }
         
@@ -182,6 +181,10 @@
         button:hover {
             background: #654321;
             transform: scale(1.05);
+        }
+
+        #resetButton {
+            margin-top: 20px;
         }
         
         .hidden {
@@ -209,16 +212,15 @@
                         <div class="card-symbol">🧅</div>
                     </div>
                 </div>
+                <div id="tooltip" class="tooltip">
+                    <div class="tooltip-name" id="tooltipName"></div>
+                    <div class="tooltip-orientation" id="tooltipOrientation"></div>
+                    <div class="tooltip-meaning" id="tooltipMeaning"></div>
+                </div>
             </div>
         </div>
-        
-        <div id="result" class="drawn-card">
-            <div class="card-name" id="cardName"></div>
-            <div class="card-orientation" id="cardOrientation"></div>
-            <div class="card-meaning" id="cardMeaning"></div>
-            <button onclick="resetDeck()">Draw Another Card</button>
-        </div>
     </div>
+    <button id="resetButton" class="hidden" onclick="resetDeck()">Draw Another Card</button>
 
     <script>
         const tarotCards = [
@@ -466,29 +468,46 @@
                 animatedCard.style.transform = 'translateX(200px) translateY(0) rotateY(180deg)';
             }, 1100);
             
-            // Show meaning
+            // Store card data for tooltip
             setTimeout(() => {
-                const resultPanel = document.getElementById('result');
-                document.getElementById('cardName').textContent = card.name;
-                document.getElementById('cardOrientation').textContent = isReversed ? '(Reversed)' : '(Upright)';
-                document.getElementById('cardMeaning').textContent = isReversed ? card.reversed : card.upright;
+                const tooltip = document.getElementById('tooltip');
+                document.getElementById('tooltipName').textContent = card.name;
+                document.getElementById('tooltipOrientation').textContent = isReversed ? '(Reversed)' : '(Upright)';
+                document.getElementById('tooltipMeaning').textContent = isReversed ? card.reversed : card.upright;
                 
-                resultPanel.classList.add('show');
+                // Add mousemove listener to flipped card
+                animatedCard.addEventListener('mousemove', showTooltip);
+                animatedCard.addEventListener('mouseleave', hideTooltip);
             }, 2100);
+            document.getElementById('resetButton').classList.remove('hidden');
         }
 
         function resetDeck() {
             const pile = document.getElementById('cardPile');
             const animatedCard = document.getElementById('animatedCard');
-            const resultPanel = document.getElementById('result');
+            const tooltip = document.getElementById('tooltip');
             
-            resultPanel.classList.remove('show');
+            tooltip.classList.remove('show');
+            animatedCard.removeEventListener('mousemove', showTooltip);
+            animatedCard.removeEventListener('mouseleave', hideTooltip);
             
-            setTimeout(() => {
-                animatedCard.style.display = 'none';
-                animatedCard.style.transform = 'translateX(0) translateY(0) rotateY(0deg)';
-                pile.style.display = 'block';
-            }, 500);
+            animatedCard.style.display = 'none';
+            animatedCard.style.transform = 'translateX(0) translateY(0) rotateY(0deg)';
+            pile.style.display = 'block';
+
+            document.getElementById('resetButton').classList.remove('hidden');
+        }
+
+        function showTooltip(e) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.left = (e.pageX + 15) + 'px';
+            tooltip.style.top = (e.pageY + 15) + 'px';
+            tooltip.classList.add('show');
+        }
+        
+        function hideTooltip() {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.classList.remove('show');
         }
     </script>
 </body>
