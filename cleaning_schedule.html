@@ -184,6 +184,24 @@
                 <option value="8" selected>8 Hours</option>
                 <option value="9">9 Hours</option>
             </select>
+            <div class="control-group">
+            <label>Start Time:</label>
+            <div class="time-inputs">
+                <select id="startHour" onchange="generateSchedule()">
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8" selected>8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+                <select id="startMinute" onchange="generateSchedule()">
+                    <option value="0" selected>:00</option>
+                    <option value="30">:30</option>
+                </select>
+            </div>
+        </div>
         </div>
         
         <div id="schedule"></div>
@@ -203,7 +221,9 @@
             const needsMicroBreaks = totalHours >= 8;
             
             let schedule = [];
-            let currentTime = '8:00';
+            const startHour = document.getElementById('startHour').value;
+            const startMinute = document.getElementById('startMinute').value;
+            let currentTime = `${startHour}:${startMinute.padStart(2, '0')}`;
             
             // Morning: Daily task (1.5 hours)
             schedule.push({
@@ -229,19 +249,29 @@
             let tasksSinceMicroBreak = 0;
             
             while (remainingMinutes > 0) {
-                // Check if we need lunch break (at 12:30)
+            // Check if we need lunch break (just over halfway through the shift)
+                const [startH, startM] = `${startHour}:${startMinute.padStart(2, '0')}`.split(':').map(Number);
+                const startMinutes = startH * 60 + startM;
+                const endMinutes = startMinutes + (totalHours * 60);
+                const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
+                const lunchTime = midpointMinutes + 30;
+                
                 const [h, m] = currentTime.split(':').map(Number);
                 const currentMinutes = h * 60 + m;
-                const lunchTime = 12 * 60 + 30; // 12:30 in minutes
                 
-                if (currentMinutes >= lunchTime && currentMinutes < lunchTime + 60) {
+                if (!schedule.some(s => s.type === 'break') && currentMinutes >= lunchTime && remainingMinutes > 45) {
+                    const lunchHour = Math.floor(lunchTime / 60);
+                    const lunchMin = lunchTime % 60;
+                    const lunchStart = `${lunchHour}:${String(lunchMin).padStart(2, '0')}`;
+                    const lunchEnd = addMinutes(lunchStart, 60);
+                    
                     schedule.push({
-                        start: '12:30',
-                        end: '13:30',
+                        start: lunchStart,
+                        end: lunchEnd,
                         task: 'Break',
                         type: 'break'
                     });
-                    currentTime = '13:30';
+                    currentTime = lunchEnd;
                     continue;
                 }
                 
