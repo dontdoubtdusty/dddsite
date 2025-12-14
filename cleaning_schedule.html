@@ -317,15 +317,12 @@
             
             // Calculate remaining work time
             let remainingMinutes = (workHours * 60) - 90; // Subtract daily task
+            let lunchTaken = false;
             
             // Variables for task tracking
             let isHeavy = true;
             let microBreakCounter = 0;
             let tasksSinceMicroBreak = 0;
-
-            // Calculate remaining work time
-            let remainingMinutes = (workHours * 60) - 90; // Subtract daily task
-            let lunchTaken = false; 
             
             while (remainingMinutes > 0) {
                 // Parse time with AM/PM
