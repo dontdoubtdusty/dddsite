@@ -244,12 +244,6 @@
             // Calculate remaining work time
             let remainingMinutes = (workHours * 60) - 90; // Subtract daily task
             
-            // Alternate heavy/light tasks (45 minutes each)
-            let isHeavy = true;
-            let microBreakCounter = 0;
-            const microBreakInterval = needsMicroBreaks ? Math.floor(remainingMinutes / 5 / 45) : 0;
-            let tasksSinceMicroBreak = 0;
-            
             while (remainingMinutes > 0) {
             // Check if we need lunch break (just over halfway through the shift)
                 const [startH, startM] = `${startHour}:${startMinute.padStart(2, '0')}`.split(':').map(Number);
