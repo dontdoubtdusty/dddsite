@@ -148,10 +148,11 @@
             background: #95a5a6;
             color: white;
         }
-        
-        .micro-break {
+
+        .micro-break-divider {
+            height: 3px;
             background: #9b59b6;
-            color: white;
+            margin: 8px 0;
         }
         
         @media print {
@@ -237,9 +238,13 @@
             // Calculate remaining work time
             let remainingMinutes = (workHours * 60) - 90; // Subtract daily task
             
-            // Add micro-breaks if needed (5 breaks × 2 minutes = 10 minutes)
-            if (needsMicroBreaks) {
-                remainingMinutes -= 10;
+            // Add micro-break divider if needed
+            if (needsMicroBreaks && tasksSinceMicroBreak >= 2 && microBreakCounter < 5 && remainingMinutes > 45) {
+                schedule.push({
+                    type: 'micro-break-divider'
+                });
+                microBreakCounter++;
+                tasksSinceMicroBreak = 0;
             }
             
             // Alternate heavy/light tasks (45 minutes each)
@@ -336,6 +341,14 @@
             let currentSection = '';
             
             schedule.forEach(item => {
+                schedule.forEach(item => {
+                // Handle micro-break dividers
+                if (item.type === 'micro-break-divider') {
+                    html += '<div class="micro-break-divider"></div>';
+                    return;
+                }
+                
+                // ... rest of the existing code
                 const [h] = item.start.split(':').map(Number);
                 let section = '';
                 
