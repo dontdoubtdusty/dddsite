@@ -257,7 +257,14 @@
             let tasksSinceMicroBreak = 0;
             
             while (remainingMinutes > 0) {
-                const [h, m] = currentTime.split(':').map(Number);
+                // Parse time with AM/PM
+                const timeStr = currentTime.split(' ')[0]; // Get "1:30" from "1:30 PM"
+                const period = currentTime.split(' ')[1]; // Get "AM" or "PM"
+                const [h, m] = timeStr.split(':').map(Number);
+                let hour24 = h;
+                if (period === 'PM' && h !== 12) hour24 = hour24 + 12;
+                if (period === 'AM' && h === 12) hour24 = 0;
+                const currentMinutes = hour24 * 60 + m;
                 const currentMinutes = h * 60 + m;
                 
                 // Check if we've reached lunch time
