@@ -276,19 +276,6 @@
     </div>
 
     <script>
-        function addMinutes(time, minutes) {
-            const [hours, mins] = time.split(':').map(Number);
-            const date = new Date(2000, 0, 1, hours, mins);
-            date.setMinutes(date.getMinutes() + minutes);
-            
-            let h = date.getHours();
-            let m = String(date.getMinutes()).padStart(2, '0');
-            let period = h >= 12 ? 'PM' : 'AM';
-            h = h % 12 || 12; // Convert to 12-hour format, 0 becomes 12
-            
-            return `${h}:${m} ${period}`;
-        }
-
         function generateSchedule() {
             const totalHours = parseInt(document.getElementById('hours').value);
             const workHours = totalHours - 1; // Subtract 1 hour break
@@ -305,17 +292,17 @@
             const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
             const lunchTime = midpointMinutes + 30;
             
-            // Helper function to convert minutes to time string
+            // Helper function to convert minutes to 24-hour time string
             function minutesToTime(mins) {
                 const h = Math.floor(mins / 60);
                 const m = mins % 60;
-                return `${h}:${String(m).padStart(2, '0')}`;
+                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
             }
             
             // Morning: Daily task (1.5 hours)
             schedule.push({
-                start: addMinutes(minutesToTime(currentMinutes), 0),
-                end: addMinutes(minutesToTime(currentMinutes), 90),
+                start: minutesToTime(currentMinutes),
+                end: minutesToTime(currentMinutes + 90),
                 task: 'Same daily task',
                 type: 'daily'
             });
@@ -333,12 +320,9 @@
             while (remainingMinutes > 0) {
                 // Check if we've reached lunch time
                 if (!lunchTaken && currentMinutes >= lunchTime) {
-                    const lunchStart = addMinutes(minutesToTime(lunchTime), 0);
-                    const lunchEnd = addMinutes(minutesToTime(lunchTime), 60);
-                    
                     schedule.push({
-                        start: lunchStart,
-                        end: lunchEnd,
+                        start: minutesToTime(lunchTime),
+                        end: minutesToTime(lunchTime + 60),
                         task: 'Break',
                         type: 'break'
                     });
@@ -382,8 +366,8 @@
                 }
                 
                 schedule.push({
-                    start: addMinutes(minutesToTime(currentMinutes), 0),
-                    end: addMinutes(minutesToTime(currentMinutes), duration),
+                    start: minutesToTime(currentMinutes),
+                    end: minutesToTime(currentMinutes + duration),
                     task: taskLabel,
                     type: taskType
                 });
@@ -409,19 +393,12 @@
                     return;
                 }
                 
-                // Extract hour from time string with AM/PM
-                const timeStr = item.start.split(' ')[0]; // Get "8:00" from "8:00 AM"
-                const period = item.start.split(' ')[1]; // Get "AM" or "PM"
-                const [h] = timeStr.split(':').map(Number);
-                
-                // Convert to 24-hour for comparison
-                let hour24 = h;
-                if (period === 'PM' && h !== 12) hour24 = h + 12;
-                if (period === 'AM' && h === 12) hour24 = 0;
+                // Extract hour from 24-hour time string
+                const [h] = item.start.split(':').map(Number);
                 
                 let section = '';
                 
-                if (hour24 < 12) {
+                if (h < 12) {
                     section = 'morning';
                 } else if (item.type === 'break') {
                     section = 'break';
@@ -461,22 +438,6 @@
             }
             
             scheduleDiv.innerHTML = html;
-        }
-
-        function addMinutesToFormatted(timeWithPeriod, minutes) {
-            // Parse "9:30 AM" format
-            const parts = timeWithPeriod.split(' ');
-            const [h, m] = parts[0].split(':').map(Number);
-            const period = parts[1];
-            
-            // Convert to 24-hour
-            let hour24 = h;
-            if (period === 'PM' && h !== 12) hour24 = h + 12;
-            if (period === 'AM' && h === 12) hour24 = 0;
-            
-            // Use the original addMinutes with 24-hour format
-            const time24 = `${hour24}:${String(m).padStart(2, '0')}`;
-            return addMinutes(time24, minutes);
         }
         
         // Generate initial schedule
