@@ -297,7 +297,7 @@
             let schedule = [];
             const startHour = document.getElementById('startHour').value;
             const startMinute = document.getElementById('startMinute').value;
-            let currentTime = `${startHour}:${startMinute.padStart(2, '0')}`;
+            let currentTime = addMinutes(`${startHour}:${startMinute.padStart(2, '0')}`, 0);
             
             // Calculate lunch time ONCE outside the loop
             const [startH, startM] = currentTime.split(':').map(Number);
