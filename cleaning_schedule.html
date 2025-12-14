@@ -340,10 +340,19 @@
                     return;
                 }
                 
-                const [h] = item.start.split(':').map(Number);
+                // Extract hour from time string with AM/PM
+                const timeStr = item.start.split(' ')[0]; // Get "8:00" from "8:00 AM"
+                const period = item.start.split(' ')[1]; // Get "AM" or "PM"
+                const [h] = timeStr.split(':').map(Number);
+                
+                // Convert to 24-hour for comparison
+                let hour24 = h;
+                if (period === 'PM' && h !== 12) hour24 = h + 12;
+                if (period === 'AM' && h === 12) hour24 = 0;
+                
                 let section = '';
                 
-                if (h < 12 || (h === 12 && item.start !== '12:30')) {
+                if (hour24 < 12) {
                     section = 'morning';
                 } else if (item.type === 'break') {
                     section = 'break';
