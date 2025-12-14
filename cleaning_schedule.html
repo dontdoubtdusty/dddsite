@@ -295,30 +295,31 @@
             const needsMicroBreaks = totalHours >= 8;
             
             let schedule = [];
-            const startHour = document.getElementById('startHour').value;
-            const startMinute = document.getElementById('startMinute').value;
-            let currentTime = addMinutes(`${startHour}:${startMinute.padStart(2, '0')}`, 0);
+            const startHour = parseInt(document.getElementById('startHour').value);
+            const startMinute = parseInt(document.getElementById('startMinute').value);
             
-            // Calculate lunch time ONCE outside the loop
-            const timeStr = currentTime.split(' ')[0]; // Get "8:00" from "8:00 AM"
-            const period = currentTime.split(' ')[1]; // Get "AM" or "PM"
-            const [startH, startM] = timeStr.split(':').map(Number);
-            let startHour24 = startH;
-            if (period === 'PM' && startH !== 12) startHour24 = startH + 12;
-            if (period === 'AM' && startH === 12) startHour24 = 0;
-            const startMinutes = startHour24 * 60 + startM;
+            // Work in minutes from midnight (24-hour format)
+            let currentMinutes = startHour * 60 + startMinute;
+            const startMinutes = currentMinutes;
             const endMinutes = startMinutes + (totalHours * 60);
             const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
             const lunchTime = midpointMinutes + 30;
             
+            // Helper function to convert minutes to time string
+            function minutesToTime(mins) {
+                const h = Math.floor(mins / 60);
+                const m = mins % 60;
+                return `${h}:${String(m).padStart(2, '0')}`;
+            }
+            
             // Morning: Daily task (1.5 hours)
             schedule.push({
-                start: currentTime,
-                end: addMinutes(currentTime, 90),
+                start: addMinutes(minutesToTime(currentMinutes), 0),
+                end: addMinutes(minutesToTime(currentMinutes), 90),
                 task: 'Same daily task',
                 type: 'daily'
             });
-            currentTime = addMinutes(currentTime, 90);
+            currentMinutes += 90;
             
             // Calculate remaining work time
             let remainingMinutes = (workHours * 60) - 90; // Subtract daily task
@@ -330,22 +331,10 @@
             let tasksSinceMicroBreak = 0;
             
             while (remainingMinutes > 0) {
-                // Parse time with AM/PM
-                const timeStr = currentTime.split(' ')[0]; // Get "1:30" from "1:30 PM"
-                const period = currentTime.split(' ')[1]; // Get "AM" or "PM"
-                const [h, m] = timeStr.split(':').map(Number);
-                let hour24 = h;
-                if (period === 'PM' && h !== 12) hour24 = hour24 + 12;
-                if (period === 'AM' && h === 12) hour24 = 0;
-                const currentMinutes = hour24 * 60 + m;
-                
                 // Check if we've reached lunch time
-                if (!lunchTaken && currentMinutes >= lunchTime) {  // <-- CHANGE from !schedule.some(s => s.type === 'break')
-                    const lunchHour = Math.floor(lunchTime / 60);
-                    const lunchMin = lunchTime % 60;
-                    const lunchStartRaw = `${lunchHour}:${String(lunchMin).padStart(2, '0')}`;
-                    const lunchStart = addMinutes(lunchStartRaw, 0); // Format with AM/PM
-                    const lunchEnd = addMinutes(lunchStartRaw, 60);
+                if (!lunchTaken && currentMinutes >= lunchTime) {
+                    const lunchStart = addMinutes(minutesToTime(lunchTime), 0);
+                    const lunchEnd = addMinutes(minutesToTime(lunchTime), 60);
                     
                     schedule.push({
                         start: lunchStart,
@@ -353,8 +342,8 @@
                         task: 'Break',
                         type: 'break'
                     });
-                    currentTime = lunchEnd;
-                    lunchTaken = true;  // <-- ADD THIS LINE
+                    currentMinutes = lunchTime + 60;
+                    lunchTaken = true;
                     continue;
                 }
                 
@@ -393,13 +382,13 @@
                 }
                 
                 schedule.push({
-                    start: currentTime,
-                    end: addMinutesToFormatted(currentTime, duration),
+                    start: addMinutes(minutesToTime(currentMinutes), 0),
+                    end: addMinutes(minutesToTime(currentMinutes), duration),
                     task: taskLabel,
                     type: taskType
                 });
                 
-                currentTime = addMinutesToFormatted(currentTime, duration);
+                currentMinutes += duration;
                 remainingMinutes -= duration;
                 isHeavy = !isHeavy;
                 tasksSinceMicroBreak++;
