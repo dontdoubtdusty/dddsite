@@ -264,8 +264,9 @@
                 if (!schedule.some(s => s.type === 'break') && currentMinutes >= lunchTime) {
                     const lunchHour = Math.floor(lunchTime / 60);
                     const lunchMin = lunchTime % 60;
-                    const lunchStart = `${lunchHour}:${String(lunchMin).padStart(2, '0')}`;
-                    const lunchEnd = addMinutes(lunchStart, 60);
+                    const lunchStartRaw = `${lunchHour}:${String(lunchMin).padStart(2, '0')}`;
+                    const lunchStart = addMinutes(lunchStartRaw, 0); // Format with AM/PM
+                    const lunchEnd = addMinutes(lunchStartRaw, 60);
                     
                     schedule.push({
                         start: lunchStart,
