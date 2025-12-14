@@ -265,7 +265,6 @@
                 if (period === 'PM' && h !== 12) hour24 = hour24 + 12;
                 if (period === 'AM' && h === 12) hour24 = 0;
                 const currentMinutes = hour24 * 60 + m;
-                const currentMinutes = h * 60 + m;
                 
                 // Check if we've reached lunch time
                 if (!schedule.some(s => s.type === 'break') && currentMinutes >= lunchTime) {
