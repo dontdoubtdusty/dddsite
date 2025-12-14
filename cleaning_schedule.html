@@ -341,14 +341,12 @@
             let currentSection = '';
             
             schedule.forEach(item => {
-                schedule.forEach(item => {
                 // Handle micro-break dividers
                 if (item.type === 'micro-break-divider') {
                     html += '<div class="micro-break-divider"></div>';
                     return;
                 }
                 
-                // ... rest of the existing code
                 const [h] = item.start.split(':').map(Number);
                 let section = '';
                 
