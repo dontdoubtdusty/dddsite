@@ -189,13 +189,13 @@
             <label>Start Time:</label>
             <div class="time-inputs">
                 <select id="startHour" onchange="generateSchedule()">
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8" selected>8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
+                    <option value="6">6 AM</option>
+                    <option value="7">7 AM</option>
+                    <option value="8" selected>8 AM</option>
+                    <option value="9">9 AM</option>
+                    <option value="10">10 AM</option>
+                    <option value="11">11 AM</option>
+                    <option value="12">12 PM</option>
                 </select>
                 <select id="startMinute" onchange="generateSchedule()">
                     <option value="0" selected>:00</option>
@@ -213,7 +213,13 @@
             const [hours, mins] = time.split(':').map(Number);
             const date = new Date(2000, 0, 1, hours, mins);
             date.setMinutes(date.getMinutes() + minutes);
-            return date.getHours() + ':' + String(date.getMinutes()).padStart(2, '0');
+            
+            let h = date.getHours();
+            let m = String(date.getMinutes()).padStart(2, '0');
+            let period = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12; // Convert to 12-hour format, 0 becomes 12
+            
+            return `${h}:${m} ${period}`;
         }
 
         function generateSchedule() {
