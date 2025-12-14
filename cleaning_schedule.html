@@ -322,6 +322,10 @@
             let isHeavy = true;
             let microBreakCounter = 0;
             let tasksSinceMicroBreak = 0;
+
+            // Calculate remaining work time
+            let remainingMinutes = (workHours * 60) - 90; // Subtract daily task
+            let lunchTaken = false; 
             
             while (remainingMinutes > 0) {
                 // Parse time with AM/PM
@@ -334,7 +338,7 @@
                 const currentMinutes = hour24 * 60 + m;
                 
                 // Check if we've reached lunch time
-                if (!schedule.some(s => s.type === 'break') && currentMinutes >= lunchTime) {
+                if (!lunchTaken && currentMinutes >= lunchTime) {  // <-- CHANGE from !schedule.some(s => s.type === 'break')
                     const lunchHour = Math.floor(lunchTime / 60);
                     const lunchMin = lunchTime % 60;
                     const lunchStartRaw = `${lunchHour}:${String(lunchMin).padStart(2, '0')}`;
@@ -348,6 +352,7 @@
                         type: 'break'
                     });
                     currentTime = lunchEnd;
+                    lunchTaken = true;  // <-- ADD THIS LINE
                     continue;
                 }
                 
