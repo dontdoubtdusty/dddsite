@@ -325,7 +325,7 @@
                     type: taskType
                 });
                 
-                currentTime = addMinutes(currentTime, duration);
+                currentTime = addMinutesToFormatted(currentTime, duration);
                 remainingMinutes -= duration;
                 isHeavy = !isHeavy;
                 tasksSinceMicroBreak++;
@@ -398,6 +398,22 @@
             }
             
             scheduleDiv.innerHTML = html;
+        }
+
+        function addMinutesToFormatted(timeWithPeriod, minutes) {
+            // Parse "9:30 AM" format
+            const parts = timeWithPeriod.split(' ');
+            const [h, m] = parts[0].split(':').map(Number);
+            const period = parts[1];
+            
+            // Convert to 24-hour
+            let hour24 = h;
+            if (period === 'PM' && h !== 12) hour24 = h + 12;
+            if (period === 'AM' && h === 12) hour24 = 0;
+            
+            // Use the original addMinutes with 24-hour format
+            const time24 = `${hour24}:${String(m).padStart(2, '0')}`;
+            return addMinutes(time24, minutes);
         }
         
         // Generate initial schedule
