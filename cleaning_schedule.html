@@ -300,8 +300,13 @@
             let currentTime = addMinutes(`${startHour}:${startMinute.padStart(2, '0')}`, 0);
             
             // Calculate lunch time ONCE outside the loop
-            const [startH, startM] = currentTime.split(':').map(Number);
-            const startMinutes = startH * 60 + startM;
+            const timeStr = currentTime.split(' ')[0]; // Get "8:00" from "8:00 AM"
+            const period = currentTime.split(' ')[1]; // Get "AM" or "PM"
+            const [startH, startM] = timeStr.split(':').map(Number);
+            let startHour24 = startH;
+            if (period === 'PM' && startH !== 12) startHour24 = startH + 12;
+            if (period === 'AM' && startH === 12) startHour24 = 0;
+            const startMinutes = startHour24 * 60 + startM;
             const endMinutes = startMinutes + (totalHours * 60);
             const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
             const lunchTime = midpointMinutes + 30;
