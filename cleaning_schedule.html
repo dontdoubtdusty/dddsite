@@ -321,12 +321,12 @@
                 // Check if we've reached lunch time
                 if (!lunchTaken && currentMinutes >= lunchTime) {
                     schedule.push({
-                        start: minutesToTime(lunchTime),
-                        end: minutesToTime(lunchTime + 60),
+                        start: minutesToTime(currentMinutes),
+                        end: minutesToTime(currentMinutes + 60),
                         task: 'Break',
                         type: 'break'
                     });
-                    currentMinutes = lunchTime + 60;
+                    currentMinutes = currentMinutes + 60;
                     lunchTaken = true;
                     continue;
                 }
