@@ -265,7 +265,7 @@
                 }
                                
                 
-                if (!schedule.some(s => s.type === 'break') && currentMinutes >= lunchTime && remainingMinutes > 45) {
+                if (!schedule.some(s => s.type === 'break') && currentMinutes >= lunchTime) {
                     const lunchHour = Math.floor(lunchTime / 60);
                     const lunchMin = lunchTime % 60;
                     const lunchStart = `${lunchHour}:${String(lunchMin).padStart(2, '0')}`;
