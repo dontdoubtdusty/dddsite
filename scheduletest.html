@@ -213,6 +213,15 @@
             border-bottom: none;
         }
         
+        .task-row.current-time {
+            box-shadow: inset 4px 0 0 #3498db;
+            background: rgba(52, 152, 219, 0.1) !important;
+        }
+        
+        body.dark-mode .task-row.current-time {
+            background: rgba(52, 152, 219, 0.2) !important;
+        }
+        
         body.dark-mode .task-row {
             background: #1e1e1e;
             border-bottom-color: #2a2a2a;
@@ -722,7 +731,8 @@
                 html += '</div>';
             }
             
-            scheduleDiv.innerHTML = html;
+            scheduleDiv.innerHTML = html;    
+            highlightCurrentTime();
         }
 
         function toggleTheme() {
@@ -766,6 +776,38 @@
                 document.getElementById('colorToggle').textContent = '🎨 Simple';
             }
             generateSchedule();
+        }
+
+        function highlightCurrentTime() {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            document.querySelectorAll('.task-row').forEach(row => {
+                row.classList.remove('current-time');
+            });
+            
+            const schedule = document.querySelectorAll('.task-row');
+            schedule.forEach((row, index) => {
+                const timeText = row.querySelector('.time').textContent;
+                const [startStr, endStr] = timeText.split(' – ');
+                
+                const startMins = parseTime(startStr);
+                const endMins = parseTime(endStr);
+                
+                if (currentMinutes >= startMins && currentMinutes < endMins) {
+                    row.classList.add('current-time');
+                }
+            });
+        }
+        
+        function parseTime(timeStr) {
+            const [time, period] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            
+            if (period === 'PM' && hours !== 12) hours += 12;
+            if (period === 'AM' && hours === 12) hours = 0;
+            
+            return hours * 60 + minutes;
         }
         
         // Generate initial schedule
