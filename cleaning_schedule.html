@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Cleaning Work Schedule</title>
+    <title>Task Rotation Schedule</title>
     <style>
         * {
             margin: 0;
@@ -66,7 +66,12 @@
             margin: 0 auto;
             background: white;
             padding: 40px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-radius: 16px;
+        }
+        
+        body.dark-mode .container {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
         
         h1 {
@@ -158,23 +163,46 @@
         }
         
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        body.dark-mode .section {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         
         .section-header {
-            background: #2c3e50;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
-            padding: 12px 20px;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 2px;
+            padding: 16px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 0;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        
+        body.dark-mode .section-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
         }
         
         .task-row {
             display: flex;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 18px 24px;
             align-items: center;
+            background: white;
+        }
+        
+        .task-row:last-child {
+            border-bottom: none;
+        }
+        
+        body.dark-mode .task-row {
+            background: #1e1e1e;
+            border-bottom-color: #2a2a2a;
         }
         
         .task-row:last-child {
@@ -182,10 +210,16 @@
         }
         
         .time {
-            font-weight: 700;
-            font-size: 16px;
-            color: #2c3e50;
-            min-width: 140px;
+            font-weight: 600;
+            font-size: 15px;
+            color: #5a6c7d;
+            min-width: 200px;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.3px;
+        }
+        
+        body.dark-mode .time {
+            color: #8a9ba8;
         }
         
         .task {
@@ -196,12 +230,12 @@
         }
         
         .label {
-            padding: 6px 14px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
         }
         
         .daily {
@@ -230,9 +264,10 @@
         }
 
         .micro-break-divider {
-            height: 3px;
-            background: #9b59b6;
-            margin: 8px 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #9b59b6 50%, transparent 100%);
+            margin: 12px 24px;
+            opacity: 0.6;
         }
 
         #themeToggle {
@@ -360,7 +395,7 @@
 <body>
     <button id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
     <div class="container">
-        <h1>Daily Cleaning Work Schedule</h1>
+        <h1>Task Rotation Schedule</h1>
         
         <div class="controls">
             <label for="hours"># of Hours:</label>
