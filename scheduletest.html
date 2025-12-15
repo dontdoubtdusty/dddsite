@@ -302,6 +302,84 @@
             accent-color: #f39c12;
         }
 
+        #colorToggle {
+            position: fixed;
+            top: 15px;
+            right: 90px;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 20px;
+            background: #8e44ad;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        #colorToggle:hover {
+            background: #9b59b6;
+        }
+        
+        body.dark-mode #colorToggle {
+            background: #9b59b6;
+        }
+        
+        /* Colorful mode styles */
+        body.colorful-mode .task-row {
+            transition: background 0.3s;
+        }
+        
+        body.colorful-mode .task-row:has(.daily) {
+            background: linear-gradient(90deg, rgba(52, 152, 219, 0.15) 0%, rgba(52, 152, 219, 0.05) 100%);
+        }
+        
+        body.colorful-mode .task-row:has(.heavy) {
+            background: linear-gradient(90deg, rgba(231, 76, 60, 0.15) 0%, rgba(231, 76, 60, 0.05) 100%);
+        }
+        
+        body.colorful-mode .task-row:has(.light) {
+            background: linear-gradient(90deg, rgba(46, 204, 113, 0.15) 0%, rgba(46, 204, 113, 0.05) 100%);
+        }
+        
+        body.colorful-mode .task-row:has(.moderate) {
+            background: linear-gradient(90deg, rgba(243, 156, 18, 0.15) 0%, rgba(243, 156, 18, 0.05) 100%);
+        }
+        
+        body.colorful-mode .task-row:has(.break) {
+            background: linear-gradient(90deg, rgba(149, 165, 166, 0.15) 0%, rgba(149, 165, 166, 0.05) 100%);
+        }
+        
+        /* Dark mode + colorful mode */
+        body.dark-mode.colorful-mode .task-row:has(.daily) {
+            background: linear-gradient(90deg, rgba(52, 152, 219, 0.25) 0%, rgba(52, 152, 219, 0.1) 100%);
+        }
+        
+        body.dark-mode.colorful-mode .task-row:has(.heavy) {
+            background: linear-gradient(90deg, rgba(231, 76, 60, 0.25) 0%, rgba(231, 76, 60, 0.1) 100%);
+        }
+        
+        body.dark-mode.colorful-mode .task-row:has(.light) {
+            background: linear-gradient(90deg, rgba(46, 204, 113, 0.25) 0%, rgba(46, 204, 113, 0.1) 100%);
+        }
+        
+        body.dark-mode.colorful-mode .task-row:has(.moderate) {
+            background: linear-gradient(90deg, rgba(243, 156, 18, 0.25) 0%, rgba(243, 156, 18, 0.1) 100%);
+        }
+        
+        body.dark-mode.colorful-mode .task-row:has(.break) {
+            background: linear-gradient(90deg, rgba(149, 165, 166, 0.25) 0%, rgba(149, 165, 166, 0.1) 100%);
+        }
+        
+        @media (max-width: 768px) {
+            #colorToggle {
+                top: 10px;
+                right: 75px;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 20px 10px;
@@ -394,6 +472,7 @@
 </head>
 <body>
     <button id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+    <button id="colorToggle" onclick="toggleColorful()">🎨 Colorful</button>
     <div class="container">
         <h1>Task Rotation Schedule</h1>
         
@@ -625,12 +704,31 @@
                 localStorage.setItem('theme', 'light');
             }
         }
+
+        function toggleColorful() {
+            const body = document.body;
+            const button = document.getElementById('colorToggle');
+            
+            body.classList.toggle('colorful-mode');
+            
+            if (body.classList.contains('colorful-mode')) {
+                button.textContent = '🎨 Simple';
+                localStorage.setItem('colorful', 'true');
+            } else {
+                button.textContent = '🎨 Colorful';
+                localStorage.setItem('colorful', 'false');
+            }
+        }
         
-        // Load saved theme on page load
+        // Update the window.onload function to restore colorful mode:
         window.onload = function() {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 document.getElementById('themeToggle').textContent = '☀️ Light Mode';
+            }
+            if (localStorage.getItem('colorful') === 'true') {
+                document.body.classList.add('colorful-mode');
+                document.getElementById('colorToggle').textContent = '🎨 Simple';
             }
             generateSchedule();
         }
