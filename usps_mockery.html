@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Do You Mock Me, USPS?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stamp {
+            width: 150px;
+            height: 150px;
+            border: 8px dashed #ff6b6b;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            animation: float 3s ease-in-out infinite;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); }
+            50% { text-shadow: 0 0 20px #ff6b6b, 2px 2px 4px rgba(0, 0, 0, 0.5); }
+        }
+
+        .quote {
+            font-size: 1.5em;
+            font-style: italic;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #4ecdc4;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        .possibilities {
+            margin-top: 50px;
+        }
+
+        .possibilities h2 {
+            color: #4ecdc4;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .option {
+            background: rgba(78, 205, 196, 0.2);
+            padding: 20px 30px;
+            border-radius: 10px;
+            border: 2px solid #4ecdc4;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            flex: 1;
+            min-width: 200px;
+            max-width: 250px;
+        }
+
+        .option:hover {
+            transform: translateY(-5px);
+            background: rgba(78, 205, 196, 0.4);
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+        }
+
+        .option h3 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .option p {
+            font-size: 0.9em;
+            color: #ddd;
+        }
+
+        .envelope {
+            position: fixed;
+            font-size: 30px;
+            opacity: 0.3;
+            animation: drift 15s linear infinite;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(-100px, -100px) rotate(0deg); }
+            100% { transform: translate(100vw, 100vh) rotate(360deg); }
+        }
+
+        .envelope:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .envelope:nth-child(2) { top: 60%; left: 80%; animation-delay: 3s; }
+        .envelope:nth-child(3) { top: 30%; left: 50%; animation-delay: 6s; }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="envelope">📬</div>
+    <div class="envelope">📭</div>
+    <div class="envelope">📮</div>
+
+    <div class="container">
+        <div class="stamp">📨</div>
+        
+        <h1>A Digital Lament</h1>
+        
+        <div class="quote">
+            "And I thought to myself<br>
+            <strong>Why do you mock me,<br>
+            United States Postal Service?</strong>"
+        </div>
+
+        <div class="possibilities">
+            <h2>And that's gotta be the basis for something...</h2>
+            
+            <div class="options">
+                <div class="option">
+                    <h3>🎭 A Ballet</h3>
+                    <p>Interpretive dance expressing the existential dread of delayed packages</p>
+                </div>
+                
+                <div class="option">
+                    <h3>🎵 A Diss Track</h3>
+                    <p>Dropping bars about lost mail and tracking numbers that lie</p>
+                </div>
+                
+                <div class="option">
+                    <h3>🌐 A Fake Webpage</h3>
+                    <p>This very page you're reading right now (meta!)</p>
+                </div>
+                
+                <div class="option">
+                    <h3>❓ Who Knows</h3>
+                    <p>The possibilities are endless when USPS lets you down</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Neither rain nor snow nor gloom of night... but perhaps just my mail.</p>
+        </footer>
+    </div>
+</body>
+</html>
