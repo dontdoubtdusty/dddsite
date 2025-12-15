@@ -603,11 +603,10 @@
                     continue;
                 }
                 
-                // Add micro-break divider if needed
+                // Check if we need a micro-break after this task
+                let showMicroBreak = false;
                 if (needsMicroBreaks && tasksSinceMicroBreak >= 2 && microBreakCounter < 5 && remainingMinutes > 45) {
-                    schedule.push({
-                        type: 'micro-break-divider'
-                    });
+                    showMicroBreak = true;
                     microBreakCounter++;
                     tasksSinceMicroBreak = 0;
                 }
@@ -642,7 +641,8 @@
                     end: minutesToTime(currentMinutes + duration),
                     task: taskLabel,
                     type: taskType,
-                    startMinutes: currentMinutes  // Add this
+                    startMinutes: currentMinutes,
+                    showMicroBreak: showMicroBreak
                 });
                 
                 currentMinutes += duration;
@@ -703,6 +703,7 @@
                         <div class="task">${item.task}</div>
                         <span class="label ${item.type}">${item.type === 'moderate-light' ? 'Moderate/Light' : item.type.charAt(0).toUpperCase() + item.type.slice(1).replace('-', ' ')}</span>
                     </div>
+                    ${item.showMicroBreak ? '<div class="micro-break-divider"></div>' : ''}
                 `;
             });
             
