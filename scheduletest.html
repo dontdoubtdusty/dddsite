@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Rotation Schedule</title>
-    <p class="subtitle">Plan your workday with a balanced task rotation and scheduled mini-breaks</p>
+    <p class="subtitle">Plan your workday with a balanced task rotation</p>
     <style>
         * {
             margin: 0;
@@ -603,10 +603,11 @@
                     continue;
                 }
                 
-                // Check if we need a micro-break after this task
-                let showMicroBreak = false;
+                // Add micro-break divider if needed
                 if (needsMicroBreaks && tasksSinceMicroBreak >= 2 && microBreakCounter < 5 && remainingMinutes > 45) {
-                    showMicroBreak = true;
+                    schedule.push({
+                        type: 'micro-break-divider'
+                    });
                     microBreakCounter++;
                     tasksSinceMicroBreak = 0;
                 }
@@ -641,8 +642,7 @@
                     end: minutesToTime(currentMinutes + duration),
                     task: taskLabel,
                     type: taskType,
-                    startMinutes: currentMinutes,
-                    showMicroBreak: showMicroBreak
+                    startMinutes: currentMinutes  // Add this
                 });
                 
                 currentMinutes += duration;
@@ -703,7 +703,6 @@
                         <div class="task">${item.task}</div>
                         <span class="label ${item.type}">${item.type === 'moderate-light' ? 'Moderate/Light' : item.type.charAt(0).toUpperCase() + item.type.slice(1).replace('-', ' ')}</span>
                     </div>
-                    ${item.showMicroBreak ? '<div class="micro-break-divider"></div>' : ''}
                 `;
             });
             
