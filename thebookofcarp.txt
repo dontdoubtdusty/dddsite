@@ -515,7 +515,7 @@
 514: "And it turns out, it's not a penis." [Gartic] [26/01/2020]
 515: "I didn't even have TIME to teabag him." [Dead by Daylight] [26/01/2020]
 516: "Wow. What a turbo shitter." [Dead by Daylight] [27/01/2020]
-517: "I'm gonna bust your boy pussy open." [Temtem] [28/01/2020]
+
 518: "I don't want Toucan Sam at the front of my party!" [Temtem] [28/01/2020]
 519: "I don't want Lucina's feet anymore, okay? I'm done with it. I'm over it." [Super Smash Bros. Ultimate] [29/01/2020]
 520: "Chat, I wanna be your girlfriend chat." [Super Smash Bros. Ultimate] [29/01/2020]
@@ -717,7 +717,7 @@
 716: "Oh the reactor's melting down? That's good dude. Hell yeah." [Among Us] [05/05/2020]
 717: "Who the fuck is Anthony? Pick up your cold brew you cuck!" [The Jackbox Party Pack 5] [08/05/2020]
 718: "Can I get some poopy loopy snoopy loopy doopy?" [The Jackbox Party Pack 5] [08/05/2020]
-719 "If you have a fish in your hand instead of a dick in your hand, the pedophile won't bother you. Easy!" [The Jackbox Party Pack 5] [08/05/2020]
+
 720: "Kissy kissies *smooching noises*" [The Jackbox Party Pack 4] [08/05/2020]
 721: "Always sucky before the fucky." [The Jackbox Party Pack 4] [08/05/2020]
 722: "No one ever talks about my penis." [The Jackbox Party Pack 4] [08/05/2020]
@@ -1760,6 +1760,7 @@
 1807: "Get away from me Jeffrey. I'm a free man!" [Dead by Daylight] [08/04/2024]
 1808: "Oh, dude, she's right there? Stuff me." [Dead by Daylight] [08/04/2024]
 1809: "The lore is that she gets sucked into the cosmic space...time...vagina butthole while she's sleeping dude. She's not wearing shoes while she's sleeping. Silly." [Dragon Ball: The Breakers] [08/04/2024]
+
 
 
 
