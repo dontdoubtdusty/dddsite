@@ -355,7 +355,8 @@
                 start: minutesToTime(currentMinutes),
                 end: minutesToTime(currentMinutes + 90),
                 task: 'Same daily task',
-                type: 'daily'
+                type: 'daily',
+                startMinutes: currentMinutes  // Add this
             });
             currentMinutes += 90;
             
@@ -375,7 +376,8 @@
                         start: minutesToTime(currentMinutes),
                         end: minutesToTime(currentMinutes + 60),
                         task: 'Break',
-                        type: 'break'
+                        type: 'break',
+                        startMinutes: currentMinutes  // Add this
                     });
                     currentMinutes = currentMinutes + 60;
                     lunchTaken = true;
@@ -420,7 +422,8 @@
                     start: minutesToTime(currentMinutes),
                     end: minutesToTime(currentMinutes + duration),
                     task: taskLabel,
-                    type: taskType
+                    type: taskType,
+                    startMinutes: currentMinutes  // Add this
                 });
                 
                 currentMinutes += duration;
@@ -444,8 +447,8 @@
                     return;
                 }
                 
-                // Extract hour from 24-hour time string
-                const [h] = item.start.split(':').map(Number);
+                // Extract hour from stored minutes value
+                const h = Math.floor(item.startMinutes / 60);
                 
                 let section = '';
                 
