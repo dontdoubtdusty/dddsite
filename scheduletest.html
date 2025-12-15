@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Cleaning Work Schedule</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .container {
+            background: #2d2d2d;
+        }
+        
+        body.dark-mode .controls {
+            background: #3a3a3a;
+        }
+        
+        body.dark-mode .section-header {
+            background: #1a1a1a;
+        }
+        
+        body.dark-mode .task-row {
+            border-bottom-color: #444;
+        }
+        
+        body.dark-mode .task {
+            color: #e0e0e0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .controls label {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .controls select {
+            font-size: 16px;
+            padding: 8px 16px;
+            border: 2px solid #2c3e50;
+            border-radius: 4px;
+            background: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .time-inputs select {
+            padding: 8px 12px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            background: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        
+        .task-row {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 16px 20px;
+            align-items: center;
+        }
+        
+        .task-row:last-child {
+            border-bottom: none;
+        }
+        
+        .time {
+            font-weight: 700;
+            font-size: 16px;
+            color: #2c3e50;
+            min-width: 140px;
+        }
+        
+        .task {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .label {
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .daily {
+            background: #3498db;
+            color: white;
+        }
+        
+        .heavy {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .light {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .moderate {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .break {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .micro-break-divider {
+            height: 3px;
+            background: #9b59b6;
+            margin: 8px 0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                width: 100%;
+                align-items: flex-start;
+            }
+            
+            .time-inputs {
+                width: 100%;
+            }
+            
+            .controls select {
+                width: 100%;
+                font-size: 14px;
+            }
+            
+            .time-inputs select {
+                flex: 1;
+            }
+            
+            .section-header {
+                font-size: 16px;
+                padding: 10px 15px;
+            }
+            
+            .task-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 15px;
+            }
+            
+            .time {
+                font-size: 14px;
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .task {
+                font-size: 14px;
+                width: 100%;
+            }
+            
+            .label {
+                align-self: flex-end;
+            }
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            
+            .controls {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Daily Cleaning Work Schedule</h1>
+        
+        <div class="controls">
+            <button id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+            <label for="hours"># of Hours:</label>
+            <select id="hours" onchange="generateSchedule()">
+                <option value="5">5 Hours</option>
+                <option value="6">6 Hours</option>
+                <option value="7">7 Hours</option>
+                <option value="8" selected>8 Hours</option>
+                <option value="9">9 Hours</option>
+            </select>
+            <div class="control-group">
+            <label>Start Time:</label>
+            <div class="time-inputs">
+                <select id="startHour" onchange="generateSchedule()">
+                    <option value="6">6 AM</option>
+                    <option value="7">7 AM</option>
+                    <option value="8" selected>8 AM</option>
+                    <option value="9">9 AM</option>
+                    <option value="10">10 AM</option>
+                    <option value="11">11 AM</option>
+                    <option value="12">12 PM</option>
+                </select>
+                <select id="startMinute" onchange="generateSchedule()">
+                    <option value="0" selected>:00</option>
+                    <option value="30">:30</option>
+                </select>
+            </div>
+        </div>
+        </div>
+        
+        <div id="schedule"></div>
+    </div>
+
+    <script>
+        function generateSchedule() {
+            const totalHours = parseInt(document.getElementById('hours').value);
+            const workHours = totalHours - 1; // Subtract 1 hour break
+            const needsMicroBreaks = totalHours >= 8;
+            
+            let schedule = [];
+            const startHour = parseInt(document.getElementById('startHour').value);
+            const startMinute = parseInt(document.getElementById('startMinute').value);
+            
+            // Work in minutes from midnight (24-hour format)
+            let currentMinutes = startHour * 60 + startMinute;
+            const startMinutes = currentMinutes;
+            const endMinutes = startMinutes + (totalHours * 60);
+            const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
+            const lunchTime = midpointMinutes + 30;
+            
+            // Helper function to convert minutes to 24-hour time string
+            function minutesToTime(mins) {
+                const h = Math.floor(mins / 60);
+                const m = mins % 60;
+                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+            }
+            
+            // Morning: Daily task (1.5 hours)
+            schedule.push({
+                start: minutesToTime(currentMinutes),
+                end: minutesToTime(currentMinutes + 90),
+                task: 'Same daily task',
+                type: 'daily'
+            });
+            currentMinutes += 90;
+            
+            // Calculate remaining work time
+            let remainingMinutes = (workHours * 60) - 90; // Subtract daily task
+            let lunchTaken = false;
+            
+            // Variables for task tracking
+            let isHeavy = true;
+            let microBreakCounter = 0;
+            let tasksSinceMicroBreak = 0;
+            
+            while (remainingMinutes > 0) {
+                // Check if we've reached lunch time
+                if (!lunchTaken && currentMinutes >= lunchTime) {
+                    schedule.push({
+                        start: minutesToTime(currentMinutes),
+                        end: minutesToTime(currentMinutes + 60),
+                        task: 'Break',
+                        type: 'break'
+                    });
+                    currentMinutes = currentMinutes + 60;
+                    lunchTaken = true;
+                    continue;
+                }
+                
+                // Add micro-break divider if needed
+                if (needsMicroBreaks && tasksSinceMicroBreak >= 2 && microBreakCounter < 5 && remainingMinutes > 45) {
+                    schedule.push({
+                        type: 'micro-break-divider'
+                    });
+                    microBreakCounter++;
+                    tasksSinceMicroBreak = 0;
+                }
+                
+                let duration = Math.min(45, remainingMinutes);
+                let taskType, taskLabel;
+                
+                // Determine task type based on position
+                if (currentMinutes < lunchTime) {
+                    // Morning: alternate heavy/light
+                    taskType = isHeavy ? 'heavy' : 'light';
+                    taskLabel = isHeavy ? 'Heavy task' : 'Light task';
+                } else {
+                    // Afternoon: moderate and light
+                    if (remainingMinutes <= 15) {
+                        taskType = 'light';
+                        taskLabel = 'Very light / finishing tasks';
+                    } else if (remainingMinutes <= 45) {
+                        taskType = 'moderate';
+                        taskLabel = 'Moderate/light task';
+                    } else if (isHeavy) {
+                        taskType = 'moderate';
+                        taskLabel = 'Moderate task';
+                    } else {
+                        taskType = 'light';
+                        taskLabel = 'Light task';
+                    }
+                }
+                
+                schedule.push({
+                    start: minutesToTime(currentMinutes),
+                    end: minutesToTime(currentMinutes + duration),
+                    task: taskLabel,
+                    type: taskType
+                });
+                
+                currentMinutes += duration;
+                remainingMinutes -= duration;
+                isHeavy = !isHeavy;
+                tasksSinceMicroBreak++;
+            }
+            
+            renderSchedule(schedule);
+        }
+        
+        function renderSchedule(schedule) {
+            const scheduleDiv = document.getElementById('schedule');
+            let html = '';
+            let currentSection = '';
+            
+            schedule.forEach(item => {
+                // Handle micro-break dividers
+                if (item.type === 'micro-break-divider') {
+                    html += '<div class="micro-break-divider"></div>';
+                    return;
+                }
+                
+                // Extract hour from 24-hour time string
+                const [h] = item.start.split(':').map(Number);
+                
+                let section = '';
+                
+                if (h < 12) {
+                    section = 'morning';
+                } else if (item.type === 'break') {
+                    section = 'break';
+                } else {
+                    section = 'afternoon';
+                }
+                
+                if (section !== currentSection) {
+                    if (currentSection !== '') {
+                        html += '</div>';
+                    }
+                    
+                    let headerText = '';
+                    if (section === 'morning') {
+                        headerText = 'MORNING SESSION';
+                    } else if (section === 'break') {
+                        headerText = 'LUNCH BREAK';
+                    } else {
+                        headerText = 'AFTERNOON SESSION';
+                    }
+                    
+                    html += `<div class="section"><div class="section-header">${headerText}</div>`;
+                    currentSection = section;
+                }
+                
+                html += `
+                    <div class="task-row">
+                        <div class="time">${item.start} – ${item.end}</div>
+                        <div class="task">${item.task}</div>
+                        <span class="label ${item.type}">${item.type.charAt(0).toUpperCase() + item.type.slice(1).replace('-', ' ')}</span>
+                    </div>
+                `;
+            });
+            
+            if (currentSection !== '') {
+                html += '</div>';
+            }
+            
+            scheduleDiv.innerHTML = html;
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const button = document.getElementById('themeToggle');
+            
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                button.textContent = '☀️ Light Mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                button.textContent = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        
+        // Load saved theme on page load
+        window.onload = function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggle').textContent = '☀️ Light Mode';
+            }
+            generateSchedule();
+        }
+        
+        // Generate initial schedule
+        generateSchedule();
+    </script>
+</body>
+</html>
