@@ -337,11 +337,16 @@
             const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
             const lunchTime = midpointMinutes + 30;
             
-            // Helper function to convert minutes to 24-hour time string
+            // Helper function to convert minutes to 12-hour time string
             function minutesToTime(mins) {
-                const h = Math.floor(mins / 60);
+                let h = Math.floor(mins / 60);
                 const m = mins % 60;
-                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                
+                // Convert to 12-hour format
+                if (h > 12) h = h - 12;
+                if (h === 0) h = 12;
+                
+                return `${h}:${String(m).padStart(2, '0')}`;
             }
             
             // Morning: Daily task (1.5 hours)
