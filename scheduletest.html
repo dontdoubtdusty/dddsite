@@ -200,6 +200,29 @@
             margin: 8px 0;
         }
 
+        #themeToggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 50px;
+            background: #2c3e50;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        #themeToggle:hover {
+            background: #34495e;
+        }
+        
+        body.dark-mode #themeToggle {
+            background: #f39c12;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 20px 10px;
@@ -285,11 +308,11 @@
     </style>
 </head>
 <body>
+    <button id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
     <div class="container">
         <h1>Daily Cleaning Work Schedule</h1>
         
         <div class="controls">
-            <button id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
             <label for="hours"># of Hours (including break):</label>
             <select id="hours" onchange="generateSchedule()">
                 <option value="5">5 Hours</option>
