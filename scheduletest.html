@@ -223,6 +223,15 @@
             background: #f39c12;
         }
 
+        .controls input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        
+        body.dark-mode .controls input[type="checkbox"] {
+            accent-color: #f39c12;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 20px 10px;
@@ -319,7 +328,13 @@
         <h1>Daily Cleaning Work Schedule</h1>
         
         <div class="controls">
-            <label for="hours"># of Hours (including break):</label>
+            <label for="hours"># of Hours:</label>
+            <div class="control-group">
+                <label for="includeBreak">
+                    <input type="checkbox" id="includeBreak" checked onchange="generateSchedule()">
+                    Include Break
+                </label>
+            </div>
             <select id="hours" onchange="generateSchedule()">
                 <option value="5">5 Hours</option>
                 <option value="6">6 Hours</option>
@@ -353,7 +368,8 @@
     <script>
         function generateSchedule() {
             const totalHours = parseInt(document.getElementById('hours').value);
-            const workHours = totalHours - 1; // Subtract 1 hour break
+            const includeBreak = document.getElementById('includeBreak').checked;
+            const workHours = includeBreak ? totalHours - 1 : totalHours;
             const needsMicroBreaks = totalHours >= 8;
             
             let schedule = [];
@@ -401,13 +417,13 @@
             
             while (remainingMinutes > 0) {
                 // Check if we've reached lunch time
-                if (!lunchTaken && currentMinutes >= lunchTime) {
+                if (includeBreak && !lunchTaken && currentMinutes >= lunchTime) {
                     schedule.push({
                         start: minutesToTime(currentMinutes),
                         end: minutesToTime(currentMinutes + 60),
                         task: 'Break',
                         type: 'break',
-                        startMinutes: currentMinutes  // Add this
+                        startMinutes: currentMinutes
                     });
                     currentMinutes = currentMinutes + 60;
                     lunchTaken = true;
