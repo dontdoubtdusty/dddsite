@@ -16,6 +16,50 @@
             background: #f5f5f5;
             padding: 40px 20px;
         }
+
+        body.dark-mode {
+            background: #121212;
+            color: #e8e8e8;
+        }
+        
+        body.dark-mode .container {
+            background: #1e1e1e;
+        }
+        
+        body.dark-mode .controls {
+            background: #2a2a2a;
+        }
+        
+        body.dark-mode .controls label {
+            color: #e8e8e8;
+        }
+        
+        body.dark-mode .controls select {
+            background: #2a2a2a;
+            color: #e8e8e8;
+            border-color: #404040;
+        }
+        
+        body.dark-mode .section-header {
+            background: #2d2d2d;
+            color: #ffffff;
+        }
+        
+        body.dark-mode .task-row {
+            border-bottom-color: #333;
+        }
+        
+        body.dark-mode .time {
+            color: #a0a0a0;
+        }
+        
+        body.dark-mode .task {
+            color: #d0d0d0;
+        }
+        
+        body.dark-mode h1 {
+            color: #ffffff;
+        }
         
         .container {
             max-width: 800px;
@@ -113,6 +157,7 @@
             flex: 1;
             font-size: 16px;
             color: #333;
+            margin-left: 15px;  /* Add this */
         }
         
         .label {
@@ -153,6 +198,29 @@
             height: 3px;
             background: #9b59b6;
             margin: 8px 0;
+        }
+
+        #themeToggle {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 20px;
+            background: #2c3e50;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        #themeToggle:hover {
+            background: #34495e;
+        }
+        
+        body.dark-mode #themeToggle {
+            background: #f39c12;
         }
 
         @media (max-width: 768px) {
@@ -220,6 +288,12 @@
             .label {
                 align-self: flex-end;
             }
+            #themeToggle {
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
         }
         
         @media print {
@@ -240,11 +314,12 @@
     </style>
 </head>
 <body>
+    <button id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
     <div class="container">
         <h1>Daily Cleaning Work Schedule</h1>
         
         <div class="controls">
-            <label for="hours"># of Hours:</label>
+            <label for="hours"># of Hours (including break):</label>
             <select id="hours" onchange="generateSchedule()">
                 <option value="5">5 Hours</option>
                 <option value="6">6 Hours</option>
@@ -292,19 +367,26 @@
             const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
             const lunchTime = midpointMinutes + 30;
             
-            // Helper function to convert minutes to 24-hour time string
+            // Helper function to convert minutes to 12-hour time string
             function minutesToTime(mins) {
-                const h = Math.floor(mins / 60);
+                let h = Math.floor(mins / 60);
                 const m = mins % 60;
-                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                
+                // Convert to 12-hour format
+                if (h > 12) h = h - 12;
+                if (h === 0) h = 12;
+                
+                return `${h}:${String(m).padStart(2, '0')} ${ampm}`;
             }
             
             // Morning: Daily task (1.5 hours)
             schedule.push({
                 start: minutesToTime(currentMinutes),
                 end: minutesToTime(currentMinutes + 90),
-                task: 'Same daily task',
-                type: 'daily'
+                task: 'Daily task',
+                type: 'daily',
+                startMinutes: currentMinutes  // Add this
             });
             currentMinutes += 90;
             
@@ -324,10 +406,12 @@
                         start: minutesToTime(currentMinutes),
                         end: minutesToTime(currentMinutes + 60),
                         task: 'Break',
-                        type: 'break'
+                        type: 'break',
+                        startMinutes: currentMinutes  // Add this
                     });
                     currentMinutes = currentMinutes + 60;
                     lunchTaken = true;
+                    tasksSinceMicroBreak = 0;
                     continue;
                 }
                 
@@ -369,7 +453,8 @@
                     start: minutesToTime(currentMinutes),
                     end: minutesToTime(currentMinutes + duration),
                     task: taskLabel,
-                    type: taskType
+                    type: taskType,
+                    startMinutes: currentMinutes  // Add this
                 });
                 
                 currentMinutes += duration;
@@ -393,8 +478,8 @@
                     return;
                 }
                 
-                // Extract hour from 24-hour time string
-                const [h] = item.start.split(':').map(Number);
+                // Extract hour from stored minutes value
+                const h = Math.floor(item.startMinutes / 60);
                 
                 let section = '';
                 
@@ -438,6 +523,30 @@
             }
             
             scheduleDiv.innerHTML = html;
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const button = document.getElementById('themeToggle');
+            
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                button.textContent = '☀️ Light Mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                button.textContent = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        
+        // Load saved theme on page load
+        window.onload = function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggle').textContent = '☀️ Light Mode';
+            }
+            generateSchedule();
         }
         
         // Generate initial schedule
