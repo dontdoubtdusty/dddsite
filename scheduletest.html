@@ -270,6 +270,11 @@
             background: #f39c12;
             color: white;
         }
+
+        .moderate-light {
+            background: linear-gradient(90deg, #f39c12 0%, #2ecc71 100%);
+            color: white;
+        }
         
         .break {
             background: #95a5a6;
@@ -382,6 +387,13 @@
         
         body.dark-mode.colorful-mode .task-row:has(.break) {
             background: linear-gradient(90deg, rgba(149, 165, 166, 0.25) 0%, rgba(149, 165, 166, 0.1) 100%);
+        }
+        body.colorful-mode .task-row:has(.moderate-light) {
+            background: linear-gradient(90deg, rgba(243, 156, 18, 0.1) 0%, rgba(46, 204, 113, 0.1) 100%);
+        }
+        
+        body.dark-mode.colorful-mode .task-row:has(.moderate-light) {
+            background: linear-gradient(90deg, rgba(243, 156, 18, 0.2) 0%, rgba(46, 204, 113, 0.2) 100%);
         }
         
         @media (max-width: 768px) {
@@ -614,7 +626,7 @@
                         taskType = 'light';
                         taskLabel = 'Very light / finishing tasks';
                     } else if (remainingMinutes <= 45) {
-                        taskType = 'moderate';
+                        taskType = 'moderate-light';
                         taskLabel = 'Moderate/light task';
                     } else if (isHeavy) {
                         taskType = 'moderate';
