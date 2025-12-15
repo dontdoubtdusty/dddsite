@@ -531,6 +531,16 @@
                     Break?
                 </label>
             </div>
+                <div class="control-group">
+                <label>Daily Task:</label>
+                <select id="dailyDuration" onchange="generateSchedule()">
+                    <option value="30">30 min</option>
+                    <option value="45">45 min</option>
+                    <option value="60">1 hour</option>
+                    <option value="90" selected>1.5 hours</option>
+                    <option value="120">2 hours</option>
+                </select>
+            </div>
         </div>
         </div>
         
@@ -543,6 +553,8 @@
             const includeBreak = document.getElementById('includeBreak').checked;
             const workHours = includeBreak ? totalHours - 1 : totalHours;
             const needsMicroBreaks = totalHours >= 6;
+
+            const dailyDuration = parseInt(document.getElementById('dailyDuration').value); //Daily task duration
             
             let schedule = [];
             const startHour = parseInt(document.getElementById('startHour').value);
@@ -568,18 +580,18 @@
                 return `${h}:${String(m).padStart(2, '0')} ${ampm}`;
             }
             
-            // Morning: Daily task (1.5 hours)
+            // Morning: Daily task (variable length)
             schedule.push({
                 start: minutesToTime(currentMinutes),
-                end: minutesToTime(currentMinutes + 90),
+                end: minutesToTime(currentMinutes + dailyDuration),  // Changed from + 90
                 task: 'Daily task',
                 type: 'daily',
-                startMinutes: currentMinutes  // Add this
+                startMinutes: currentMinutes
             });
-            currentMinutes += 90;
+            currentMinutes += dailyDuration;  // Changed from += 90
             
             // Calculate remaining work time
-            let remainingMinutes = (workHours * 60) - 90; // Subtract daily task
+            let remainingMinutes = (workHours * 60) - dailyDuration;
             let lunchTaken = false;
             
             // Variables for task tracking
