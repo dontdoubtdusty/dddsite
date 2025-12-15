@@ -329,12 +329,6 @@
         
         <div class="controls">
             <label for="hours"># of Hours:</label>
-            <div class="control-group">
-                <label for="includeBreak">
-                    <input type="checkbox" id="includeBreak" checked onchange="generateSchedule()">
-                    Include Break
-                </label>
-            </div>
             <select id="hours" onchange="generateSchedule()">
                 <option value="5">5 Hours</option>
                 <option value="6">6 Hours</option>
@@ -358,6 +352,12 @@
                     <option value="0" selected>:00</option>
                     <option value="30">:30</option>
                 </select>
+            </div>
+            <div class="control-group">
+                <label for="includeBreak">
+                    <input type="checkbox" id="includeBreak" checked onchange="generateSchedule()">
+                    Break?
+                </label>
             </div>
         </div>
         </div>
