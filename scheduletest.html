@@ -341,12 +341,13 @@
             function minutesToTime(mins) {
                 let h = Math.floor(mins / 60);
                 const m = mins % 60;
+                const ampm = h >= 12 ? 'PM' : 'AM';
                 
                 // Convert to 12-hour format
                 if (h > 12) h = h - 12;
                 if (h === 0) h = 12;
                 
-                return `${h}:${String(m).padStart(2, '0')}`;
+                return `${h}:${String(m).padStart(2, '0')} ${ampm}`;
             }
             
             // Morning: Daily task (1.5 hours)
