@@ -701,7 +701,7 @@
                     <div class="task-row">
                         <div class="time">${item.start} – ${item.end}</div>
                         <div class="task">${item.task}</div>
-                        <span class="label ${item.type}">${item.type.charAt(0).toUpperCase() + item.type.slice(1).replace('-', ' ')}</span>
+                        <span class="label ${item.type}">${item.type === 'moderate-light' ? 'Moderate/Light' : item.type.charAt(0).toUpperCase() + item.type.slice(1).replace('-', ' ')}</span>
                     </div>
                 `;
             });
