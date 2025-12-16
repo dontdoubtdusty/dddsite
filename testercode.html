@@ -232,11 +232,33 @@
     .hud-line.time {
       animation: chronopulse 3s ease-in-out infinite;
     }
+
+    .console-header {
+      background: linear-gradient(180deg, #0d1a24 0%, #0a1218 100%);
+      padding: 12px 20px;
+      border-bottom: 1px solid #2a5a7a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
     
-    @keyframes chronopulse {
-      0%   { opacity: 0.7; }
-      50%  { opacity: 1; }
-      100% { opacity: 0.7; }
+    .mission-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: #7ba8c4;
+      text-transform: uppercase;
+      font-weight: 400;
+      margin: 0;
+      opacity: 0.85;
+    }
+    
+    .mission-code {
+      font-family: monospace;
+      font-size: 10px;
+      color: #5a8aa4;
+      letter-spacing: 0.1em;
+      opacity: 0.6;
     }
 
 
@@ -249,6 +271,11 @@
   <div class="corner tr"></div>
   <div class="corner bl"></div>
   <div class="corner br"></div>
+
+    <div class="console-header">
+      <h1 class="mission-title">SUNADMIRAL NAVIGATION TRAJECTORY MAP</h1>
+      <span class="mission-code">SYS-NAV-04</span>
+    </div>
   
     <div class="map">
       <svg class="path" viewBox="0 0 700 400" preserveAspectRatio="none">
