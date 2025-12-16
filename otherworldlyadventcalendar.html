@@ -196,7 +196,36 @@
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
+        @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8em;
         }
+    
+        .subtitle {
+            font-size: 1em;
+        }
+        
+        .calendar-grid {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+    
+        .box-number {
+            font-size: 2em;
+        }
+    
+        .draft-title {
+            font-size: 0.9em;
+        }
+    
+        .sets {
+            font-size: 0.75em;
+        }
+    
+        .description {
+            font-size: 0.7em;
+        }
+    }
     </style>
 </head>
 <body>
