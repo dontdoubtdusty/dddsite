@@ -435,89 +435,145 @@
     </div>
 
     <script>
-        function playVideo() {
-            const placeholder = document.getElementById('placeholder');
-            const videoFrame = document.getElementById('videoFrame');
-            
-            placeholder.style.display = 'none';
-            videoFrame.style.display = 'block';
-            videoFrame.src = 'https://www.youtube.com/embed/ErdeXcuQ5kY?autoplay=1';
-            // Add click handlers to all timestamps
-            document.querySelectorAll('.timestamp').forEach(timestamp => {
-                timestamp.addEventListener('click', function() {
-                    const timeText = this.querySelector('.timestamp-time').textContent;
-                    const seconds = convertToSeconds(timeText);
-                    
-                    const placeholder = document.getElementById('placeholder');
-                    const videoFrame = document.getElementById('videoFrame');
-                    
-                    // Show video if not already showing
-                    if (placeholder.style.display !== 'none') {
-                        placeholder.style.display = 'none';
-                        videoFrame.style.display = 'block';
-                    }
-                    
-                    // Update video URL with timestamp
-                    videoFrame.src = `https://www.youtube.com/embed/ErdeXcuQ5kY?autoplay=1&start=${seconds}`;
-                });
-            });
-            
-            // Convert MM:SS or HH:MM:SS to seconds
-            function convertToSeconds(timeString) {
-                const parts = timeString.split(':').map(Number);
-                if (parts.length === 2) {
-                    // MM:SS
-                    return parts[0] * 60 + parts[1];
-                } else if (parts.length === 3) {
-                    // HH:MM:SS
-                    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    function playVideo() {
+        const placeholder = document.getElementById('placeholder');
+        const videoFrame = document.getElementById('videoFrame');
+        
+        placeholder.style.display = 'none';
+        videoFrame.style.display = 'block';
+        videoFrame.src = 'https://www.youtube.com/embed/ErdeXcuQ5kY?autoplay=1';
+
+        // Add click handlers to all timestamps
+        document.querySelectorAll('.timestamp').forEach(timestamp => {
+            timestamp.addEventListener('click', function() {
+                const timeText = this.querySelector('.timestamp-time').textContent;
+                const seconds = convertToSeconds(timeText);
+                
+                const placeholder = document.getElementById('placeholder');
+                const videoFrame = document.getElementById('videoFrame');
+                
+                // Show video if not already showing
+                if (placeholder.style.display !== 'none') {
+                    placeholder.style.display = 'none';
+                    videoFrame.style.display = 'block';
                 }
-                return 0;
-            }
-        }
-        // Add click handlers for like/dislike buttons
-document.querySelectorAll('.comment').forEach(comment => {
-    const likeBtn = comment.querySelectorAll('.like-btn')[0];
-    const dislikeBtn = comment.querySelectorAll('.like-btn')[1];
-    
-    let likeState = 0; // 0 = neutral, 1 = liked, -1 = disliked
-    const originalLikes = parseInt(likeBtn.textContent.match(/[\d.]+K?/)[0].replace('K', '000'));
-    
-    likeBtn.addEventListener('click', function() {
-        if (likeState === 1) {
-            // Unlike
-            likeState = 0;
-            this.style.color = '#aaa';
-            updateLikeCount(likeBtn, originalLikes);
-        } else {
-            // Like
-            likeState = 1;
-            this.style.color = '#3ea6ff';
-            dislikeBtn.style.color = '#aaa';
-            updateLikeCount(likeBtn, originalLikes + 1);
-        }
-    });
-    
-            dislikeBtn.addEventListener('click', function() {
-                if (likeState === -1) {
-                    // Un-dislike
-                    likeState = 0;
-                    this.style.color = '#aaa';
-                    updateLikeCount(likeBtn, originalLikes);
-                } else {
-                    // Dislike
-                    likeState = -1;
-                    this.style.color = '#3ea6ff';
-                    likeBtn.style.color = '#aaa';
-                    updateLikeCount(likeBtn, likeState === -1 && originalLikes > 0 ? originalLikes - 1 : originalLikes);
-                }
+                
+                // Update video URL with timestamp
+                videoFrame.src = `https://www.youtube.com/embed/ErdeXcuQ5kY?autoplay=1&start=${seconds}`;
             });
         });
         
-        function updateLikeCount(element, count) {
-            const displayCount = count >= 1000 ? (count / 1000).toFixed(1) + 'K' : count;
-            element.innerHTML = `👍 ${displayCount}`;
+        // Convert MM:SS or HH:MM:SS to seconds
+        function convertToSeconds(timeString) {
+            const parts = timeString.split(':').map(Number);
+            if (parts.length === 2) {
+                // MM:SS
+                return parts[0] * 60 + parts[1];
+            } else if (parts.length === 3) {
+                // HH:MM:SS
+                return parts[0] * 3600 + parts[1] * 60 + parts[2];
+            }
+            return 0;
         }
-    </script>
+    }
+
+    // --- NEW / CORRECTED LIKE/DISLIKE LOGIC START ---
+
+    // Utility function to convert K-notation string (e.g., "12K", "8.4K") to a raw number
+    function parseKNotation(text) {
+        const match = text.match(/[\d.]+/);
+        if (!match) return 0;
+
+        let number = parseFloat(match[0]);
+        if (text.includes('K')) {
+            number *= 1000;
+        }
+        return Math.round(number); // Round to nearest whole number
+    }
+
+    // Utility function to format a number back into K-notation (e.g., 12000 -> "12K")
+    function formatKNotation(count) {
+        if (count >= 1000) {
+            return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+        }
+        return count.toString();
+    }
+
+    document.querySelectorAll('.comment').forEach(comment => {
+        const likeBtn = comment.querySelector('.like-btn:nth-child(1)');
+        const dislikeBtn = comment.querySelector('.like-btn:nth-child(2)');
+        
+        // Use a data attribute to store the initial, correct numeric like count
+        const initialLikeCount = parseKNotation(likeBtn.textContent);
+        comment.setAttribute('data-likes', initialLikeCount);
+        
+        // Use a data attribute to store the current state: 0=neutral, 1=liked, -1=disliked
+        comment.setAttribute('data-state', 0);
+
+        function updateDisplay(likeCount, likeState) {
+            // Update like button text
+            likeBtn.innerHTML = `👍 ${formatKNotation(likeCount)}`;
+
+            // Update button colors
+            if (likeState === 1) {
+                likeBtn.style.color = '#3ea6ff';
+                dislikeBtn.style.color = '#aaa';
+            } else if (likeState === -1) {
+                likeBtn.style.color = '#aaa';
+                dislikeBtn.style.color = '#3ea6ff';
+            } else {
+                likeBtn.style.color = '#aaa';
+                dislikeBtn.style.color = '#aaa';
+            }
+        }
+
+        likeBtn.addEventListener('click', function() {
+            let currentState = parseInt(comment.getAttribute('data-state'));
+            let currentLikes = parseInt(comment.getAttribute('data-likes'));
+
+            if (currentState === 1) {
+                // Transition: Liked -> Neutral (Decrement likes)
+                currentState = 0;
+                currentLikes -= 1;
+            } else {
+                // Transition: Neutral/Disliked -> Liked (Increment likes)
+                if (currentState === -1) {
+                    // If moving from disliked to liked, we need to increment twice
+                    // (once to undo the implicit dislike effect, and once to like)
+                    // The HTML doesn't show dislike counts, so we just add 1
+                }
+                currentState = 1;
+                currentLikes += 1;
+            }
+
+            comment.setAttribute('data-state', currentState);
+            comment.setAttribute('data-likes', currentLikes);
+            updateDisplay(currentLikes, currentState);
+        });
+
+        dislikeBtn.addEventListener('click', function() {
+            let currentState = parseInt(comment.getAttribute('data-state'));
+            let currentLikes = parseInt(comment.getAttribute('data-likes'));
+            
+            if (currentState === -1) {
+                // Transition: Disliked -> Neutral (Increment likes back)
+                currentState = 0;
+                // Add 1 back to likes if the number was changed by the likeBtn handler
+                // Since dislike is not counted publicly, we just reset the state/color
+            } else {
+                // Transition: Neutral/Liked -> Disliked (Decrement likes if coming from liked)
+                if (currentState === 1) {
+                    currentLikes -= 1;
+                }
+                currentState = -1;
+            }
+
+            comment.setAttribute('data-state', currentState);
+            comment.setAttribute('data-likes', currentLikes);
+            updateDisplay(currentLikes, currentState);
+        });
+    });
+    // --- NEW / CORRECTED LIKE/DISLIKE LOGIC END ---
+</script>
 </body>
 </html>
