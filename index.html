@@ -115,6 +115,51 @@
             box-shadow: 0 10px 40px rgba(78, 205, 196, 0.4);
         }
 
+      .shrek-section {
+          margin-bottom: 4rem;
+          padding: 2rem;
+          background: linear-gradient(135deg, rgba(139, 195, 74, 0.15), rgba(104, 159, 56, 0.15));
+          border: 3px solid #7CB342;
+          border-radius: 20px;
+          box-shadow: 0 0 40px rgba(124, 179, 66, 0.3);
+          position: relative;
+          overflow: visible;
+      }
+      
+      .shrek-section .section-title {
+          color: #AED581;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 195, 74, 0.6);
+          position: relative;
+          z-index: 1;
+      }
+      
+      .shrek-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 1.5rem;
+          position: relative;
+          z-index: 1;
+      }
+      
+      .shrek-card {
+          background: rgba(104, 159, 56, 0.2);
+          border-color: rgba(139, 195, 74, 0.4);
+      }
+      
+      .shrek-card:hover {
+          border-color: #8BC34A;
+          box-shadow: 0 10px 40px rgba(139, 195, 74, 0.5);
+          background: rgba(139, 195, 74, 0.15);
+      }
+      
+      .shrek-card .card-title {
+          color: #C5E1A5;
+      }
+      
+      .shrek-card:hover .card-title {
+          color: #DCEDC8;
+      }
+
         .grid {
             display: flex;
             flex-direction: column;
@@ -213,6 +258,10 @@
             .advent-grid, .toolkit-grid {
                 grid-template-columns: 1fr;
             }
+
+          .shrek-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .floating {
@@ -297,6 +346,39 @@
                 </div>
             </div>
         </section>
+
+        <section class="shrek-section">
+                <h2 class="section-title">The Swamp Sanctuary</h2>
+                <div class="shrek-grid">
+                    <div class="card shrek-card">
+                        <a href="shoracle.html" class="link-wrapper">
+                            <div class="card-title">Swamp Tarot</div>
+                            <div class="card-desc">Divine your destiny with the ancient wisdom of the swamp oracle</div>
+                        </a>
+                    </div>
+            
+                    <div class="card shrek-card">
+                        <a href="booster.html" class="link-wrapper">
+                            <div class="card-title">Shrek Booster Pack</div>
+                            <div class="card-desc">Shrek Booster Pack Simulator with layers of collectible surprises</div>
+                        </a>
+                    </div>
+            
+                    <div class="card shrek-card">
+                        <a href="dice.html" class="link-wrapper">
+                            <div class="card-title">Shrek Dice</div>
+                            <div class="card-desc">And you thought it was ogre</div>
+                        </a>
+                    </div>
+            
+                    <div class="card shrek-card">
+                        <a href="notepad-recreation.html" class="link-wrapper">
+                            <div class="card-title">ShrekPad</div>
+                            <div class="card-desc">A fully functional Notepad variant for all your swampy note-taking needs</div>
+                        </a>
+                    </div>
+                </div>
+            </section>
 
         <h2 class="section-title">Goober Stops</h2>
         <div class="grid">
