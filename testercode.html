@@ -179,8 +179,11 @@
 
     @keyframes travel {
       0%   { left: 80px;  top: 300px; }   /* Node 1 - Home */
-      99.99%  { left: 520px; top: 90px; }    /* Node 4 - RE4 */
-      100% { left: 80px;  top: 300px; }   /* Instant teleport back to Home */
+      24.99%  { left: 200px; top: 120px; }   /* Node 2 */
+      49.99%  { left: 380px; top: 200px; }   /* Node 3 */
+      74.99%  { left: 520px; top: 90px; }    /* Node 4 - RE4 */
+      75%  { left: 80px;  top: 300px; }   /* Instant teleport back to Home */
+      100% { left: 80px;  top: 300px; }   /* Stay at Home until loop restarts */
     }
 
     .label {
