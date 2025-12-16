@@ -56,16 +56,14 @@
       position: absolute;
       font-size: 32px;
       transform: translate(-50%, -50%);
-      animation: travel 10s linear infinite;
+      animation: travel 12s linear infinite;
       filter: drop-shadow(0 0 12px rgba(255,200,0,0.9));
     }
 
     @keyframes travel {
-      0%   { left: 80px;  top: 300px; }
-      25%  { left: 200px; top: 120px; }
-      50%  { left: 380px; top: 200px; }
-      75%  { left: 520px; top: 90px; }
-      100% { left: 80px;  top: 300px; }
+      0%   { left: 80px;  top: 300px; }  /* Alpha */
+      50%  { left: 520px; top: 90px; }   /* Resident Evil 4 */
+      100% { left: 80px;  top: 300px; }  /* Reset to Alpha */
     }
 
     .label {
@@ -83,7 +81,8 @@
     }
     .hud {
       position: absolute;
-      bottom: 18px;
+      bottom: auto;
+      top: 18px;
       left: 18px;
       padding: 12px 16px;
       border-radius: 12px;
@@ -141,12 +140,10 @@
     </svg>
 
     <div class="star" style="left:80px; top:300px; background:#c44;"></div>
-    <div class="star" style="left:380px; top:200px;"></div>
     <div class="star" style="left:520px; top:90px;"></div>
 
-    <div class="label" style="left:65px; top:315px;">Resident Evil 4</div>
-    <div class="label" style="left:360px; top:215px;">Gamma</div>
-    <div class="label" style="left:505px; top:105px;">Delta</div>
+    <div class="label" style="left:65px; top:315px;">Alpha</div>
+    <div class="label" style="left:505px; top:105px;">RE4</div>
 
     <div class="paw" style="left:140px; top:260px;">🐾</div>
     <div class="paw" style="left:310px; top:160px;">🐾</div>
