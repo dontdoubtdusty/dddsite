@@ -273,6 +273,66 @@
       stroke-width: 2;
       stroke-dasharray: 6 6;
     }
+
+    .console-container {
+      display: flex;
+      gap: 0;
+    }
+    
+    .admirals-log {
+      width: 220px;
+      background: linear-gradient(180deg, #0a1218 0%, #0d1a24 100%);
+      border-left: 1px solid #2a5a7a;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .log-header {
+      background: linear-gradient(180deg, #0d1a24 0%, #0a1218 100%);
+      padding: 12px 16px;
+      border-bottom: 1px solid #2a5a7a;
+    }
+    
+    .log-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: #7ba8c4;
+      text-transform: uppercase;
+      font-weight: 400;
+      margin: 0;
+      opacity: 0.85;
+    }
+    
+    .log-content {
+      padding: 16px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #9fb8cc;
+      line-height: 1.6;
+    }
+    
+    .log-entry {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(42, 90, 122, 0.3);
+    }
+    
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+    
+    .log-date {
+      color: #5a8aa4;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    
+    .log-text {
+      color: #b8d4e8;
+      font-size: 11px;
+    }
   </style>
 </head>
 <body>
@@ -325,6 +385,21 @@
       </div>
     </div>
   
+    </div>
+    <div class="admirals-log">
+      <div class="log-header">
+        <h2 class="log-title">Admiral's Log</h2>
+      </div>
+      <div class="log-content">
+        <div class="log-entry">
+          <div class="log-date">DECEMBER 2025</div>
+          <div class="log-text">Returned</div>
+        </div>
+        <div class="log-entry">
+          <div class="log-date">DECEMBER 2025</div>
+          <div class="log-text">Current RE4</div>
+        </div>
+      </div>
     </div>
   </div>
   
