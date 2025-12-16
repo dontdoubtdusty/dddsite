@@ -166,7 +166,7 @@
       width: 32px;
       height: 32px;
       transform: translate(-50%, -50%);
-      animation: travel 12s linear infinite;
+      animation: travel 6s linear infinite;
     
       background-image: url('/sun_icon.png');
       background-size: contain;
@@ -178,11 +178,11 @@
 
 
     @keyframes travel {
-      0%   { left: 80px;  top: 300px; }   /* Node 1 */
-      25%  { left: 200px; top: 120px; }   /* Node 2 */
-      50%  { left: 380px; top: 200px; }   /* Node 3 */
-      75%  { left: 520px; top: 90px; }    /* Node 4 */
-      100% { left: 80px;  top: 300px; }   /* Back to Node 1 */
+      0%   { left: 80px;  top: 300px; }   /* Node 1 - Home */
+      33.33%  { left: 200px; top: 120px; }   /* Node 2 */
+      66.66%  { left: 380px; top: 200px; }   /* Node 3 */
+      99.99%  { left: 520px; top: 90px; }    /* Node 4 - RE4 */
+      100% { left: 80px;  top: 300px; }   /* Instant teleport back to Home */
     }
 
     .label {
@@ -260,9 +260,19 @@
       letter-spacing: 0.1em;
       opacity: 0.6;
     }
-
-
-
+    
+    .trajectory-main {
+      stroke: #6b9ac4;
+      stroke-width: 3;
+      filter: drop-shadow(0 0 3px rgba(107, 154, 196, 0.4));
+      stroke-dasharray: none;
+    }
+    
+    .trajectory-alternate {
+      stroke: rgba(255,255,255,0.15);
+      stroke-width: 2;
+      stroke-dasharray: 6 6;
+    }
   </style>
 </head>
 <body>
@@ -279,12 +289,18 @@
   
     <div class="map">
       <svg class="path" viewBox="0 0 700 400" preserveAspectRatio="none">
+        <!-- Alternate/completed routes (dimmed) -->
         <polyline
-          points="80,300 200,120 380,200 520,90 80,300"
-          fill="none"
-          stroke="rgba(255,255,255,0.25)"
-          stroke-width="2"
-          stroke-dasharray="6 6" />
+          class="trajectory-alternate"
+          points="80,300 200,120 380,200 520,90"
+          fill="none" />
+        
+        <!-- Main trajectory: Home → RE4 (highlighted) -->
+        <line
+        class="trajectory-main"
+        x1="84" y1="304"
+        x2="524" y2="94"
+        fill="none" />
       </svg>
   
       <div class="star" style="left:80px; top:300px; background:#c44;"></div>
