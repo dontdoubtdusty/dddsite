@@ -71,6 +71,37 @@
         .draft-title { font-size: 0.9em; font-weight: bold; color: #c0ff8a; text-align: center; margin-bottom: 6px; line-height: 1.2; }
         .sets { font-size: 0.7em; color: #98ffcf; text-align: center; margin-bottom: 6px; font-style: italic; line-height: 1.2; }
         .description { font-size: 0.65em; color: #7fffd4; text-align: center; line-height: 1.25; overflow-wrap: break-word; }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+        
+            .subtitle {
+                font-size: 1em;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 10px;
+            }
+        
+            .box-number {
+                font-size: 2em;
+            }
+        
+            .draft-title {
+                font-size: 0.8em;
+            }
+        
+            .sets {
+                font-size: 0.65em;
+            }
+        
+            .description {
+                font-size: 0.6em;
+            }
+        }
     </style>
 </head>
 <body>
