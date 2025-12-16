@@ -475,6 +475,49 @@
                 return 0;
             }
         }
+        // Add click handlers for like/dislike buttons
+document.querySelectorAll('.comment').forEach(comment => {
+    const likeBtn = comment.querySelectorAll('.like-btn')[0];
+    const dislikeBtn = comment.querySelectorAll('.like-btn')[1];
+    
+    let likeState = 0; // 0 = neutral, 1 = liked, -1 = disliked
+    const originalLikes = parseInt(likeBtn.textContent.match(/[\d.]+K?/)[0].replace('K', '000'));
+    
+    likeBtn.addEventListener('click', function() {
+        if (likeState === 1) {
+            // Unlike
+            likeState = 0;
+            this.style.color = '#aaa';
+            updateLikeCount(likeBtn, originalLikes);
+        } else {
+            // Like
+            likeState = 1;
+            this.style.color = '#3ea6ff';
+            dislikeBtn.style.color = '#aaa';
+            updateLikeCount(likeBtn, originalLikes + 1);
+        }
+    });
+    
+            dislikeBtn.addEventListener('click', function() {
+                if (likeState === -1) {
+                    // Un-dislike
+                    likeState = 0;
+                    this.style.color = '#aaa';
+                    updateLikeCount(likeBtn, originalLikes);
+                } else {
+                    // Dislike
+                    likeState = -1;
+                    this.style.color = '#3ea6ff';
+                    likeBtn.style.color = '#aaa';
+                    updateLikeCount(likeBtn, likeState === -1 && originalLikes > 0 ? originalLikes - 1 : originalLikes);
+                }
+            });
+        });
+        
+        function updateLikeCount(element, count) {
+            const displayCount = count >= 1000 ? (count / 1000).toFixed(1) + 'K' : count;
+            element.innerHTML = `👍 ${displayCount}`;
+        }
     </script>
 </body>
 </html>
