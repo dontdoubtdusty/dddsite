@@ -205,6 +205,7 @@
             gap: 5px;
             color: #aaa;
             cursor: pointer;
+            transition: color 0.2s;
         }
         .like-btn:hover {
             color: #fff;
@@ -220,22 +221,21 @@
             font-weight: 500;
         }
         
-        /* === LIKE BUTTON STYLES === */
-        /* Main Video Like Button Icon */
+        /* === MAIN LIKE BUTTON STYLES (PURPLE) === */
         .main-like-icon { 
             color: #fff; 
+            font-size: 16px; 
+            transition: color 0.2s ease;
         }
 
-        /* Main Video Liked state (Purple) */
         .main-like-icon.liked {
-            color: #6a0dad; 
+            color: #6a0dad; /* PURPLE */
         }
         
-        /* Comment Like/Dislike buttons */
-        .like-icon {
-            font-size: 14px; /* Smaller icon for comments */
-            color: inherit; /* Use parent color */
-            transition: color 0.2s ease;
+        /* === COMMENT LIKE BUTTON STYLES (BLUE) === */
+        /* This applies the YouTube-like blue color to the entire action element */
+        .like-btn.active-like {
+            color: #3ea6ff; /* BLUE for active comment like/dislike */
         }
     </style>
 </head>
@@ -477,6 +477,7 @@
         return count.toString();
     }
 
+    // Main video like button logic (Purple toggle)
     function toggleMainLike(buttonElement) {
         const icon = buttonElement.querySelector('.main-like-icon');
         const countElement = document.getElementById('mainLikeCount');
@@ -529,6 +530,7 @@
         });
     }
 
+    // Comment like/dislike buttons logic (Blue toggle)
     document.querySelectorAll('.comment').forEach(comment => {
         const likeBtn = comment.querySelector('.like-btn:nth-child(1)');
         const dislikeBtn = comment.querySelector('.like-btn:nth-child(2)');
@@ -540,18 +542,14 @@
         function updateCommentDisplay(likeCount, likeState) {
             likeBtn.innerHTML = `👍 ${formatKNotation(likeCount)}`;
 
-            const blueColor = '#3ea6ff';
-            const neutralColor = '#aaa';
+            // Use classes for styling instead of inline styles
+            likeBtn.classList.remove('active-like');
+            dislikeBtn.classList.remove('active-like');
             
             if (likeState === 1) {
-                likeBtn.style.color = blueColor;
-                dislikeBtn.style.color = neutralColor;
+                likeBtn.classList.add('active-like');
             } else if (likeState === -1) {
-                likeBtn.style.color = neutralColor;
-                dislikeBtn.style.color = blueColor;
-            } else {
-                likeBtn.style.color = neutralColor;
-                dislikeBtn.style.color = neutralColor;
+                dislikeBtn.classList.add('active-like');
             }
         }
 
