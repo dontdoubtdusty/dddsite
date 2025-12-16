@@ -174,16 +174,9 @@
         }
 
         .grid {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .grid .card {
-            width: 100%;
-            max-width: 500px;
         }
 
         .card {
