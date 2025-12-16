@@ -61,9 +61,11 @@
     }
 
     @keyframes travel {
-      0%   { left: 80px;  top: 300px; }  /* Alpha */
-      50%  { left: 520px; top: 90px; }   /* Resident Evil 4 */
-      100% { left: 80px;  top: 300px; }  /* Reset to Alpha */
+      0%   { left: 80px;  top: 300px; }   /* Node 1 */
+      25%  { left: 200px; top: 120px; }   /* Node 2 */
+      50%  { left: 380px; top: 200px; }   /* Node 3 */
+      75%  { left: 520px; top: 90px; }    /* Node 4 */
+      100% { left: 80px;  top: 300px; }   /* Back to Node 1 */
     }
 
     .label {
@@ -140,9 +142,13 @@
     </svg>
 
     <div class="star" style="left:80px; top:300px; background:#c44;"></div>
+    <div class="star" style="left:200px; top:120px;"></div>
+    <div class="star" style="left:380px; top:200px;"></div>
     <div class="star" style="left:520px; top:90px;"></div>
 
     <div class="label" style="left:65px; top:315px;">Alpha</div>
+    <div class="label" style="left:185px; top:135px;">😺 Node 2</div>
+    <div class="label" style="left:365px; top:215px;">😸 Node 3</div>
     <div class="label" style="left:505px; top:105px;">RE4</div>
 
     <div class="paw" style="left:140px; top:260px;">🐾</div>
@@ -155,10 +161,10 @@
     <div class="hud">
     <div class="hud-line small">TRANSIT VECTOR</div>
     <div class="hud-line route">
-      RE4 → BETA NODE
+      HOME NODE → RE4 NODE
     </div>
     <div class="hud-line time">
-      ⧖  Δ-T : 4.73 σ
+      ⧖  Δ-RE4 : 4.73 σ
     </div>
   </div>
 
