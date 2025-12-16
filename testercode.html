@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dusty's Goober Stop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f7dc6f);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 4s ease infinite;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #4ecdc4;
+            letter-spacing: 0.3rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .advent-section {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(255, 107, 107, 0.2);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #f7dc6f;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+        }
+
+        .advent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .advent-card {
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        .advent-card:hover {
+            border-color: #ff6b6b;
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
+        }
+
+        .toolkit-section {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: rgba(78, 205, 196, 0.1);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(78, 205, 196, 0.2);
+        }
+
+        .toolkit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .toolkit-card {
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+
+        .toolkit-card:hover {
+            border-color: #4ecdc4;
+            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.4);
+        }
+
+      .shrek-section {
+          margin-bottom: 4rem;
+          padding: 2rem;
+          background: linear-gradient(135deg, rgba(139, 195, 74, 0.15), rgba(104, 159, 56, 0.15));
+          border: 3px solid #7CB342;
+          border-radius: 20px;
+          box-shadow: 0 0 40px rgba(124, 179, 66, 0.3);
+          position: relative;
+          overflow: hidden;
+      }
+      
+      .shrek-section::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          right: -50%;
+          width: 100%;
+          height: 100%;
+          background: radial-gradient(circle, rgba(139, 195, 74, 0.2) 0%, transparent 70%);
+          animation: swampGlow 4s ease-in-out infinite;
+      }
+      
+      @keyframes swampGlow {
+          0%, 100% { opacity: 0.5; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.2); }
+      }
+      
+      .shrek-section .section-title {
+          color: #AED581;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 195, 74, 0.6);
+          position: relative;
+          z-index: 1;
+      }
+      
+      .shrek-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 1.5rem;
+          position: relative;
+          z-index: 1;
+      }
+      
+      .shrek-card {
+          background: rgba(104, 159, 56, 0.2);
+          border-color: rgba(139, 195, 74, 0.4);
+      }
+      
+      .shrek-card:hover {
+          border-color: #8BC34A;
+          box-shadow: 0 10px 40px rgba(139, 195, 74, 0.5);
+          background: rgba(139, 195, 74, 0.15);
+      }
+      
+      .shrek-card .card-title {
+          color: #C5E1A5;
+      }
+      
+      .shrek-card:hover .card-title {
+          color: #DCEDC8;
+      }
+
+        .grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .grid .card {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: #4ecdc4;
+            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.3);
+        }
+
+        .grid .card::before {
+            display: none;
+        }
+
+        .grid .card:hover {
+            transform: none;
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #f7dc6f;
+            margin-bottom: 0.8rem;
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .card:hover .card-title {
+            color: #4ecdc4;
+        }
+
+        .card-desc {
+            color: #ddd;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .link-wrapper {
+            text-decoration: none;
+            display: block;
+            height: 100%;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+                letter-spacing: 0.2rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .advent-grid, .toolkit-grid {
+                grid-template-columns: 1fr;
+            }
+
+          .shrek-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="floating">
+            <h1>Dusty's Goober Stop</h1>
+            <div class="subtitle">Web Experiments & Digital Oddities</div>
+        </header>
+
+        <section class="advent-section">
+            <h2 class="section-title">Advent Calendars</h2>
+            <div class="advent-grid">
+                <div class="card advent-card">
+                    <a href="mtgadvent.html" class="link-wrapper">
+                        <div class="card-title">MTG Draft Mashup Advent</div>
+                        <div class="card-desc">MTG Draft Mashup Advent Calendar with daily card reveals</div>
+                    </a>
+                </div>
+
+                <div class="card advent-card">
+                    <a href="otherworldlyadventcalendar.html" class="link-wrapper">
+                        <div class="card-title">Otherworldly Advent</div>
+                        <div class="card-desc">A new otherworldly horror every day to haunt your dreams</div>
+                    </a>
+                </div>
+
+                <div class="card advent-card">
+                    <a href="horroradvent.html" class="link-wrapper">
+                        <div class="card-title">Horror Advent</div>
+                        <div class="card-desc">Open each door to discover a chilling blend of classic and contemporary horror and sci‑fi tales</div>
+                    </a>
+                </div>
+
+                <div class="card advent-card">
+                    <a href="silly_reasons_advent_calendar.html" class="link-wrapper">
+                        <div class="card-title">Silly Reasons Advent</div>
+                        <div class="card-desc">An advent calendar filled with absurd and delightful reasons to live</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="toolkit-section">
+            <h2 class="section-title">Goober Toolkit</h2>
+            <div class="toolkit-grid">
+                <div class="card toolkit-card">
+                    <a href="8ball.html" class="link-wrapper">
+                        <div class="card-title">Magic 8-Ball</div>
+                        <div class="card-desc">Get cryptic answers to life's burning questions from the digital oracle</div>
+                    </a>
+                </div>
+
+                <div class="card toolkit-card">
+                    <a href="booster.html" class="link-wrapper">
+                        <div class="card-title">Shrek Booster Pack</div>
+                        <div class="card-desc">Shrek Booster Pack Simulator with layers of collectible surprises</div>
+                    </a>
+                </div>
+
+                <div class="card toolkit-card">
+                    <a href="dice.html" class="link-wrapper">
+                        <div class="card-title">Shrek Dice</div>
+                        <div class="card-desc">And you thought it was ogre</div>
+                    </a>
+                </div>
+
+                <div class="card toolkit-card">
+                    <a href="thebookofcarp.html" class="link-wrapper">
+                        <div class="card-title">The Book of Carp</div>
+                        <div class="card-desc">Sacred wisdom and profound musings from the ancient texts</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <h2 class="section-title">Goober Stops</h2>
+        <div class="grid">
+            <div class="card">
+
+            <div class="card">
+                <a href="beards.html" class="link-wrapper">
+                    <div class="card-title">Beards PSA</div>
+                    <div class="card-desc">An anti AI-beard public service announcement - there's too many!</div>
+                </a>
+            </div>
+
+            <div class="card">
+                <a href="freaksgiving.html" class="link-wrapper">
+                    <div class="card-title">Big Beautiful Bill's Freaksgiving</div>
+                    <div class="card-desc">A twisted holiday celebration you won't soon forget</div>
+                </a>
+            </div>
+
+            <div class="card">
+                <a href="donotresist.html" class="link-wrapper">
+                    <div class="card-title">Do Not Resist</div>
+                    <div class="card-desc">An experimental interactive experience that tests your will</div>
+                </a>
+            </div>
+
+            <div class="card">
+                <a href="horse.html" class="link-wrapper">
+                    <div class="card-title">Horse Rain</div>
+                    <div class="card-desc">The timeline of the horse rain horror - a catastrophic event</div>
+                </a>
+            </div>
+
+            <div class="card">
+                <a href="like_mike.html" class="link-wrapper">
+                    <div class="card-title">Like Mike Awards</div>
+                    <div class="card-desc">Basketball-inspired awards celebrating legendary achievements</div>
+                </a>
+            </div>
+
+            <div class="card">
+                <a href="space_transfer.html" class="link-wrapper">
+                    <div class="card-title">Space Transfer</div>
+                    <div class="card-desc">Intergalactic shoe shopping experience - transfer to a footwear boutique in another galaxy</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
