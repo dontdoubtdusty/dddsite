@@ -119,11 +119,19 @@
 
     .sun {
       position: absolute;
-      font-size: 32px;
+      width: 32px;
+      height: 32px;
       transform: translate(-50%, -50%);
       animation: travel 12s linear infinite;
+    
+      background-image: url('/sun_icon.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    
       filter: drop-shadow(0 0 12px rgba(255,200,0,0.9));
     }
+
 
     @keyframes travel {
       0%   { left: 80px;  top: 300px; }   /* Node 1 */
@@ -212,7 +220,7 @@
     <div class="label" style="left:365px; top:215px;">🐾🐾</div>
     <div class="label" style="left:505px; top:105px;">RE4</div>
 
-    <div class="sun">☀️</div>
+    <div class="sun"></div>
 
     <div class="hud">
     <div class="hud-line small">TRANSIT VECTOR</div>
