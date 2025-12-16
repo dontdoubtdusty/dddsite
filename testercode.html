@@ -45,29 +45,54 @@
       border-radius: 16px;
       overflow: hidden;
     
-      /* dark space tint for map */
-      background-color: #0b0f1e;  /* deep space blue/purple */
-      
-      /* keep subtle grid lines on top */
+      /* dark map base */
+      background-color: #0b0f1e;
+    
+      /* grid layers on top */
       background-image:
         repeating-linear-gradient(
           0deg,
-          rgba(255,255,255,0.05) 0px,
-          rgba(255,255,255,0.05) 1px,
+          rgba(0, 255, 255, 0.05) 0px,
+          rgba(0, 255, 255, 0.05) 1px,
           transparent 1px,
           transparent 40px
         ),
         repeating-linear-gradient(
           90deg,
-          rgba(255,255,255,0.05) 0px,
-          rgba(255,255,255,0.05) 1px,
+          rgba(0, 255, 255, 0.05) 0px,
+          rgba(0, 255, 255, 0.05) 1px,
           transparent 1px,
           transparent 40px
         );
-      background-blend-mode: overlay;
+      background-size: 40px 40px;
+      background-blend-mode: normal;
     
-      /* subtle shadow to float above page bg */
+      /* subtle floating panel shadow */
       box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+
+    .map::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(0, 255, 255, 0.12) 0px,
+          rgba(0, 255, 255, 0.12) 1px,
+          transparent 1px,
+          transparent 40px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(0, 255, 255, 0.12) 0px,
+          rgba(0, 255, 255, 0.12) 1px,
+          transparent 1px,
+          transparent 40px
+        );
+      pointer-events: none;
+      z-index: 1;
+      mix-blend-mode: lighten;
     }
 
     .map::after {
