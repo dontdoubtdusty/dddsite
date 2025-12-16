@@ -219,35 +219,27 @@
             font-size: 14px;
             font-weight: 500;
         }
-        /* Default state (Unliked) */
+        
+        /* === LIKE BUTTON STYLES === */
+        /* Main Video Like Button Icon */
+        .main-like-icon { 
+            color: #fff; 
+        }
+
+        /* Main Video Liked state (Purple) */
+        .main-like-icon.liked {
+            color: #6a0dad; 
+        }
+        
+        /* Comment Like/Dislike buttons */
         .like-icon {
-            font-size: 24px;
-            color: #888; /* Neutral color (gray) */
-            cursor: pointer;
-            transition: color 0.2s ease; /* Smooth transition */
+            font-size: 14px; /* Smaller icon for comments */
+            color: inherit; /* Use parent color */
+            transition: color 0.2s ease;
         }
-        
-        /* Liked state (Purple) */
-        .like-icon.liked {
-            color: #6a0dad; /* YouTube's purple/deep indigo color */
-        }
-        
-        /* Optional: Button styling */
-        .like-button {
-            background: none;
-            border: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px;
-            border-ra
     </style>
 </head>
 <body>
-    <button class="like-button" onclick="toggleLike(this)">
-    <span id="like-icon" class="like-icon">👍</span>
-    <span class="like-count">0</span>
-    </button>
     <div class="video-player">
         <div class="video-placeholder" id="placeholder">
             <div class="play-button" onclick="playVideo()">
@@ -276,7 +268,10 @@
         </div>
 
         <div class="engagement-buttons">
-            <button class="btn">👍 187K</button>
+            <button class="btn" id="mainLikeBtn" onclick="toggleMainLike(this)">
+                <span class="main-like-icon">👍</span> 
+                <span id="mainLikeCount">187K</span>
+            </button>
             <button class="btn">👎 Dislike</button>
             <button class="btn">💬 Share</button>
             <button class="btn">📥 Download</button>
@@ -294,56 +289,56 @@
             </div>
 
             <div class="timestamps">
-        <h3 style="margin-bottom: 10px; font-size: 16px;">📍 Timestamps:</h3>
-        <div class="timestamp">
-            <span class="timestamp-time">0:00</span>
-            <span class="timestamp-desc">Intro - "Here We Go Again"</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">0:45</span>
-            <span class="timestamp-desc">The Classic Cartoon Sound Effects Collection</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">18:32</span>
-            <span class="timestamp-desc">Video Game Fails Montage (Skyrim, Fallout, RDR2)</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">42:15</span>
-            <span class="timestamp-desc">The Guy Who ALWAYS Steps On Them</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">1:03:47</span>
-            <span class="timestamp-desc">Movie Scene Supercut</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">1:28:20</span>
-            <span class="timestamp-desc">The Elaborate Setup That Goes Wrong</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">1:56:05</span>
-            <span class="timestamp-desc">Slow Motion Replays With Commentary</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">2:28:44</span>
-            <span class="timestamp-desc">The One That Catches Three People</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">2:54:30</span>
-            <span class="timestamp-desc">Comedy Sketch Compilation</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">3:22:18</span>
-            <span class="timestamp-desc">Animated Shorts Collection</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">3:46:52</span>
-            <span class="timestamp-desc">The Absolute WORST Timing Moments</span>
-        </div>
-        <div class="timestamp">
-            <span class="timestamp-time">4:02:15</span>
-            <span class="timestamp-desc">Outro + Bloopers</span>
-        </div>
-    </div>
+                <h3 style="margin-bottom: 10px; font-size: 16px;">📍 Timestamps:</h3>
+                <div class="timestamp">
+                    <span class="timestamp-time">0:00</span>
+                    <span class="timestamp-desc">Intro - "Here We Go Again"</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">0:45</span>
+                    <span class="timestamp-desc">The Classic Cartoon Sound Effects Collection</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">18:32</span>
+                    <span class="timestamp-desc">Video Game Fails Montage (Skyrim, Fallout, RDR2)</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">42:15</span>
+                    <span class="timestamp-desc">The Guy Who ALWAYS Steps On Them</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">1:03:47</span>
+                    <span class="timestamp-desc">Movie Scene Supercut</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">1:28:20</span>
+                    <span class="timestamp-desc">The Elaborate Setup That Goes Wrong</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">1:56:05</span>
+                    <span class="timestamp-desc">Slow Motion Replays With Commentary</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">2:28:44</span>
+                    <span class="timestamp-desc">The One That Catches Three People</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">2:54:30</span>
+                    <span class="timestamp-desc">Comedy Sketch Compilation</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">3:22:18</span>
+                    <span class="timestamp-desc">Animated Shorts Collection</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">3:46:52</span>
+                    <span class="timestamp-desc">The Absolute WORST Timing Moments</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">4:02:15</span>
+                    <span class="timestamp-desc">Outro + Bloopers</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -435,7 +430,7 @@
                 <div class="comment-actions">
                     <div class="like-btn">👍 4.7K</div>
                     <div class="like-btn">👎</div>
-                    <div class="link-btn">💬 Reply</div>
+                    <div class="like-btn">💬 Reply</div>
                 </div>
             </div>
         </div>
@@ -461,6 +456,53 @@
     </div>
 
     <script>
+    function parseKNotation(text) {
+        const match = text.match(/[\d.]+/);
+        if (!match) return 0;
+        let number = parseFloat(match[0]);
+        if (text.includes('K') || text.includes('k')) {
+            number *= 1000;
+        }
+        return Math.round(number);
+    }
+
+    function formatKNotation(count) {
+        if (count >= 1000) {
+            const kValue = (count / 1000).toFixed(1);
+            if (kValue.endsWith('.0')) {
+                return kValue.slice(0, -2) + 'K';
+            }
+            return kValue + 'K';
+        }
+        return count.toString();
+    }
+
+    function toggleMainLike(buttonElement) {
+        const icon = buttonElement.querySelector('.main-like-icon');
+        const countElement = document.getElementById('mainLikeCount');
+        let rawCount = parseKNotation(countElement.textContent);
+
+        if (icon.classList.contains('liked')) {
+            icon.classList.remove('liked');
+            rawCount -= 1;
+        } else {
+            icon.classList.add('liked');
+            rawCount += 1;
+        }
+
+        countElement.textContent = formatKNotation(rawCount);
+    }
+    
+    function convertToSeconds(timeString) {
+        const parts = timeString.split(':').map(Number);
+        if (parts.length === 2) {
+            return parts[0] * 60 + parts[1];
+        } else if (parts.length === 3) {
+            return parts[0] * 3600 + parts[1] * 60 + parts[2];
+        }
+        return 0;
+    }
+
     function playVideo() {
         const placeholder = document.getElementById('placeholder');
         const videoFrame = document.getElementById('videoFrame');
@@ -469,7 +511,6 @@
         videoFrame.style.display = 'block';
         videoFrame.src = 'https://www.youtube.com/embed/ErdeXcuQ5kY?autoplay=1';
 
-        // Add click handlers to all timestamps
         document.querySelectorAll('.timestamp').forEach(timestamp => {
             timestamp.addEventListener('click', function() {
                 const timeText = this.querySelector('.timestamp-time').textContent;
@@ -478,78 +519,39 @@
                 const placeholder = document.getElementById('placeholder');
                 const videoFrame = document.getElementById('videoFrame');
                 
-                // Show video if not already showing
                 if (placeholder.style.display !== 'none') {
                     placeholder.style.display = 'none';
                     videoFrame.style.display = 'block';
                 }
                 
-                // Update video URL with timestamp
                 videoFrame.src = `https://www.youtube.com/embed/ErdeXcuQ5kY?autoplay=1&start=${seconds}`;
             });
         });
-        
-        // Convert MM:SS or HH:MM:SS to seconds
-        function convertToSeconds(timeString) {
-            const parts = timeString.split(':').map(Number);
-            if (parts.length === 2) {
-                // MM:SS
-                return parts[0] * 60 + parts[1];
-            } else if (parts.length === 3) {
-                // HH:MM:SS
-                return parts[0] * 3600 + parts[1] * 60 + parts[2];
-            }
-            return 0;
-        }
-    }
-
-    // --- NEW / CORRECTED LIKE/DISLIKE LOGIC START ---
-
-    // Utility function to convert K-notation string (e.g., "12K", "8.4K") to a raw number
-    function parseKNotation(text) {
-        const match = text.match(/[\d.]+/);
-        if (!match) return 0;
-
-        let number = parseFloat(match[0]);
-        if (text.includes('K')) {
-            number *= 1000;
-        }
-        return Math.round(number); // Round to nearest whole number
-    }
-
-    // Utility function to format a number back into K-notation (e.g., 12000 -> "12K")
-    function formatKNotation(count) {
-        if (count >= 1000) {
-            return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-        }
-        return count.toString();
     }
 
     document.querySelectorAll('.comment').forEach(comment => {
         const likeBtn = comment.querySelector('.like-btn:nth-child(1)');
         const dislikeBtn = comment.querySelector('.like-btn:nth-child(2)');
         
-        // Use a data attribute to store the initial, correct numeric like count
         const initialLikeCount = parseKNotation(likeBtn.textContent);
         comment.setAttribute('data-likes', initialLikeCount);
-        
-        // Use a data attribute to store the current state: 0=neutral, 1=liked, -1=disliked
-        comment.setAttribute('data-state', 0);
+        comment.setAttribute('data-state', 0); // 0=neutral, 1=liked, -1=disliked
 
-        function updateDisplay(likeCount, likeState) {
-            // Update like button text
+        function updateCommentDisplay(likeCount, likeState) {
             likeBtn.innerHTML = `👍 ${formatKNotation(likeCount)}`;
 
-            // Update button colors
+            const blueColor = '#3ea6ff';
+            const neutralColor = '#aaa';
+            
             if (likeState === 1) {
-                likeBtn.style.color = '#3ea6ff';
-                dislikeBtn.style.color = '#aaa';
+                likeBtn.style.color = blueColor;
+                dislikeBtn.style.color = neutralColor;
             } else if (likeState === -1) {
-                likeBtn.style.color = '#aaa';
-                dislikeBtn.style.color = '#3ea6ff';
+                likeBtn.style.color = neutralColor;
+                dislikeBtn.style.color = blueColor;
             } else {
-                likeBtn.style.color = '#aaa';
-                dislikeBtn.style.color = '#aaa';
+                likeBtn.style.color = neutralColor;
+                dislikeBtn.style.color = neutralColor;
             }
         }
 
@@ -558,23 +560,18 @@
             let currentLikes = parseInt(comment.getAttribute('data-likes'));
 
             if (currentState === 1) {
-                // Transition: Liked -> Neutral (Decrement likes)
                 currentState = 0;
                 currentLikes -= 1;
             } else {
-                // Transition: Neutral/Disliked -> Liked (Increment likes)
                 if (currentState === -1) {
-                    // If moving from disliked to liked, we need to increment twice
-                    // (once to undo the implicit dislike effect, and once to like)
-                    // The HTML doesn't show dislike counts, so we just add 1
+                    currentLikes += 1;
                 }
                 currentState = 1;
                 currentLikes += 1;
             }
-
             comment.setAttribute('data-state', currentState);
             comment.setAttribute('data-likes', currentLikes);
-            updateDisplay(currentLikes, currentState);
+            updateCommentDisplay(currentLikes, currentState);
         });
 
         dislikeBtn.addEventListener('click', function() {
@@ -582,44 +579,18 @@
             let currentLikes = parseInt(comment.getAttribute('data-likes'));
             
             if (currentState === -1) {
-                // Transition: Disliked -> Neutral (Increment likes back)
                 currentState = 0;
-                // Add 1 back to likes if the number was changed by the likeBtn handler
-                // Since dislike is not counted publicly, we just reset the state/color
             } else {
-                // Transition: Neutral/Liked -> Disliked (Decrement likes if coming from liked)
                 if (currentState === 1) {
                     currentLikes -= 1;
                 }
                 currentState = -1;
             }
-
             comment.setAttribute('data-state', currentState);
             comment.setAttribute('data-likes', currentLikes);
-            updateDisplay(currentLikes, currentState);
+            updateCommentDisplay(currentLikes, currentState);
         });
     });
-    // --- NEW / CORRECTED LIKE/DISLIKE LOGIC END ---
-        function toggleLike(buttonElement) {
-        // 1. Find the icon inside the button that was clicked
-            const icon = buttonElement.querySelector('.like-icon');
-            const countElement = buttonElement.querySelector('.like-count');
-            let currentCount = parseInt(countElement.textContent);
-    
-            // 2. Check if the 'liked' class is currently present
-            if (icon.classList.contains('liked')) {
-                // It is currently liked -> UNLIKE IT
-                icon.classList.remove('liked');
-                currentCount -= 1; // Decrement the count
-            } else {
-                // It is not liked -> LIKE IT
-                icon.classList.add('liked');
-                currentCount += 1; // Increment the count
-            }
-    
-            // 3. Update the displayed count
-            countElement.textContent = currentCount;
-        }
-</script>
+    </script>
 </body>
 </html>
