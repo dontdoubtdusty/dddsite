@@ -9,36 +9,98 @@
   <style>
     body {
       margin: 0;
-      background: radial-gradient(circle at center, #0b1020, #02030a 70%);
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      font-family: system-ui, sans-serif;
+    
+      /* page-level space background placeholder */
+      background-image: url('https://i.imgur.com/Alw6mHY.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    
+      /* sci-fi overlay/tint */
+      background-blend-mode: overlay;
+      background-color: rgba(5, 10, 25, 0.7);
+    
+      /* optional subtle vignette for depth */
+      box-shadow: inset 0 0 150px rgba(0,0,0,0.5);
     }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.02), transparent 70%);
+    }
+
+
+
 
     .map {
       position: relative;
       width: 700px;
       height: 400px;
       border-radius: 16px;
-      background:
+      overflow: hidden;
+    
+      /* dark map base */
+      background-color: #0b0f1e;
+    
+      /* grid layers on top */
+      background-image:
         repeating-linear-gradient(
           0deg,
-          rgba(255,255,255,0.05) 0px,
-          rgba(255,255,255,0.05) 1px,
+          rgba(0, 255, 255, 0.05) 0px,
+          rgba(0, 255, 255, 0.05) 1px,
           transparent 1px,
           transparent 40px
         ),
         repeating-linear-gradient(
           90deg,
-          rgba(255,255,255,0.05) 0px,
-          rgba(255,255,255,0.05) 1px,
+          rgba(0, 255, 255, 0.05) 0px,
+          rgba(0, 255, 255, 0.05) 1px,
           transparent 1px,
           transparent 40px
         );
+      background-size: 40px 40px;
+      background-blend-mode: normal;
+    
+      /* subtle floating panel shadow */
       box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-      overflow: hidden;
+    }
+
+    .map::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(0, 255, 255, 0.12) 0px,
+          rgba(0, 255, 255, 0.12) 1px,
+          transparent 1px,
+          transparent 40px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(0, 255, 255, 0.12) 0px,
+          rgba(0, 255, 255, 0.12) 1px,
+          transparent 1px,
+          transparent 40px
+        );
+      pointer-events: none;
+      z-index: 1;
+      mix-blend-mode: lighten;
+    }
+
+    .map::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.02), transparent 80%);
     }
 
     .star {
