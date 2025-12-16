@@ -310,15 +310,13 @@
       font-size: 12px;
       color: #9fb8cc;
       line-height: 1.6;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
     }
     
     .log-entry {
       position: relative;
       padding-left: 20px;
       border-left: 2px solid #2a5a7a;
+      margin: 0;
     }
     
     .log-entry::before {
@@ -431,23 +429,19 @@
         <h2 class="log-title">Admiral's Log</h2>
       </div>
       <div class="log-content">
-        <div class="log-entry">
-          <div class="log-date">DECEMBER 2025</div>
-          <div class="log-text">Returned</div>
-        </div>
-        <div class="log-entry">
-          <div class="log-date">DECEMBER 2025</div>
-          <div class="log-text">Current RE4</div>
-        </div>
-      </div>
-      <div class="log-panels">
-        <div class="log-panel">
-          <div class="panel-label">Status</div>
-          <div class="panel-value">Active</div>
-        </div>
-        <div class="log-panel">
-          <div class="panel-label">Transit</div>
-          <div class="panel-value">En Route</div>
+        <div class="log-panels">
+          <div class="log-panel">
+            <div class="log-entry">
+              <div class="log-date">DECEMBER 2025</div>
+              <div class="log-text">Returned</div>
+            </div>
+          </div>
+          <div class="log-panel">
+            <div class="log-entry">
+              <div class="log-date">DECEMBER 2025</div>
+              <div class="log-text">Current RE4</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
