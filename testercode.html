@@ -344,6 +344,35 @@
       color: #b8d4e8;
       font-size: 11px;
     }
+
+    .log-panels {
+      display: flex;
+      gap: 12px;
+      padding: 0 16px 16px 16px;
+    }
+    
+    .log-panel {
+      flex: 1;
+      background: rgba(10, 18, 24, 0.4);
+      border: 1px solid #2a5a7a;
+      border-radius: 4px;
+      padding: 12px;
+      font-family: monospace;
+    }
+    
+    .panel-label {
+      font-size: 9px;
+      color: #5a8aa4;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    
+    .panel-value {
+      font-size: 13px;
+      color: #b8d4e8;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
@@ -409,6 +438,16 @@
         <div class="log-entry">
           <div class="log-date">DECEMBER 2025</div>
           <div class="log-text">Current RE4</div>
+        </div>
+      </div>
+      <div class="log-panels">
+        <div class="log-panel">
+          <div class="panel-label">Status</div>
+          <div class="panel-value">Active</div>
+        </div>
+        <div class="log-panel">
+          <div class="panel-label">Transit</div>
+          <div class="panel-value">En Route</div>
         </div>
       </div>
     </div>
