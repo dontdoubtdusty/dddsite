@@ -1,594 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bear Trap Leg Search Compilation</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
-            background-color: #0f0f0f;
-            color: #fff;
-        }
-        .header {
-            background-color: #212121;
-            padding: 15px 20px;
-            border-bottom: 1px solid #303030;
-        }
-        .header h1 {
-            font-size: 20px;
-            font-weight: 500;
-        }
-        .video-player {
-            background-color: #000;
-            width: 100%;
-            max-width: 1280px;
-            margin: 0 auto;
-            aspect-ratio: 16/9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        .video-placeholder {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-        .video-placeholder.hidden {
-            display: none;
-        }
-        .video-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .play-button {
-            width: 80px;
-            height: 80px;
-            background-color: rgba(255, 0, 0, 0.9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .play-button:hover {
-            transform: scale(1.1);
-            background-color: rgb(255, 0, 0);
-        }
-        .play-icon {
-            width: 0;
-            height: 0;
-            border-left: 25px solid white;
-            border-top: 15px solid transparent;
-            border-bottom: 15px solid transparent;
-            margin-left: 5px;
-        }
-        .video-info {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .video-title {
-            font-size: 20px;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-        .video-stats {
-            display: flex;
-            gap: 10px;
-            color: #aaa;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        .engagement-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .btn {
-            background-color: #272727;
-            border: none;
-            color: #fff;
-            padding: 10px 16px;
-            border-radius: 18px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background-color 0.2s;
-        }
-        .btn:hover {
-            background-color: #3f3f3f;
-        }
-        .description {
-            background-color: #272727;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        .description-text {
-            color: #ddd;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-        .timestamps {
-            margin-top: 15px;
-            border-top: 1px solid #3f3f3f;
-            padding-top: 15px;
-        }
-        .timestamp {
-            display: flex;
-            gap: 10px;
-            padding: 8px 0;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            border-radius: 4px;
-            padding-left: 5px;
-        }
-        .timestamp:hover {
-            background-color: #3f3f3f;
-        }
-        .timestamp-time {
-            color: #3ea6ff;
-            font-weight: 500;
-            min-width: 60px;
-        }
-        .timestamp-desc {
-            color: #ddd;
-        }
-        .comments-section {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .comments-header {
-            font-size: 20px;
-            font-weight: 500;
-            margin-bottom: 30px;
-        }
-        .comment {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
-            flex-shrink: 0;
-        }
-        .comment-content {
-            flex: 1;
-        }
-        .comment-author {
-            font-weight: 500;
-            margin-bottom: 5px;
-            font-size: 13px;
-        }
-        .comment-time {
-            color: #aaa;
-            font-size: 12px;
-            margin-left: 5px;
-        }
-        .comment-text {
-            color: #ddd;
-            line-height: 1.5;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        .comment-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            font-size: 13px;
-        }
-        .like-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #aaa;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .like-btn:hover {
-            color: #fff;
-        }
-        .video-duration {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 500;
-        }
+  <meta charset="UTF-8" />
+  <title>Sun Space Map</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+          margin: 0;
+          height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         
-        /* === MAIN LIKE BUTTON STYLES (PURPLE) === */
-        .main-like-icon { 
-            color: #fff; 
-            font-size: 16px; 
-            transition: color 0.2s ease;
-        }
-
-        .main-like-icon.liked {
-            color: #6a0dad; /* PURPLE */
-        }
+          /* space/space-station background placeholder */
+          background-image: url('https://i.imgur.com/Alw6mHY.jpeg');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
         
-        /* === COMMENT LIKE BUTTON STYLES (BLUE) === */
-        /* This applies the YouTube-like blue color to the entire action element */
-        .like-btn.active-like {
-            color: #3ea6ff; /* BLUE for active comment like/dislike */
-        }
-    </style>
-</head>
-<body>
-    <div class="video-player">
-        <div class="video-placeholder" id="placeholder">
-            <div class="play-button" onclick="playVideo()">
-                <div class="play-icon"></div>
-            </div>
-            <div style="text-align: center; color: #aaa;">
-                <p style="font-size: 18px; margin-bottom: 5px;">🐻 MEGA COMPILATION 🐻</p>
-                <p style="font-size: 14px;">47:32 of Pure Chaos</p>
-            </div>
-        </div>
-        <iframe id="videoFrame" class="video-frame" style="display: none;" 
-            src="" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-        </iframe>
-        <div class="video-duration">47:32</div>
-    </div>
-
-    <div class="video-info">
-        <h1 class="video-title">People Getting Their Legs Caught in Bear Traps Compilation #47 (TRY NOT TO LAUGH CHALLENGE)</h1>
+          /* sci-fi tint and glow */
+          background-blend-mode: overlay;
+          background-color: rgba(5, 10, 25, 0.7);
         
-        <div class="video-stats">
-            <span>2,847,392 views</span>
-            <span>•</span>
-            <span>Dec 14, 2024</span>
-        </div>
-
-        <div class="engagement-buttons">
-            <button class="btn" id="mainLikeBtn" onclick="toggleMainLike(this)">
-                <span class="main-like-icon">👍</span> 
-                <span id="mainLikeCount">187K</span>
-            </button>
-            <button class="btn">👎 Dislike</button>
-            <button class="btn">💬 Share</button>
-            <button class="btn">📥 Download</button>
-            <button class="btn">✂️ Clip</button>
-            <button class="btn">💾 Save</button>
-        </div>
-
-        <div class="description">
-            <div class="description-text">
-                <p><strong>WELCOME TO THE ULTIMATE BEAR TRAP COMPILATION! 🐻🪤</strong></p>
-                <p style="margin-top: 10px;">
-                    47 minutes of the most hilarious, unexpected, and downright silly moments of people stepping on bear traps. 
-                    From comedians doing bits to video game fails, movie scenes, and staged pranks - this compilation has it ALL!
-                </p>
-            </div>
-
-            <div class="timestamps">
-                <h3 style="margin-bottom: 10px; font-size: 16px;">📍 Timestamps:</h3>
-                <div class="timestamp">
-                    <span class="timestamp-time">0:00</span>
-                    <span class="timestamp-desc">Intro - "Here We Go Again"</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">0:45</span>
-                    <span class="timestamp-desc">The Classic Cartoon Sound Effects Collection</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">18:32</span>
-                    <span class="timestamp-desc">Video Game Fails Montage (Skyrim, Fallout, RDR2)</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">42:15</span>
-                    <span class="timestamp-desc">The Guy Who ALWAYS Steps On Them</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">1:03:47</span>
-                    <span class="timestamp-desc">Movie Scene Supercut</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">1:28:20</span>
-                    <span class="timestamp-desc">The Elaborate Setup That Goes Wrong</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">1:56:05</span>
-                    <span class="timestamp-desc">Slow Motion Replays With Commentary</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">2:28:44</span>
-                    <span class="timestamp-desc">The One That Catches Three People</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">2:54:30</span>
-                    <span class="timestamp-desc">Comedy Sketch Compilation</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">3:22:18</span>
-                    <span class="timestamp-desc">Animated Shorts Collection</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">3:46:52</span>
-                    <span class="timestamp-desc">The Absolute WORST Timing Moments</span>
-                </div>
-                <div class="timestamp">
-                    <span class="timestamp-time">4:02:15</span>
-                    <span class="timestamp-desc">Outro + Bloopers</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="comments-section">
-        <div class="comments-header">8,472 Comments</div>
-
-        <div class="comment">
-            <div class="avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
-            <div class="comment-content">
-                <div class="comment-author">
-                    @SillyGoober2024
-                    <span class="comment-time">2 days ago</span>
-                </div>
-                <div class="comment-text">
-                    The one at 27:08 where THREE people step on the same trap is absolutely legendary. I've watched it 47 times and I'm still crying 😂😂😂
-                </div>
-                <div class="comment-actions">
-                    <div class="like-btn">👍 12K</div>
-                    <div class="like-btn">👎</div>
-                    <div class="like-btn">💬 Reply</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="comment">
-            <div class="avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
-            <div class="comment-content">
-                <div class="comment-author">
-                    @ComedyGoldMiner
-                    <span class="comment-time">1 day ago</span>
-                </div>
-                <div class="comment-text">
-                    This is peak internet content. We've peaked as a civilization. It's all downhill from here. Worth it.
-                </div>
-                <div class="comment-actions">
-                    <div class="like-btn">👍 8.4K</div>
-                    <div class="like-btn">👎</div>
-                    <div class="like-btn">💬 Reply</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="comment">
-            <div class="avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></div>
-            <div class="comment-content">
-                <div class="comment-author">
-                    @GamingFails101
-                    <span class="comment-time">3 days ago</span>
-                </div>
-                <div class="comment-text">
-                    The video game section starting at 3:42 is GOLD. That Skyrim NPC walking straight into 5 traps in a row while carrying a basket... perfection 👌
-                </div>
-                <div class="comment-actions">
-                    <div class="like-btn">👍 6.2K</div>
-                    <div class="like-btn">👎</div>
-                    <div class="like-btn">💬 Reply</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="comment">
-            <div class="avatar" style="background: linear-gradient(135deg, #fa709a, #fee140);"></div>
-            <div class="comment-content">
-                <div class="comment-author">
-                    @DefinitelyNotABear
-                    <span class="comment-time">5 hours ago</span>
-                </div>
-                <div class="comment-text">
-                    As a bear, I approve of this compilation. Humans stepping on their own traps never gets old 🐻
-                </div>
-                <div class="comment-actions">
-                    <div class="like-btn">👍 15K</div>
-                    <div class="like-btn">👎</div>
-                    <div class="like-btn">💬 Reply</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="comment">
-            <div class="avatar" style="background: linear-gradient(135deg, #30cfd0, #330867);"></div>
-            <div class="comment-content">
-                <div class="comment-author">
-                    @ClassicComedyFan
-                    <span class="comment-time">1 week ago</span>
-                </div>
-                <div class="comment-text">
-                    The cartoon sound effect compilation at 0:15 brought back so many memories. That "BOING" followed by the Wilhelm scream... *chef's kiss* 🤣
-                </div>
-                <div class="comment-actions">
-                    <div class="like-btn">👍 4.7K</div>
-                    <div class="like-btn">👎</div>
-                    <div class="like-btn">💬 Reply</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="comment">
-            <div class="avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
-            <div class="comment-content">
-                <div class="comment-author">
-                    @ThatOneGuy
-                    <span class="comment-time">4 days ago</span>
-                </div>
-                <div class="comment-text">
-                    I showed this to my grandma and she laughed so hard she almost fell off her chair. Now she wants me to make her a compilation playlist. You've created a monster.
-                </div>
-                <div class="comment-actions">
-                    <div class="like-btn">👍 9.1K</div>
-                    <div class="like-btn">👎</div>
-                    <div class="like-btn">💬 Reply</div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-    function parseKNotation(text) {
-        const match = text.match(/[\d.]+/);
-        if (!match) return 0;
-        let number = parseFloat(match[0]);
-        if (text.includes('K') || text.includes('k')) {
-            number *= 1000;
+          /* optional vignette effect */
+          box-shadow: inset 0 0 150px rgba(0,0,0,0.5);
+          font-family: system-ui, sans-serif;
         }
-        return Math.round(number);
+
+      body::after {
+          content: '';
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          background: radial-gradient(circle at center, rgba(255,255,255,0.02), transparent 70%);
+        }
+
+
+
+    .map {
+      position: relative;
+      width: 700px;
+      height: 400px;
+      border-radius: 16px;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.05) 0px,
+          rgba(255,255,255,0.05) 1px,
+          transparent 1px,
+          transparent 40px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255,0.05) 0px,
+          rgba(255,255,255,0.05) 1px,
+          transparent 1px,
+          transparent 40px
+        );
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      overflow: hidden;
     }
 
-    function formatKNotation(count) {
-        if (count >= 1000) {
-            const kValue = (count / 1000).toFixed(1);
-            if (kValue.endsWith('.0')) {
-                return kValue.slice(0, -2) + 'K';
-            }
-            return kValue + 'K';
-        }
-        return count.toString();
+    .star {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9ad0ff;
+      box-shadow: 0 0 10px rgba(154,208,255,0.8);
     }
 
-    // Main video like button logic (Purple toggle)
-    function toggleMainLike(buttonElement) {
-        const icon = buttonElement.querySelector('.main-like-icon');
-        const countElement = document.getElementById('mainLikeCount');
-        let rawCount = parseKNotation(countElement.textContent);
+    .path {
+      position: absolute;
+      inset: 0;
+    }
 
-        if (icon.classList.contains('liked')) {
-            icon.classList.remove('liked');
-            rawCount -= 1;
-        } else {
-            icon.classList.add('liked');
-            rawCount += 1;
-        }
+    .sun {
+      position: absolute;
+      font-size: 32px;
+      transform: translate(-50%, -50%);
+      animation: travel 12s linear infinite;
+      filter: drop-shadow(0 0 12px rgba(255,200,0,0.9));
+    }
 
-        countElement.textContent = formatKNotation(rawCount);
+    @keyframes travel {
+      0%   { left: 80px;  top: 300px; }   /* Node 1 */
+      25%  { left: 200px; top: 120px; }   /* Node 2 */
+      50%  { left: 380px; top: 200px; }   /* Node 3 */
+      75%  { left: 520px; top: 90px; }    /* Node 4 */
+      100% { left: 80px;  top: 300px; }   /* Back to Node 1 */
+    }
+
+    .label {
+      position: absolute;
+      color: rgba(255,255,255,0.7);
+      font-size: 16px;
+      font-family: 'Orbitron', sans-serif;
+      transform: translateY(10px);
+      letter-spacing: 0.05em;
     }
     
-    function convertToSeconds(timeString) {
-        const parts = timeString.split(':').map(Number);
-        if (parts.length === 2) {
-            return parts[0] * 60 + parts[1];
-        } else if (parts.length === 3) {
-            return parts[0] * 3600 + parts[1] * 60 + parts[2];
-        }
-        return 0;
+    .hud {
+      position: absolute;
+      bottom: auto;
+      top: 18px;
+      left: 18px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(10, 20, 40, 0.6);
+      backdrop-filter: blur(6px);
+      box-shadow: inset 0 0 0 1px rgba(150,200,255,0.2),
+                  0 0 20px rgba(80,140,255,0.15);
+      color: #cfe8ff;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+    }
+    
+    .hud-line {
+      line-height: 1.4;
+    }
+    
+    .hud-line.small {
+      font-size: 10px;
+      opacity: 0.6;
+    }
+    
+    .hud-line.route {
+      font-size: 13px;
+    }
+    
+    .hud-line.time {
+      margin-top: 4px;
+      font-size: 16px;
+      color: #ffe38a;
+      text-shadow: 0 0 8px rgba(255,220,120,0.6);
+    }
+    .hud-line.time {
+      animation: chronopulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes chronopulse {
+      0%   { opacity: 0.7; }
+      50%  { opacity: 1; }
+      100% { opacity: 0.7; }
     }
 
-    function playVideo() {
-        const placeholder = document.getElementById('placeholder');
-        const videoFrame = document.getElementById('videoFrame');
-        
-        placeholder.style.display = 'none';
-        videoFrame.style.display = 'block';
-        videoFrame.src = 'https://www.youtube.com/embed/ErdeXcuQ5kY?autoplay=1';
 
-        document.querySelectorAll('.timestamp').forEach(timestamp => {
-            timestamp.addEventListener('click', function() {
-                const timeText = this.querySelector('.timestamp-time').textContent;
-                const seconds = convertToSeconds(timeText);
-                
-                const placeholder = document.getElementById('placeholder');
-                const videoFrame = document.getElementById('videoFrame');
-                
-                if (placeholder.style.display !== 'none') {
-                    placeholder.style.display = 'none';
-                    videoFrame.style.display = 'block';
-                }
-                
-                videoFrame.src = `https://www.youtube.com/embed/ErdeXcuQ5kY?autoplay=1&start=${seconds}`;
-            });
-        });
-    }
 
-    // Comment like/dislike buttons logic (Blue toggle)
-    document.querySelectorAll('.comment').forEach(comment => {
-        const likeBtn = comment.querySelector('.like-btn:nth-child(1)');
-        const dislikeBtn = comment.querySelector('.like-btn:nth-child(2)');
-        
-        const initialLikeCount = parseKNotation(likeBtn.textContent);
-        comment.setAttribute('data-likes', initialLikeCount);
-        comment.setAttribute('data-state', 0); // 0=neutral, 1=liked, -1=disliked
+  </style>
+</head>
+<body>
+  <div class="map">
+    <svg class="path" viewBox="0 0 700 400" preserveAspectRatio="none">
+      <polyline
+        points="80,300 200,120 380,200 520,90 80,300"
+        fill="none"
+        stroke="rgba(255,255,255,0.25)"
+        stroke-width="2"
+        stroke-dasharray="6 6" />
+    </svg>
 
-        function updateCommentDisplay(likeCount, likeState) {
-            likeBtn.innerHTML = `👍 ${formatKNotation(likeCount)}`;
+    <div class="star" style="left:80px; top:300px; background:#c44;"></div>
+    <div class="star" style="left:200px; top:120px;"></div>
+    <div class="star" style="left:380px; top:200px;"></div>
+    <div class="star" style="left:520px; top:90px;"></div>
 
-            // Use classes for styling instead of inline styles
-            likeBtn.classList.remove('active-like');
-            dislikeBtn.classList.remove('active-like');
-            
-            if (likeState === 1) {
-                likeBtn.classList.add('active-like');
-            } else if (likeState === -1) {
-                dislikeBtn.classList.add('active-like');
-            }
-        }
+    <div class="label" style="left:65px; top:315px;">Home</div>
+    <div class="label" style="left:185px; top:135px;">😺</div>
+    <div class="label" style="left:365px; top:215px;">🐾🐾</div>
+    <div class="label" style="left:505px; top:105px;">RE4</div>
 
-        likeBtn.addEventListener('click', function() {
-            let currentState = parseInt(comment.getAttribute('data-state'));
-            let currentLikes = parseInt(comment.getAttribute('data-likes'));
+    <div class="sun">☀️</div>
 
-            if (currentState === 1) {
-                currentState = 0;
-                currentLikes -= 1;
-            } else {
-                if (currentState === -1) {
-                    currentLikes += 1;
-                }
-                currentState = 1;
-                currentLikes += 1;
-            }
-            comment.setAttribute('data-state', currentState);
-            comment.setAttribute('data-likes', currentLikes);
-            updateCommentDisplay(currentLikes, currentState);
-        });
+    <div class="hud">
+    <div class="hud-line small">TRANSIT VECTOR</div>
+    <div class="hud-line route">
+      HOME NODE → RE4 NODE
+    </div>
+    <div class="hud-line time">
+      ⧖  Δ-RE4 : 4.73 σ
+    </div>
+  </div>
 
-        dislikeBtn.addEventListener('click', function() {
-            let currentState = parseInt(comment.getAttribute('data-state'));
-            let currentLikes = parseInt(comment.getAttribute('data-likes'));
-            
-            if (currentState === -1) {
-                currentState = 0;
-            } else {
-                if (currentState === 1) {
-                    currentLikes -= 1;
-                }
-                currentState = -1;
-            }
-            comment.setAttribute('data-state', currentState);
-            comment.setAttribute('data-likes', currentLikes);
-            updateCommentDisplay(currentLikes, currentState);
-        });
-    });
-    </script>
+  </div>
 </body>
 </html>
