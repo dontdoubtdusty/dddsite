@@ -166,7 +166,7 @@
       width: 32px;
       height: 32px;
       transform: translate(-50%, -50%);
-      animation: travel 12s linear infinite;
+      animation: travel 6s linear infinite;
     
       background-image: url('/sun_icon.png');
       background-size: contain;
@@ -179,11 +179,10 @@
 
     @keyframes travel {
       0%   { left: 80px;  top: 300px; }   /* Node 1 - Home */
-      24.99%  { left: 200px; top: 120px; }   /* Node 2 */
-      49.99%  { left: 380px; top: 200px; }   /* Node 3 */
-      74.99%  { left: 520px; top: 90px; }    /* Node 4 - RE4 */
-      75%  { left: 80px;  top: 300px; }   /* Instant teleport back to Home */
-      100% { left: 80px;  top: 300px; }   /* Stay at Home until loop restarts */
+      33.33%  { left: 200px; top: 120px; }   /* Node 2 */
+      66.66%  { left: 380px; top: 200px; }   /* Node 3 */
+      99.99%  { left: 520px; top: 90px; }    /* Node 4 - RE4 */
+      100% { left: 80px;  top: 300px; }   /* Instant teleport back to Home */
     }
 
     .label {
@@ -263,9 +262,9 @@
     }
     
     .trajectory-main {
-      stroke: #ff9d00;
+      stroke: #6b9ac4;
       stroke-width: 3;
-      filter: drop-shadow(0 0 4px rgba(255, 157, 0, 0.6));
+      filter: drop-shadow(0 0 3px rgba(107, 154, 196, 0.4));
       stroke-dasharray: none;
     }
     
