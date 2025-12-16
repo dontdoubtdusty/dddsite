@@ -260,9 +260,19 @@
       letter-spacing: 0.1em;
       opacity: 0.6;
     }
-
-
-
+    
+    .trajectory-main {
+      stroke: #ff9d00;
+      stroke-width: 3;
+      filter: drop-shadow(0 0 4px rgba(255, 157, 0, 0.6));
+      stroke-dasharray: none;
+    }
+    
+    .trajectory-alternate {
+      stroke: rgba(255,255,255,0.15);
+      stroke-width: 2;
+      stroke-dasharray: 6 6;
+    }
   </style>
 </head>
 <body>
@@ -279,12 +289,18 @@
   
     <div class="map">
       <svg class="path" viewBox="0 0 700 400" preserveAspectRatio="none">
+        <!-- Alternate/completed routes (dimmed) -->
         <polyline
-          points="80,300 200,120 380,200 520,90 80,300"
-          fill="none"
-          stroke="rgba(255,255,255,0.25)"
-          stroke-width="2"
-          stroke-dasharray="6 6" />
+          class="trajectory-alternate"
+          points="80,300 200,120 380,200 520,90"
+          fill="none" />
+        
+        <!-- Main trajectory: Home → RE4 (highlighted) -->
+        <line
+          class="trajectory-main"
+          x1="80" y1="300"
+          x2="520" y2="90"
+          fill="none" />
       </svg>
   
       <div class="star" style="left:80px; top:300px; background:#c44;"></div>
