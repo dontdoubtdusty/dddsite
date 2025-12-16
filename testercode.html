@@ -3,441 +3,478 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dusty's Goober Stop</title>
+    <title>Bear Trap Leg Search Compilation</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #0f0f0f;
             color: #fff;
-            overflow-x: hidden;
         }
-
-        .container {
-            max-width: 1200px;
+        .header {
+            background-color: #212121;
+            padding: 15px 20px;
+            border-bottom: 1px solid #303030;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+        .video-player {
+            background-color: #000;
+            width: 100%;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 2rem;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem 0;
-        }
-
-        h1 {
-            font-size: 4rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f7dc6f);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient 4s ease infinite;
-            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
-            margin-bottom: 0.5rem;
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #4ecdc4;
-            letter-spacing: 0.3rem;
-            text-transform: uppercase;
-            opacity: 0.8;
-        }
-
-        .advent-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(255, 107, 107, 0.1);
-            border: 2px solid rgba(255, 107, 107, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(255, 107, 107, 0.2);
-        }
-
-        .section-title {
-            font-size: 2rem;
-            color: #f7dc6f;
-            text-align: center;
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2rem;
-        }
-
-        .advent-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .advent-card {
-            border-color: rgba(255, 107, 107, 0.3);
-        }
-
-        .advent-card:hover {
-            border-color: #ff6b6b;
-            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
-        }
-
-        .toolkit-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(78, 205, 196, 0.1);
-            border: 2px solid rgba(78, 205, 196, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(78, 205, 196, 0.2);
-        }
-
-        .toolkit-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .toolkit-card {
-            border-color: rgba(78, 205, 196, 0.3);
-        }
-
-        .toolkit-card:hover {
-            border-color: #4ecdc4;
-            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.4);
-        }
-
-      .shrek-section {
-          margin-bottom: 4rem;
-          padding: 2rem;
-          background: linear-gradient(135deg, rgba(139, 195, 74, 0.15), rgba(104, 159, 56, 0.15));
-          border: 3px solid #7CB342;
-          border-radius: 20px;
-          box-shadow: 0 0 40px rgba(124, 179, 66, 0.3);
-          position: relative;
-          overflow: visible;
-      }
-      
-      .shrek-section .section-title {
-          color: #AED581;
-          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 195, 74, 0.6);
-          position: relative;
-          z-index: 1;
-      }
-      
-      .shrek-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 1.5rem;
-          position: relative;
-          z-index: 1;
-      }
-      
-      .shrek-card {
-          background: rgba(104, 159, 56, 0.2);
-          border-color: rgba(139, 195, 74, 0.4);
-      }
-      
-      .shrek-card:hover {
-          border-color: #8BC34A;
-          box-shadow: 0 10px 40px rgba(139, 195, 74, 0.5);
-          background: rgba(139, 195, 74, 0.15);
-      }
-      
-      .shrek-card .card-title {
-          color: #C5E1A5;
-      }
-      
-      .shrek-card:hover .card-title {
-          color: #DCEDC8;
-      }
-
-        .goober-stops-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(69, 183, 209, 0.1);
-            border: 2px solid rgba(69, 183, 209, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(69, 183, 209, 0.2);
-        }
-        
-        .goober-stops-section .section-title {
-            margin-bottom: 2rem;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
-            overflow: hidden;
         }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+        .video-placeholder {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
         }
-
-        .card:hover::before {
-            left: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: #4ecdc4;
-            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.3);
-        }
-
-        .grid .card::before {
+        .video-placeholder.hidden {
             display: none;
         }
-
-        .grid .card:hover {
-            transform: none;
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: none;
+        .video-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
-
-        .card-title {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #f7dc6f;
-            margin-bottom: 0.8rem;
-            text-decoration: none;
-            display: block;
-            transition: color 0.3s ease;
+        .play-button {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 0, 0, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
-
-        .card:hover .card-title {
-            color: #4ecdc4;
+        .play-button:hover {
+            transform: scale(1.1);
+            background-color: rgb(255, 0, 0);
         }
-
-        .card-desc {
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-left: 25px solid white;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            margin-left: 5px;
+        }
+        .video-info {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .video-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .video-stats {
+            display: flex;
+            gap: 10px;
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .engagement-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background-color: #272727;
+            border: none;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 18px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background-color: #3f3f3f;
+        }
+        .description {
+            background-color: #272727;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .description-text {
             color: #ddd;
             line-height: 1.6;
-            font-size: 0.95rem;
+            font-size: 14px;
         }
-
-        .link-wrapper {
-            text-decoration: none;
-            display: block;
-            height: 100%;
+        .timestamps {
+            margin-top: 15px;
+            border-top: 1px solid #3f3f3f;
+            padding-top: 15px;
         }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
-            }
-            
-            .subtitle {
-                font-size: 1rem;
-                letter-spacing: 0.2rem;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .advent-grid, .toolkit-grid {
-                grid-template-columns: 1fr;
-            }
-
-          .shrek-grid {
-                grid-template-columns: 1fr;
-            }
+        .timestamp {
+            display: flex;
+            gap: 10px;
+            padding: 8px 0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-radius: 4px;
+            padding-left: 5px;
         }
-
-        .floating {
-            animation: float 3s ease-in-out infinite;
+        .timestamp:hover {
+            background-color: #3f3f3f;
         }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        .timestamp-time {
+            color: #3ea6ff;
+            font-weight: 500;
+            min-width: 60px;
+        }
+        .timestamp-desc {
+            color: #ddd;
+        }
+        .comments-section {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .comments-header {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+        .comment {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            flex-shrink: 0;
+        }
+        .comment-content {
+            flex: 1;
+        }
+        .comment-author {
+            font-weight: 500;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+        .comment-time {
+            color: #aaa;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .comment-text {
+            color: #ddd;
+            line-height: 1.5;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .comment-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            font-size: 13px;
+        }
+        .like-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #aaa;
+            cursor: pointer;
+        }
+        .like-btn:hover {
+            color: #fff;
+        }
+        .video-duration {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="floating">
-            <h1>Dusty's Goober Stop</h1>
-            <div class="subtitle">Web Experiments & Digital Oddities</div>
-        </header>
-
-        <section class="advent-section">
-            <h2 class="section-title">Advent Calendars</h2>
-            <div class="advent-grid">
-                <div class="card advent-card">
-                    <a href="mtgadvent.html" class="link-wrapper">
-                        <div class="card-title">MTG Draft Mashup Advent</div>
-                        <div class="card-desc">MTG Draft Mashup Advent Calendar with daily card reveals</div>
-                    </a>
-                </div>
-
-                <div class="card advent-card">
-                    <a href="otherworldlyadventcalendar.html" class="link-wrapper">
-                        <div class="card-title">Otherworldly Advent</div>
-                        <div class="card-desc">A new otherworldly horror every day to haunt your dreams</div>
-                    </a>
-                </div>
-
-                <div class="card advent-card">
-                    <a href="horroradvent.html" class="link-wrapper">
-                        <div class="card-title">Horror Advent</div>
-                        <div class="card-desc">Open each door to discover a chilling blend of classic and contemporary horror and sci‑fi tales</div>
-                    </a>
-                </div>
-
-                <div class="card advent-card">
-                    <a href="silly_reasons_advent_calendar.html" class="link-wrapper">
-                        <div class="card-title">Silly Reasons Advent</div>
-                        <div class="card-desc">An advent calendar filled with absurd and delightful reasons to live</div>
-                    </a>
-                </div>
+    <div class="video-player">
+        <div class="video-placeholder" id="placeholder">
+            <div class="play-button" onclick="playVideo()">
+                <div class="play-icon"></div>
             </div>
-        </section>
-
-        <section class="toolkit-section">
-            <h2 class="section-title">Goober Toolkit</h2>
-            <div class="toolkit-grid">
-                <div class="card toolkit-card">
-                    <a href="8ball.html" class="link-wrapper">
-                        <div class="card-title">Magic 8-Ball</div>
-                        <div class="card-desc">Get cryptic answers to life's burning questions from the digital oracle</div>
-                    </a>
-                </div>
-
-                <div class="card toolkit-card">
-                    <a href="booster.html" class="link-wrapper">
-                        <div class="card-title">Shrek Booster Pack</div>
-                        <div class="card-desc">Shrek Booster Pack Simulator with layers of collectible surprises</div>
-                    </a>
-                </div>
-
-                <div class="card toolkit-card">
-                    <a href="dice.html" class="link-wrapper">
-                        <div class="card-title">Shrek Dice</div>
-                        <div class="card-desc">And you thought it was ogre</div>
-                    </a>
-                </div>
-
-                <div class="card toolkit-card">
-                    <a href="thebookofcarp.html" class="link-wrapper">
-                        <div class="card-title">The Book of Carp</div>
-                        <div class="card-desc">Sacred wisdom and profound musings from the ancient texts</div>
-                    </a>
-                </div>
+            <div style="text-align: center; color: #aaa;">
+                <p style="font-size: 18px; margin-bottom: 5px;">🐻 MEGA COMPILATION 🐻</p>
+                <p style="font-size: 14px;">47:32 of Pure Chaos</p>
             </div>
-        </section>
-
-        <section class="shrek-section">
-                <h2 class="section-title">The Swamp Sanctuary</h2>
-                <div class="shrek-grid">
-                    <div class="card shrek-card">
-                        <a href="shoracle.html" class="link-wrapper">
-                            <div class="card-title">Swamp Tarot</div>
-                            <div class="card-desc">Divine your destiny with the ancient wisdom of the swamp oracle</div>
-                        </a>
-                    </div>
-            
-                    <div class="card shrek-card">
-                        <a href="booster.html" class="link-wrapper">
-                            <div class="card-title">Shrek Booster Pack</div>
-                            <div class="card-desc">Shrek Booster Pack Simulator with layers of collectible surprises</div>
-                        </a>
-                    </div>
-            
-                    <div class="card shrek-card">
-                        <a href="dice.html" class="link-wrapper">
-                            <div class="card-title">Shrek Dice</div>
-                            <div class="card-desc">And you thought it was ogre</div>
-                        </a>
-                    </div>
-            
-                    <div class="card shrek-card">
-                        <a href="notepad-recreation.html" class="link-wrapper">
-                            <div class="card-title">ShrekPad</div>
-                            <div class="card-desc">A fully functional Notepad variant for all your swampy note-taking needs</div>
-                        </a>
-                    </div>
-                </div>
-            </section>
-        <section class="goober-stops-section">
-            <h2 class="section-title">Goober Stops</h2>
-                <div class="grid">
-                    <div class="card">
-                        <a href="beards.html" class="link-wrapper">
-                            <div class="card-title">Beards PSA</div>
-                            <div class="card-desc">An anti AI-beard public service announcement - there's too many!</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="freaksgiving.html" class="link-wrapper">
-                            <div class="card-title">Big Beautiful Bill's Freaksgiving</div>
-                            <div class="card-desc">A twisted holiday celebration you won't soon forget</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="donotresist.html" class="link-wrapper">
-                            <div class="card-title">Do Not Resist</div>
-                            <div class="card-desc">An experimental interactive experience that tests your will</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="horse.html" class="link-wrapper">
-                            <div class="card-title">Horse Rain</div>
-                            <div class="card-desc">The timeline of the horse rain horror - a catastrophic event</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="like_mike.html" class="link-wrapper">
-                            <div class="card-title">Like Mike Awards</div>
-                            <div class="card-desc">Basketball-inspired awards celebrating legendary achievements</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="space_transfer.html" class="link-wrapper">
-                            <div class="card-title">Space Transfer</div>
-                            <div class="card-desc">Intergalactic shoe shopping experience - transfer to a footwear boutique in another galaxy</div>
-                        </a>
-                    </div>
-
-                    <div class="card">
-                        <a href="usps_mockery.html" class="link-wrapper">
-                            <div class="card-title">USPS Mockery</div>
-                            <div class="card-desc">A quick side thought about the mockery of mail</div>
-                        </a>
-                    </div>
-                </div>
-        </section>
+        </div>
+        <iframe id="videoFrame" class="video-frame" style="display: none;" 
+            src="" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+        <div class="video-duration">47:32</div>
     </div>
+
+    <div class="video-info">
+        <h1 class="video-title">People Getting Their Legs Caught in Bear Traps Compilation #47 (TRY NOT TO LAUGH CHALLENGE)</h1>
+        
+        <div class="video-stats">
+            <span>2,847,392 views</span>
+            <span>•</span>
+            <span>Dec 14, 2024</span>
+        </div>
+
+        <div class="engagement-buttons">
+            <button class="btn">👍 187K</button>
+            <button class="btn">👎 Dislike</button>
+            <button class="btn">💬 Share</button>
+            <button class="btn">📥 Download</button>
+            <button class="btn">✂️ Clip</button>
+            <button class="btn">💾 Save</button>
+        </div>
+
+        <div class="description">
+            <div class="description-text">
+                <p><strong>WELCOME TO THE ULTIMATE BEAR TRAP COMPILATION! 🐻🪤</strong></p>
+                <p style="margin-top: 10px;">
+                    47 minutes of the most hilarious, unexpected, and downright silly moments of people stepping on bear traps. 
+                    From comedians doing bits to video game fails, movie scenes, and staged pranks - this compilation has it ALL!
+                </p>
+            </div>
+
+            <div class="timestamps">
+                <h3 style="margin-bottom: 10px; font-size: 16px;">📍 Timestamps:</h3>
+                <div class="timestamp">
+                    <span class="timestamp-time">0:00</span>
+                    <span class="timestamp-desc">Intro - "Here We Go Again"</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">0:15</span>
+                    <span class="timestamp-desc">The Classic Cartoon Sound Effects Collection</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">3:42</span>
+                    <span class="timestamp-desc">Video Game Fails Montage (Skyrim, Fallout, RDR2)</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">8:17</span>
+                    <span class="timestamp-desc">The Guy Who ALWAYS Steps On Them</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">12:04</span>
+                    <span class="timestamp-desc">Movie Scene Supercut</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">16:30</span>
+                    <span class="timestamp-desc">The Elaborate Setup That Goes Wrong</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">21:15</span>
+                    <span class="timestamp-desc">Slow Motion Replays With Commentary</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">27:08</span>
+                    <span class="timestamp-desc">The One That Catches Three People</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">31:45</span>
+                    <span class="timestamp-desc">Comedy Sketch Compilation</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">37:22</span>
+                    <span class="timestamp-desc">Animated Shorts Collection</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">42:10</span>
+                    <span class="timestamp-desc">The Absolute WORST Timing Moments</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-time">46:18</span>
+                    <span class="timestamp-desc">Outro + Bloopers</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comments-section">
+        <div class="comments-header">8,472 Comments</div>
+
+        <div class="comment">
+            <div class="avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+            <div class="comment-content">
+                <div class="comment-author">
+                    @SillyGoober2024
+                    <span class="comment-time">2 days ago</span>
+                </div>
+                <div class="comment-text">
+                    The one at 27:08 where THREE people step on the same trap is absolutely legendary. I've watched it 47 times and I'm still crying 😂😂😂
+                </div>
+                <div class="comment-actions">
+                    <div class="like-btn">👍 12K</div>
+                    <div class="like-btn">👎</div>
+                    <div class="like-btn">💬 Reply</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comment">
+            <div class="avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+            <div class="comment-content">
+                <div class="comment-author">
+                    @ComedyGoldMiner
+                    <span class="comment-time">1 day ago</span>
+                </div>
+                <div class="comment-text">
+                    This is peak internet content. We've peaked as a civilization. It's all downhill from here. Worth it.
+                </div>
+                <div class="comment-actions">
+                    <div class="like-btn">👍 8.4K</div>
+                    <div class="like-btn">👎</div>
+                    <div class="like-btn">💬 Reply</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comment">
+            <div class="avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></div>
+            <div class="comment-content">
+                <div class="comment-author">
+                    @GamingFails101
+                    <span class="comment-time">3 days ago</span>
+                </div>
+                <div class="comment-text">
+                    The video game section starting at 3:42 is GOLD. That Skyrim NPC walking straight into 5 traps in a row while carrying a basket... perfection 👌
+                </div>
+                <div class="comment-actions">
+                    <div class="like-btn">👍 6.2K</div>
+                    <div class="like-btn">👎</div>
+                    <div class="like-btn">💬 Reply</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comment">
+            <div class="avatar" style="background: linear-gradient(135deg, #fa709a, #fee140);"></div>
+            <div class="comment-content">
+                <div class="comment-author">
+                    @DefinitelyNotABear
+                    <span class="comment-time">5 hours ago</span>
+                </div>
+                <div class="comment-text">
+                    As a bear, I approve of this compilation. Humans stepping on their own traps never gets old 🐻
+                </div>
+                <div class="comment-actions">
+                    <div class="like-btn">👍 15K</div>
+                    <div class="like-btn">👎</div>
+                    <div class="like-btn">💬 Reply</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comment">
+            <div class="avatar" style="background: linear-gradient(135deg, #30cfd0, #330867);"></div>
+            <div class="comment-content">
+                <div class="comment-author">
+                    @ClassicComedyFan
+                    <span class="comment-time">1 week ago</span>
+                </div>
+                <div class="comment-text">
+                    The cartoon sound effect compilation at 0:15 brought back so many memories. That "BOING" followed by the Wilhelm scream... *chef's kiss* 🤣
+                </div>
+                <div class="comment-actions">
+                    <div class="like-btn">👍 4.7K</div>
+                    <div class="like-btn">👎</div>
+                    <div class="link-btn">💬 Reply</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comment">
+            <div class="avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+            <div class="comment-content">
+                <div class="comment-author">
+                    @ThatOneGuy
+                    <span class="comment-time">4 days ago</span>
+                </div>
+                <div class="comment-text">
+                    I showed this to my grandma and she laughed so hard she almost fell off her chair. Now she wants me to make her a compilation playlist. You've created a monster.
+                </div>
+                <div class="comment-actions">
+                    <div class="like-btn">👍 9.1K</div>
+                    <div class="like-btn">👎</div>
+                    <div class="like-btn">💬 Reply</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function playVideo() {
+            const placeholder = document.getElementById('placeholder');
+            const videoFrame = document.getElementById('videoFrame');
+            
+            placeholder.style.display = 'none';
+            videoFrame.style.display = 'block';
+            videoFrame.src = 'https://www.youtube.com/embed/ErdeXcuQ5kY?autoplay=1';
+            // Add click handlers to all timestamps
+            document.querySelectorAll('.timestamp').forEach(timestamp => {
+                timestamp.addEventListener('click', function() {
+                    const timeText = this.querySelector('.timestamp-time').textContent;
+                    const seconds = convertToSeconds(timeText);
+                    
+                    const placeholder = document.getElementById('placeholder');
+                    const videoFrame = document.getElementById('videoFrame');
+                    
+                    // Show video if not already showing
+                    if (placeholder.style.display !== 'none') {
+                        placeholder.style.display = 'none';
+                        videoFrame.style.display = 'block';
+                    }
+                    
+                    // Update video URL with timestamp
+                    videoFrame.src = `https://www.youtube.com/embed/ErdeXcuQ5kY?autoplay=1&start=${seconds}`;
+                });
+            });
+            
+            // Convert MM:SS or HH:MM:SS to seconds
+            function convertToSeconds(timeString) {
+                const parts = timeString.split(':').map(Number);
+                if (parts.length === 2) {
+                    // MM:SS
+                    return parts[0] * 60 + parts[1];
+                } else if (parts.length === 3) {
+                    // HH:MM:SS
+                    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+                }
+                return 0;
+            }
+        }
+    </script>
 </body>
 </html>
