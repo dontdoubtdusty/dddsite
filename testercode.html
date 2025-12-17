@@ -323,14 +323,6 @@
                 <div class="column-subtitle">1 book</div>
             </div>
             <div class="column-content">
-                <div class="book-card">
-                    <div class="book-title">The Remains of the Day</div>
-                    <div class="book-author">Kazuo Ishiguro</div>
-                    <div class="book-date">3 days ago</div>
-                    <div class="book-controls">
-                        <button class="btn-right">→</button>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -341,18 +333,6 @@
                 <div class="column-subtitle">1 book</div>
             </div>
             <div class="column-content">
-                <div class="book-card">
-                    <div class="book-title">Sapiens</div>
-                    <div class="book-author">Yuval Noah Harari</div>
-                    <div class="book-meta">Started Dec 1</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 65%;"></div>
-                    </div>
-                    <div class="book-controls">
-                        <button class="btn-left">←</button>
-                        <button class="btn-right">→</button>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -366,15 +346,6 @@
                 <div class="column-subtitle">1 book waiting</div>
             </div>
             <div class="column-content">
-                <div class="book-card">
-                    <div class="book-title">Tomorrow, and Tomorrow, and Tomorrow</div>
-                    <div class="book-date">Finished Dec 10</div>
-                    <div class="not-rated">Not rated</div>
-                    <div class="book-controls">
-                        <button class="btn-left">←</button>
-                        <button class="btn-right">→</button>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -385,13 +356,6 @@
                 <div class="column-subtitle">1 book</div>
             </div>
             <div class="column-content">
-                <div class="book-card">
-                    <div class="book-title">The Midnight Library</div>
-                    <div class="rating">★★★★★</div>
-                    <div class="book-controls">
-                        <button class="btn-left">←</button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -567,11 +531,6 @@
             }
           }
           
-          // Save "not rated" badge for column 3
-          if (index === 2) {
-            bookData.notRated = card.querySelector('.not-rated') ? true : false;
-          }
-          
           books[columnKey].push(bookData);
         });
       });
@@ -638,12 +597,12 @@
           </div>
         `;
       } else if (columnIndex === 3) {
-        // Finished Unrated column
-        if (book.date) {
-          html += `<div class="book-date">${book.date}</div>`;
+          if (book.date) {
+            html += `<div class="book-date">${book.date}</div>`;
+          }
+          html += `<div class="not-rated">Not rated</div>`;
         }
-        html += `<div class="not-rated">Not rated</div>`;
-      } else if (columnIndex === 4) {
+         else if (columnIndex === 4) {
         // Finished & Rated column
         if (book.rating) {
           html += `<div class="rating">${book.rating}</div>`;
