@@ -525,59 +525,46 @@
     
     // Move book between columns
     async function moveBook(button, direction) {
-        const bookCard = button.closest('.book-card');
-        const currentColumn = button.closest('.column');
-        const columnIndex = Array.from(document.querySelectorAll('.column')).indexOf(currentColumn);
+    const bookCard = button.closest('.book-card');
+    const currentColumn = button.closest('.column');
+    const columnIndex = Array.from(document.querySelectorAll('.column')).indexOf(currentColumn);
+    
+    const targetIndex = direction === 'right' ? columnIndex + 1 : columnIndex - 1;
+    const targetColumn = document.querySelectorAll('.column')[targetIndex];
+    
+    if (targetColumn) {
+        const targetContent = targetColumn.querySelector('.column-content');
         
-        const targetIndex = direction === 'right' ? columnIndex + 1 : columnIndex - 1;
-        const targetColumn = document.querySelectorAll('.column')[targetIndex];
+        // Update controls based on target column
+        const controls = bookCard.querySelector('.book-controls');
+        controls.innerHTML = '';
         
-        if (targetColumn) {
-            const targetContent = targetColumn.querySelector('.column-content');
-            
-            // Update controls based on target column
-            const controls = bookCard.querySelector('.book-controls');
-            controls.innerHTML = '';
-            
-            // Add appropriate buttons for target column
-            if (targetIndex > 0) {
-                const leftBtn = document.createElement('button');
-                leftBtn.className = 'btn-left';
-                leftBtn.textContent = '←';
-                leftBtn.onclick = () => moveBook(leftBtn, 'left');
-                controls.appendChild(leftBtn);
-            }
-            if (targetIndex < 3) {
-                const rightBtn = document.createElement('button');
-                rightBtn.className = 'btn-right';
-                rightBtn.textContent = '→';
-                rightBtn.onclick = () => moveBook(rightBtn, 'right');
-                controls.appendChild(rightBtn);
-            }
-            
-            // Move the card
-            targetContent.prepend(bookCard);
-            
-            // Add Goodreads click handler if moving to column 4
-            if (targetIndex === 3) { // targetIndex 3 = column 4
-                const titleElement = bookCard.querySelector('.book-title');
-                const title = titleElement.textContent;
-                
-                titleElement.style.cursor = 'pointer';
-                titleElement.style.textDecoration = 'underline';
-                titleElement.onclick = () => {
-                    const searchQuery = encodeURIComponent(title);
-                    window.open(`https://www.goodreads.com/search?q=${searchQuery}`, '_blank');
-                };
-            }
-            
-            // Update counts
-            updateColumnCount(columnIndex + 1);
-            updateColumnCount(targetIndex + 1);
-            
-            await saveBooks();
+        // Add appropriate buttons for target column
+        if (targetIndex > 0) {
+            const leftBtn = document.createElement('button');
+            leftBtn.className = 'btn-left';
+            leftBtn.textContent = '←';
+            leftBtn.onclick = () => moveBook(leftBtn, 'left');
+            controls.appendChild(leftBtn);
         }
+        if (targetIndex < 3) {
+            const rightBtn = document.createElement('button');
+            rightBtn.className = 'btn-right';
+            rightBtn.textContent = '→';
+            rightBtn.onclick = () => moveBook(rightBtn, 'right');
+            controls.appendChild(rightBtn);
+        }
+        
+        // Move the card
+        targetContent.prepend(bookCard);
+        
+        // Update counts
+        updateColumnCount(columnIndex + 1);
+        updateColumnCount(targetIndex + 1);
+        
+        await saveBooks();
     }
+}
     
     // Update column subtitle count
     function updateColumnCount(columnNumber) {
@@ -713,14 +700,12 @@
       
       bookCard.innerHTML = html;
       
-      // Add click handler for column 4 titles
-      if (columnIndex === 4) {
-        const titleElement = bookCard.querySelector('.book-title');
-        titleElement.addEventListener('click', () => {
-          const searchQuery = encodeURIComponent(book.title);
-          window.open(`https://www.goodreads.com/search?q=${searchQuery}`, '_blank');
-        });
-      }
+      // Add Goodreads click handler to ALL book titles
+      const titleElement = bookCard.querySelector('.book-title');
+      titleElement.addEventListener('click', () => {
+        const searchQuery = encodeURIComponent(book.title);
+        window.open(`https://www.goodreads.com/search?q=${searchQuery}`, '_blank');
+      });
       
       return bookCard;
     }
