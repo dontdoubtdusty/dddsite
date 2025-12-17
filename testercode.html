@@ -1,138 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Book Tracker</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #f4f4f4;
-      padding: 30px;
-    }
-
-    input {
-      width: 300px;
-      padding: 8px;
-      font-size: 16px;
-    }
-
-    button {
-      padding: 6px 10px;
-      margin-left: 4px;
-      cursor: pointer;
-    }
-
-    .suggestions {
-      background: white;
-      border: 1px solid #ccc;
-      width: 300px;
-      max-height: 200px;
-      overflow-y: auto;
-      position: absolute;
-      z-index: 10;
-    }
-
-    .suggestion {
-      padding: 6px;
-      cursor: pointer;
-    }
-
-    .suggestion:hover {
-      background: #eaeaea;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .input-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn-add {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .btn-add:hover {
+            background: #5568d3;
+        }
+        
+        .columns {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .column {
+          background: white;
+          border-radius: 10px;
+          padding: 20px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          flex: 1;
+          min-width: 250px; /* Prevents columns from getting too narrow */
+      }
+        
+        .column h2 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.3em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .book-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 80px;
+        }
+        
+        .book-item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .book-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .book-title {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .book-controls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-control {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .btn-left {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-left:hover {
+            background: #45a049;
+        }
+        
+        .btn-right {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .btn-right:hover {
+            background: #0b7dda;
+        }
+        
+        .btn-remove {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-remove:hover {
+            background: #da190b;
+        }
+        
+        @media (max-width: 1200px) {
+            .columns {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .columns {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-
-  <h1>Book Tracker</h1>
-
-  <div style="position: relative;">
-    <input
-      id="bookInput"
-      type="text"
-      placeholder="Enter book title"
-      autocomplete="off"
-    />
-    <div id="suggestions" class="suggestions"></div>
-  </div>
-
-  <br />
-
-  <a id="goodreadsLink" href="#" target="_blank">
-    <button>Goodreads</button>
-  </a>
-
-  <script>
-    const input = document.getElementById("bookInput");
-    const suggestionsDiv = document.getElementById("suggestions");
-    const goodreadsLink = document.getElementById("goodreadsLink");
-
-    let debounceTimer = null;
-
-    input.addEventListener("input", function () {
-      const query = input.value.trim();
-      updateGoodreadsLink(query);
-
-      clearTimeout(debounceTimer);
-
-      if (query.length < 3) {
-        suggestionsDiv.innerHTML = "";
-        return;
-      }
-
-      debounceTimer = setTimeout(function () {
-        fetchSuggestions(query);
-      }, 300);
-    });
-
-    function updateGoodreadsLink(text) {
-      const encoded = encodeURIComponent(text);
-      goodreadsLink.href = `https://www.goodreads.com/search?q=${encoded}`;
-    }
-
-    function fetchSuggestions(query) {
-      fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=8`)
-        .then(function (response) {
-          return response.json();
-        })
-        .then(function (data) {
-          renderSuggestions(data.docs);
-        })
-        .catch(function () {
-          suggestionsDiv.innerHTML = "";
-        });
-    }
-
-    function renderSuggestions(books) {
-      suggestionsDiv.innerHTML = "";
-
-      books.forEach(function (book) {
-        if (!book.title) {
-          return;
-        }
-
-        const div = document.createElement("div");
-        div.className = "suggestion";
-
-        const author = book.author_name ? book.author_name[0] : "Unknown author";
-        div.textContent = `${book.title} — ${author}`;
-
-        div.onclick = function () {
-          input.value = book.title;
-          updateGoodreadsLink(book.title);
-          suggestionsDiv.innerHTML = "";
+    <div class="container">
+        <h1>📚 Book Tracker</h1>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="bookInput" placeholder="Enter book title..." />
+                <button class="btn-add" onclick="addBook()">+ Add Book</button>
+            </div>
+        </div>
+        
+        <div class="columns">
+            <div class="column">
+                <h2>Downloaded</h2>
+                <div class="book-list" id="downloaded"></div>
+            </div>
+            
+            <div class="column">
+                <h2>Currently Reading</h2>
+                <div class="book-list" id="reading"></div>
+            </div>
+            
+            <div class="column">
+                <h2>Finished (Not Rated)</h2>
+                <div class="book-list" id="finished"></div>
+            </div>
+            
+            <div class="column">
+                <h2>Finished & Rated</h2>
+                <div class="book-list" id="rated"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const columns = ['downloaded', 'reading', 'finished', 'rated'];
+        const books = {
+            downloaded: [],
+            reading: [],
+            finished: [],
+            rated: []
         };
-
-        suggestionsDiv.appendChild(div);
-      });
-    }
-
-    document.addEventListener("click", function (event) {
-      if (!event.target.closest("#bookInput")) {
-        suggestionsDiv.innerHTML = "";
-      }
-    });
-  </script>
-
+        
+        function addBook() {
+            const input = document.getElementById('bookInput');
+            const title = input.value.trim();
+            
+            if (title) {
+                books.downloaded.push(title);
+                input.value = '';
+                render();
+            }
+        }
+        
+        document.getElementById('bookInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addBook();
+            }
+        });
+        
+        function removeBook(column, index) {
+            books[column].splice(index, 1);
+            render();
+        }
+        
+        function moveBook(column, index, direction) {
+            const currentIndex = columns.indexOf(column);
+            const newIndex = currentIndex + direction;
+            const newColumn = columns[newIndex];
+            
+            const book = books[column][index];
+            books[column].splice(index, 1);
+            books[newColumn].push(book);
+            render();
+        }
+        
+        function render() {
+            columns.forEach(column => {
+                const container = document.getElementById(column);
+                container.innerHTML = '';
+                
+                books[column].forEach((book, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'book-item';
+                    
+                    const title = document.createElement('span');
+                    title.className = 'book-title';
+                    title.textContent = book;
+                    
+                    const controls = document.createElement('div');
+                    controls.className = 'book-controls';
+                    
+                    const currentIndex = columns.indexOf(column);
+                    
+                    if (currentIndex > 0) {
+                        const leftBtn = document.createElement('button');
+                        leftBtn.className = 'btn-control btn-left';
+                        leftBtn.textContent = '<';
+                        leftBtn.onclick = () => moveBook(column, index, -1);
+                        controls.appendChild(leftBtn);
+                    }
+                    
+                    if (currentIndex < columns.length - 1) {
+                        const rightBtn = document.createElement('button');
+                        rightBtn.className = 'btn-control btn-right';
+                        rightBtn.textContent = '>';
+                        rightBtn.onclick = () => moveBook(column, index, 1);
+                        controls.appendChild(rightBtn);
+                    }
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'btn-control btn-remove';
+                    removeBtn.textContent = '−';
+                    removeBtn.onclick = () => removeBook(column, index);
+                    controls.appendChild(removeBtn);
+                    
+                    div.appendChild(title);
+                    div.appendChild(controls);
+                    container.appendChild(div);
+                });
+            });
+        }
+        
+        render();
+    </script>
 </body>
 </html>
