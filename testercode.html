@@ -418,9 +418,16 @@
     // Search for books using Open Library API
     async function searchBooks(query) {
         try {
-            const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`);
+            // Use title search specifically for better results
+            const response = await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(query)}&limit=10`);
             const data = await response.json();
-            return data.docs.map(book => ({
+            
+            // Filter results to only include books where the title actually contains the search query
+            const filtered = data.docs.filter(book => 
+                book.title && book.title.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            return filtered.slice(0, 5).map(book => ({
                 title: book.title,
                 author: book.author_name ? book.author_name[0] : 'Unknown Author'
             }));
