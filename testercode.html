@@ -442,28 +442,21 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
-
     // Your Firebase config (replace with your actual config)
     const firebaseConfig = {
       apiKey: "AIzaSyDe-AQ70nJ9Lah8ojh4pivmxD0KglHWGHo",
-
       authDomain: "dusty-s-reading-flow.firebaseapp.com",
-    
       projectId: "dusty-s-reading-flow",
-    
       storageBucket: "dusty-s-reading-flow.firebasestorage.app",
-    
       messagingSenderId: "378730506034",
-    
       appId: "1:378730506034:web:16cc698d8ebb54430d592b"
-
     };
     
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     
     let searchTimeout;
-
+    
     // Search for books using Open Library API
     async function searchBooks(query) {
         try {
@@ -478,7 +471,7 @@
             return [];
         }
     }
-
+    
     // Display search results
     function displayResults(books) {
         const container = document.getElementById('searchResults');
@@ -493,16 +486,16 @@
             </div>`
         ).join('');
     }
-
+    
     // Escape HTML to prevent injection
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
-
+    
     // Add book to Downloaded column
-    function addBook(title, author) {
+    async function addBook(title, author) {
         const columnContent = document.querySelector('.column-1 .column-content');
         const bookCard = document.createElement('div');
         bookCard.className = 'book-card';
@@ -522,12 +515,11 @@
         // Clear search
         document.querySelector('.search-field').value = '';
         document.getElementById('searchResults').innerHTML = '';
-
         await saveBooks();
     }
-
+    
     // Move book between columns
-    function moveBook(button, direction) {
+    async function moveBook(button, direction) {
         const bookCard = button.closest('.book-card');
         const currentColumn = button.closest('.column');
         const columnIndex = Array.from(document.querySelectorAll('.column')).indexOf(currentColumn);
@@ -564,11 +556,11 @@
             // Update counts
             updateColumnCount(columnIndex + 1);
             updateColumnCount(targetIndex + 1);
+            
+            await saveBooks();
         }
-
-        await saveBooks();
     }
-
+    
     // Update column subtitle count
     function updateColumnCount(columnNumber) {
         const column = document.querySelector(`.column-${columnNumber}`);
@@ -576,7 +568,7 @@
         const subtitle = column.querySelector('.column-subtitle');
         subtitle.textContent = `${count} book${count !== 1 ? 's' : ''}`;
     }
-
+    
     async function saveBooks() {
       const books = {
         column1: [],
@@ -603,7 +595,7 @@
         console.error('Error saving books:', error);
       }
     }
-
+    
     async function loadBooks() {
       try {
         const doc = await db.collection('reading-flow').doc('user-books').get();
@@ -632,7 +624,7 @@
         console.error('Error loading books:', error);
       }
     }
-
+    
     function createBookCard(book, columnIndex) {
       const bookCard = document.createElement('div');
       bookCard.className = 'book-card';
@@ -657,7 +649,7 @@
       bookCard.innerHTML = html;
       return bookCard;
     }
-
+    
     // Search input listener with debouncing
     document.querySelector('.search-field').addEventListener('input', (e) => {
         clearTimeout(searchTimeout);
@@ -672,26 +664,26 @@
             document.getElementById('searchResults').innerHTML = '';
         }
     });
-
+    
     // Close search results when clicking outside
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.top-bar')) {
             document.getElementById('searchResults').innerHTML = '';
         }
     });
-
-    // Initialize button click handlers for existing books
-    document.addEventListener('DOMContentLoaded', async () => {
-    // Load books from Firebase
-    await loadBooks();
     
     // Initialize button click handlers for existing books
-    document.querySelectorAll('.btn-left').forEach(btn => {
-        btn.onclick = () => moveBook(btn, 'left');
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Load books from Firebase
+        await loadBooks();
+        
+        // Initialize button click handlers for existing books
+        document.querySelectorAll('.btn-left').forEach(btn => {
+            btn.onclick = () => moveBook(btn, 'left');
+        });
+        document.querySelectorAll('.btn-right').forEach(btn => {
+            btn.onclick = () => moveBook(btn, 'right');
+        });
     });
-    document.querySelectorAll('.btn-right').forEach(btn => {
-        btn.onclick = () => moveBook(btn, 'right');
-    });
-});
 </script>
 </html>
