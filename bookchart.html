@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book Tracker</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f4f4f4;
+      padding: 30px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .input-row {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      width: 260px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 6px 10px;
+      margin-left: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 4px;
+    }
+
+    .title {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .active {
+      background-color: #4caf50;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Book Tracker</h1>
+
+  <div class="input-row">
+    <input id="bookInput" type="text" placeholder="Enter book title" />
+    <button onclick="addBook()">Add</button>
+  </div>
+
+  <ul id="bookList"></ul>
+
+  <script>
+    function addBook() {
+      const input = document.getElementById("bookInput");
+      const titleText = input.value.trim();
+
+      if (titleText === "") {
+        return;
+      }
+
+      const li = document.createElement("li");
+
+      const title = document.createElement("span");
+      title.className = "title";
+      title.textContent = titleText;
+
+      const inProgressBtn = document.createElement("button");
+      inProgressBtn.textContent = "Downloaded / In Progress";
+
+      const doneBtn = document.createElement("button");
+      doneBtn.textContent = "Done";
+
+      const goodreadsBtn = document.createElement("button");
+      goodreadsBtn.textContent = "Goodreads";
+
+      inProgressBtn.onclick = function () {
+        inProgressBtn.classList.add("active");
+        doneBtn.classList.remove("active");
+      };
+
+      doneBtn.onclick = function () {
+        doneBtn.classList.add("active");
+        inProgressBtn.classList.remove("active");
+      };
+
+      goodreadsBtn.onclick = function () {
+        const query = encodeURIComponent(titleText);
+        window.open(`https://www.goodreads.com/search?q=${query}`, "_blank");
+      };
+
+      li.appendChild(title);
+      li.appendChild(inProgressBtn);
+      li.appendChild(doneBtn);
+      li.appendChild(goodreadsBtn);
+
+      document.getElementById("bookList").appendChild(li);
+
+      input.value = "";
+    }
+  </script>
+
+</body>
+</html>
