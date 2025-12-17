@@ -311,7 +311,6 @@
           background: rgba(74, 144, 226, 0.05);
     }
 
-
 </style>
 </head>
 <body>
@@ -498,19 +497,32 @@
 
   // ---------- DRAG TARGETS ----------
   function setupDropZones() {
-    document.querySelectorAll('.column-content').forEach(content => {
-      content.addEventListener('dragover', (e) => {
-        e.preventDefault();
+      document.querySelectorAll('.column-content').forEach(content => {
+    
+        content.addEventListener('dragover', (e) => {
+          e.preventDefault();
+        });
+    
+        content.addEventListener('dragenter', () => {
+          content.classList.add('drag-over');
+        });
+    
+        content.addEventListener('dragleave', () => {
+          content.classList.remove('drag-over');
+        });
+    
+        content.addEventListener('drop', async () => {
+          content.classList.remove('drag-over');
+    
+          if (!draggedCard) return;
+    
+          content.prepend(draggedCard);
+          updateAllCounts();
+          await saveBooks();
+        });
       });
+    }
 
-      content.addEventListener('drop', async () => {
-        if (!draggedCard) return;
-        content.prepend(draggedCard);
-        updateAllCounts();
-        await saveBooks();
-      });
-    });
-  }
 
   // ---------- COUNTS ----------
   function updateColumnCount(columnNumber) {
