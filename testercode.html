@@ -596,13 +596,7 @@
             <div class="progress-fill" style="width: ${progress};"></div>
           </div>
         `;
-      } else if (columnIndex === 3) {
-          if (book.date) {
-            html += `<div class="book-date">${book.date}</div>`;
-          }
-          html += `<div class="not-rated">Not rated</div>`;
-        }
-         else if (columnIndex === 4) {
+      } else if (columnIndex === 4) {
         // Finished & Rated column
         if (book.rating) {
           html += `<div class="rating">${book.rating}</div>`;
