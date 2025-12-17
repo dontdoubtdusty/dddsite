@@ -562,13 +562,11 @@
             if (targetIndex === 3) { // targetIndex 3 = column 4
                 const titleElement = bookCard.querySelector('.book-title');
                 const title = titleElement.textContent;
-                const authorElement = bookCard.querySelector('.book-author');
-                const author = authorElement ? authorElement.textContent : '';
                 
                 titleElement.style.cursor = 'pointer';
                 titleElement.style.textDecoration = 'underline';
                 titleElement.onclick = () => {
-                    const searchQuery = encodeURIComponent(`${title} ${author}`);
+                    const searchQuery = encodeURIComponent(title);
                     window.open(`https://www.goodreads.com/search?q=${searchQuery}`, '_blank');
                 };
             }
@@ -671,16 +669,13 @@
       bookCard.innerHTML = html;
       
       // Add click handler for column 4 titles
-      if (columnIndex === 4) {
-        const titleElement = bookCard.querySelector('.book-title');
-        titleElement.addEventListener('click', () => {
-          const searchQuery = encodeURIComponent(`${book.title} ${book.author}`);
-          window.open(`https://www.goodreads.com/search?q=${searchQuery}`, '_blank');
-        });
-      }
-      
-      return bookCard;
-    }
+        if (columnIndex === 4) {
+          const titleElement = bookCard.querySelector('.book-title');
+          titleElement.addEventListener('click', () => {
+            const searchQuery = encodeURIComponent(book.title);
+            window.open(`https://www.goodreads.com/search?q=${searchQuery}`, '_blank');
+          });
+        }
     
     // Search input listener with debouncing
     document.querySelector('.search-field').addEventListener('input', (e) => {
