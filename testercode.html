@@ -3,308 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Tracker</title>
+    <title>Reading Flow</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .input-section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-        
-        input[type="text"] {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .btn-add {
-            padding: 12px 30px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        
-        .btn-add:hover {
-            background: #5568d3;
-        }
-        
-        .columns {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 20px;
         }
-        
-        .column {
-          background: white;
-          border-radius: 10px;
-          padding: 20px;
-          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-          flex: 1;
-          min-width: 250px; /* Prevents columns from getting too narrow */
-      }
-        
-        .column h2 {
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 1.3em;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-        
-        .book-list {
+
+        .top-bar {
+            background: white;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e0e0e0;
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            min-height: 80px;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
         }
-        
-        .book-item {
-            background: #f8f9fa;
+
+        .top-bar h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .search-field {
+            padding: 8px 16px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            width: 300px;
+            font-size: 14px;
+        }
+
+        .search-field:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .columns-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            gap: 0;
+        }
+
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e0e0e0;
+            background: white;
+        }
+
+        .column:last-child {
+            border-right: none;
+        }
+
+        .column-header {
+            padding: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .column-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .column-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .column-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        /* Column 1: Downloaded */
+        .column-1 {
+            background: #fafafa;
+        }
+
+        .column-1 .book-card {
+            background: white;
             padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .column-1 .book-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .column-1 .book-author {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .column-1 .book-date {
+            font-size: 11px;
+            color: #999;
+        }
+
+        /* Column 2: Currently Reading */
+        .column-2 {
+            flex: 1.2;
+            background: #ffffff;
+        }
+
+        .column-2 .column-header {
+            border-bottom-color: #4a90e2;
+        }
+
+        .column-2 .book-card {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .column-2 .book-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .column-2 .book-author {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .column-2 .book-meta {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .column-2 .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .column-2 .progress-fill {
+            height: 100%;
+            background: #4a90e2;
+            border-radius: 3px;
+        }
+
+        /* Column 3: Finished Unrated */
+        .column-3 {
+            background: #fffbf0;
+        }
+
+        .column-3 .column-header {
+            background: #fff4e0;
+            border-bottom-color: #f59e0b;
+        }
+
+        .column-3 .column-title {
+            color: #d97706;
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: transform 0.2s;
         }
-        
-        .book-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        .column-3 .warning-badge {
+            display: inline-block;
+            background: #f59e0b;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
         }
-        
-        .book-title {
-            flex: 1;
+
+        .column-3 .book-card {
+            background: white;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border: 2px solid #fbbf24;
+        }
+
+        .column-3 .book-title {
             font-size: 14px;
-            color: #333;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
         }
-        
-        .book-controls {
-            display: flex;
-            gap: 5px;
+
+        .column-3 .book-date {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
         }
-        
-        .btn-control {
-            width: 28px;
-            height: 28px;
-            border: none;
+
+        .column-3 .not-rated {
+            font-size: 12px;
+            color: #d97706;
+            font-weight: 600;
+            background: #fef3c7;
+            padding: 4px 8px;
             border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
+            display: inline-block;
+        }
+
+        /* Column 4: Finished & Rated */
+        .column-4 {
+            background: #f9fafb;
+        }
+
+        .column-4 .book-card {
+            background: white;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            opacity: 0.85;
+        }
+
+        .column-4 .book-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 6px;
+        }
+
+        .column-4 .rating {
             font-size: 14px;
-            transition: all 0.2s;
+            color: #fbbf24;
         }
-        
-        .btn-left {
-            background: #4CAF50;
-            color: white;
+
+        /* Empty states */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 13px;
+            line-height: 1.6;
         }
-        
-        .btn-left:hover {
-            background: #45a049;
+
+        /* Scrollbar styling */
+        .column-content::-webkit-scrollbar {
+            width: 6px;
         }
-        
-        .btn-right {
-            background: #2196F3;
-            color: white;
+
+        .column-content::-webkit-scrollbar-track {
+            background: transparent;
         }
-        
-        .btn-right:hover {
-            background: #0b7dda;
-        }
-        
-        .btn-remove {
-            background: #f44336;
-            color: white;
-        }
-        
-        .btn-remove:hover {
-            background: #da190b;
-        }
-        
-        @media (max-width: 1200px) {
-            .columns {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .columns {
-                grid-template-columns: 1fr;
-            }
+
+        .column-content::-webkit-scrollbar-thumb {
+            background: #d0d0d0;
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📚 Book Tracker</h1>
-        
-        <div class="input-section">
-            <div class="input-group">
-                <input type="text" id="bookInput" placeholder="Enter book title..." />
-                <button class="btn-add" onclick="addBook()">+ Add Book</button>
+    <div class="top-bar">
+        <h1>Reading Flow</h1>
+        <input type="text" class="search-field" placeholder="Search books...">
+    </div>
+
+    <div class="columns-container">
+        <!-- Column 1: Downloaded -->
+        <div class="column column-1">
+            <div class="column-header">
+                <div class="column-title">Downloaded</div>
+                <div class="column-subtitle">12 books</div>
+            </div>
+            <div class="column-content">
+                <div class="book-card">
+                    <div class="book-title">The Remains of the Day</div>
+                    <div class="book-author">Kazuo Ishiguro</div>
+                    <div class="book-date">3 days ago</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">Atomic Habits</div>
+                    <div class="book-author">James Clear</div>
+                    <div class="book-date">1 week ago</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">Project Hail Mary</div>
+                    <div class="book-author">Andy Weir</div>
+                    <div class="book-date">2 weeks ago</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">Meditations</div>
+                    <div class="book-author">Marcus Aurelius</div>
+                    <div class="book-date">3 weeks ago</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">The Design of Everyday Things</div>
+                    <div class="book-author">Don Norman</div>
+                    <div class="book-date">1 month ago</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">Thinking, Fast and Slow</div>
+                    <div class="book-author">Daniel Kahneman</div>
+                    <div class="book-date">1 month ago</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">The Power Broker</div>
+                    <div class="book-author">Robert Caro</div>
+                    <div class="book-date">2 months ago</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">A Gentleman in Moscow</div>
+                    <div class="book-author">Amor Towles</div>
+                    <div class="book-date">2 months ago</div>
+                </div>
             </div>
         </div>
-        
-        <div class="columns">
-            <div class="column">
-                <h2>Downloaded</h2>
-                <div class="book-list" id="downloaded"></div>
+
+        <!-- Column 2: Currently Reading -->
+        <div class="column column-2">
+            <div class="column-header">
+                <div class="column-title">Currently Reading</div>
+                <div class="column-subtitle">2 books</div>
             </div>
-            
-            <div class="column">
-                <h2>Currently Reading</h2>
-                <div class="book-list" id="reading"></div>
+            <div class="column-content">
+                <div class="book-card">
+                    <div class="book-title">Sapiens</div>
+                    <div class="book-author">Yuval Noah Harari</div>
+                    <div class="book-meta">Started Dec 1</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%;"></div>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">The Three-Body Problem</div>
+                    <div class="book-author">Liu Cixin</div>
+                    <div class="book-meta">Started Nov 28</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 30%;"></div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="column">
-                <h2>Finished (Not Rated)</h2>
-                <div class="book-list" id="finished"></div>
+        </div>
+
+        <!-- Column 3: Finished Unrated -->
+        <div class="column column-3">
+            <div class="column-header">
+                <div class="column-title">
+                    Finished — Not Rated
+                    <span class="warning-badge">!</span>
+                </div>
+                <div class="column-subtitle">3 books waiting</div>
             </div>
-            
-            <div class="column">
-                <h2>Finished & Rated</h2>
-                <div class="book-list" id="rated"></div>
+            <div class="column-content">
+                <div class="book-card">
+                    <div class="book-title">Tomorrow, and Tomorrow, and Tomorrow</div>
+                    <div class="book-date">Finished Dec 10</div>
+                    <div class="not-rated">Not rated</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">Range</div>
+                    <div class="book-date">Finished Dec 5</div>
+                    <div class="not-rated">Not rated</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">The Ministry for the Future</div>
+                    <div class="book-date">Finished Nov 30</div>
+                    <div class="not-rated">Not rated</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 4: Finished & Rated -->
+        <div class="column column-4">
+            <div class="column-header">
+                <div class="column-title">Finished & Rated</div>
+                <div class="column-subtitle">24 books</div>
+            </div>
+            <div class="column-content">
+                <div class="book-card">
+                    <div class="book-title">The Midnight Library</div>
+                    <div class="rating">★★★★★</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">Educated</div>
+                    <div class="rating">★★★★☆</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">Dune</div>
+                    <div class="rating">★★★★★</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">The Lean Startup</div>
+                    <div class="rating">★★★★☆</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">Born a Crime</div>
+                    <div class="rating">★★★★★</div>
+                </div>
+                <div class="book-card">
+                    <div class="book-title">Circe</div>
+                    <div class="rating">★★★★☆</div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <script>
-        const columns = ['downloaded', 'reading', 'finished', 'rated'];
-        const books = {
-            downloaded: [],
-            reading: [],
-            finished: [],
-            rated: []
-        };
-        
-        function addBook() {
-            const input = document.getElementById('bookInput');
-            const title = input.value.trim();
-            
-            if (title) {
-                books.downloaded.push(title);
-                input.value = '';
-                render();
-            }
-        }
-        
-        document.getElementById('bookInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addBook();
-            }
-        });
-        
-        function removeBook(column, index) {
-            books[column].splice(index, 1);
-            render();
-        }
-        
-        function moveBook(column, index, direction) {
-            const currentIndex = columns.indexOf(column);
-            const newIndex = currentIndex + direction;
-            const newColumn = columns[newIndex];
-            
-            const book = books[column][index];
-            books[column].splice(index, 1);
-            books[newColumn].push(book);
-            render();
-        }
-        
-        function render() {
-            columns.forEach(column => {
-                const container = document.getElementById(column);
-                container.innerHTML = '';
-                
-                books[column].forEach((book, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'book-item';
-                    
-                    const title = document.createElement('span');
-                    title.className = 'book-title';
-                    title.textContent = book;
-                    
-                    const controls = document.createElement('div');
-                    controls.className = 'book-controls';
-                    
-                    const currentIndex = columns.indexOf(column);
-                    
-                    if (currentIndex > 0) {
-                        const leftBtn = document.createElement('button');
-                        leftBtn.className = 'btn-control btn-left';
-                        leftBtn.textContent = '<';
-                        leftBtn.onclick = () => moveBook(column, index, -1);
-                        controls.appendChild(leftBtn);
-                    }
-                    
-                    if (currentIndex < columns.length - 1) {
-                        const rightBtn = document.createElement('button');
-                        rightBtn.className = 'btn-control btn-right';
-                        rightBtn.textContent = '>';
-                        rightBtn.onclick = () => moveBook(column, index, 1);
-                        controls.appendChild(rightBtn);
-                    }
-                    
-                    const removeBtn = document.createElement('button');
-                    removeBtn.className = 'btn-control btn-remove';
-                    removeBtn.textContent = '−';
-                    removeBtn.onclick = () => removeBook(column, index);
-                    controls.appendChild(removeBtn);
-                    
-                    div.appendChild(title);
-                    div.appendChild(controls);
-                    container.appendChild(div);
-                });
-            });
-        }
-        
-        render();
-    </script>
 </body>
 </html>
