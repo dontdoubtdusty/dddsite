@@ -491,18 +491,24 @@
         html += `<div class="book-author">${book.author}</div>`;
       }
     
-      // Display appropriate date based on column
-      let dateText = '';
-      if (columnIndex === 1 && book.downloadedDate) {
-        dateText = `Downloaded on ${book.downloadedDate}`;
-      } else if (columnIndex === 2 && book.startedDate) {
-        dateText = `Started on ${book.startedDate}`;
-      } else if (columnIndex === 3 && book.finishedDate) {
-        dateText = `Finished on ${book.finishedDate}`;
+      // Build dates progressively based on what's available
+      let dates = [];
+      
+      if (book.downloadedDate) {
+        dates.push(`Downloaded on ${book.downloadedDate}`);
+      }
+      
+      if (book.startedDate && columnIndex >= 2) {
+        dates.push(`Started on ${book.startedDate}`);
+      }
+      
+      if (book.finishedDate && columnIndex >= 3) {
+        dates.push(`Finished on ${book.finishedDate}`);
       }
     
-      if (dateText) {
-        html += `<div class="book-date">${dateText}</div>`;
+      // Display all applicable dates
+      if (dates.length > 0) {
+        html += `<div class="book-date">${dates.join('<br>')}</div>`;
       }
     
       html += `
