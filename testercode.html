@@ -598,12 +598,27 @@
       document.querySelectorAll('.column').forEach((column, index) => {
         const columnKey = `column${index + 1}`;
         column.querySelectorAll('.book-card').forEach(card => {
-          books[columnKey].push({
+          const bookData = {
             title: card.querySelector('.book-title').textContent,
             author: card.querySelector('.book-author')?.textContent || '',
             date: card.querySelector('.book-date, .book-meta')?.textContent || '',
             rating: card.querySelector('.rating')?.textContent || ''
-          });
+          };
+          
+          // Save progress bar for column 2
+          if (index === 1) {
+            const progressFill = card.querySelector('.progress-fill');
+            if (progressFill) {
+              bookData.progress = progressFill.style.width;
+            }
+          }
+          
+          // Save "not rated" badge for column 3
+          if (index === 2) {
+            bookData.notRated = card.querySelector('.not-rated') ? true : false;
+          }
+          
+          books[columnKey].push(bookData);
         });
       });
       
@@ -650,13 +665,43 @@
       bookCard.className = 'book-card';
       
       let html = `<div class="book-title">${book.title}</div>`;
-      if (book.author) html += `<div class="book-author">${book.author}</div>`;
-      if (book.date) {
-        const dateClass = columnIndex === 2 ? 'book-meta' : 'book-date';
-        html += `<div class="${dateClass}">${book.date}</div>`;
-      }
-      if (book.rating) html += `<div class="rating">${book.rating}</div>`;
       
+      if (book.author) {
+        html += `<div class="book-author">${book.author}</div>`;
+      }
+      
+      // Column-specific content
+      if (columnIndex === 2) {
+        // Currently Reading column
+        if (book.date) {
+          html += `<div class="book-meta">${book.date}</div>`;
+        }
+        // Add progress bar
+        const progress = book.progress || '0%';
+        html += `
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${progress};"></div>
+          </div>
+        `;
+      } else if (columnIndex === 3) {
+        // Finished Unrated column
+        if (book.date) {
+          html += `<div class="book-date">${book.date}</div>`;
+        }
+        html += `<div class="not-rated">Not rated</div>`;
+      } else if (columnIndex === 4) {
+        // Finished & Rated column
+        if (book.rating) {
+          html += `<div class="rating">${book.rating}</div>`;
+        }
+      } else {
+        // Downloaded column (column 1)
+        if (book.date) {
+          html += `<div class="book-date">${book.date}</div>`;
+        }
+      }
+      
+      // Add controls
       html += '<div class="book-controls">';
       if (columnIndex > 1) {
         html += '<button class="btn-left" onclick="moveBook(this, \'left\')">←</button>';
