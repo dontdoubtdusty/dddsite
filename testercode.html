@@ -422,6 +422,16 @@
         div.textContent = text;
         return div.innerHTML;
     }
+
+    function getTodayDate() {
+      const now = new Date();
+      return now.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
     
     // Add book to Downloaded column
     async function addBook(title, author) {
@@ -431,7 +441,7 @@
         bookCard.innerHTML = `
             <div class="book-title">${title}</div>
             <div class="book-author">${author}</div>
-            <div class="book-date">Just now</div>
+            <div class="book-date">Started ${getTodayDate()}</div>
             <div class="book-controls">
                 <button class="btn-right" onclick="moveBook(this, 'right')">→</button>
                 <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
@@ -576,53 +586,35 @@
     function createBookCard(book, columnIndex) {
       const bookCard = document.createElement('div');
       bookCard.className = 'book-card';
-      
+    
       let html = `<div class="book-title">${book.title}</div>`;
-      
+    
       if (book.author) {
         html += `<div class="book-author">${book.author}</div>`;
       }
-      
-      // Column-specific content
-      if (columnIndex === 2) {
-        // Currently Reading column
-        if (book.date) {
-          html += `<div class="book-meta">${book.date}</div>`;
-        }
-        // Add progress bar
-        const progress = book.progress || '0%';
-        html += `
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: ${progress};"></div>
-          </div>
-        `;
-      } else if (columnIndex === 4) {
-        // Finished & Rated column
-        if (book.rating) {
-          html += `<div class="rating">${book.rating}</div>`;
-        }
-      } else {
-        // Downloaded column (column 1)
-        if (book.date) {
-          html += `<div class="book-date">${book.date}</div>`;
-        }
+    
+      if (book.date) {
+        html += `<div class="book-date">${book.date}</div>`;
       }
-      
-      // Add controls
-        html += '<div class="book-controls">';
-        if (columnIndex > 1) {
-          html += '<button class="btn-left" onclick="moveBook(this, \'left\')">←</button>';
-        }
-        if (columnIndex < 4) {
-          html += '<button class="btn-right" onclick="moveBook(this, \'right\')">→</button>';
-        }
-        html += '<button class="btn-delete" onclick="deleteBook(this)">Delete</button>';
-        html += '</div>';
-      
+    
+      html += '<div class="book-controls">';
+    
+      if (columnIndex > 1) {
+        html += '<button class="btn-left" onclick="moveBook(this, \'left\')">←</button>';
+      }
+    
+      if (columnIndex < 4) {
+        html += '<button class="btn-right" onclick="moveBook(this, \'right\')">→</button>';
+      }
+    
+      html += '<button class="btn-delete" onclick="deleteBook(this)">Delete</button>';
+      html += '</div>';
+    
       bookCard.innerHTML = html;
-            
+    
       return bookCard;
     }
+
 
     async function deleteBook(button) {
         const bookCard = button.closest('.book-card');
