@@ -285,6 +285,7 @@
     <div class="top-bar">
         <h1>Reading Flow</h1>
         <input type="text" class="search-field" placeholder="Search books...">
+        <div class="search-results" id="searchResults"></div>
     </div>
 
     <div class="columns-container">
@@ -368,4 +369,148 @@
         </div>
     </div>
 </body>
+<script>
+    let searchTimeout;
+
+    // Search for books using Open Library API
+    async function searchBooks(query) {
+        try {
+            const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`);
+            const data = await response.json();
+            return data.docs.map(book => ({
+                title: book.title,
+                author: book.author_name ? book.author_name[0] : 'Unknown Author'
+            }));
+        } catch (error) {
+            console.error('Error searching books:', error);
+            return [];
+        }
+    }
+
+    // Display search results
+    function displayResults(books) {
+        const container = document.getElementById('searchResults');
+        if (books.length === 0) {
+            container.innerHTML = '<div class="search-result empty">No results found</div>';
+            return;
+        }
+        container.innerHTML = books.map(book => 
+            `<div class="search-result" onclick="addBook('${escapeHtml(book.title)}', '${escapeHtml(book.author)}')">
+                <div class="result-title">${book.title}</div>
+                <div class="result-author">${book.author}</div>
+            </div>`
+        ).join('');
+    }
+
+    // Escape HTML to prevent injection
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Add book to Downloaded column
+    function addBook(title, author) {
+        const columnContent = document.querySelector('.column-1 .column-content');
+        const bookCard = document.createElement('div');
+        bookCard.className = 'book-card';
+        bookCard.innerHTML = `
+            <div class="book-title">${title}</div>
+            <div class="book-author">${author}</div>
+            <div class="book-date">Just now</div>
+            <div class="book-controls">
+                <button class="btn-right" onclick="moveBook(this, 'right')">→</button>
+            </div>
+        `;
+        columnContent.prepend(bookCard);
+        
+        // Update subtitle count
+        updateColumnCount(1);
+        
+        // Clear search
+        document.querySelector('.search-field').value = '';
+        document.getElementById('searchResults').innerHTML = '';
+    }
+
+    // Move book between columns
+    function moveBook(button, direction) {
+        const bookCard = button.closest('.book-card');
+        const currentColumn = button.closest('.column');
+        const columnIndex = Array.from(document.querySelectorAll('.column')).indexOf(currentColumn);
+        
+        const targetIndex = direction === 'right' ? columnIndex + 1 : columnIndex - 1;
+        const targetColumn = document.querySelectorAll('.column')[targetIndex];
+        
+        if (targetColumn) {
+            const targetContent = targetColumn.querySelector('.column-content');
+            
+            // Update controls based on target column
+            const controls = bookCard.querySelector('.book-controls');
+            controls.innerHTML = '';
+            
+            // Add appropriate buttons for target column
+            if (targetIndex > 0) {
+                const leftBtn = document.createElement('button');
+                leftBtn.className = 'btn-left';
+                leftBtn.textContent = '←';
+                leftBtn.onclick = () => moveBook(leftBtn, 'left');
+                controls.appendChild(leftBtn);
+            }
+            if (targetIndex < 3) {
+                const rightBtn = document.createElement('button');
+                rightBtn.className = 'btn-right';
+                rightBtn.textContent = '→';
+                rightBtn.onclick = () => moveBook(rightBtn, 'right');
+                controls.appendChild(rightBtn);
+            }
+            
+            // Move the card
+            targetContent.prepend(bookCard);
+            
+            // Update counts
+            updateColumnCount(columnIndex + 1);
+            updateColumnCount(targetIndex + 1);
+        }
+    }
+
+    // Update column subtitle count
+    function updateColumnCount(columnNumber) {
+        const column = document.querySelector(`.column-${columnNumber}`);
+        const count = column.querySelectorAll('.book-card').length;
+        const subtitle = column.querySelector('.column-subtitle');
+        subtitle.textContent = `${count} book${count !== 1 ? 's' : ''}`;
+    }
+
+    // Search input listener with debouncing
+    document.querySelector('.search-field').addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+        
+        if (query.length > 2) {
+            searchTimeout = setTimeout(async () => {
+                const books = await searchBooks(query);
+                displayResults(books);
+            }, 300);
+        } else {
+            document.getElementById('searchResults').innerHTML = '';
+        }
+    });
+
+    // Close search results when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.top-bar')) {
+            document.getElementById('searchResults').innerHTML = '';
+        }
+    });
+
+    // Initialize button click handlers for existing books
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.btn-left').forEach(btn => {
+            btn.onclick = () => moveBook(btn, 'left');
+        });
+        document.querySelectorAll('.btn-right').forEach(btn => {
+            btn.onclick = () => moveBook(btn, 'right');
+        });
+    });
+</script>
 </html>
