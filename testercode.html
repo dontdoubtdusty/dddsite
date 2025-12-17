@@ -462,64 +462,81 @@
 
   // ---------- BOOK CREATION ----------
   async function addBook(title, author) {
-    const column = document.querySelector('.column-1 .column-content');
-    const bookCard = createBookCard({
-      title,
-      author,
-      date: `Started ${getTodayDate()}`
-    }, 1);
-
-    column.prepend(bookCard);
-    updateColumnCount(1);
-
-    document.querySelector('.search-field').value = '';
-    document.getElementById('searchResults').innerHTML = '';
-
-    await saveBooks();
-  }
+      const column = document.querySelector('.column-1 .column-content');
+      const bookCard = createBookCard({
+        title,
+        author,
+        downloadedDate: getTodayDate(),
+        startedDate: null,
+        finishedDate: null
+      }, 1);
+    
+      column.prepend(bookCard);
+      updateColumnCount(1);
+    
+      document.querySelector('.search-field').value = '';
+      document.getElementById('searchResults').innerHTML = '';
+    
+      await saveBooks();
+    }
 
   function createBookCard(book, columnIndex) {
-    const bookCard = document.createElement('div');
-    bookCard.className = 'book-card';
-    bookCard.setAttribute('draggable', 'true');
-
-    let html = `<div class="book-title">${book.title}</div>`;
-
-    if (book.author) {
-      html += `<div class="book-author">${book.author}</div>`;
+      const bookCard = document.createElement('div');
+      bookCard.className = 'book-card';
+      bookCard.setAttribute('draggable', 'true');
+    
+      let html = `<div class="book-title">${book.title}</div>`;
+    
+      if (book.author) {
+        html += `<div class="book-author">${book.author}</div>`;
+      }
+    
+      // Display appropriate date based on column
+      let dateText = '';
+      if (columnIndex === 1 && book.downloadedDate) {
+        dateText = `Downloaded on ${book.downloadedDate}`;
+      } else if (columnIndex === 2 && book.startedDate) {
+        dateText = `Started on ${book.startedDate}`;
+      } else if (columnIndex === 3 && book.finishedDate) {
+        dateText = `Finished on ${book.finishedDate}`;
+      }
+    
+      if (dateText) {
+        html += `<div class="book-date">${dateText}</div>`;
+      }
+    
+      html += `
+        <div class="book-controls">
+          <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
+        </div>
+      `;
+    
+      bookCard.innerHTML = html;
+    
+      // Store book data on the element
+      bookCard.dataset.downloadedDate = book.downloadedDate || '';
+      bookCard.dataset.startedDate = book.startedDate || '';
+      bookCard.dataset.finishedDate = book.finishedDate || '';
+    
+      // Drag handlers
+      bookCard.addEventListener('dragstart', (e) => {
+        draggedCard = bookCard;
+        bookCard.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+    
+      bookCard.addEventListener('dragend', async () => {
+        bookCard.classList.remove('dragging');
+        draggedCard = null;
+        await saveBooks();
+      });
+    
+      return bookCard;
     }
-
-    if (book.date) {
-      html += `<div class="book-date">${book.date}</div>`;
-    }
-
-    html += `
-      <div class="book-controls">
-        <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
-      </div>
-    `;
-
-    bookCard.innerHTML = html;
-
-    // Drag handlers
-    bookCard.addEventListener('dragstart', (e) => {
-      draggedCard = bookCard;
-      bookCard.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-
-    bookCard.addEventListener('dragend', async () => {
-      bookCard.classList.remove('dragging');
-      draggedCard = null;
-      await saveBooks();
-    });
-
-    return bookCard;
-  }
 
   // ---------- DRAG TARGETS ----------
   function setupDropZones() {
-      document.querySelectorAll('.column-content').forEach(content => {
+      document.querySelectorAll('.column-content').forEach((content, contentIndex) => {
     
         content.addEventListener('dragover', (e) => {
           e.preventDefault();
@@ -538,7 +555,28 @@
     
           if (!draggedCard) return;
     
-          content.prepend(draggedCard);
+          const targetColumn = contentIndex + 1;
+          
+          // Update dates based on target column
+          if (targetColumn === 2 && !draggedCard.dataset.startedDate) {
+            draggedCard.dataset.startedDate = getTodayDate();
+          } else if (targetColumn === 3 && !draggedCard.dataset.finishedDate) {
+            draggedCard.dataset.finishedDate = getTodayDate();
+          }
+    
+          // Rebuild the card with updated dates
+          const bookData = {
+            title: draggedCard.querySelector('.book-title').textContent,
+            author: draggedCard.querySelector('.book-author')?.textContent || '',
+            downloadedDate: draggedCard.dataset.downloadedDate,
+            startedDate: draggedCard.dataset.startedDate,
+            finishedDate: draggedCard.dataset.finishedDate
+          };
+    
+          const newCard = createBookCard(bookData, targetColumn);
+          draggedCard.replaceWith(newCard);
+          content.prepend(newCard);
+          
           updateAllCounts();
           await saveBooks();
         });
@@ -562,37 +600,39 @@
 
   // ---------- SAVE / LOAD ----------
   async function saveBooks() {
-    const books = { column1: [], column2: [], column3: [], column4: [] };
-
-    document.querySelectorAll('.column').forEach((column, index) => {
-      const key = `column${index + 1}`;
-      column.querySelectorAll('.book-card').forEach(card => {
-        books[key].push({
-          title: card.querySelector('.book-title').textContent,
-          author: card.querySelector('.book-author')?.textContent || '',
-          date: card.querySelector('.book-date')?.textContent || ''
+      const books = { column1: [], column2: [], column3: [], column4: [] };
+    
+      document.querySelectorAll('.column').forEach((column, index) => {
+        const key = `column${index + 1}`;
+        column.querySelectorAll('.book-card').forEach(card => {
+          books[key].push({
+            title: card.querySelector('.book-title').textContent,
+            author: card.querySelector('.book-author')?.textContent || '',
+            downloadedDate: card.dataset.downloadedDate || '',
+            startedDate: card.dataset.startedDate || '',
+            finishedDate: card.dataset.finishedDate || ''
+          });
         });
       });
-    });
-
-    await db.collection('reading-flow').doc('user-books').set(books);
-  }
-
-  async function loadBooks() {
-    const doc = await db.collection('reading-flow').doc('user-books').get();
-    if (!doc.exists) return;
-
-    document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
-
-    ['column1','column2','column3','column4'].forEach((key, i) => {
-      const column = document.querySelector(`.column-${i + 1} .column-content`);
-      doc.data()[key]?.forEach(book => {
-        column.appendChild(createBookCard(book, i + 1));
+    
+      await db.collection('reading-flow').doc('user-books').set(books);
+    }
+    
+    async function loadBooks() {
+      const doc = await db.collection('reading-flow').doc('user-books').get();
+      if (!doc.exists) return;
+    
+      document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
+    
+      ['column1','column2','column3','column4'].forEach((key, i) => {
+        const column = document.querySelector(`.column-${i + 1} .column-content`);
+        doc.data()[key]?.forEach(book => {
+          column.appendChild(createBookCard(book, i + 1));
+        });
       });
-    });
-
-    updateAllCounts();
-  }
+    
+      updateAllCounts();
+    }
 
   // ---------- DELETE ----------
   async function deleteBook(button) {
