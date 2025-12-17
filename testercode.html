@@ -558,6 +558,21 @@
             // Move the card
             targetContent.prepend(bookCard);
             
+            // Add Goodreads click handler if moving to column 4
+            if (targetIndex === 3) { // targetIndex 3 = column 4
+                const titleElement = bookCard.querySelector('.book-title');
+                const title = titleElement.textContent;
+                const authorElement = bookCard.querySelector('.book-author');
+                const author = authorElement ? authorElement.textContent : '';
+                
+                titleElement.style.cursor = 'pointer';
+                titleElement.style.textDecoration = 'underline';
+                titleElement.onclick = () => {
+                    const searchQuery = encodeURIComponent(`${title} ${author}`);
+                    window.open(`https://www.goodreads.com/search?q=${searchQuery}`, '_blank');
+                };
+            }
+            
             // Update counts
             updateColumnCount(columnIndex + 1);
             updateColumnCount(targetIndex + 1);
