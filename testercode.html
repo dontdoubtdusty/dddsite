@@ -606,16 +606,18 @@
             content.innerHTML = '';
           });
           
-          // Populate each column
-          Object.keys(data).forEach((columnKey, index) => {
+          // Populate each column - use the correct column mapping
+          ['column1', 'column2', 'column3', 'column4'].forEach((columnKey, index) => {
             const columnIndex = index + 1;
             const column = document.querySelector(`.column-${columnIndex}`);
             const content = column.querySelector('.column-content');
             
-            data[columnKey].forEach(book => {
-              const bookCard = createBookCard(book, columnIndex);
-              content.appendChild(bookCard);
-            });
+            if (data[columnKey]) {
+              data[columnKey].forEach(book => {
+                const bookCard = createBookCard(book, columnIndex);
+                content.appendChild(bookCard);
+              });
+            }
             
             updateColumnCount(columnIndex);
           });
