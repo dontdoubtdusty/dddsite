@@ -245,16 +245,21 @@
             opacity: 0.85;
         }
 
+        .column-4 .rating {
+            font-size: 14px;
+            color: #fbbf24;
+        }
         .column-4 .book-title {
             font-size: 13px;
             font-weight: 500;
             color: #4b5563;
             margin-bottom: 6px;
+            cursor: pointer;
+            text-decoration: underline;
         }
-
-        .column-4 .rating {
-            font-size: 14px;
-            color: #fbbf24;
+        
+        .column-4 .book-title:hover {
+            color: #1f2937;
         }
 
         /* Empty states */
@@ -649,6 +654,16 @@
       html += '</div>';
       
       bookCard.innerHTML = html;
+      
+      // Add click handler for column 4 titles
+      if (columnIndex === 4) {
+        const titleElement = bookCard.querySelector('.book-title');
+        titleElement.addEventListener('click', () => {
+          const searchQuery = encodeURIComponent(`${book.title} ${book.author}`);
+          window.open(`https://www.goodreads.com/search?q=${searchQuery}`, '_blank');
+        });
+      }
+      
       return bookCard;
     }
     
