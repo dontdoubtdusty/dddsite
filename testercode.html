@@ -669,13 +669,16 @@
       bookCard.innerHTML = html;
       
       // Add click handler for column 4 titles
-        if (columnIndex === 4) {
-          const titleElement = bookCard.querySelector('.book-title');
-          titleElement.addEventListener('click', () => {
-            const searchQuery = encodeURIComponent(book.title);
-            window.open(`https://www.goodreads.com/search?q=${searchQuery}`, '_blank');
-          });
-        }
+      if (columnIndex === 4) {
+        const titleElement = bookCard.querySelector('.book-title');
+        titleElement.addEventListener('click', () => {
+          const searchQuery = encodeURIComponent(book.title);
+          window.open(`https://www.goodreads.com/search?q=${searchQuery}`, '_blank');
+        });
+      }
+      
+      return bookCard;
+    }
     
     // Search input listener with debouncing
     document.querySelector('.search-field').addEventListener('input', (e) => {
