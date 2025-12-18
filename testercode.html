@@ -312,7 +312,7 @@
       <button onclick="closeArchiveModal()" class="btn-sign-out" style="color:#2a241f; border-color:#2a241f;">Close</button>
     </div>
     <p style="color:#6f5f4d; margin-bottom:24px; font-size:14px;">Books you've conquered and celebrated.</p>
-    <div id="archiveList" style="display: grid; gap: 16px;">
+    <div id="archiveList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
       <!-- Archive cards will go here -->
     </div>
   </div>
@@ -484,194 +484,206 @@
       }
     }
 
-  // Updated addBook to ensure search field is cleared
-  async function addBook(title, author) {
-    if (!currentUser) { alert("Please sign in first"); return; }
+    async function deleteArchivedBook(docId) {
+      if (!confirm('Permanently delete this book from your archive?')) return;
+      
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('archived').doc(docId).delete();
+        await loadArchivedBooks(); // Reload the archive to show updated list
+      } catch (error) {
+        console.error('Error deleting archived book:', error);
+        alert('Error deleting book. Please try again.');
+      }
+    }
+
+      // Updated addBook to ensure search field is cleared
+      async function addBook(title, author) {
+        if (!currentUser) { alert("Please sign in first"); return; }
+        
+        const col = document.querySelector('.column-1 .column-content');
+        const bookCard = createBookCard({ title, author, downloadedDate: getTodayDate() }, 1);
+        col.prepend(bookCard);
+        
+        // Clear the main search field and results dropdown
+        document.querySelector('.search-field').value = '';
+        document.getElementById('searchResults').innerHTML = '';
+        
+        updateAllCounts();
+        await saveBooks();
+      }
     
-    const col = document.querySelector('.column-1 .column-content');
-    const bookCard = createBookCard({ title, author, downloadedDate: getTodayDate() }, 1);
-    col.prepend(bookCard);
+      function createBookCard(book, colIdx) {
+        const card = document.createElement('div');
+        card.className = 'book-card';
+        card.setAttribute('draggable', 'true');
     
-    // Clear the main search field and results dropdown
-    document.querySelector('.search-field').value = '';
-    document.getElementById('searchResults').innerHTML = '';
+        // Safety net logic
+        const pDate = (book.downloadedDate && book.downloadedDate !== 'N/A') ? book.downloadedDate : "Recently";
+        const sDate = (book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : (colIdx >= 2 ? "Recently" : "...");
+        const fDate = (book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : (colIdx >= 3 ? "Recently" : "...");
+        const rDate = (book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : (colIdx >= 4 ? "Recently" : "...");
     
-    updateAllCounts();
-    await saveBooks();
-  }
-
-  function createBookCard(book, colIdx) {
-    const card = document.createElement('div');
-    card.className = 'book-card';
-    card.setAttribute('draggable', 'true');
-
-    // Safety net logic
-    const pDate = (book.downloadedDate && book.downloadedDate !== 'N/A') ? book.downloadedDate : "Recently";
-    const sDate = (book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : (colIdx >= 2 ? "Recently" : "...");
-    const fDate = (book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : (colIdx >= 3 ? "Recently" : "...");
-    const rDate = (book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : (colIdx >= 4 ? "Recently" : "...");
-
-    card.innerHTML = `
-      <button class="btn-delete" onclick="${colIdx === 4 ? 'archiveBook(this)' : 'deleteBook(this)'}">
-        ${colIdx === 4 ? '⭐ Archive' : 'Delete'}
-      </button>
-      <div class="book-title">${book.title}</div>
-      <div class="book-author">${book.author}</div>
-      <div class="book-timeline">
-        <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${pDate}</div></div>
-        <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Started ${sDate}</div></div>
-        <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Finished ${fDate}</div></div>
-        <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div></div>
-      </div>
-    `;
-
-    card.dataset.downloadedDate = pDate;
-    card.dataset.startedDate = sDate === "..." ? "" : sDate;
-    card.dataset.finishedDate = fDate === "..." ? "" : fDate;
-    card.dataset.ratedDate = rDate === "..." ? "" : rDate;
-
-    card.addEventListener('dragstart', () => { draggedCard = card; card.classList.add('dragging'); });
-    card.addEventListener('dragend', () => { draggedCard = null; card.classList.remove('dragging'); });
-    return card;
-  }
-
-  function setupDropZones() {
-      document.querySelectorAll('.column-content').forEach((content, i) => {
-        // 1. Highlight column when card enters
-        content.addEventListener('dragover', (e) => {
-          e.preventDefault(); // Required to allow drop
-          if (!content.classList.contains('drag-over')) {
-            content.classList.add('drag-over');
-          }
+        card.innerHTML = `
+          <button class="btn-delete" onclick="${colIdx === 4 ? 'archiveBook(this)' : 'deleteBook(this)'}">
+            ${colIdx === 4 ? '⭐ Archive' : 'Delete'}
+          </button>
+          <div class="book-title">${book.title}</div>
+          <div class="book-author">${book.author}</div>
+          <div class="book-timeline">
+            <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${pDate}</div></div>
+            <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Started ${sDate}</div></div>
+            <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Finished ${fDate}</div></div>
+            <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div></div>
+          </div>
+        `;
+    
+        card.dataset.downloadedDate = pDate;
+        card.dataset.startedDate = sDate === "..." ? "" : sDate;
+        card.dataset.finishedDate = fDate === "..." ? "" : fDate;
+        card.dataset.ratedDate = rDate === "..." ? "" : rDate;
+    
+        card.addEventListener('dragstart', () => { draggedCard = card; card.classList.add('dragging'); });
+        card.addEventListener('dragend', () => { draggedCard = null; card.classList.remove('dragging'); });
+        return card;
+      }
+    
+      function setupDropZones() {
+          document.querySelectorAll('.column-content').forEach((content, i) => {
+            // 1. Highlight column when card enters
+            content.addEventListener('dragover', (e) => {
+              e.preventDefault(); // Required to allow drop
+              if (!content.classList.contains('drag-over')) {
+                content.classList.add('drag-over');
+              }
+            });
+        
+            // 2. Remove highlight when card leaves
+            content.addEventListener('dragleave', () => {
+              content.classList.remove('drag-over');
+            });
+        
+            // 3. Handle the drop
+            content.addEventListener('drop', async (e) => {
+              e.preventDefault();
+              content.classList.remove('drag-over'); // Clear feedback immediately
+              
+              if (!draggedCard) return;
+              
+              const targetIdx = i + 1;
+              
+              // Update dates based on column
+              if (targetIdx >= 2 && (!draggedCard.dataset.startedDate || draggedCard.dataset.startedDate === "Recently")) {
+                draggedCard.dataset.startedDate = getTodayDate();
+              }
+              if (targetIdx >= 3 && (!draggedCard.dataset.finishedDate || draggedCard.dataset.finishedDate === "Recently")) {
+                draggedCard.dataset.finishedDate = getTodayDate();
+              }
+              if (targetIdx >= 4 && (!draggedCard.dataset.ratedDate || draggedCard.dataset.ratedDate === "Recently")) {
+                draggedCard.dataset.ratedDate = getTodayDate();
+              }
+    
+              
+              const newCard = createBookCard({
+                title: draggedCard.querySelector('.book-title').textContent,
+                author: draggedCard.querySelector('.book-author').textContent,
+                downloadedDate: draggedCard.dataset.downloadedDate,
+                startedDate: draggedCard.dataset.startedDate,
+                finishedDate: draggedCard.dataset.finishedDate,
+                ratedDate: draggedCard.dataset.ratedDate
+              }, targetIdx);
+              
+              content.prepend(newCard);
+              draggedCard.remove();
+              updateAllCounts();
+              await saveBooks();
+            });
+          });
+        }
+    
+      async function saveBooks() {
+        if (!currentUser) return;
+        const data = { column1: [], column2: [], column3: [], column4: [] };
+        document.querySelectorAll('.column').forEach((col, i) => {
+          col.querySelectorAll('.book-card').forEach(c => {
+            data[`column${i+1}`].push({
+              title: c.querySelector('.book-title').textContent,
+              author: c.querySelector('.book-author').textContent,
+              downloadedDate: c.dataset.downloadedDate,
+              startedDate: c.dataset.startedDate,
+              finishedDate: c.dataset.finishedDate,
+              ratedDate: c.dataset.ratedDate
+            });
+          });
         });
+        await db.collection('users').doc(currentUser.uid).collection('books').doc('data').set(data);
+      }
     
-        // 2. Remove highlight when card leaves
-        content.addEventListener('dragleave', () => {
-          content.classList.remove('drag-over');
+      async function loadBooks() {
+        const doc = await db.collection('users').doc(currentUser.uid).collection('books').doc('data').get();
+        if (doc.exists) {
+          const data = doc.data();
+          [1,2,3,4].forEach(i => {
+            const col = document.querySelector(`.column-${i} .column-content`);
+            col.innerHTML = '';
+            (data[`column${i}`] || []).forEach(b => col.appendChild(createBookCard(b, i)));
+          });
+        }
+        updateAllCounts();
+      }
+    
+      function updateAllCounts() {
+        document.querySelectorAll('.column').forEach((col, i) => {
+          const count = col.querySelectorAll('.book-card').length;
+          col.querySelector('.column-subtitle').textContent = `${count} book${count !== 1 ? 's' : ''}`;
         });
+      }
     
-        // 3. Handle the drop
-        content.addEventListener('drop', async (e) => {
-          e.preventDefault();
-          content.classList.remove('drag-over'); // Clear feedback immediately
+      async function deleteBook(btn) { btn.closest('.book-card').remove(); updateAllCounts(); await saveBooks(); }
+    
+        async function archiveBook(btn) {
+          const card = btn.closest('.book-card');
+          const bookData = {
+            title: card.querySelector('.book-title').textContent,
+            author: card.querySelector('.book-author').textContent,
+            downloadedDate: card.dataset.downloadedDate,
+            startedDate: card.dataset.startedDate,
+            finishedDate: card.dataset.finishedDate,
+            ratedDate: card.dataset.ratedDate,
+            archivedDate: getTodayDate()
+          };
           
-          if (!draggedCard) return;
+          // Save to archive collection
+          await db.collection('users').doc(currentUser.uid).collection('archived').add(bookData);
           
-          const targetIdx = i + 1;
-          
-          // Update dates based on column
-          if (targetIdx >= 2 && (!draggedCard.dataset.startedDate || draggedCard.dataset.startedDate === "Recently")) {
-            draggedCard.dataset.startedDate = getTodayDate();
-          }
-          if (targetIdx >= 3 && (!draggedCard.dataset.finishedDate || draggedCard.dataset.finishedDate === "Recently")) {
-            draggedCard.dataset.finishedDate = getTodayDate();
-          }
-          if (targetIdx >= 4 && (!draggedCard.dataset.ratedDate || draggedCard.dataset.ratedDate === "Recently")) {
-            draggedCard.dataset.ratedDate = getTodayDate();
-          }
-
-          
-          const newCard = createBookCard({
-            title: draggedCard.querySelector('.book-title').textContent,
-            author: draggedCard.querySelector('.book-author').textContent,
-            downloadedDate: draggedCard.dataset.downloadedDate,
-            startedDate: draggedCard.dataset.startedDate,
-            finishedDate: draggedCard.dataset.finishedDate,
-            ratedDate: draggedCard.dataset.ratedDate
-          }, targetIdx);
-          
-          content.prepend(newCard);
-          draggedCard.remove();
+          // Remove from view
+          card.remove();
           updateAllCounts();
           await saveBooks();
-        });
-      });
-    }
-
-  async function saveBooks() {
-    if (!currentUser) return;
-    const data = { column1: [], column2: [], column3: [], column4: [] };
-    document.querySelectorAll('.column').forEach((col, i) => {
-      col.querySelectorAll('.book-card').forEach(c => {
-        data[`column${i+1}`].push({
-          title: c.querySelector('.book-title').textContent,
-          author: c.querySelector('.book-author').textContent,
-          downloadedDate: c.dataset.downloadedDate,
-          startedDate: c.dataset.startedDate,
-          finishedDate: c.dataset.finishedDate,
-          ratedDate: c.dataset.ratedDate
-        });
-      });
-    });
-    await db.collection('users').doc(currentUser.uid).collection('books').doc('data').set(data);
-  }
-
-  async function loadBooks() {
-    const doc = await db.collection('users').doc(currentUser.uid).collection('books').doc('data').get();
-    if (doc.exists) {
-      const data = doc.data();
-      [1,2,3,4].forEach(i => {
-        const col = document.querySelector(`.column-${i} .column-content`);
-        col.innerHTML = '';
-        (data[`column${i}`] || []).forEach(b => col.appendChild(createBookCard(b, i)));
-      });
-    }
-    updateAllCounts();
-  }
-
-  function updateAllCounts() {
-    document.querySelectorAll('.column').forEach((col, i) => {
-      const count = col.querySelectorAll('.book-card').length;
-      col.querySelector('.column-subtitle').textContent = `${count} book${count !== 1 ? 's' : ''}`;
-    });
-  }
-
-  async function deleteBook(btn) { btn.closest('.book-card').remove(); updateAllCounts(); await saveBooks(); }
-
-    async function archiveBook(btn) {
-      const card = btn.closest('.book-card');
-      const bookData = {
-        title: card.querySelector('.book-title').textContent,
-        author: card.querySelector('.book-author').textContent,
-        downloadedDate: card.dataset.downloadedDate,
-        startedDate: card.dataset.startedDate,
-        finishedDate: card.dataset.finishedDate,
-        ratedDate: card.dataset.ratedDate,
-        archivedDate: getTodayDate()
-      };
-      
-      // Save to archive collection
-      await db.collection('users').doc(currentUser.uid).collection('archived').add(bookData);
-      
-      // Remove from view
-      card.remove();
-      updateAllCounts();
-      await saveBooks();
-    }
-
-  document.querySelector('.search-field').addEventListener('input', (e) => {
-      clearTimeout(searchTimeout);
-      const q = e.target.value.trim();
-      
-      // Immediately clear if the user deletes their text
-      if (q.length === 0) {
-        document.getElementById('searchResults').innerHTML = '';
-        return;
-      }
+        }
     
-      if (q.length > 2) {
-        searchTimeout = setTimeout(async () => {
-          const results = await searchBooks(q);
-          displayResults(results);
-        }, 300);
-      }
-    });
-
-  document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('book-title')) window.open(`https://www.goodreads.com/search?q=${encodeURIComponent(e.target.textContent)}`, '_blank');
-    if (!e.target.closest('.search-container')) document.getElementById('searchResults').innerHTML = '';
-  })
-  document.getElementById('viewArchiveBtn').addEventListener('click', openArchiveModal);
+      document.querySelector('.search-field').addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          const q = e.target.value.trim();
+          
+          // Immediately clear if the user deletes their text
+          if (q.length === 0) {
+            document.getElementById('searchResults').innerHTML = '';
+            return;
+          }
+        
+          if (q.length > 2) {
+            searchTimeout = setTimeout(async () => {
+              const results = await searchBooks(q);
+              displayResults(results);
+            }, 300);
+          }
+        });
+    
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('book-title')) window.open(`https://www.goodreads.com/search?q=${encodeURIComponent(e.target.textContent)}`, '_blank');
+        if (!e.target.closest('.search-container')) document.getElementById('searchResults').innerHTML = '';
+      })
+      document.getElementById('viewArchiveBtn').addEventListener('click', openArchiveModal);
 </script>
 </body>
 </html>
