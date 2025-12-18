@@ -250,27 +250,15 @@
 
     .coachmark-wrapper {
       position: absolute;
-      right: -18px;
+      right: -12px;
       top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      transform: translateY(-52%);
       pointer-events: none;
       z-index: 2000;
     }
     
-    .coachmark-pulse {
-      width: 14px;
-      height: 14px;
-      background: #d4af37;
-      border-radius: 50%;
-      box-shadow: 0 0 0 rgba(212, 175, 55, 0.6);
-      animation: pulse-gold 2s infinite;
-      flex-shrink: 0;
-    }
-    
     .coachmark-bubble {
+      position: relative;
       background: #fffdf8;
       color: #2a241f;
       border: 1px solid #e2d6c4;
@@ -278,13 +266,12 @@
       padding: 10px 14px;
       font-size: 13px;
       line-height: 1.4;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
       white-space: nowrap;
-      position: relative;
-      transform: translateY(-1px);  
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      animation: coachmark-float 2.2s ease-in-out infinite;
     }
-
     
+    /* Pointer toward the search input */
     .coachmark-bubble::after {
       content: "";
       position: absolute;
@@ -297,6 +284,16 @@
       border-left: 1px solid #e2d6c4;
       border-bottom: 1px solid #e2d6c4;
     }
+    
+    /* Gentle float instead of pulse */
+    @keyframes coachmark-float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-3px);
+      }
+    }
 
 
     </style>
@@ -308,7 +305,6 @@
       <div class="search-container">
         <input type="text" class="search-field" placeholder="Search books...">
           <div id="onboardingHint" class="coachmark-wrapper" style="display:none;">
-              <div class="coachmark-pulse"></div>
               <div class="coachmark-bubble">
                 <strong>Start here!</strong><br>
                 Search for a book to add your first card.
