@@ -92,6 +92,25 @@
       color: #8a7a67;
       font-style: italic;
     }
+        /* Align auth controls to the right */
+    .auth-controls {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+    }
+    
+    /* Adjust the Sign In button for the Top Bar */
+    .auth-controls .auth-btn {
+      padding: 8px 16px;
+      font-size: 14px;
+      background: white;
+      color: #2a241f;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .auth-controls .auth-btn:hover {
+      background: #f5f5f5;
+    }
     
     /* ───────── Top Bar ───────── */
     
@@ -718,23 +737,33 @@
   let searchTimeout;
   let draggedCard = null;
 
-  // 2. Auth Observer
+  // 2. Auth Observer (Toggles Button vs User Info)
   auth.onAuthStateChanged(async (user) => {
-    const authContainer = document.getElementById('authContainer');
+    const signInBtn = document.getElementById('googleSignIn');
     const userInfo = document.getElementById('userInfo');
     const userNameDisplay = document.getElementById('userName');
 
     if (user) {
       currentUser = user;
-      authContainer.style.display = 'none';
+      console.log('User signed in:', user.email);
+      
+      // Toggle visibility in the top bar
+      signInBtn.style.display = 'none';
       userInfo.style.display = 'flex';
       userNameDisplay.textContent = user.displayName || user.email;
+      
+      // Load data for the user
       await loadBooks();
       setupDropZones();
     } else {
       currentUser = null;
-      authContainer.style.display = 'flex';
+      console.log('User signed out');
+      
+      // Toggle visibility back to Sign In
+      signInBtn.style.display = 'inline-flex';
       userInfo.style.display = 'none';
+      
+      // Clear the board for a "guest" view
       document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
       updateAllCounts();
     }
