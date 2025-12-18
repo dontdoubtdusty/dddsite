@@ -349,41 +349,51 @@
     container.innerHTML = html;
   }
 
+  // Updated Search & Manual Entry logic
   function openManualModal() { 
+    // Clear fields so they are fresh every time it opens
+    document.getElementById('manualTitle').value = '';
+    document.getElementById('manualAuthor').value = '';
+    
     document.getElementById('manualModal').style.display = 'flex'; 
     document.getElementById('searchResults').innerHTML = '';
+    
+    // Optional: Focus the title field automatically
+    setTimeout(() => document.getElementById('manualTitle').focus(), 50);
   }
-  function closeManualModal() { document.getElementById('manualModal').style.display = 'none'; }
-  async function submitManualEntry() {
-      const t = document.getElementById('manualTitle').value.trim();
-      const a = document.getElementById('manualAuthor').value.trim() || 'Unknown Author';
-      
-      if(t) { 
-        await addBook(t, a); 
-        // FIX: Clear manual modal fields
-        document.getElementById('manualTitle').value = '';
-        document.getElementById('manualAuthor').value = '';
-        closeManualModal(); 
-      } else { 
-        alert("Please enter a title"); 
-      }
-    }
 
-  // CORE LOGIC
-  async function addBook(title, author) {
-      if (!currentUser) { alert("Please sign in first"); return; }
-      
-      const col = document.querySelector('.column-1 .column-content');
-      const bookCard = createBookCard({ title, author, downloadedDate: getTodayDate() }, 1);
-      col.prepend(bookCard);
-      
-      // FIX: Clear the UI elements
-      document.querySelector('.search-field').value = '';
-      document.getElementById('searchResults').innerHTML = '';
-      
-      updateAllCounts();
-      await saveBooks();
+  function closeManualModal() { 
+    document.getElementById('manualModal').style.display = 'none'; 
+  }
+
+  async function submitManualEntry() {
+    const t = document.getElementById('manualTitle').value.trim();
+    const a = document.getElementById('manualAuthor').value.trim() || 'Unknown Author';
+    
+    if(t) { 
+      await addBook(t, a); 
+      // Modal closing now handles the "freshness" for the next open
+      closeManualModal(); 
+    } else { 
+      alert("Please enter a title"); 
     }
+  }
+
+  // Updated addBook to ensure search field is cleared
+  async function addBook(title, author) {
+    if (!currentUser) { alert("Please sign in first"); return; }
+    
+    const col = document.querySelector('.column-1 .column-content');
+    const bookCard = createBookCard({ title, author, downloadedDate: getTodayDate() }, 1);
+    col.prepend(bookCard);
+    
+    // Clear the main search field and results dropdown
+    document.querySelector('.search-field').value = '';
+    document.getElementById('searchResults').innerHTML = '';
+    
+    updateAllCounts();
+    await saveBooks();
+  }
 
   function createBookCard(book, colIdx) {
     const card = document.createElement('div');
