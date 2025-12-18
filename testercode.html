@@ -246,8 +246,6 @@
       font-weight: 700;
     }
 
-
-
     .btn-delete { padding: 6px 12px; border-radius: 6px; border: 1px solid #a65b4b; background: transparent; color: #a65b4b; font-size: 11px; cursor: pointer; float: right; transition: all 0.15s ease; }
     .btn-delete:hover { background: #a65b4b; color: #fffdf8; }
 
@@ -262,6 +260,17 @@
       padding: 40px; border-radius: 16px; border: 1px solid #e2d6c4;
       max-width: 420px; width: 90%; text-align: center;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    @media (max-width: 768px) {
+      .columns-container {
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+      
+      .column {
+        min-width: 280px;
+        flex-shrink: 0;
+      }
     }
     </style>
 </head>
