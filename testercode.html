@@ -792,8 +792,9 @@
         });
     
         card.addEventListener('touchend', async (e) => {
+          if (card.dragTimeout) clearTimeout(card.dragTimeout);
+          
           if (!touchedCard || !clone) {
-            if (card.dragTimeout) clearTimeout(card.dragTimeout);
             return;
           }
           
@@ -833,12 +834,15 @@
             if (currentUser) await saveBooks();
             setupTouchDrag(); // Re-setup for all cards
           } else {
-            touchedCard.style.opacity = '1';
+            card.style.opacity = '1';
           }
           
-          if (clone) clone.remove();
-          touchedCard = null;
+          // Always clean up clone and reset state
+          if (clone && clone.parentNode) {
+            clone.parentNode.removeChild(clone);
+          }
           clone = null;
+          touchedCard = null;
         });
     
         card.addEventListener('touchcancel', () => {
