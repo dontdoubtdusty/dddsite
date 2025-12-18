@@ -678,6 +678,26 @@ function createBookCard(book, colIdx) {
   return card;
 }
 
+/* ───────── ARCHIVES ───────── */
+
+function openArchiveModal() { 
+    document.getElementById('archiveModal').style.display = 'flex'; loadArchivedBooks(); 
+} 
+function closeArchiveModal() { 
+    document.getElementById('archiveModal').style.display = 'none'; 
+} 
+async function loadArchivedBooks() { 
+    if (!currentUser) return; 
+    const archiveList = document.getElementById('archiveList'); 
+    archiveList.innerHTML = '<p style="text-align:center; color:#7a6a57;">Loading...</p>'; 
+    try { const snapshot = await db.collection('users').doc(currentUser.uid).collection('archived').get(); 
+         if (snapshot.empty) { 
+             archiveList.innerHTML = '<p style="text-align:center; color:#7a6a57; padding: 40px;">No archived books yet. Finish and rate some books to see them here! ⭐</p>'; 
+             return; 
+         }
+    }
+}
+
 /* ───────── DRAG & DROP ───────── */
 
 function setupDropZones() {
