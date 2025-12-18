@@ -24,7 +24,7 @@
     /* ───────── Top Bar ───────── */
     
     .top-bar {
-      background: #3a2f25;
+      background: linear-gradient(135deg, #3a2f25, #4a3e32);
       padding: 18px 28px;
       border-bottom: 1px solid #5a4a3b;
       display: flex;
@@ -38,6 +38,7 @@
       font-weight: 600;
       color: #f5ecd9;
       letter-spacing: 0.04em;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
     
     /* ───────── Search ───────── */
@@ -75,8 +76,8 @@
       right: 0;
       max-height: 300px;
       overflow-y: auto;
-      background: #fbf7ef;        /* light parchment */
-      border: 1px solid #d6c7b2;  /* subtle warm border */
+      background: #fbf7ef;
+      border: 1px solid #d6c7b2;
       border-top: none;
       border-radius: 0 0 8px 8px;
       box-shadow: 0 6px 15px rgba(0,0,0,0.25);
@@ -135,6 +136,7 @@
       flex-direction: column;
       background: #f8f2e8;
       border-right: 1px solid #d2c3ad;
+      position: relative;
     }
     
     .column:last-child {
@@ -144,7 +146,7 @@
     .column-header {
       padding: 22px 20px;
       border-bottom: 1px solid #d2c3ad;
-      background: #f3ebdd;
+      background: linear-gradient(180deg, #f3ebdd, #f8f2e8);
     }
     
     .column-title {
@@ -170,7 +172,7 @@
     /* ───────── Book Cards ───────── */
     
     .book-card {
-      background: #fffdf8;
+      background: linear-gradient(135deg, #fffdf8, #fefbf3);
       padding: 16px 18px;
       margin-bottom: 14px;
       border-radius: 10px;
@@ -264,25 +266,24 @@
     
     /* Highlight Finished — Not Rated column */
     .column-3 {
-      background: #fff4e0;           /* warm cream background */
+      background: linear-gradient(180deg, #fff9ed, #fff4e0);
       border-right: 1px solid #d2c3ad;
     }
     
     .column-3 .column-header {
-      background: #ffe5b4;           /* soft amber for header */
+      background: linear-gradient(180deg, #ffe5b4, #ffd89b);
       border-bottom: 2px solid #f5a623; 
     }
     
     .column-3 .column-title {
-      color: #d97706;                /* rich warm accent */
+      color: #d97706;
       font-weight: 700;
     }
     
     .column-3 .column-subtitle {
-      color: #9c6c2e;                /* slightly muted amber for subtitle */
+      color: #9c6c2e;
     }
     
-    /* Optional: subtle glow for attention */
     .column-3 {
       box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.1);
     }
@@ -344,10 +345,12 @@
     .timeline-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
+      gap: 10px;
+      margin-bottom: 8px;
       font-size: 12px;
       transition: all 0.3s ease;
+      padding: 4px 6px;
+      border-radius: 6px;
     }
     
     .timeline-item:last-child {
@@ -360,40 +363,82 @@
       border-radius: 50%;
       flex-shrink: 0;
       transition: all 0.3s ease;
+      position: relative;
     }
     
-    /* Locked state - muted and small */
+    /* Locked state - muted gray */
     .timeline-item.locked {
-      opacity: 0.35;
+      opacity: 0.4;
+      background: transparent;
     }
     
     .timeline-item.locked .timeline-dot {
-      background: #d6c7b2;
-      border: 1px solid #c9a76a;
+      background: #ddd;
+      border: 1px dashed #bbb;
       width: 6px;
       height: 6px;
     }
     
     .timeline-item.locked .timeline-text {
-      color: #9a8b7a;
+      color: #aaa;
       font-size: 11px;
       font-style: italic;
+      font-weight: 400;
     }
     
-    /* Unlocked state - bold and prominent */
-    .timeline-item.unlocked {
+    /* Unlocked - Downloaded (soft blue) */
+    .timeline-item.unlocked.milestone-1 {
       opacity: 1;
+      background: rgba(99, 179, 237, 0.08);
     }
     
-    .timeline-item.unlocked .timeline-dot {
-      background: #8b6a3e;
-      box-shadow: 0 0 0 3px rgba(139, 106, 62, 0.2);
+    .timeline-item.unlocked.milestone-1 .timeline-dot {
+      background: linear-gradient(135deg, #63b3ed, #4299e1);
+      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
       width: 10px;
       height: 10px;
     }
     
-    .timeline-item.unlocked .timeline-text {
-      color: #3a2f25;
+    .timeline-item.unlocked.milestone-1 .timeline-text {
+      color: #2c5282;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    
+    /* Unlocked - Started (warm amber) */
+    .timeline-item.unlocked.milestone-2 {
+      opacity: 1;
+      background: rgba(246, 173, 85, 0.08);
+    }
+    
+    .timeline-item.unlocked.milestone-2 .timeline-dot {
+      background: linear-gradient(135deg, #f6ad55, #ed8936);
+      box-shadow: 0 0 0 3px rgba(246, 173, 85, 0.25);
+      width: 10px;
+      height: 10px;
+    }
+    
+    .timeline-item.unlocked.milestone-2 .timeline-text {
+      color: #7c2d12;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    
+    /* Unlocked - Finished (rich green) */
+    .timeline-item.unlocked.milestone-3 {
+      opacity: 1;
+      background: rgba(104, 211, 145, 0.08);
+    }
+    
+    .timeline-item.unlocked.milestone-3 .timeline-dot {
+      background: linear-gradient(135deg, #68d391, #48bb78);
+      box-shadow: 0 0 0 3px rgba(104, 211, 145, 0.25);
+      width: 10px;
+      height: 10px;
+    }
+    
+    .timeline-item.unlocked.milestone-3 .timeline-text {
+      color: #22543d;
       font-weight: 600;
       font-size: 12px;
     }
@@ -561,7 +606,7 @@
       html += `<div class="book-timeline">`;
       
       // Downloaded - unlocked in column 1+
-      const downloadedState = columnIndex >= 1 ? 'unlocked' : 'locked';
+      const downloadedState = columnIndex >= 1 ? 'unlocked milestone-1' : 'locked';
       const downloadedText = book.downloadedDate ? `on ${book.downloadedDate}` : 'recently';
       html += `
         <div class="timeline-item ${downloadedState}">
@@ -571,7 +616,7 @@
       `;
       
       // Started - unlocked in column 2+
-      const startedState = columnIndex >= 2 ? 'unlocked' : 'locked';
+      const startedState = columnIndex >= 2 ? 'unlocked milestone-2' : 'locked';
       const startedText = book.startedDate ? `on ${book.startedDate}` : 'recently';
       html += `
         <div class="timeline-item ${startedState}">
@@ -581,7 +626,7 @@
       `;
       
       // Finished - unlocked in column 3+
-      const finishedState = columnIndex >= 3 ? 'unlocked' : 'locked';
+      const finishedState = columnIndex >= 3 ? 'unlocked milestone-3' : 'locked';
       const finishedText = book.finishedDate ? `on ${book.finishedDate}` : 'recently';
       html += `
         <div class="timeline-item ${finishedState}">
