@@ -360,12 +360,17 @@
       setupDropZones();
     } else {
       currentUser = null;
-      signInBtn.style.display = 'inline-flex';
-      userInfo.style.display = 'none';
-      document.querySelector('.top-bar h1').textContent = "Dusty's Reading Flow Tool";
-      document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
-      document.getElementById('viewArchiveBtn').style.display = 'none';
-      updateAllCounts();
+          signInBtn.style.display = 'inline-flex';
+          userInfo.style.display = 'none';
+          document.querySelector('.top-bar h1').textContent = "Dusty's Reading Flow Tool";
+          
+          [1, 2, 3, 4].forEach(i => {
+            const col = document.querySelector(`.column-${i} .column-content`);
+            if (col) col.innerHTML = getPlaceholder(i);
+        });
+          
+          document.getElementById('viewArchiveBtn').style.display = 'none';
+          updateAllCounts();
     }
   });
 
@@ -680,6 +685,13 @@
             `
           };
           return placeholders[colIdx];
+        }
+
+    function showAllPlaceholders() {
+          [1, 2, 3, 4].forEach(i => {
+            const col = document.querySelector(`.column-${i} .column-content`);
+            if (col) col.innerHTML = getPlaceholder(i);
+          });
         }
     
       function updateAllCounts() {
