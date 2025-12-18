@@ -246,6 +246,67 @@
       max-width: 420px; width: 90%; text-align: center;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
     }
+        /* ───────── ONBOARDING COACH MARK ───────── */
+
+    .coachmark-wrapper {
+      position: absolute;
+      right: -18px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      z-index: 2000;
+    }
+    
+    .coachmark-pulse {
+      width: 14px;
+      height: 14px;
+      background: #d4af37;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 0 rgba(212, 175, 55, 0.6);
+      animation: pulse-gold 2s infinite;
+    }
+    
+    @keyframes pulse-gold {
+      0% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.6);
+      }
+      70% {
+        box-shadow: 0 0 0 12px rgba(212, 175, 55, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+      }
+    }
+    
+    .coachmark-bubble {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      background: #fffdf8;
+      color: #2a241f;
+      border: 1px solid #e2d6c4;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.4;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      white-space: nowrap;
+    }
+    
+    .coachmark-bubble::after {
+      content: "";
+      position: absolute;
+      right: -6px;
+      top: 16px;
+      width: 10px;
+      height: 10px;
+      background: #fffdf8;
+      border-right: 1px solid #e2d6c4;
+      border-bottom: 1px solid #e2d6c4;
+      transform: rotate(-45deg);
+    }
+
     </style>
 </head>
 <body>
@@ -254,6 +315,13 @@
       <h1>Dusty's Reading Flow Tool</h1>
       <div class="search-container">
         <input type="text" class="search-field" placeholder="Search books...">
+          <div id="onboardingHint" class="coachmark-wrapper" style="display:none;">
+              <div class="coachmark-pulse"></div>
+              <div class="coachmark-bubble">
+                <strong>Start here!</strong><br>
+                Search for a book to add your first card.
+              </div>
+            </div>
         <div class="search-results" id="searchResults"></div>
       </div>
 
@@ -359,9 +427,11 @@
         userInfo.style.display = 'flex';
         userNameDisplay.textContent = user.displayName || user.email;
         document.getElementById('viewArchiveBtn').style.display = 'inline-flex';
-    
+          
+        updateOnboardingHint();
         await loadBooks();
         setupDropZones();
+          
       } else {
         currentUser = null;
     
@@ -526,6 +596,7 @@
         document.getElementById('searchResults').innerHTML = '';
         
         updateAllCounts();
+        updateOnboardingHint();
         await saveBooks();
       }
     
@@ -658,6 +729,7 @@
             });
           }
           updateAllCounts();
+          updateOnboardingHint();
         }
 
     function getPlaceholder(colIdx) {
@@ -707,6 +779,27 @@
           col.querySelector('.column-subtitle').textContent = `${count} book${count !== 1 ? 's' : ''}`;
         });
       }
+
+    function getTotalBookCount() {
+          let total = 0;
+          document.querySelectorAll('.column').forEach(col => {
+            total += col.querySelectorAll('.book-card').length;
+          });
+          return total;
+        }
+
+    function updateOnboardingHint() {
+      const hint = document.getElementById('onboardingHint');
+      if (!hint) return;
+    
+      if (currentUser && getTotalBookCount() === 0) {
+        hint.style.display = 'block';
+      } else {
+        hint.style.display = 'none';
+      }
+    }
+
+
     
       async function deleteBook(btn) { btn.closest('.book-card').remove(); updateAllCounts(); await saveBooks(); }
     
