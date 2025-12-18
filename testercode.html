@@ -415,6 +415,9 @@
     const pDate = (book.downloadedDate && book.downloadedDate !== 'N/A') ? book.downloadedDate : "Recently";
     const sDate = (book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : (colIdx >= 2 ? "Recently" : "...");
     const fDate = (book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : (colIdx >= 3 ? "Recently" : "...");
+    const rDate = (book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : (colIdx >= 4 ? "Recently" : "...");
+
+      
 
     card.innerHTML = `
       <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
@@ -424,12 +427,16 @@
         <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${pDate}</div></div>
         <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Started ${sDate}</div></div>
         <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Finished ${fDate}</div></div>
+        <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div>
+      </div>
+
       </div>
     `;
 
     card.dataset.downloadedDate = pDate;
     card.dataset.startedDate = sDate === "..." ? "" : sDate;
     card.dataset.finishedDate = fDate === "..." ? "" : fDate;
+    card.dataset.ratedDate = rDate === "..." ? "" : rDate;
 
     card.addEventListener('dragstart', () => { draggedCard = card; card.classList.add('dragging'); });
     card.addEventListener('dragend', () => { draggedCard = null; card.classList.remove('dragging'); });
@@ -467,13 +474,18 @@
           if (targetIdx >= 3 && (!draggedCard.dataset.finishedDate || draggedCard.dataset.finishedDate === "Recently")) {
             draggedCard.dataset.finishedDate = getTodayDate();
           }
+          if (targetIdx >= 4 && (!draggedCard.dataset.ratedDate || draggedCard.dataset.ratedDate === "Recently")) {
+            draggedCard.dataset.ratedDate = getTodayDate();
+          }
+
           
           const newCard = createBookCard({
             title: draggedCard.querySelector('.book-title').textContent,
             author: draggedCard.querySelector('.book-author').textContent,
             downloadedDate: draggedCard.dataset.downloadedDate,
             startedDate: draggedCard.dataset.startedDate,
-            finishedDate: draggedCard.dataset.finishedDate
+            finishedDate: draggedCard.dataset.finishedDate,
+            ratedDate: draggedCard.dataset.ratedDate
           }, targetIdx);
           
           content.prepend(newCard);
@@ -494,7 +506,8 @@
           author: c.querySelector('.book-author').textContent,
           downloadedDate: c.dataset.downloadedDate,
           startedDate: c.dataset.startedDate,
-          finishedDate: c.dataset.finishedDate
+          finishedDate: c.dataset.finishedDate,
+          ratedDate: c.dataset.ratedDate
         });
       });
     });
