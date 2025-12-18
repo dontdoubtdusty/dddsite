@@ -478,6 +478,7 @@
       await loadBooks();
       document.getElementById('demoBanner').classList.remove('active'); // Add this line
       setupDropZones();
+      setupTouchDrag();
     } else {
       currentUser = null;
       signInBtn.style.display = 'inline-flex';
@@ -488,6 +489,7 @@
       // Load demo books
       loadDemoBooks();
       setupDropZones();
+      setupTouchDrag();
     }
   });
 
@@ -733,6 +735,96 @@
       });
     }
 
+    function setupTouchDrag() {
+      let touchedCard = null;
+      let touchStartY = 0;
+      let touchStartX = 0;
+      let clone = null;
+    
+      document.querySelectorAll('.book-card').forEach(card => {
+        card.addEventListener('touchstart', (e) => {
+          touchedCard = card;
+          touchStartY = e.touches[0].clientY;
+          touchStartX = e.touches[0].clientX;
+          
+          // Create visual clone
+          clone = card.cloneNode(true);
+          clone.style.position = 'fixed';
+          clone.style.width = card.offsetWidth + 'px';
+          clone.style.pointerEvents = 'none';
+          clone.style.opacity = '0.8';
+          clone.style.zIndex = '9999';
+          clone.style.left = card.getBoundingClientRect().left + 'px';
+          clone.style.top = card.getBoundingClientRect().top + 'px';
+          document.body.appendChild(clone);
+          
+          card.style.opacity = '0.3';
+        });
+    
+        card.addEventListener('touchmove', (e) => {
+          if (!touchedCard || !clone) return;
+          e.preventDefault();
+          
+          const touch = e.touches[0];
+          clone.style.left = (touch.clientX - touchStartX + touchedCard.getBoundingClientRect().left) + 'px';
+          clone.style.top = (touch.clientY - touchStartY + touchedCard.getBoundingClientRect().top) + 'px';
+          
+          // Highlight drop zones
+          const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+          document.querySelectorAll('.column-content').forEach(c => c.classList.remove('drag-over'));
+          const dropZone = elementBelow?.closest('.column-content');
+          if (dropZone) dropZone.classList.add('drag-over');
+        });
+    
+        card.addEventListener('touchend', async (e) => {
+          if (!touchedCard || !clone) return;
+          
+          const touch = e.changedTouches[0];
+          const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+          const dropZone = elementBelow?.closest('.column-content');
+          
+          document.querySelectorAll('.column-content').forEach(c => c.classList.remove('drag-over'));
+          
+          if (dropZone) {
+            const columns = Array.from(document.querySelectorAll('.column-content'));
+            const targetIdx = columns.indexOf(dropZone) + 1;
+            
+            // Update dates
+            if (targetIdx >= 2 && (!touchedCard.dataset.startedDate || touchedCard.dataset.startedDate === "Recently")) {
+              touchedCard.dataset.startedDate = getTodayDate();
+            }
+            if (targetIdx >= 3 && (!touchedCard.dataset.finishedDate || touchedCard.dataset.finishedDate === "Recently")) {
+              touchedCard.dataset.finishedDate = getTodayDate();
+            }
+            if (targetIdx >= 4 && (!touchedCard.dataset.ratedDate || touchedCard.dataset.ratedDate === "Recently")) {
+              touchedCard.dataset.ratedDate = getTodayDate();
+            }
+            
+            const newCard = createBookCard({
+              title: touchedCard.querySelector('.book-title').textContent,
+              author: touchedCard.querySelector('.book-author').textContent,
+              downloadedDate: touchedCard.dataset.downloadedDate,
+              startedDate: touchedCard.dataset.startedDate,
+              finishedDate: touchedCard.dataset.finishedDate,
+              ratedDate: touchedCard.dataset.ratedDate
+            }, targetIdx);
+            
+            dropZone.prepend(newCard);
+            touchedCard.remove();
+            updateAllCounts();
+            if (currentUser) await saveBooks();
+            setupTouchDrag(); // Re-setup for new card
+          } else {
+            touchedCard.style.opacity = '1';
+          }
+          
+          if (clone) clone.remove();
+          touchedCard = null;
+          clone = null;
+        });
+      });
+    }
+
   async function saveBooks() {
     if (!currentUser) return;
     const data = { column1: [], column2: [], column3: [], column4: [] };
@@ -762,6 +854,7 @@
       });
     }
     updateAllCounts();
+    setupTouchDrag();
   }
 
   function updateAllCounts() {
