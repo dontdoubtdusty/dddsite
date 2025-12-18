@@ -309,9 +309,12 @@
 
     <div id="archiveModal" class="modal-overlay">
   <div class="modal-content" style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-      <h2 style="color:#2a241f; font-size:28px; margin: 0;">🏆 Your Archive</h2>
-      <button onclick="closeArchiveModal()" class="btn-sign-out" style="color:#2a241f; border-color:#2a241f;">Close</button>
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img src="/booktrophy.png" alt="Trophy" style="width: 80px; height: 80px; filter: brightness(0) saturate(100%) invert(60%) sepia(80%) saturate(500%) hue-rotate(10deg) brightness(95%) contrast(90%); margin-bottom: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="color:#2a241f; font-size:28px; margin: 0; flex: 1;">Your Archive</h2>
+        <button onclick="closeArchiveModal()" class="btn-sign-out" style="color:#2a241f; border-color:#2a241f;">Close</button>
+      </div>
     </div>
     <p style="color:#6f5f4d; margin-bottom:24px; font-size:14px;">Books you've conquered and celebrated.</p>
     <div id="archiveList" style="display: grid; gap: 16px;">
@@ -353,6 +356,7 @@
       signInBtn.style.display = 'none';
       userInfo.style.display = 'flex';
       userNameDisplay.textContent = user.displayName || user.email;
+        document.querySelector('.top-bar h1').textContent = `${user.displayName || 'Your'}'s Reading Flow Tool`;
         document.getElementById('viewArchiveBtn').style.display = 'inline-flex';
       await loadBooks();
       setupDropZones();
@@ -361,6 +365,7 @@
       signInBtn.style.display = 'inline-flex';
       userInfo.style.display = 'none';
       document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
+        document.querySelector('.top-bar h1').textContent = "Dusty's Reading Flow Tool";
         document.getElementById('viewArchiveBtn').style.display = 'none';
       updateAllCounts();
     }
@@ -465,7 +470,7 @@
           const book = doc.data();
           html += `
             <div class="book-card" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #d4af37; box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);">
-              <button class="btn-delete" onclick="unarchiveBook('${doc.id}')">↩️ Restore</button>
+              <button class="btn-delete" onclick="deleteArchivedBook('${doc.id}')">Delete</button>
               <div class="book-title">${book.title}</div>
               <div class="book-author">${book.author}</div>
               <div class="book-timeline">
@@ -483,6 +488,17 @@
       } catch (error) {
         console.error('Error loading archive:', error);
         archiveList.innerHTML = '<p style="text-align:center; color:#a65b4b;">Error loading archive. Please try again.</p>';
+      }
+    }
+    async function deleteArchivedBook(docId) {
+      if (!confirm('Permanently delete this book from your archive?')) return;
+      
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('archived').doc(docId).delete();
+        await loadArchivedBooks(); // Reload the archive to show updated list
+      } catch (error) {
+        console.error('Error deleting archived book:', error);
+        alert('Error deleting book. Please try again.');
       }
     }
 
