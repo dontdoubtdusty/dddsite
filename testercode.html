@@ -817,6 +817,16 @@ async function loadBooks() {
 
 /* ───────── UI HELPERS ───────── */
 
+    function getPlaceholder(colIdx) { 
+        const placeholders = { 
+            1: <div style="text-align: center; padding: 40px 20px; color: #7a6a57;"> <div style="font-size: 48px; margin-bottom: 16px;">📚</div> <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Start Your Reading Journey</div> <div style="font-size: 14px; line-height: 1.6;">Search for books above to add them to your flow. Track every step from purchase to completion!</div> </div> , 
+            2: <div style="text-align: center; padding: 40px 20px; color: #7a6a57;"> <div style="font-size: 48px; margin-bottom: 16px;">📖</div> <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Ready to Read?</div> <div style="font-size: 14px; line-height: 1.6;">Drag books here when you start reading them. Your journey begins!</div> </div> , 
+            3: <div style="text-align: center; padding: 40px 20px; color: #7a6a57;"> <div style="font-size: 48px; margin-bottom: 16px;">✅</div> <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Finished Books</div> <div style="font-size: 14px; line-height: 1.6;">Move completed books here before rating them. Almost there!</div> </div> , 
+            4: <div style="text-align: center; padding: 40px 20px; color: #7a6a57;"> <div style="font-size: 48px; margin-bottom: 16px;">⭐</div> <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Hall of Fame</div> <div style="font-size: 14px; line-height: 1.6;">Books you've finished and rated live here. Ready to archive when you want!</div> 
+        </div> }; 
+    return placeholders[colIdx]; 
+    }
+
 function showAllPlaceholders() {
   [1, 2, 3, 4].forEach(i => {
     const col = document.querySelector(`.column-${i} .column-content`);
