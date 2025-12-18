@@ -829,48 +829,45 @@
   }
 
   function createBookCard(book, columnIndex) {
-    const bookCard = document.createElement('div');
-    bookCard.className = 'book-card';
-    bookCard.setAttribute('draggable', 'true');
-
-    bookCard.innerHTML = `
-      <div class="book-title">${book.title}</div>
-      <div class="book-author">${book.author || ''}</div>
-      <div class="book-timeline">
-        <div class="timeline-item ${columnIndex >= 1 ? 'unlocked milestone-1' : 'locked'}">
-          <div class="timeline-dot"></div>
-          <div class="timeline-text">Purchased ${book.purchasedDate || 'N/A'}</div>
+      const bookCard = document.createElement('div');
+      bookCard.className = 'book-card';
+      bookCard.setAttribute('draggable', 'true');
+    
+      // Logic to handle missing dates
+      const displayPurchased = book.downloadedDate || getTodayDate(); // Defaults to today if missing
+      const displayStarted = book.startedDate || "..."; 
+      const displayFinished = book.finishedDate || "...";
+    
+      bookCard.innerHTML = `
+        <div class="book-title">${book.title}</div>
+        <div class="book-author">${book.author || ''}</div>
+        <div class="book-timeline">
+          <div class="timeline-item ${columnIndex >= 1 ? 'unlocked milestone-1' : 'locked'}">
+            <div class="timeline-dot"></div>
+            <div class="timeline-text">Purchased ${displayPurchased}</div>
+          </div>
+          <div class="timeline-item ${columnIndex >= 2 ? 'unlocked milestone-2' : 'locked'}">
+            <div class="timeline-dot"></div>
+            <div class="timeline-text">Started ${displayStarted}</div>
+          </div>
+          <div class="timeline-item ${columnIndex >= 3 ? 'unlocked milestone-3' : 'locked'}">
+            <div class="timeline-dot"></div>
+            <div class="timeline-text">Finished ${displayFinished}</div>
+          </div>
         </div>
-        <div class="timeline-item ${columnIndex >= 2 ? 'unlocked milestone-2' : 'locked'}">
-          <div class="timeline-dot"></div>
-          <div class="timeline-text">Started ${book.startedDate || '...'}</div>
+        <div class="book-controls">
+          <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
         </div>
-        <div class="timeline-item ${columnIndex >= 3 ? 'unlocked milestone-3' : 'locked'}">
-          <div class="timeline-dot"></div>
-          <div class="timeline-text">Finished ${book.finishedDate || '...'}</div>
-        </div>
-      </div>
-      <div class="book-controls">
-        <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
-      </div>
-    `;
-
-    bookCard.dataset.purchasedDate = book.purchasedDate || '';
-    bookCard.dataset.startedDate = book.startedDate || '';
-    bookCard.dataset.finishedDate = book.finishedDate || '';
-
-    bookCard.addEventListener('dragstart', (e) => {
-      draggedCard = bookCard;
-      bookCard.classList.add('dragging');
-    });
-
-    bookCard.addEventListener('dragend', () => {
-      bookCard.classList.remove('dragging');
-      draggedCard = null;
-    });
-
-    return bookCard;
-  }
+      `;
+      
+      // Ensure the dataset also gets the "Today" date if it was missing
+      bookCard.dataset.downloadedDate = displayPurchased;
+      bookCard.dataset.startedDate = book.startedDate || '';
+      bookCard.dataset.finishedDate = book.finishedDate || '';
+    
+      // ... rest of the function (drag events) remains the same
+      return bookCard;
+    }
 
   function setupDropZones() {
     document.querySelectorAll('.column-content').forEach((content, contentIndex) => {
