@@ -403,6 +403,7 @@ const auth = firebase.auth();
 let currentUser = null;
 let searchTimeout;
 let draggedCard = null;
+let hasSeenOnboarding = false;
 
 /* ───────── AUTH STATE ───────── */
 
@@ -478,7 +479,7 @@ function updateOnboardingHint() {
   const hint = document.getElementById('onboardingHint');
   if (!hint) return;
 
-  if (currentUser && getTotalBookCount() === 0) {
+  if (currentUser && !hasSeenOnboarding && isFirstColumnEmpty()) {
     hint.style.display = 'block';
   } else {
     hint.style.display = 'none';
@@ -572,6 +573,7 @@ async function addBook(title, author) {
   document.getElementById('searchResults').innerHTML = '';
 
   updateAllCounts();
+  hasSeenOnboarding = true;
   updateOnboardingHint();
   await saveBooks();
 }
@@ -756,23 +758,22 @@ async function loadBooks() {
   if (doc.exists) {
     const data = doc.data();
 
-    [1, 2, 3, 4].forEach(i => {
-      const col = document.querySelector(`.column-${i} .column-content`);
-      col.innerHTML = '';
+    let foundAnyBook = false;
 
+    [1, 2, 3, 4].forEach(i => {
       const books = data[`column${i}`] || [];
-      if (books.length) {
-        books.forEach(b => col.appendChild(createBookCard(b, i)));
-      } else {
-        col.innerHTML = getPlaceholder(i);
+      if (books.length > 0) {
+        foundAnyBook = true;
       }
     });
-  } else {
-    showAllPlaceholders();
-  }
+      
+    if (foundAnyBook) {
+      hasSeenOnboarding = true;
+    }
+    
+    updateAllCounts();
+    updateOnboardingHint();
 
-  updateAllCounts();
-  updateOnboardingHint();
 }
 
 /* ───────── UI HELPERS ───────── */
