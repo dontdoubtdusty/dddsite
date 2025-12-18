@@ -478,7 +478,6 @@
       await loadBooks();
       document.getElementById('demoBanner').classList.remove('active'); // Add this line
       setupDropZones();
-      setupTouchDrag();
     } else {
       currentUser = null;
       signInBtn.style.display = 'inline-flex';
@@ -489,7 +488,6 @@
       // Load demo books
       loadDemoBooks();
       setupDropZones();
-      setupTouchDrag();
     }
   });
 
@@ -683,191 +681,60 @@
   }
 
   function setupDropZones() {
-      document.querySelectorAll('.column-content').forEach((content, i) => {
-        // 1. Highlight column when card enters
-        content.addEventListener('dragover', (e) => {
-          e.preventDefault(); // Required to allow drop
-          if (!content.classList.contains('drag-over')) {
-            content.classList.add('drag-over');
-          }
-        });
-    
-        // 2. Remove highlight when card leaves
-        content.addEventListener('dragleave', () => {
-          content.classList.remove('drag-over');
-        });
-    
-        // 3. Handle the drop
-        content.addEventListener('drop', async (e) => {
-          e.preventDefault();
-          content.classList.remove('drag-over'); // Clear feedback immediately
-          
-          if (!draggedCard) return;
-          
-          const targetIdx = i + 1;
-          
-          // Update dates based on column
-          if (targetIdx >= 2 && (!draggedCard.dataset.startedDate || draggedCard.dataset.startedDate === "Recently")) {
-            draggedCard.dataset.startedDate = getTodayDate();
-          }
-          if (targetIdx >= 3 && (!draggedCard.dataset.finishedDate || draggedCard.dataset.finishedDate === "Recently")) {
-            draggedCard.dataset.finishedDate = getTodayDate();
-          }
-          if (targetIdx >= 4 && (!draggedCard.dataset.ratedDate || draggedCard.dataset.ratedDate === "Recently")) {
-            draggedCard.dataset.ratedDate = getTodayDate();
-          }
-
-          
-          const newCard = createBookCard({
-            title: draggedCard.querySelector('.book-title').textContent,
-            author: draggedCard.querySelector('.book-author').textContent,
-            downloadedDate: draggedCard.dataset.downloadedDate,
-            startedDate: draggedCard.dataset.startedDate,
-            finishedDate: draggedCard.dataset.finishedDate,
-            ratedDate: draggedCard.dataset.ratedDate
-          }, targetIdx);
-          
-          content.prepend(newCard);
-          draggedCard.remove();
-          updateAllCounts();
-          await saveBooks();
-        });
-      });
-    }
-
-    function setupTouchDrag() {
-          // Remove old listeners by cloning and replacing all cards
-          document.querySelectorAll('.book-card').forEach(card => {
-            const newCard = card.cloneNode(true);
-            card.parentNode.replaceChild(newCard, card);
-          });
-        
-          // Now add fresh listeners
-          document.querySelectorAll('.book-card').forEach(card => {
-            // Reset any leftover styles from previous drags
-            card.style.opacity = '1';
-            card.style.visibility = 'visible';
-            
-            let touchedCard = null;
-            let touchStartY = 0;
-            let touchStartX = 0;
-            let clone = null;
-        
-            card.addEventListener('touchstart', (e) => {
-              touchStartY = e.touches[0].clientY;
-              touchStartX = e.touches[0].clientX;
-              
-              // Wait 300ms before enabling drag (allows scrolling)
-              card.dragTimeout = setTimeout(() => {
-                touchedCard = card;
-                
-                // Create visual clone
-                clone = card.cloneNode(true);
-                clone.style.position = 'fixed';
-                clone.style.width = card.offsetWidth + 'px';
-                clone.style.pointerEvents = 'none';
-                clone.style.opacity = '0.8';
-                clone.style.zIndex = '9999';
-                clone.style.left = card.getBoundingClientRect().left + 'px';
-                clone.style.top = card.getBoundingClientRect().top + 'px';
-                document.body.appendChild(clone);
-                
-                // Completely hide the original card during drag
-                card.style.opacity = '0';
-                card.style.visibility = 'hidden';
-              }, 300);
-            });
-        
-            card.addEventListener('touchmove', (e) => {
-              if (!touchedCard || !clone) {
-                // Cancel drag timeout if user is scrolling
-                if (card.dragTimeout) clearTimeout(card.dragTimeout);
-                return;
-              }
-              e.preventDefault();
-              
-              const touch = e.touches[0];
-              clone.style.left = (touch.clientX - touchStartX + card.getBoundingClientRect().left) + 'px';
-              clone.style.top = (touch.clientY - touchStartY + card.getBoundingClientRect().top) + 'px';
-              
-              // Highlight drop zones
-              const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-              document.querySelectorAll('.column-content').forEach(c => c.classList.remove('drag-over'));
-              const dropZone = elementBelow?.closest('.column-content');
-              if (dropZone) dropZone.classList.add('drag-over');
-            });
-        
-            card.addEventListener('touchend', async (e) => {
-              if (card.dragTimeout) clearTimeout(card.dragTimeout);
-              
-              if (!touchedCard || !clone) {
-                return;
-              }
-              
-              const touch = e.changedTouches[0];
-              const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-              const dropZone = elementBelow?.closest('.column-content');
-              
-              document.querySelectorAll('.column-content').forEach(c => c.classList.remove('drag-over'));
-              
-              if (dropZone && touchedCard.parentElement !== dropZone) {
-                const columns = Array.from(document.querySelectorAll('.column-content'));
-                const targetIdx = columns.indexOf(dropZone) + 1;
-                
-                // Update dates
-                if (targetIdx >= 2 && (!touchedCard.dataset.startedDate || touchedCard.dataset.startedDate === "Recently")) {
-                  touchedCard.dataset.startedDate = getTodayDate();
-                }
-                if (targetIdx >= 3 && (!touchedCard.dataset.finishedDate || touchedCard.dataset.finishedDate === "Recently")) {
-                  touchedCard.dataset.finishedDate = getTodayDate();
-                }
-                if (targetIdx >= 4 && (!touchedCard.dataset.ratedDate || touchedCard.dataset.ratedDate === "Recently")) {
-                  touchedCard.dataset.ratedDate = getTodayDate();
-                }
-                
-                const newCard = createBookCard({
-                  title: touchedCard.querySelector('.book-title').textContent,
-                  author: touchedCard.querySelector('.book-author').textContent,
-                  downloadedDate: touchedCard.dataset.downloadedDate,
-                  startedDate: touchedCard.dataset.startedDate,
-                  finishedDate: touchedCard.dataset.finishedDate,
-                  ratedDate: touchedCard.dataset.ratedDate
-                }, targetIdx);
-                
-                dropZone.prepend(newCard);
-                touchedCard.remove();
-                updateAllCounts();
-                if (currentUser) await saveBooks();
-                setupTouchDrag(); // Re-setup for all cards
-              } else {
-                // Restore visibility if drag was cancelled
-                card.style.opacity = '1';
-                card.style.visibility = 'visible';
-              }
-              
-              // Always clean up clone and reset state
-              if (clone && clone.parentNode) {
-                clone.parentNode.removeChild(clone);
-              }
-              clone = null;
-              touchedCard = null;
-            });
-        
-            card.addEventListener('touchcancel', () => {
-              if (card.dragTimeout) clearTimeout(card.dragTimeout);
-              if (touchedCard === card) {
-                touchedCard.style.opacity = '1';
-                touchedCard.style.visibility = 'visible';
-                touchedCard = null;
-              }
-              if (clone) {
-                clone.remove();
-                clone = null;
-              }
-              document.querySelectorAll('.column-content').forEach(c => c.classList.remove('drag-over'));
-            });
-          });
+    document.querySelectorAll('.column-content').forEach((content, i) => {
+      // 1. Highlight column when card enters
+      content.addEventListener('dragover', (e) => {
+        e.preventDefault(); // Required to allow drop
+        if (!content.classList.contains('drag-over')) {
+          content.classList.add('drag-over');
         }
+      });
+  
+      // 2. Remove highlight when card leaves
+      content.addEventListener('dragleave', () => {
+        content.classList.remove('drag-over');
+      });
+  
+      // 3. Handle the drop
+      content.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        content.classList.remove('drag-over'); // Clear feedback immediately
+        
+        if (!draggedCard) return;
+        
+        const targetIdx = i + 1;
+        const originalCard = draggedCard; // Store reference before any operations
+        
+        // Update dates based on column
+        if (targetIdx >= 2 && (!originalCard.dataset.startedDate || originalCard.dataset.startedDate === "Recently")) {
+          originalCard.dataset.startedDate = getTodayDate();
+        }
+        if (targetIdx >= 3 && (!originalCard.dataset.finishedDate || originalCard.dataset.finishedDate === "Recently")) {
+          originalCard.dataset.finishedDate = getTodayDate();
+        }
+        if (targetIdx >= 4 && (!originalCard.dataset.ratedDate || originalCard.dataset.ratedDate === "Recently")) {
+          originalCard.dataset.ratedDate = getTodayDate();
+        }
+
+        
+        const newCard = createBookCard({
+          title: originalCard.querySelector('.book-title').textContent,
+          author: originalCard.querySelector('.book-author').textContent,
+          downloadedDate: originalCard.dataset.downloadedDate,
+          startedDate: originalCard.dataset.startedDate,
+          finishedDate: originalCard.dataset.finishedDate,
+          ratedDate: originalCard.dataset.ratedDate
+        }, targetIdx);
+        
+        // Remove the original FIRST, then add the new one
+        originalCard.remove();
+        content.prepend(newCard);
+        
+        updateAllCounts();
+        await saveBooks();
+      });
+    });
+  }
 
   async function saveBooks() {
     if (!currentUser) return;
@@ -898,7 +765,6 @@
       });
     }
     updateAllCounts();
-    setupTouchDrag();
   }
 
   function updateAllCounts() {
