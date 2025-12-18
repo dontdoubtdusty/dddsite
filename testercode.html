@@ -688,13 +688,23 @@ function closeArchiveModal() {
 } 
 async function loadArchivedBooks() { 
     if (!currentUser) return; 
+    
     const archiveList = document.getElementById('archiveList'); 
     archiveList.innerHTML = '<p style="text-align:center; color:#7a6a57;">Loading...</p>'; 
-    try { const snapshot = await db.collection('users').doc(currentUser.uid).collection('archived').get(); 
-         if (snapshot.empty) { 
-             archiveList.innerHTML = '<p style="text-align:center; color:#7a6a57; padding: 40px;">No archived books yet. Finish and rate some books to see them here! ⭐</p>'; 
-             return; 
-         }
+    
+    try { 
+        const snapshot = await db.collection('users').doc(currentUser.uid).collection('archived').get(); 
+        
+        if (snapshot.empty) { 
+            archiveList.innerHTML = '<p style="text-align:center; color:#7a6a57; padding: 40px;">No archived books yet. Finish and rate some books to see them here! ⭐</p>'; 
+            return; 
+        }
+        
+        // Add your logic here to display the books if the snapshot isn't empty
+        
+    } catch (error) {
+        console.error("Error loading archived books: ", error);
+        archiveList.innerHTML = '<p style="text-align:center; color:red;">Failed to load archive.</p>';
     }
 }
 
