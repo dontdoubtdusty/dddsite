@@ -258,6 +258,10 @@
         <input type="text" class="search-field" placeholder="Search books...">
         <div class="search-results" id="searchResults"></div>
       </div>
+
+    <button class="auth-btn" id="viewArchiveBtn" style="display: none;">
+      🏆 View Archive
+    </button>
       
       <div class="auth-controls">
         <button class="auth-btn" id="googleSignIn">
@@ -303,6 +307,19 @@
       </div>
     </div>
 
+    <div id="archiveModal" class="modal-overlay">
+  <div class="modal-content" style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <h2 style="color:#2a241f; font-size:28px; margin: 0;">🏆 Your Archive</h2>
+      <button onclick="closeArchiveModal()" class="btn-sign-out" style="color:#2a241f; border-color:#2a241f;">Close</button>
+    </div>
+    <p style="color:#6f5f4d; margin-bottom:24px; font-size:14px;">Books you've conquered and celebrated.</p>
+    <div id="archiveList" style="display: grid; gap: 16px;">
+      <!-- Archive cards will go here -->
+    </div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -336,6 +353,7 @@
       signInBtn.style.display = 'none';
       userInfo.style.display = 'flex';
       userNameDisplay.textContent = user.displayName || user.email;
+        document.getElementById('viewArchiveBtn').style.display = 'inline-flex';
       await loadBooks();
       setupDropZones();
     } else {
@@ -343,6 +361,7 @@
       signInBtn.style.display = 'inline-flex';
       userInfo.style.display = 'none';
       document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
+        document.getElementById('viewArchiveBtn').style.display = 'none';
       updateAllCounts();
     }
   });
@@ -417,6 +436,55 @@
       alert("Please enter a title"); 
     }
   }
+
+    function openArchiveModal() {
+      document.getElementById('archiveModal').style.display = 'flex';
+      loadArchivedBooks();
+    }
+    
+    function closeArchiveModal() {
+      document.getElementById('archiveModal').style.display = 'none';
+    }
+    
+    async function loadArchivedBooks() {
+      if (!currentUser) return;
+      
+      const archiveList = document.getElementById('archiveList');
+      archiveList.innerHTML = '<p style="text-align:center; color:#7a6a57;">Loading...</p>';
+      
+      try {
+        const snapshot = await db.collection('users').doc(currentUser.uid).collection('archived').get();
+        
+        if (snapshot.empty) {
+          archiveList.innerHTML = '<p style="text-align:center; color:#7a6a57; padding: 40px;">No archived books yet. Finish and rate some books to see them here! ⭐</p>';
+          return;
+        }
+        
+        let html = '';
+        snapshot.forEach(doc => {
+          const book = doc.data();
+          html += `
+            <div class="book-card" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #d4af37; box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);">
+              <button class="btn-delete" onclick="unarchiveBook('${doc.id}')">↩️ Restore</button>
+              <div class="book-title">${book.title}</div>
+              <div class="book-author">${book.author}</div>
+              <div class="book-timeline">
+                <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${book.downloadedDate}</div></div>
+                <div class="timeline-item unlocked milestone-2"><div class="timeline-dot"></div><div class="timeline-text">Started ${book.startedDate}</div></div>
+                <div class="timeline-item unlocked milestone-3"><div class="timeline-dot"></div><div class="timeline-text">Finished ${book.finishedDate}</div></div>
+                <div class="timeline-item unlocked milestone-4"><div class="timeline-dot"></div><div class="timeline-text">Rated ${book.ratedDate}</div></div>
+                <div class="timeline-item unlocked" style="background: rgba(168, 85, 247, 0.15);"><div class="timeline-dot" style="background: #a855f7;"></div><div class="timeline-text" style="color: #581c87; font-weight: 700;">⭐ Archived ${book.archivedDate}</div></div>
+              </div>
+            </div>
+          `;
+        });
+        
+        archiveList.innerHTML = html;
+      } catch (error) {
+        console.error('Error loading archive:', error);
+        archiveList.innerHTML = '<p style="text-align:center; color:#a65b4b;">Error loading archive. Please try again.</p>';
+      }
+    }
 
   // Updated addBook to ensure search field is cleared
   async function addBook(title, author) {
@@ -608,6 +676,7 @@
   document.addEventListener('click', (e) => {
     if (e.target.classList.contains('book-title')) window.open(`https://www.goodreads.com/search?q=${encodeURIComponent(e.target.textContent)}`, '_blank');
     if (!e.target.closest('.search-container')) document.getElementById('searchResults').innerHTML = '';
+      document.getElementById('viewArchiveBtn').addEventListener('click', openArchiveModal);
   });
 </script>
 </body>
