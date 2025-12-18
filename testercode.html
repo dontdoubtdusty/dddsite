@@ -261,6 +261,23 @@
       max-width: 420px; width: 90%; text-align: center;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
     }
+    .demo-banner {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 1px solid #1d4ed8;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .demo-banner.active {
+      display: flex;
+    }
     @media (max-width: 768px) {
       .top-bar {
         flex-wrap: wrap;
@@ -298,6 +315,13 @@
         font-size: 12px;
       }
       
+      /* Demo banner mobile */
+      .demo-banner {
+        padding: 10px 16px;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+      
       .columns-container {
         overflow-x: auto;
         overflow-y: hidden;
@@ -333,6 +357,10 @@
           <button class="btn-sign-out" id="signOutBtn">Sign Out</button>
         </div>
       </div>
+    </div>
+
+    <div class="demo-banner" id="demoBanner">
+      Viewing demo - Sign in to start your own reading flow!
     </div>
 
     <div class="columns-container">
@@ -405,6 +433,37 @@
   let searchTimeout;
   let draggedCard = null;
 
+  const DEMO_BOOKS = {
+      column1: [
+        { title: "The Hobbit", author: "J.R.R. Tolkien", downloadedDate: "Dec 1, 2024" }
+      ],
+      column2: [
+        { title: "1984", author: "George Orwell", downloadedDate: "Nov 15, 2024", startedDate: "Nov 20, 2024" }
+      ],
+      column3: [
+        { title: "Project Hail Mary", author: "Andy Weir", downloadedDate: "Oct 10, 2024", startedDate: "Oct 15, 2024", finishedDate: "Nov 28, 2024" }
+      ],
+      column4: [
+        { title: "Dune", author: "Frank Herbert", downloadedDate: "Sep 5, 2024", startedDate: "Sep 10, 2024", finishedDate: "Oct 22, 2024", ratedDate: "Oct 23, 2024" }
+      ]
+    };
+    
+    function loadDemoBooks() {
+      [1,2,3,4].forEach(i => {
+        const col = document.querySelector(`.column-${i} .column-content`);
+        col.innerHTML = '';
+        (DEMO_BOOKS[`column${i}`] || []).forEach(b => {
+          const card = createBookCard(b, i);
+          card.style.opacity = '0.85';
+          card.setAttribute('draggable', 'false');
+          card.style.cursor = 'not-allowed';
+          col.appendChild(card);
+        });
+      });
+      updateAllCounts();
+      document.getElementById('demoBanner').classList.add('active');
+    }
+
   // AUTH OBSERVER
   auth.onAuthStateChanged(async (user) => {
     const signInBtn = document.getElementById('googleSignIn');
@@ -416,18 +475,20 @@
       signInBtn.style.display = 'none';
       userInfo.style.display = 'flex';
       userNameDisplay.textContent = user.displayName || user.email;
-        document.querySelector('.top-bar h1').textContent = `${user.displayName || 'Your'}'s Reading Flow Tool`;
-        document.getElementById('viewArchiveBtn').style.display = 'inline-flex';
+      document.querySelector('.top-bar h1').textContent = `${user.displayName || 'Your'}'s Reading Flow Tool`;
+      document.getElementById('viewArchiveBtn').style.display = 'inline-flex';
       await loadBooks();
+      document.getElementById('demoBanner').classList.remove('active'); // Add this line
       setupDropZones();
     } else {
       currentUser = null;
       signInBtn.style.display = 'inline-flex';
       userInfo.style.display = 'none';
-      document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
-        document.querySelector('.top-bar h1').textContent = "Dusty's Reading Flow Tool";
-        document.getElementById('viewArchiveBtn').style.display = 'none';
-      updateAllCounts();
+      document.querySelector('.top-bar h1').textContent = "Dusty's Reading Flow Tool";
+      document.getElementById('viewArchiveBtn').style.display = 'none';
+      
+      // Load demo books
+      loadDemoBooks();
     }
   });
 
@@ -564,7 +625,11 @@
 
   // Updated addBook to ensure search field is cleared
   async function addBook(title, author) {
-    if (!currentUser) { alert("Please sign in first"); return; }
+    async function addBook(title, author) {
+      if (!currentUser) { 
+        alert("Sign in with Google to start tracking your own books!"); 
+        return; 
+      }
     
     const col = document.querySelector('.column-1 .column-content');
     const bookCard = createBookCard({ title, author, downloadedDate: getTodayDate() }, 1);
