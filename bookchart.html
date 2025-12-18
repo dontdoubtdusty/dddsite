@@ -39,7 +39,22 @@
       letter-spacing: 0.04em;
       text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
-
+        
+    .top-bar h1::before {
+      content: '';
+      display: inline-block;
+      width: 38px;
+      height: 28px;
+      background-image: url('bookopenicon.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      margin-right: 12px;
+      vertical-align: middle;
+      mix-blend-mode: multiply;
+      opacity: 0.9;
+    }
+        
     .auth-controls {
       display: flex;
       align-items: center;
@@ -231,8 +246,6 @@
       font-weight: 700;
     }
 
-
-
     .btn-delete { padding: 6px 12px; border-radius: 6px; border: 1px solid #a65b4b; background: transparent; color: #a65b4b; font-size: 11px; cursor: pointer; float: right; transition: all 0.15s ease; }
     .btn-delete:hover { background: #a65b4b; color: #fffdf8; }
 
@@ -247,6 +260,53 @@
       padding: 40px; border-radius: 16px; border: 1px solid #e2d6c4;
       max-width: 420px; width: 90%; text-align: center;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    @media (max-width: 768px) {
+      .top-bar {
+        flex-wrap: wrap;
+        padding: 12px 16px;
+      }
+      
+      .top-bar h1 {
+        font-size: 16px;
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      
+      .search-container {
+        width: 100%;
+        order: 3;
+        margin-top: 10px;
+      }
+      
+      .auth-controls {
+        margin-left: 0;
+        gap: 8px;
+      }
+      
+      #viewArchiveBtn {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+      
+      .user-info {
+        font-size: 12px;
+      }
+      
+      .btn-sign-out {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+      
+      .columns-container {
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+      
+      .column {
+        min-width: 280px;
+        flex-shrink: 0;
+      }
     }
     </style>
 </head>
