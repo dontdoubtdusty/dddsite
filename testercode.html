@@ -345,34 +345,41 @@
 
   // AUTH OBSERVER
   auth.onAuthStateChanged(async (user) => {
-    const signInBtn = document.getElementById('googleSignIn');
-    const userInfo = document.getElementById('userInfo');
-    const userNameDisplay = document.getElementById('userName');
-    document.querySelector('.top-bar h1').textContent = `${user.displayName || 'Your'}'s Reading Flow Tool`;
-
-    if (user) {
-      currentUser = user;
-      signInBtn.style.display = 'none';
-      userInfo.style.display = 'flex';
-      userNameDisplay.textContent = user.displayName || user.email;
+      const signInBtn = document.getElementById('googleSignIn');
+      const userInfo = document.getElementById('userInfo');
+      const userNameDisplay = document.getElementById('userName');
+      const titleEl = document.querySelector('.top-bar h1');
+    
+      if (user) {
+        currentUser = user;
+    
+        titleEl.textContent = `${user.displayName || 'Your'}'s Reading Flow Tool`;
+    
+        signInBtn.style.display = 'none';
+        userInfo.style.display = 'flex';
+        userNameDisplay.textContent = user.displayName || user.email;
         document.getElementById('viewArchiveBtn').style.display = 'inline-flex';
-      await loadBooks();
-      setupDropZones();
-    } else {
-      currentUser = null;
-          signInBtn.style.display = 'inline-flex';
-          userInfo.style.display = 'none';
-          document.querySelector('.top-bar h1').textContent = "Dusty's Reading Flow Tool";
-          
-          [1, 2, 3, 4].forEach(i => {
-            const col = document.querySelector(`.column-${i} .column-content`);
-            if (col) col.innerHTML = getPlaceholder(i);
+    
+        await loadBooks();
+        setupDropZones();
+      } else {
+        currentUser = null;
+    
+        titleEl.textContent = "Dusty's Reading Flow Tool";
+    
+        signInBtn.style.display = 'inline-flex';
+        userInfo.style.display = 'none';
+        document.getElementById('viewArchiveBtn').style.display = 'none';
+    
+        [1, 2, 3, 4].forEach(i => {
+          const col = document.querySelector(`.column-${i} .column-content`);
+          if (col) col.innerHTML = getPlaceholder(i);
         });
-          
-          document.getElementById('viewArchiveBtn').style.display = 'none';
-          updateAllCounts();
-    }
-  });
+    
+        updateAllCounts();
+      }
+    });
+
 
   document.getElementById('googleSignIn').addEventListener('click', async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
