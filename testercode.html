@@ -169,6 +169,84 @@
       padding: 18px;
     }
     
+    /* Column 1 - Downloaded (soft blue) */
+    .column-1 {
+      background: linear-gradient(180deg, #e6f2ff, #f0f7ff);
+    }
+    
+    .column-1 .column-header {
+      background: linear-gradient(180deg, #dbeafe, #e6f2ff);
+      border-bottom: 2px solid #93c5fd;
+    }
+    
+    .column-1 .column-title {
+      color: #1e40af;
+    }
+    
+    .column-1 .column-subtitle {
+      color: #3b82f6;
+    }
+    
+    /* Column 2 - Currently Reading (warm amber) */
+    .column-2 {
+      background: linear-gradient(180deg, #fff7ed, #fffbf5);
+    }
+    
+    .column-2 .column-header {
+      background: linear-gradient(180deg, #fed7aa, #ffedd5);
+      border-bottom: 2px solid #fb923c;
+    }
+    
+    .column-2 .column-title {
+      color: #c2410c;
+    }
+    
+    .column-2 .column-subtitle {
+      color: #ea580c;
+    }
+    
+    /* Column 3 - Finished Not Rated (amber alert) */
+    .column-3 {
+      background: linear-gradient(180deg, #fff9ed, #fff4e0);
+      border-right: 1px solid #d2c3ad;
+    }
+    
+    .column-3 .column-header {
+      background: linear-gradient(180deg, #ffe5b4, #ffd89b);
+      border-bottom: 2px solid #f5a623; 
+    }
+    
+    .column-3 .column-title {
+      color: #d97706;
+      font-weight: 700;
+    }
+    
+    .column-3 .column-subtitle {
+      color: #9c6c2e;
+    }
+    
+    .column-3 {
+      box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.1);
+    }
+    
+    /* Column 4 - Finished & Rated (rich green) */
+    .column-4 {
+      background: linear-gradient(180deg, #f0fdf4, #f7fef9);
+    }
+    
+    .column-4 .column-header {
+      background: linear-gradient(180deg, #bbf7d0, #d1fae5);
+      border-bottom: 2px solid #4ade80;
+    }
+    
+    .column-4 .column-title {
+      color: #15803d;
+    }
+    
+    .column-4 .column-subtitle {
+      color: #16a34a;
+    }
+    
     /* ───────── Book Cards ───────── */
     
     .book-card {
@@ -189,6 +267,17 @@
     .book-card:hover {
       transform: translateY(-1px);
       box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+    }
+    
+    /* Gold cards in final column */
+    .column-4 .book-card {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 1px solid #d4af37;
+      box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);
+    }
+    
+    .column-4 .book-card:hover {
+      box-shadow: 0 10px 20px rgba(212, 175, 55, 0.4);
     }
     
     .book-title {
@@ -262,30 +351,6 @@
     
     .column-content::-webkit-scrollbar-track {
       background: transparent;
-    }
-    
-    /* Highlight Finished — Not Rated column */
-    .column-3 {
-      background: linear-gradient(180deg, #fff9ed, #fff4e0);
-      border-right: 1px solid #d2c3ad;
-    }
-    
-    .column-3 .column-header {
-      background: linear-gradient(180deg, #ffe5b4, #ffd89b);
-      border-bottom: 2px solid #f5a623; 
-    }
-    
-    .column-3 .column-title {
-      color: #d97706;
-      font-weight: 700;
-    }
-    
-    .column-3 .column-subtitle {
-      color: #9c6c2e;
-    }
-    
-    .column-3 {
-      box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.1);
     }
 
     @media (max-width: 768px) {
