@@ -94,14 +94,27 @@
 
     .search-results {
       position: absolute;
-      top: 100%; left: 0; right: 0;
-      max-height: 300px;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 320px; /* Increased slightly */
       overflow-y: auto;
       background: #fbf7ef;
       border: 1px solid #d6c7b2;
       border-radius: 0 0 8px 8px;
       box-shadow: 0 6px 15px rgba(0,0,0,0.25);
       z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Ensure the manual entry is always at the bottom and visible */
+    .search-result:last-child {
+      border-bottom: none;
+      position: sticky;
+      bottom: 0;
+      background: #f4faff; /* Slightly different color to stand out */
+      border-top: 1px solid #d2c3ad;
     }
     
     .search-result { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #e2d6c4; background: #fbf7ef; transition: background 0.15s ease; color: #3a2f25; }
@@ -342,22 +355,35 @@
   }
   function closeManualModal() { document.getElementById('manualModal').style.display = 'none'; }
   async function submitManualEntry() {
-    const t = document.getElementById('manualTitle').value.trim();
-    const a = document.getElementById('manualAuthor').value.trim() || 'Unknown Author';
-    if(t) { await addBook(t, a); closeManualModal(); } else { alert("Please enter a title"); }
-  }
+      const t = document.getElementById('manualTitle').value.trim();
+      const a = document.getElementById('manualAuthor').value.trim() || 'Unknown Author';
+      
+      if(t) { 
+        await addBook(t, a); 
+        // FIX: Clear manual modal fields
+        document.getElementById('manualTitle').value = '';
+        document.getElementById('manualAuthor').value = '';
+        closeManualModal(); 
+      } else { 
+        alert("Please enter a title"); 
+      }
+    }
 
   // CORE LOGIC
   async function addBook(title, author) {
-    if (!currentUser) { alert("Please sign in first"); return; }
-    const col = document.querySelector('.column-1 .column-content');
-    const bookCard = createBookCard({ title, author, downloadedDate: getTodayDate() }, 1);
-    col.prepend(bookCard);
-    document.querySelector('.search-field').value = '';
-    document.getElementById('searchResults').innerHTML = '';
-    updateAllCounts();
-    await saveBooks();
-  }
+      if (!currentUser) { alert("Please sign in first"); return; }
+      
+      const col = document.querySelector('.column-1 .column-content');
+      const bookCard = createBookCard({ title, author, downloadedDate: getTodayDate() }, 1);
+      col.prepend(bookCard);
+      
+      // FIX: Clear the UI elements
+      document.querySelector('.search-field').value = '';
+      document.getElementById('searchResults').innerHTML = '';
+      
+      updateAllCounts();
+      await saveBooks();
+    }
 
   function createBookCard(book, colIdx) {
     const card = document.createElement('div');
@@ -458,11 +484,22 @@
   async function deleteBook(btn) { btn.closest('.book-card').remove(); updateAllCounts(); await saveBooks(); }
 
   document.querySelector('.search-field').addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    const q = e.target.value.trim();
-    if (q.length > 2) searchTimeout = setTimeout(async () => displayResults(await searchBooks(q)), 300);
-    else document.getElementById('searchResults').innerHTML = '';
-  });
+      clearTimeout(searchTimeout);
+      const q = e.target.value.trim();
+      
+      // Immediately clear if the user deletes their text
+      if (q.length === 0) {
+        document.getElementById('searchResults').innerHTML = '';
+        return;
+      }
+    
+      if (q.length > 2) {
+        searchTimeout = setTimeout(async () => {
+          const results = await searchBooks(q);
+          displayResults(results);
+        }, 300);
+      }
+    });
 
   document.addEventListener('click', (e) => {
     if (e.target.classList.contains('book-title')) window.open(`https://www.goodreads.com/search?q=${encodeURIComponent(e.target.textContent)}`, '_blank');
