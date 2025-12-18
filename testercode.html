@@ -9,9 +9,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
-      font-family: Georgia, Cambria, "Times New Roman", Times, serif;
-      line-height: 1.55;
-      letter-spacing: 0.01em;
+      font-family: Georgia, "Times New Roman", serif;
       background: linear-gradient(180deg, #2b241c, #1f1a15);
       height: 100vh;
       overflow: hidden;
@@ -440,53 +438,33 @@
     card.setAttribute('draggable', 'true');
 
     // Safety net logic
-    const pDate = book.downloadedDate || getTodayDate();
-    const sDate = colIdx >= 2 ? (book.startedDate || getTodayDate()) : null;
-    const fDate = colIdx >= 3 ? (book.finishedDate || getTodayDate()) : null;
-    const rDate = colIdx >= 4 ? (book.ratedDate || getTodayDate()) : null;
-
+    const pDate = (book.downloadedDate && book.downloadedDate !== 'N/A') ? book.downloadedDate : "Recently";
+    const sDate = (book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : (colIdx >= 2 ? "Recently" : "...");
+    const fDate = (book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : (colIdx >= 3 ? "Recently" : "...");
+    const rDate = (book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : (colIdx >= 4 ? "Recently" : "...");
 
       
 
     card.innerHTML = `
-      <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
+      <button class="btn-delete" onclick="${colIdx === 4 ? 'archiveBook(this)' : 'deleteBook(this)'}">
+        ${colIdx === 4 ? '⭐ Archive' : 'Delete'}
+      </button>
       <div class="book-title">${book.title}</div>
       <div class="book-author">${book.author}</div>
       <div class="book-timeline">
-          <div class="timeline-item unlocked milestone-1">
-            <div class="timeline-dot"></div>
-            <div class="timeline-text">Purchased ${pDate}</div>
-          </div>
-        
-          <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}">
-            <div class="timeline-dot"></div>
-            <div class="timeline-text">
-              ${colIdx >= 2 ? `Started ${sDate}` : 'Not yet started'}
-            </div>
-          </div>
-        
-          <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}">
-            <div class="timeline-dot"></div>
-            <div class="timeline-text">
-              ${colIdx >= 3 ? `Finished ${fDate}` : 'Not finished'}
-            </div>
-          </div>
-        
-          <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}">
-            <div class="timeline-dot"></div>
-            <div class="timeline-text">
-              ${colIdx >= 4 ? `Rated ${rDate}` : 'Not rated'}
-            </div>
-          </div>
-        </div>
+        <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${pDate}</div></div>
+        <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Started ${sDate}</div></div>
+        <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Finished ${fDate}</div></div>
+        <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div>
+      </div>
+
       </div>
     `;
 
     card.dataset.downloadedDate = pDate;
-    card.dataset.startedDate = sDate || '';
-    card.dataset.finishedDate = fDate || '';
-    card.dataset.ratedDate = rDate || '';
-
+    card.dataset.startedDate = sDate === "..." ? "" : sDate;
+    card.dataset.finishedDate = fDate === "..." ? "" : fDate;
+    card.dataset.ratedDate = rDate === "..." ? "" : rDate;
 
     card.addEventListener('dragstart', () => { draggedCard = card; card.classList.add('dragging'); });
     card.addEventListener('dragend', () => { draggedCard = null; card.classList.remove('dragging'); });
@@ -516,34 +494,27 @@
           if (!draggedCard) return;
           
           const targetIdx = i + 1;
-
-            // Always preserve purchased date
-            const downloadedDate = draggedCard.dataset.downloadedDate;
-            
-            // Reset downstream states deterministically
-            const startedDate = targetIdx >= 2
-              ? draggedCard.dataset.startedDate || getTodayDate()
-              : '';
-            
-            const finishedDate = targetIdx >= 3
-              ? draggedCard.dataset.finishedDate || getTodayDate()
-              : '';
-            
-            const ratedDate = targetIdx >= 4
-              ? draggedCard.dataset.ratedDate || getTodayDate()
-              : '';
-
+          
+          // Update dates based on column
+          if (targetIdx >= 2 && (!draggedCard.dataset.startedDate || draggedCard.dataset.startedDate === "Recently")) {
+            draggedCard.dataset.startedDate = getTodayDate();
+          }
+          if (targetIdx >= 3 && (!draggedCard.dataset.finishedDate || draggedCard.dataset.finishedDate === "Recently")) {
+            draggedCard.dataset.finishedDate = getTodayDate();
+          }
+          if (targetIdx >= 4 && (!draggedCard.dataset.ratedDate || draggedCard.dataset.ratedDate === "Recently")) {
+            draggedCard.dataset.ratedDate = getTodayDate();
+          }
 
           
           const newCard = createBookCard({
-          title: draggedCard.querySelector('.book-title').textContent,
-          author: draggedCard.querySelector('.book-author').textContent,
-          downloadedDate,
-          startedDate,
-          finishedDate,
-          ratedDate
-        }, targetIdx);
-
+            title: draggedCard.querySelector('.book-title').textContent,
+            author: draggedCard.querySelector('.book-author').textContent,
+            downloadedDate: draggedCard.dataset.downloadedDate,
+            startedDate: draggedCard.dataset.startedDate,
+            finishedDate: draggedCard.dataset.finishedDate,
+            ratedDate: draggedCard.dataset.ratedDate
+          }, targetIdx);
           
           content.prepend(newCard);
           draggedCard.remove();
@@ -592,6 +563,27 @@
   }
 
   async function deleteBook(btn) { btn.closest('.book-card').remove(); updateAllCounts(); await saveBooks(); }
+
+    async function archiveBook(btn) {
+      const card = btn.closest('.book-card');
+      const bookData = {
+        title: card.querySelector('.book-title').textContent,
+        author: card.querySelector('.book-author').textContent,
+        downloadedDate: card.dataset.downloadedDate,
+        startedDate: card.dataset.startedDate,
+        finishedDate: card.dataset.finishedDate,
+        ratedDate: card.dataset.ratedDate,
+        archivedDate: getTodayDate()
+      };
+      
+      // Save to archive collection
+      await db.collection('users').doc(currentUser.uid).collection('archived').add(bookData);
+      
+      // Remove from view
+      card.remove();
+      updateAllCounts();
+      await saveBooks();
+    }
 
   document.querySelector('.search-field').addEventListener('input', (e) => {
       clearTimeout(searchTimeout);
