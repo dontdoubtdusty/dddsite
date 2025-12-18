@@ -201,9 +201,35 @@
     .timeline-item.unlocked.milestone-2 .timeline-dot { background: #f6ad55; box-shadow: 0 0 0 3px rgba(246, 173, 85, 0.25); }
     .timeline-item.unlocked.milestone-2 .timeline-text { color: #7c2d12; font-weight: 600; }
 
-    .timeline-item.unlocked.milestone-3 { background: rgba(104, 211, 145, 0.08); }
-    .timeline-item.unlocked.milestone-3 .timeline-dot { background: #68d391; box-shadow: 0 0 0 3px rgba(104, 211, 145, 0.25); }
-    .timeline-item.unlocked.milestone-3 .timeline-text { color: #22543d; font-weight: 600; }
+    .timeline-item.unlocked.milestone-3 {
+      background: rgba(74, 222, 128, 0.08);
+    }
+    
+    .timeline-item.unlocked.milestone-3 .timeline-dot {
+      background: #4ade80;
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+    }
+    
+    .timeline-item.unlocked.milestone-3 .timeline-text {
+      color: #166534;
+      font-weight: 600;
+    }
+
+    .timeline-item.unlocked.milestone-4 {
+      background: rgba(168, 85, 247, 0.1);
+    }
+    
+    .timeline-item.unlocked.milestone-4 .timeline-dot {
+      background: #a855f7;
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.3);
+    }
+    
+    .timeline-item.unlocked.milestone-4 .timeline-text {
+      color: #581c87;
+      font-weight: 700;
+    }
+
+
 
     .btn-delete { padding: 6px 12px; border-radius: 6px; border: 1px solid #a65b4b; background: transparent; color: #a65b4b; font-size: 11px; cursor: pointer; float: right; transition: all 0.15s ease; }
     .btn-delete:hover { background: #a65b4b; color: #fffdf8; }
@@ -427,7 +453,7 @@
         <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${pDate}</div></div>
         <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Started ${sDate}</div></div>
         <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Finished ${fDate}</div></div>
-        <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div>
+        <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div>
       </div>
 
       </div>
