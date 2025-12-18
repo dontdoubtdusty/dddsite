@@ -736,12 +736,19 @@
     }
 
     function setupTouchDrag() {
-      let touchedCard = null;
-      let touchStartY = 0;
-      let touchStartX = 0;
-      let clone = null;
-    
+      // Remove old listeners by cloning and replacing all cards
       document.querySelectorAll('.book-card').forEach(card => {
+        const newCard = card.cloneNode(true);
+        card.parentNode.replaceChild(newCard, card);
+      });
+    
+      // Now add fresh listeners
+      document.querySelectorAll('.book-card').forEach(card => {
+        let touchedCard = null;
+        let touchStartY = 0;
+        let touchStartX = 0;
+        let clone = null;
+    
         card.addEventListener('touchstart', (e) => {
           touchStartY = e.touches[0].clientY;
           touchStartX = e.touches[0].clientX;
@@ -785,7 +792,10 @@
         });
     
         card.addEventListener('touchend', async (e) => {
-          if (!touchedCard || !clone) return;
+          if (!touchedCard || !clone) {
+            if (card.dragTimeout) clearTimeout(card.dragTimeout);
+            return;
+          }
           
           const touch = e.changedTouches[0];
           const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -793,7 +803,7 @@
           
           document.querySelectorAll('.column-content').forEach(c => c.classList.remove('drag-over'));
           
-          if (dropZone) {
+          if (dropZone && touchedCard.parentElement !== dropZone) {
             const columns = Array.from(document.querySelectorAll('.column-content'));
             const targetIdx = columns.indexOf(dropZone) + 1;
             
@@ -830,19 +840,19 @@
           touchedCard = null;
           clone = null;
         });
-
-          card.addEventListener('touchcancel', () => {
-              if (card.dragTimeout) clearTimeout(card.dragTimeout);
-              if (touchedCard === card) {
-                touchedCard.style.opacity = '1';
-                touchedCard = null;
-              }
-              if (clone) {
-                clone.remove();
-                clone = null;
-              }
-              document.querySelectorAll('.column-content').forEach(c => c.classList.remove('drag-over'));
-            });
+    
+        card.addEventListener('touchcancel', () => {
+          if (card.dragTimeout) clearTimeout(card.dragTimeout);
+          if (touchedCard === card) {
+            touchedCard.style.opacity = '1';
+            touchedCard = null;
+          }
+          if (clone) {
+            clone.remove();
+            clone = null;
+          }
+          document.querySelectorAll('.column-content').forEach(c => c.classList.remove('drag-over'));
+        });
       });
     }
 
