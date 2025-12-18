@@ -494,16 +494,17 @@
       // Build dates progressively based on what's available
       let dates = [];
       
-      if (book.downloadedDate) {
-        dates.push(`Downloaded on ${book.downloadedDate}`);
+      // Always show downloaded date (with fallback)
+      dates.push(`Downloaded ${book.downloadedDate ? 'on ' + book.downloadedDate : 'recently'}`);
+      
+      // Show started date if in column 2 or later
+      if (columnIndex >= 2) {
+        dates.push(`Started ${book.startedDate ? 'on ' + book.startedDate : 'recently'}`);
       }
       
-      if (book.startedDate && columnIndex >= 2) {
-        dates.push(`Started on ${book.startedDate}`);
-      }
-      
-      if (book.finishedDate && columnIndex >= 3) {
-        dates.push(`Finished on ${book.finishedDate}`);
+      // Show finished date if in column 3 or later
+      if (columnIndex >= 3) {
+        dates.push(`Finished ${book.finishedDate ? 'on ' + book.finishedDate : 'recently'}`);
       }
     
       // Display all applicable dates
