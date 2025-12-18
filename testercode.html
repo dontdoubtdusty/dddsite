@@ -392,461 +392,455 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
 <script>
-  // FIREBASE CONFIG
-  const firebaseConfig = {
-    apiKey: "AIzaSyDe-AQ70nJ9Lah8ojh4pivmxD0KglHWGHo",
-    authDomain: "dusty-s-reading-flow.firebaseapp.com",
-    projectId: "dusty-s-reading-flow",
-    storageBucket: "dusty-s-reading-flow.firebasestorage.app",
-    messagingSenderId: "378730506034",
-    appId: "1:378730506034:web:16cc698d8ebb54430d592b"
+/* ───────── FIREBASE SETUP ───────── */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDe-AQ70nJ9Lah8ojh4pivmxD0KglHWGHo",
+  authDomain: "dusty-s-reading-flow.firebaseapp.com",
+  projectId: "dusty-s-reading-flow",
+  storageBucket: "dusty-s-reading-flow.firebasestorage.app",
+  messagingSenderId: "378730506034",
+  appId: "1:378730506034:web:16cc698d8ebb54430d592b"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+/* ───────── GLOBAL STATE ───────── */
+
+let currentUser = null;
+let searchTimeout;
+let draggedCard = null;
+
+/* ───────── AUTH STATE ───────── */
+
+auth.onAuthStateChanged(async (user) => {
+  const signInBtn = document.getElementById('googleSignIn');
+  const userInfo = document.getElementById('userInfo');
+  const userNameDisplay = document.getElementById('userName');
+  const titleEl = document.querySelector('.top-bar h1');
+
+  if (user) {
+    currentUser = user;
+
+    titleEl.textContent = `${user.displayName || 'Your'}'s Reading Flow Tool`;
+    signInBtn.style.display = 'none';
+    userInfo.style.display = 'flex';
+    userNameDisplay.textContent = user.displayName || user.email;
+    document.getElementById('viewArchiveBtn').style.display = 'inline-flex';
+
+    updateOnboardingHint();
+    await loadBooks();
+    setupDropZones();
+  } else {
+    currentUser = null;
+
+    titleEl.textContent = "Dusty's Reading Flow Tool";
+    signInBtn.style.display = 'inline-flex';
+    userInfo.style.display = 'none';
+    document.getElementById('viewArchiveBtn').style.display = 'none';
+
+    showAllPlaceholders();
+    updateAllCounts();
+  }
+});
+
+document.getElementById('googleSignIn').addEventListener('click', async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  await auth.signInWithPopup(provider).catch(e => console.error(e));
+});
+
+document.getElementById('signOutBtn').addEventListener('click', async () => {
+  if (confirm('Sign out?')) {
+    await auth.signOut();
+  }
+});
+
+/* ───────── GENERAL HELPERS ───────── */
+
+function getTodayDate() {
+  return new Date().toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/* ───────── ONBOARDING HINT ───────── */
+
+function getTotalBookCount() {
+  let total = 0;
+  document.querySelectorAll('.column').forEach(col => {
+    total += col.querySelectorAll('.book-card').length;
+  });
+  return total;
+}
+
+function updateOnboardingHint() {
+  const hint = document.getElementById('onboardingHint');
+  if (!hint) return;
+
+  if (currentUser && getTotalBookCount() === 0) {
+    hint.style.display = 'block';
+  } else {
+    hint.style.display = 'none';
+  }
+}
+
+/* ───────── SEARCH & MANUAL ENTRY ───────── */
+
+async function searchBooks(query) {
+  try {
+    const response = await fetch(
+      `https://openlibrary.org/search.json?title=${encodeURIComponent(query)}&limit=5`
+    );
+    const data = await response.json();
+    return data.docs.map(b => ({
+      title: b.title,
+      author: b.author_name ? b.author_name[0] : 'Unknown Author'
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function displayResults(books) {
+  const container = document.getElementById('searchResults');
+
+  let html = books.map(b => `
+    <div class="search-result" onclick="addBook('${escapeHtml(b.title)}','${escapeHtml(b.author)}')">
+      <div class="result-title">${b.title}</div>
+      <div class="result-author">${b.author}</div>
+    </div>
+  `).join('');
+
+  html += `
+    <div class="search-result"
+         onclick="openManualModal()"
+         style="color:#4285f4; font-weight:bold; border-top:1px solid #d2c3ad">
+      + Can't find it? Add Manually
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+function openManualModal() {
+  document.getElementById('manualTitle').value = '';
+  document.getElementById('manualAuthor').value = '';
+
+  document.getElementById('manualModal').style.display = 'flex';
+  document.getElementById('searchResults').innerHTML = '';
+
+  setTimeout(() => {
+    document.getElementById('manualTitle').focus();
+  }, 50);
+}
+
+function closeManualModal() {
+  document.getElementById('manualModal').style.display = 'none';
+}
+
+async function submitManualEntry() {
+  const title = document.getElementById('manualTitle').value.trim();
+  const author = document.getElementById('manualAuthor').value.trim() || 'Unknown Author';
+
+  if (!title) {
+    alert("Please enter a title");
+    return;
+  }
+
+  await addBook(title, author);
+  closeManualModal();
+}
+
+/* ───────── BOOK CRUD ───────── */
+
+async function addBook(title, author) {
+  if (!currentUser) {
+    alert("Please sign in first");
+    return;
+  }
+
+  const col = document.querySelector('.column-1 .column-content');
+  const bookCard = createBookCard(
+    { title, author, downloadedDate: getTodayDate() },
+    1
+  );
+
+  col.prepend(bookCard);
+
+  document.querySelector('.search-field').value = '';
+  document.getElementById('searchResults').innerHTML = '';
+
+  updateAllCounts();
+  updateOnboardingHint();
+  await saveBooks();
+}
+
+async function deleteBook(btn) {
+  btn.closest('.book-card').remove();
+  updateAllCounts();
+  await saveBooks();
+}
+
+async function archiveBook(btn) {
+  const card = btn.closest('.book-card');
+
+  const bookData = {
+    title: card.querySelector('.book-title').textContent,
+    author: card.querySelector('.book-author').textContent,
+    downloadedDate: card.dataset.downloadedDate,
+    startedDate: card.dataset.startedDate,
+    finishedDate: card.dataset.finishedDate,
+    ratedDate: card.dataset.ratedDate,
+    archivedDate: getTodayDate()
   };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
+  await db
+    .collection('users')
+    .doc(currentUser.uid)
+    .collection('archived')
+    .add(bookData);
 
-  let currentUser = null;
-  let searchTimeout;
-  let draggedCard = null;
+  card.remove();
+  updateAllCounts();
+  await saveBooks();
+}
 
-  // AUTH OBSERVER
-  auth.onAuthStateChanged(async (user) => {
-      const signInBtn = document.getElementById('googleSignIn');
-      const userInfo = document.getElementById('userInfo');
-      const userNameDisplay = document.getElementById('userName');
-      const titleEl = document.querySelector('.top-bar h1');
-    
-      if (user) {
-        currentUser = user;
-    
-        titleEl.textContent = `${user.displayName || 'Your'}'s Reading Flow Tool`;
-    
-        signInBtn.style.display = 'none';
-        userInfo.style.display = 'flex';
-        userNameDisplay.textContent = user.displayName || user.email;
-        document.getElementById('viewArchiveBtn').style.display = 'inline-flex';
-          
-        updateOnboardingHint();
-        await loadBooks();
-        setupDropZones();
-          
-      } else {
-        currentUser = null;
-    
-        titleEl.textContent = "Dusty's Reading Flow Tool";
-    
-        signInBtn.style.display = 'inline-flex';
-        userInfo.style.display = 'none';
-        document.getElementById('viewArchiveBtn').style.display = 'none';
-    
-        [1, 2, 3, 4].forEach(i => {
-          const col = document.querySelector(`.column-${i} .column-content`);
-          if (col) col.innerHTML = getPlaceholder(i);
-        });
-    
-        updateAllCounts();
-      }
+/* ───────── BOOK CARD FACTORY ───────── */
+
+function createBookCard(book, colIdx) {
+  const card = document.createElement('div');
+  card.className = 'book-card';
+  card.setAttribute('draggable', 'true');
+
+  const pDate = book.downloadedDate || "Recently";
+  const sDate = book.startedDate || (colIdx >= 2 ? "Recently" : "...");
+  const fDate = book.finishedDate || (colIdx >= 3 ? "Recently" : "...");
+  const rDate = book.ratedDate || (colIdx >= 4 ? "Recently" : "...");
+
+  card.innerHTML = `
+    <button class="btn-delete"
+            onclick="${colIdx === 4 ? 'archiveBook(this)' : 'deleteBook(this)'}">
+      ${colIdx === 4 ? '⭐ Archive' : 'Delete'}
+    </button>
+
+    <div class="book-title">${book.title}</div>
+    <div class="book-author">${book.author}</div>
+
+    <div class="book-timeline">
+      <div class="timeline-item unlocked milestone-1">
+        <div class="timeline-dot"></div>
+        <div class="timeline-text">Purchased ${pDate}</div>
+      </div>
+
+      <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}">
+        <div class="timeline-dot"></div>
+        <div class="timeline-text">Started ${sDate}</div>
+      </div>
+
+      <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}">
+        <div class="timeline-dot"></div>
+        <div class="timeline-text">Finished ${fDate}</div>
+      </div>
+
+      <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}">
+        <div class="timeline-dot"></div>
+        <div class="timeline-text">Rated ${rDate}</div>
+      </div>
+    </div>
+  `;
+
+  card.dataset.downloadedDate = pDate;
+  card.dataset.startedDate = sDate === "..." ? "" : sDate;
+  card.dataset.finishedDate = fDate === "..." ? "" : fDate;
+  card.dataset.ratedDate = rDate === "..." ? "" : rDate;
+
+  card.addEventListener('dragstart', () => {
+    draggedCard = card;
+    card.classList.add('dragging');
+  });
+
+  card.addEventListener('dragend', () => {
+    draggedCard = null;
+    card.classList.remove('dragging');
+  });
+
+  return card;
+}
+
+/* ───────── DRAG & DROP ───────── */
+
+function setupDropZones() {
+  document.querySelectorAll('.column-content').forEach((content, i) => {
+    content.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      content.classList.add('drag-over');
     });
 
+    content.addEventListener('dragleave', () => {
+      content.classList.remove('drag-over');
+    });
 
-  document.getElementById('googleSignIn').addEventListener('click', async () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    await auth.signInWithPopup(provider).catch(e => console.error(e));
+    content.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      content.classList.remove('drag-over');
+
+      if (!draggedCard) return;
+
+      const targetIdx = i + 1;
+
+      if (targetIdx >= 2 && !draggedCard.dataset.startedDate) {
+        draggedCard.dataset.startedDate = getTodayDate();
+      }
+      if (targetIdx >= 3 && !draggedCard.dataset.finishedDate) {
+        draggedCard.dataset.finishedDate = getTodayDate();
+      }
+      if (targetIdx >= 4 && !draggedCard.dataset.ratedDate) {
+        draggedCard.dataset.ratedDate = getTodayDate();
+      }
+
+      const newCard = createBookCard({
+        title: draggedCard.querySelector('.book-title').textContent,
+        author: draggedCard.querySelector('.book-author').textContent,
+        downloadedDate: draggedCard.dataset.downloadedDate,
+        startedDate: draggedCard.dataset.startedDate,
+        finishedDate: draggedCard.dataset.finishedDate,
+        ratedDate: draggedCard.dataset.ratedDate
+      }, targetIdx);
+
+      content.prepend(newCard);
+      draggedCard.remove();
+
+      updateAllCounts();
+      await saveBooks();
+    });
+  });
+}
+
+/* ───────── FIRESTORE SYNC ───────── */
+
+async function saveBooks() {
+  if (!currentUser) return;
+
+  const data = { column1: [], column2: [], column3: [], column4: [] };
+
+  document.querySelectorAll('.column').forEach((col, i) => {
+    col.querySelectorAll('.book-card').forEach(card => {
+      data[`column${i + 1}`].push({
+        title: card.querySelector('.book-title').textContent,
+        author: card.querySelector('.book-author').textContent,
+        downloadedDate: card.dataset.downloadedDate,
+        startedDate: card.dataset.startedDate,
+        finishedDate: card.dataset.finishedDate,
+        ratedDate: card.dataset.ratedDate
+      });
+    });
   });
 
-  document.getElementById('signOutBtn').addEventListener('click', async () => {
-    if (confirm('Sign out?')) await auth.signOut();
-  });
+  await db
+    .collection('users')
+    .doc(currentUser.uid)
+    .collection('books')
+    .doc('data')
+    .set(data);
+}
 
-  // UTILITIES
-  function getTodayDate() {
-    return new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-  }
+async function loadBooks() {
+  const doc = await db
+    .collection('users')
+    .doc(currentUser.uid)
+    .collection('books')
+    .doc('data')
+    .get();
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+  if (doc.exists) {
+    const data = doc.data();
 
-  // SEARCH & MANUAL ENTRY
-  async function searchBooks(query) {
-    try {
-      const response = await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(query)}&limit=5`);
-      const data = await response.json();
-      return data.docs.map(b => ({ title: b.title, author: b.author_name ? b.author_name[0] : 'Unknown Author' }));
-    } catch { return []; }
-  }
+    [1, 2, 3, 4].forEach(i => {
+      const col = document.querySelector(`.column-${i} .column-content`);
+      col.innerHTML = '';
 
-  function displayResults(books) {
-    const container = document.getElementById('searchResults');
-    let html = books.map(b => `
-      <div class="search-result" onclick="addBook('${escapeHtml(b.title)}','${escapeHtml(b.author)}')">
-        <div class="result-title">${b.title}</div>
-        <div class="result-author">${b.author}</div>
-      </div>
-    `).join('');
-    html += `<div class="search-result" onclick="openManualModal()" style="color:#4285f4; font-weight:bold; border-top:1px solid #d2c3ad">+ Can't find it? Add Manually</div>`;
-    container.innerHTML = html;
-  }
-
-  // Updated Search & Manual Entry logic
-  function openManualModal() { 
-    // Clear fields so they are fresh every time it opens
-    document.getElementById('manualTitle').value = '';
-    document.getElementById('manualAuthor').value = '';
-    
-    document.getElementById('manualModal').style.display = 'flex'; 
-    document.getElementById('searchResults').innerHTML = '';
-    
-    // Optional: Focus the title field automatically
-    setTimeout(() => document.getElementById('manualTitle').focus(), 50);
-  }
-
-  function closeManualModal() { 
-    document.getElementById('manualModal').style.display = 'none'; 
-  }
-
-  async function submitManualEntry() {
-    const t = document.getElementById('manualTitle').value.trim();
-    const a = document.getElementById('manualAuthor').value.trim() || 'Unknown Author';
-    
-    if(t) { 
-      await addBook(t, a); 
-      // Modal closing now handles the "freshness" for the next open
-      closeManualModal(); 
-    } else { 
-      alert("Please enter a title"); 
-    }
-  }
-
-    function openArchiveModal() {
-      document.getElementById('archiveModal').style.display = 'flex';
-      loadArchivedBooks();
-    }
-    
-    function closeArchiveModal() {
-      document.getElementById('archiveModal').style.display = 'none';
-    }
-    
-    async function loadArchivedBooks() {
-      if (!currentUser) return;
-      
-      const archiveList = document.getElementById('archiveList');
-      archiveList.innerHTML = '<p style="text-align:center; color:#7a6a57;">Loading...</p>';
-      
-      try {
-        const snapshot = await db.collection('users').doc(currentUser.uid).collection('archived').get();
-        
-        if (snapshot.empty) {
-          archiveList.innerHTML = '<p style="text-align:center; color:#7a6a57; padding: 40px;">No archived books yet. Finish and rate some books to see them here! ⭐</p>';
-          return;
-        }
-        
-        let html = '';
-        snapshot.forEach(doc => {
-          const book = doc.data();
-          html += `
-            <div class="book-card" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #d4af37; box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);">
-              <button class="btn-delete" onclick="deleteArchivedBook('${doc.id}')">Delete</button>
-              <div class="book-title">${book.title}</div>
-              <div class="book-author">${book.author}</div>
-              <div class="book-timeline">
-                <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${book.downloadedDate}</div></div>
-                <div class="timeline-item unlocked milestone-2"><div class="timeline-dot"></div><div class="timeline-text">Started ${book.startedDate}</div></div>
-                <div class="timeline-item unlocked milestone-3"><div class="timeline-dot"></div><div class="timeline-text">Finished ${book.finishedDate}</div></div>
-                <div class="timeline-item unlocked milestone-4"><div class="timeline-dot"></div><div class="timeline-text">Rated ${book.ratedDate}</div></div>
-                <div class="timeline-item unlocked" style="background: rgba(168, 85, 247, 0.15);"><div class="timeline-dot" style="background: #a855f7;"></div><div class="timeline-text" style="color: #581c87; font-weight: 700;">⭐ Archived ${book.archivedDate}</div></div>
-              </div>
-            </div>
-          `;
-        });
-        
-        archiveList.innerHTML = html;
-      } catch (error) {
-        console.error('Error loading archive:', error);
-        archiveList.innerHTML = '<p style="text-align:center; color:#a65b4b;">Error loading archive. Please try again.</p>';
-      }
-    }
-
-    async function deleteArchivedBook(docId) {
-      if (!confirm('Permanently delete this book from your archive?')) return;
-      
-      try {
-        await db.collection('users').doc(currentUser.uid).collection('archived').doc(docId).delete();
-        await loadArchivedBooks(); // Reload the archive to show updated list
-      } catch (error) {
-        console.error('Error deleting archived book:', error);
-        alert('Error deleting book. Please try again.');
-      }
-    }
-
-      // Updated addBook to ensure search field is cleared
-      async function addBook(title, author) {
-        if (!currentUser) { alert("Please sign in first"); return; }
-        
-        const col = document.querySelector('.column-1 .column-content');
-        const bookCard = createBookCard({ title, author, downloadedDate: getTodayDate() }, 1);
-        col.prepend(bookCard);
-        
-        // Clear the main search field and results dropdown
-        document.querySelector('.search-field').value = '';
-        document.getElementById('searchResults').innerHTML = '';
-        
-        updateAllCounts();
-        updateOnboardingHint();
-        await saveBooks();
-      }
-    
-      function createBookCard(book, colIdx) {
-        const card = document.createElement('div');
-        card.className = 'book-card';
-        card.setAttribute('draggable', 'true');
-    
-        // Safety net logic
-        const pDate = (book.downloadedDate && book.downloadedDate !== 'N/A') ? book.downloadedDate : "Recently";
-        const sDate = (book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : (colIdx >= 2 ? "Recently" : "...");
-        const fDate = (book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : (colIdx >= 3 ? "Recently" : "...");
-        const rDate = (book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : (colIdx >= 4 ? "Recently" : "...");
-    
-        card.innerHTML = `
-          <button class="btn-delete" onclick="${colIdx === 4 ? 'archiveBook(this)' : 'deleteBook(this)'}">
-            ${colIdx === 4 ? '⭐ Archive' : 'Delete'}
-          </button>
-          <div class="book-title">${book.title}</div>
-          <div class="book-author">${book.author}</div>
-          <div class="book-timeline">
-            <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${pDate}</div></div>
-            <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Started ${sDate}</div></div>
-            <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Finished ${fDate}</div></div>
-            <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div></div>
-          </div>
-        `;
-    
-        card.dataset.downloadedDate = pDate;
-        card.dataset.startedDate = sDate === "..." ? "" : sDate;
-        card.dataset.finishedDate = fDate === "..." ? "" : fDate;
-        card.dataset.ratedDate = rDate === "..." ? "" : rDate;
-    
-        card.addEventListener('dragstart', () => { draggedCard = card; card.classList.add('dragging'); });
-        card.addEventListener('dragend', () => { draggedCard = null; card.classList.remove('dragging'); });
-        return card;
-      }
-    
-      function setupDropZones() {
-          document.querySelectorAll('.column-content').forEach((content, i) => {
-            // 1. Highlight column when card enters
-            content.addEventListener('dragover', (e) => {
-              e.preventDefault(); // Required to allow drop
-              if (!content.classList.contains('drag-over')) {
-                content.classList.add('drag-over');
-              }
-            });
-        
-            // 2. Remove highlight when card leaves
-            content.addEventListener('dragleave', () => {
-              content.classList.remove('drag-over');
-            });
-        
-            // 3. Handle the drop
-            content.addEventListener('drop', async (e) => {
-              e.preventDefault();
-              content.classList.remove('drag-over'); // Clear feedback immediately
-              
-              if (!draggedCard) return;
-              
-              const targetIdx = i + 1;
-              
-              // Update dates based on column
-              if (targetIdx >= 2 && (!draggedCard.dataset.startedDate || draggedCard.dataset.startedDate === "Recently")) {
-                draggedCard.dataset.startedDate = getTodayDate();
-              }
-              if (targetIdx >= 3 && (!draggedCard.dataset.finishedDate || draggedCard.dataset.finishedDate === "Recently")) {
-                draggedCard.dataset.finishedDate = getTodayDate();
-              }
-              if (targetIdx >= 4 && (!draggedCard.dataset.ratedDate || draggedCard.dataset.ratedDate === "Recently")) {
-                draggedCard.dataset.ratedDate = getTodayDate();
-              }
-    
-              
-              const newCard = createBookCard({
-                title: draggedCard.querySelector('.book-title').textContent,
-                author: draggedCard.querySelector('.book-author').textContent,
-                downloadedDate: draggedCard.dataset.downloadedDate,
-                startedDate: draggedCard.dataset.startedDate,
-                finishedDate: draggedCard.dataset.finishedDate,
-                ratedDate: draggedCard.dataset.ratedDate
-              }, targetIdx);
-              
-              content.prepend(newCard);
-              draggedCard.remove();
-              updateAllCounts();
-              await saveBooks();
-            });
-          });
-        }
-    
-      async function saveBooks() {
-        if (!currentUser) return;
-        const data = { column1: [], column2: [], column3: [], column4: [] };
-        document.querySelectorAll('.column').forEach((col, i) => {
-          col.querySelectorAll('.book-card').forEach(c => {
-            data[`column${i+1}`].push({
-              title: c.querySelector('.book-title').textContent,
-              author: c.querySelector('.book-author').textContent,
-              downloadedDate: c.dataset.downloadedDate,
-              startedDate: c.dataset.startedDate,
-              finishedDate: c.dataset.finishedDate,
-              ratedDate: c.dataset.ratedDate
-            });
-          });
-        });
-        await db.collection('users').doc(currentUser.uid).collection('books').doc('data').set(data);
-      }
-    
-      async function loadBooks() {
-          const doc = await db.collection('users').doc(currentUser.uid).collection('books').doc('data').get();
-          if (doc.exists) {
-            const data = doc.data();
-            [1,2,3,4].forEach(i => {
-              const col = document.querySelector(`.column-${i} .column-content`);
-              col.innerHTML = '';
-              const books = data[`column${i}`] || [];
-              if (books.length > 0) {
-                books.forEach(b => col.appendChild(createBookCard(b, i)));
-              } else {
-                // Add placeholder
-                col.innerHTML = getPlaceholder(i);
-              }
-            });
-          } else {
-            // New user - show placeholders in all columns
-            [1,2,3,4].forEach(i => {
-              const col = document.querySelector(`.column-${i} .column-content`);
-              col.innerHTML = getPlaceholder(i);
-            });
-          }
-          updateAllCounts();
-          updateOnboardingHint();
-        }
-
-    function getPlaceholder(colIdx) {
-          const placeholders = {
-            1: `
-              <div style="text-align: center; padding: 40px 20px; color: #7a6a57;">
-                <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
-                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Start Your Reading Journey</div>
-                <div style="font-size: 14px; line-height: 1.6;">Search for books above to add them to your flow. Track every step from purchase to completion!</div>
-              </div>
-            `,
-            2: `
-              <div style="text-align: center; padding: 40px 20px; color: #7a6a57;">
-                <div style="font-size: 48px; margin-bottom: 16px;">📖</div>
-                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Ready to Read?</div>
-                <div style="font-size: 14px; line-height: 1.6;">Drag books here when you start reading them. Your journey begins!</div>
-              </div>
-            `,
-            3: `
-              <div style="text-align: center; padding: 40px 20px; color: #7a6a57;">
-                <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
-                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Finished Books</div>
-                <div style="font-size: 14px; line-height: 1.6;">Move completed books here before rating them. Almost there!</div>
-              </div>
-            `,
-            4: `
-              <div style="text-align: center; padding: 40px 20px; color: #7a6a57;">
-                <div style="font-size: 48px; margin-bottom: 16px;">⭐</div>
-                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Hall of Fame</div>
-                <div style="font-size: 14px; line-height: 1.6;">Books you've finished and rated live here. Ready to archive when you want!</div>
-              </div>
-            `
-          };
-          return placeholders[colIdx];
-        }
-
-    function showAllPlaceholders() {
-          [1, 2, 3, 4].forEach(i => {
-            const col = document.querySelector(`.column-${i} .column-content`);
-            if (col) col.innerHTML = getPlaceholder(i);
-          });
-        }
-    
-      function updateAllCounts() {
-        document.querySelectorAll('.column').forEach((col, i) => {
-          const count = col.querySelectorAll('.book-card').length;
-          col.querySelector('.column-subtitle').textContent = `${count} book${count !== 1 ? 's' : ''}`;
-        });
-      }
-
-    function getTotalBookCount() {
-          let total = 0;
-          document.querySelectorAll('.column').forEach(col => {
-            total += col.querySelectorAll('.book-card').length;
-          });
-          return total;
-        }
-
-    function updateOnboardingHint() {
-      const hint = document.getElementById('onboardingHint');
-      if (!hint) return;
-    
-      if (currentUser && getTotalBookCount() === 0) {
-        hint.style.display = 'block';
+      const books = data[`column${i}`] || [];
+      if (books.length) {
+        books.forEach(b => col.appendChild(createBookCard(b, i)));
       } else {
-        hint.style.display = 'none';
+        col.innerHTML = getPlaceholder(i);
       }
-    }
+    });
+  } else {
+    showAllPlaceholders();
+  }
 
+  updateAllCounts();
+  updateOnboardingHint();
+}
 
-    
-      async function deleteBook(btn) { btn.closest('.book-card').remove(); updateAllCounts(); await saveBooks(); }
-    
-        async function archiveBook(btn) {
-          const card = btn.closest('.book-card');
-          const bookData = {
-            title: card.querySelector('.book-title').textContent,
-            author: card.querySelector('.book-author').textContent,
-            downloadedDate: card.dataset.downloadedDate,
-            startedDate: card.dataset.startedDate,
-            finishedDate: card.dataset.finishedDate,
-            ratedDate: card.dataset.ratedDate,
-            archivedDate: getTodayDate()
-          };
-          
-          // Save to archive collection
-          await db.collection('users').doc(currentUser.uid).collection('archived').add(bookData);
-          
-          // Remove from view
-          card.remove();
-          updateAllCounts();
-          await saveBooks();
-        }
-    
-      document.querySelector('.search-field').addEventListener('input', (e) => {
-          clearTimeout(searchTimeout);
-          const q = e.target.value.trim();
-          
-          // Immediately clear if the user deletes their text
-          if (q.length === 0) {
-            document.getElementById('searchResults').innerHTML = '';
-            return;
-          }
-        
-          if (q.length > 2) {
-            searchTimeout = setTimeout(async () => {
-              const results = await searchBooks(q);
-              displayResults(results);
-            }, 300);
-          }
-        });
-    
-      document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('book-title')) window.open(`https://www.goodreads.com/search?q=${encodeURIComponent(e.target.textContent)}`, '_blank');
-        if (!e.target.closest('.search-container')) document.getElementById('searchResults').innerHTML = '';
-      })
-      document.getElementById('viewArchiveBtn').addEventListener('click', openArchiveModal);
+/* ───────── UI HELPERS ───────── */
+
+function showAllPlaceholders() {
+  [1, 2, 3, 4].forEach(i => {
+    const col = document.querySelector(`.column-${i} .column-content`);
+    if (col) col.innerHTML = getPlaceholder(i);
+  });
+}
+
+function updateAllCounts() {
+  document.querySelectorAll('.column').forEach(col => {
+    const count = col.querySelectorAll('.book-card').length;
+    col.querySelector('.column-subtitle').textContent =
+      `${count} book${count !== 1 ? 's' : ''}`;
+  });
+}
+
+/* ───────── SEARCH INPUT EVENTS ───────── */
+
+document.querySelector('.search-field').addEventListener('input', (e) => {
+  clearTimeout(searchTimeout);
+  const q = e.target.value.trim();
+
+  if (!q) {
+    document.getElementById('searchResults').innerHTML = '';
+    return;
+  }
+
+  if (q.length > 2) {
+    searchTimeout = setTimeout(async () => {
+      const results = await searchBooks(q);
+      displayResults(results);
+    }, 300);
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('book-title')) {
+    window.open(
+      `https://www.goodreads.com/search?q=${encodeURIComponent(e.target.textContent)}`,
+      '_blank'
+    );
+  }
+
+  if (!e.target.closest('.search-container')) {
+    document.getElementById('searchResults').innerHTML = '';
+  }
+});
+
+document
+  .getElementById('viewArchiveBtn')
+  .addEventListener('click', openArchiveModal);
+
 </script>
+
 </body>
 </html>
