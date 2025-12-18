@@ -39,6 +39,25 @@
       letter-spacing: 0.04em;
       text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
+        
+    .top-bar h1::before {
+      content: '';
+      display: inline-block;
+      width: 38px;
+      height: 28px;
+      background-image: url('bookopenicon.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      margin-right: 12px;
+      vertical-align: middle;
+      filter: brightness(0) saturate(100%) invert(93%) sepia(15%) saturate(557%) hue-rotate(333deg) brightness(103%) contrast(95%);
+      transition: transform 0.3s ease;
+    }
+
+    .top-bar h1:hover::before {
+      transform: scale(1.1);
+    }
 
     .auth-controls {
       display: flex;
