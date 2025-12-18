@@ -465,7 +465,7 @@
           const book = doc.data();
           html += `
             <div class="book-card" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #d4af37; box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);">
-              <button class="btn-delete" onclick="unarchiveBook('${doc.id}')">↩️ Restore</button>
+              <button class="btn-delete" onclick="deleteArchivedBook('${doc.id}')">Delete</button>
               <div class="book-title">${book.title}</div>
               <div class="book-author">${book.author}</div>
               <div class="book-timeline">
