@@ -723,15 +723,100 @@ let draggedCard = null;
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
-    console.log('Signed in:', user.email);
+    
+    // Hide the auth modal
+    document.getElementById('authContainer').style.display = 'none';
+    
+    // Show user info in top bar
+    document.getElementById('userInfo').style.display = 'flex';
+    document.getElementById('userName').textContent = user.displayName || user.email || 'Anonymous User';
+    
+    console.log('Signed in:', user.email || user.uid);
     await loadBooks();
     setupDropZones();
   } else {
     currentUser = null;
-    // Sign in anonymously so anyone can use it without Google account
-    await auth.signInAnonymously();
+    
+    // Show the auth modal
+    document.getElementById('authContainer').style.display = 'flex';
+    document.getElementById('userInfo').style.display = 'none';
   }
 });
+
+// Google Sign In button
+document.getElementById('googleSignIn').addEventListener('click', async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    await auth.signInWithPopup(provider);
+  } catch (error) {
+    console.error('Sign in error:', error);
+    if (error.code === 'auth/popup-blocked') {
+      alert('Pop-up was blocked! Please allow pop-ups for this site.');
+    } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+      // User closed the popup, just ignore
+      console.log('Sign in cancelled by user');
+    } else {
+      alert(`Failed to sign in: ${error.message}`);
+    }
+  }
+});
+
+// Sign Out button
+document.getElementById('signOutBtn').addEventListener('click', async () => {
+  if (confirm('Are you sure you want to sign out?')) {
+    await auth.signOut();
+  }
+});
+
+    // ========== AUTH ==========
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        currentUser = user;
+        
+        // Hide the auth modal
+        document.getElementById('authContainer').style.display = 'none';
+        
+        // Show user info in top bar
+        document.getElementById('userInfo').style.display = 'flex';
+        document.getElementById('userName').textContent = user.displayName || user.email || 'Anonymous User';
+        
+        console.log('Signed in:', user.email || user.uid);
+        await loadBooks();
+        setupDropZones();
+      } else {
+        currentUser = null;
+        
+        // Show the auth modal
+        document.getElementById('authContainer').style.display = 'flex';
+        document.getElementById('userInfo').style.display = 'none';
+      }
+    });
+    
+    // Google Sign In button
+    document.getElementById('googleSignIn').addEventListener('click', async () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await auth.signInWithPopup(provider);
+      } catch (error) {
+        console.error('Sign in error:', error);
+        if (error.code === 'auth/popup-blocked') {
+          alert('Pop-up was blocked! Please allow pop-ups for this site.');
+        } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+          // User closed the popup, just ignore
+          console.log('Sign in cancelled by user');
+        } else {
+          alert(`Failed to sign in: ${error.message}`);
+        }
+      }
+    });
+    
+    // Sign Out button
+    document.getElementById('signOutBtn').addEventListener('click', async () => {
+      if (confirm('Are you sure you want to sign out?')) {
+        await auth.signOut();
+      }
+    });
 
 // ========== UTILITY ==========
 
