@@ -565,7 +565,17 @@
   async function deleteBook(btn) { btn.closest('.book-card').remove(); updateAllCounts(); await saveBooks(); }
 
     async function archiveBook(btn) {
+      console.log('archiveBook called!', btn);
+      
+      if (!currentUser) {
+        console.log('No user logged in');
+        alert('Please sign in first');
+        return;
+      }
+      
       const card = btn.closest('.book-card');
+      console.log('Card found:', card);
+      
       const bookData = {
         title: card.querySelector('.book-title').textContent,
         author: card.querySelector('.book-author').textContent,
@@ -576,13 +586,22 @@
         archivedDate: getTodayDate()
       };
       
-      // Save to archive collection
-      await db.collection('users').doc(currentUser.uid).collection('archived').add(bookData);
+      console.log('Book data:', bookData);
       
-      // Remove from view
-      card.remove();
-      updateAllCounts();
-      await saveBooks();
+      try {
+        // Save to archive collection
+        await db.collection('users').doc(currentUser.uid).collection('archived').add(bookData);
+        console.log('Saved to Firebase');
+        
+        // Remove from view
+        card.remove();
+        updateAllCounts();
+        await saveBooks();
+        console.log('Card removed and counts updated');
+      } catch (error) {
+        console.error('Error archiving:', error);
+        alert('Error archiving book: ' + error.message);
+      }
     }
 
   document.querySelector('.search-field').addEventListener('input', (e) => {
