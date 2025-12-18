@@ -274,7 +274,7 @@
       padding: 18px;
     }
     
-    /* Column 1 - Downloaded (soft blue) */
+    /* Column 1 - Purchased (soft blue) */
     .column-1 {
       background: linear-gradient(180deg, #e6f2ff, #f0f7ff);
     }
@@ -511,7 +511,7 @@
       font-weight: 400;
     }
     
-    /* Unlocked - Downloaded (soft blue) */
+    /* Unlocked - Purchased (soft blue) */
     .timeline-item.unlocked.milestone-1 {
       opacity: 1;
       background: rgba(99, 179, 237, 0.08);
@@ -654,10 +654,10 @@
     </div>
 
     <div class="columns-container">
-        <!-- Column 1: Downloaded -->
+        <!-- Column 1: Purchased -->
         <div class="column column-1">
             <div class="column-header">
-                <div class="column-title">Downloaded</div>
+                <div class="column-title">Purchased</div>
                 <div class="column-subtitle">0 books</div>
             </div>
             <div class="column-content">
@@ -815,7 +815,7 @@
     const column = document.querySelector('.column-1 .column-content');
     const bookData = {
       title, author,
-      downloadedDate: getTodayDate(),
+      purchasedDate: getTodayDate(),
       startedDate: null, finishedDate: null
     };
     const bookCard = createBookCard(bookData, 1);
@@ -839,7 +839,7 @@
       <div class="book-timeline">
         <div class="timeline-item ${columnIndex >= 1 ? 'unlocked milestone-1' : 'locked'}">
           <div class="timeline-dot"></div>
-          <div class="timeline-text">Downloaded ${book.downloadedDate || 'N/A'}</div>
+          <div class="timeline-text">Purchased ${book.purchasedDate || 'N/A'}</div>
         </div>
         <div class="timeline-item ${columnIndex >= 2 ? 'unlocked milestone-2' : 'locked'}">
           <div class="timeline-dot"></div>
@@ -855,7 +855,7 @@
       </div>
     `;
 
-    bookCard.dataset.downloadedDate = book.downloadedDate || '';
+    bookCard.dataset.purchasedDate = book.purchasedDate || '';
     bookCard.dataset.startedDate = book.startedDate || '';
     bookCard.dataset.finishedDate = book.finishedDate || '';
 
@@ -891,7 +891,7 @@
         const bookData = {
           title: draggedCard.querySelector('.book-title').textContent,
           author: draggedCard.querySelector('.book-author').textContent,
-          downloadedDate: draggedCard.dataset.downloadedDate,
+          purchasedDate: draggedCard.dataset.purchasedDate,
           startedDate: draggedCard.dataset.startedDate,
           finishedDate: draggedCard.dataset.finishedDate
         };
@@ -915,7 +915,7 @@
         data[`column${i+1}`].push({
           title: card.querySelector('.book-title').textContent,
           author: card.querySelector('.book-author').textContent,
-          downloadedDate: card.dataset.downloadedDate,
+          purchasedDate: card.dataset.purchasedDate,
           startedDate: card.dataset.startedDate,
           finishedDate: card.dataset.finishedDate
         });
