@@ -718,7 +718,7 @@
   let searchTimeout;
   let draggedCard = null;
 
-  // 2. Auth Observer (Handles UI Toggling)
+  // 2. Auth Observer
   auth.onAuthStateChanged(async (user) => {
     const authContainer = document.getElementById('authContainer');
     const userInfo = document.getElementById('userInfo');
@@ -726,25 +726,15 @@
 
     if (user) {
       currentUser = user;
-      console.log('User signed in:', user.email);
-      
-      // Hide login modal and show top bar info
       authContainer.style.display = 'none';
       userInfo.style.display = 'flex';
       userNameDisplay.textContent = user.displayName || user.email;
-      
-      // Load data
       await loadBooks();
       setupDropZones();
     } else {
       currentUser = null;
-      console.log('User signed out');
-      
-      // Show login modal and hide top bar info
       authContainer.style.display = 'flex';
       userInfo.style.display = 'none';
-      
-      // Clear columns
       document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
       updateAllCounts();
     }
@@ -815,7 +805,7 @@
     const column = document.querySelector('.column-1 .column-content');
     const bookData = {
       title, author,
-      purchasedDate: getTodayDate(),
+      downloadedDate: getTodayDate(),
       startedDate: null, finishedDate: null
     };
     const bookCard = createBookCard(bookData, 1);
@@ -829,45 +819,62 @@
   }
 
   function createBookCard(book, columnIndex) {
-      const bookCard = document.createElement('div');
-      bookCard.className = 'book-card';
-      bookCard.setAttribute('draggable', 'true');
-    
-      // Logic to handle missing dates
-      const displayPurchased = book.downloadedDate || getTodayDate(); // Defaults to today if missing
-      const displayStarted = book.startedDate || "..."; 
-      const displayFinished = book.finishedDate || "...";
-    
-      bookCard.innerHTML = `
-        <div class="book-title">${book.title}</div>
-        <div class="book-author">${book.author || ''}</div>
-        <div class="book-timeline">
-          <div class="timeline-item ${columnIndex >= 1 ? 'unlocked milestone-1' : 'locked'}">
-            <div class="timeline-dot"></div>
-            <div class="timeline-text">Purchased ${displayPurchased}</div>
-          </div>
-          <div class="timeline-item ${columnIndex >= 2 ? 'unlocked milestone-2' : 'locked'}">
-            <div class="timeline-dot"></div>
-            <div class="timeline-text">Started ${displayStarted}</div>
-          </div>
-          <div class="timeline-item ${columnIndex >= 3 ? 'unlocked milestone-3' : 'locked'}">
-            <div class="timeline-dot"></div>
-            <div class="timeline-text">Finished ${displayFinished}</div>
-          </div>
+    const bookCard = document.createElement('div');
+    bookCard.className = 'book-card';
+    bookCard.setAttribute('draggable', 'true');
+
+    // SAFETY NET LOGIC
+    const displayPurchased = (book.downloadedDate && book.downloadedDate !== 'N/A') 
+                             ? book.downloadedDate 
+                             : "Recently";
+
+    const displayStarted = (book.startedDate && book.startedDate !== 'N/A') 
+                           ? book.startedDate 
+                           : (columnIndex >= 2 ? "Recently" : "...");
+                           
+    const displayFinished = (book.finishedDate && book.finishedDate !== 'N/A') 
+                            ? book.finishedDate 
+                            : (columnIndex >= 3 ? "Recently" : "...");
+
+    bookCard.innerHTML = `
+      <div class="book-title">${book.title}</div>
+      <div class="book-author">${book.author || ''}</div>
+      <div class="book-timeline">
+        <div class="timeline-item ${columnIndex >= 1 ? 'unlocked milestone-1' : 'locked'}">
+          <div class="timeline-dot"></div>
+          <div class="timeline-text">Purchased ${displayPurchased}</div>
         </div>
-        <div class="book-controls">
-          <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
+        <div class="timeline-item ${columnIndex >= 2 ? 'unlocked milestone-2' : 'locked'}">
+          <div class="timeline-dot"></div>
+          <div class="timeline-text">Started ${displayStarted}</div>
         </div>
-      `;
-      
-      // Ensure the dataset also gets the "Today" date if it was missing
-      bookCard.dataset.downloadedDate = displayPurchased;
-      bookCard.dataset.startedDate = book.startedDate || '';
-      bookCard.dataset.finishedDate = book.finishedDate || '';
-    
-      // ... rest of the function (drag events) remains the same
-      return bookCard;
-    }
+        <div class="timeline-item ${columnIndex >= 3 ? 'unlocked milestone-3' : 'locked'}">
+          <div class="timeline-dot"></div>
+          <div class="timeline-text">Finished ${displayFinished}</div>
+        </div>
+      </div>
+      <div class="book-controls">
+        <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
+      </div>
+    `;
+
+    // Map values back to dataset
+    bookCard.dataset.downloadedDate = displayPurchased;
+    bookCard.dataset.startedDate = (displayStarted === "...") ? "" : displayStarted;
+    bookCard.dataset.finishedDate = (displayFinished === "...") ? "" : displayFinished;
+
+    bookCard.addEventListener('dragstart', (e) => {
+      draggedCard = bookCard;
+      bookCard.classList.add('dragging');
+    });
+
+    bookCard.addEventListener('dragend', () => {
+      bookCard.classList.remove('dragging');
+      draggedCard = null;
+    });
+
+    return bookCard;
+  }
 
   function setupDropZones() {
     document.querySelectorAll('.column-content').forEach((content, contentIndex) => {
@@ -881,14 +888,18 @@
 
         const targetColIndex = contentIndex + 1;
         
-        // Update dates based on column
-        if (targetColIndex >= 2 && !draggedCard.dataset.startedDate) draggedCard.dataset.startedDate = getTodayDate();
-        if (targetColIndex >= 3 && !draggedCard.dataset.finishedDate) draggedCard.dataset.finishedDate = getTodayDate();
+        // Update dates to Today when moving to a new status
+        if (targetColIndex === 2 && (!draggedCard.dataset.startedDate || draggedCard.dataset.startedDate === "Recently")) {
+            draggedCard.dataset.startedDate = getTodayDate();
+        }
+        if (targetColIndex === 3 && (!draggedCard.dataset.finishedDate || draggedCard.dataset.finishedDate === "Recently")) {
+            draggedCard.dataset.finishedDate = getTodayDate();
+        }
 
         const bookData = {
           title: draggedCard.querySelector('.book-title').textContent,
           author: draggedCard.querySelector('.book-author').textContent,
-          purchasedDate: draggedCard.dataset.purchasedDate,
+          downloadedDate: draggedCard.dataset.downloadedDate,
           startedDate: draggedCard.dataset.startedDate,
           finishedDate: draggedCard.dataset.finishedDate
         };
@@ -912,7 +923,7 @@
         data[`column${i+1}`].push({
           title: card.querySelector('.book-title').textContent,
           author: card.querySelector('.book-author').textContent,
-          purchasedDate: card.dataset.purchasedDate,
+          downloadedDate: card.dataset.downloadedDate,
           startedDate: card.dataset.startedDate,
           finishedDate: card.dataset.finishedDate
         });
