@@ -743,31 +743,39 @@
     
       document.querySelectorAll('.book-card').forEach(card => {
         card.addEventListener('touchstart', (e) => {
-          touchedCard = card;
           touchStartY = e.touches[0].clientY;
           touchStartX = e.touches[0].clientX;
           
-          // Create visual clone
-          clone = card.cloneNode(true);
-          clone.style.position = 'fixed';
-          clone.style.width = card.offsetWidth + 'px';
-          clone.style.pointerEvents = 'none';
-          clone.style.opacity = '0.8';
-          clone.style.zIndex = '9999';
-          clone.style.left = card.getBoundingClientRect().left + 'px';
-          clone.style.top = card.getBoundingClientRect().top + 'px';
-          document.body.appendChild(clone);
-          
-          card.style.opacity = '0.3';
+          // Wait 300ms before enabling drag (allows scrolling)
+          card.dragTimeout = setTimeout(() => {
+            touchedCard = card;
+            
+            // Create visual clone
+            clone = card.cloneNode(true);
+            clone.style.position = 'fixed';
+            clone.style.width = card.offsetWidth + 'px';
+            clone.style.pointerEvents = 'none';
+            clone.style.opacity = '0.8';
+            clone.style.zIndex = '9999';
+            clone.style.left = card.getBoundingClientRect().left + 'px';
+            clone.style.top = card.getBoundingClientRect().top + 'px';
+            document.body.appendChild(clone);
+            
+            card.style.opacity = '0.3';
+          }, 300);
         });
     
         card.addEventListener('touchmove', (e) => {
-          if (!touchedCard || !clone) return;
+          if (!touchedCard || !clone) {
+            // Cancel drag timeout if user is scrolling
+            if (card.dragTimeout) clearTimeout(card.dragTimeout);
+            return;
+          }
           e.preventDefault();
           
           const touch = e.touches[0];
-          clone.style.left = (touch.clientX - touchStartX + touchedCard.getBoundingClientRect().left) + 'px';
-          clone.style.top = (touch.clientY - touchStartY + touchedCard.getBoundingClientRect().top) + 'px';
+          clone.style.left = (touch.clientX - touchStartX + card.getBoundingClientRect().left) + 'px';
+          clone.style.top = (touch.clientY - touchStartY + card.getBoundingClientRect().top) + 'px';
           
           // Highlight drop zones
           const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -813,7 +821,7 @@
             touchedCard.remove();
             updateAllCounts();
             if (currentUser) await saveBooks();
-            setupTouchDrag(); // Re-setup for new card
+            setupTouchDrag(); // Re-setup for all cards
           } else {
             touchedCard.style.opacity = '1';
           }
@@ -822,6 +830,19 @@
           touchedCard = null;
           clone = null;
         });
+
+          card.addEventListener('touchcancel', () => {
+              if (card.dragTimeout) clearTimeout(card.dragTimeout);
+              if (touchedCard === card) {
+                touchedCard.style.opacity = '1';
+                touchedCard = null;
+              }
+              if (clone) {
+                clone.remove();
+                clone = null;
+              }
+              document.querySelectorAll('.column-content').forEach(c => c.classList.remove('drag-over'));
+            });
       });
     }
 
