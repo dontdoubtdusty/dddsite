@@ -768,7 +768,9 @@
             clone.style.top = card.getBoundingClientRect().top + 'px';
             document.body.appendChild(clone);
             
-            card.style.opacity = '0.3';
+            // Completely hide the original card during drag
+            card.style.opacity = '0';
+            card.style.visibility = 'hidden';
           }, 300);
         });
     
@@ -834,7 +836,9 @@
             if (currentUser) await saveBooks();
             setupTouchDrag(); // Re-setup for all cards
           } else {
+            // Restore visibility if drag was cancelled
             card.style.opacity = '1';
+            card.style.visibility = 'visible';
           }
           
           // Always clean up clone and reset state
@@ -849,6 +853,7 @@
           if (card.dragTimeout) clearTimeout(card.dragTimeout);
           if (touchedCard === card) {
             touchedCard.style.opacity = '1';
+            touchedCard.style.visibility = 'visible';
             touchedCard = null;
           }
           if (clone) {
