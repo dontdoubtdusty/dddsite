@@ -14,7 +14,7 @@
       height: 100vh;
       overflow: hidden;
       display: flex;
-      flex-direction: column;res
+      flex-direction: column;
       color: #2a241f;
     }
     
@@ -511,8 +511,6 @@
     const fDate = (book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : (colIdx >= 3 ? "Recently" : "...");
     const rDate = (book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : (colIdx >= 4 ? "Recently" : "...");
 
-      
-
     card.innerHTML = `
       <button class="btn-delete" onclick="${colIdx === 4 ? 'archiveBook(this)' : 'deleteBook(this)'}">
         ${colIdx === 4 ? '⭐ Archive' : 'Delete'}
@@ -523,9 +521,7 @@
         <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${pDate}</div></div>
         <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Started ${sDate}</div></div>
         <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Finished ${fDate}</div></div>
-        <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div>
-      </div>
-
+        <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div></div>
       </div>
     `;
 
@@ -674,8 +670,8 @@
   document.addEventListener('click', (e) => {
     if (e.target.classList.contains('book-title')) window.open(`https://www.goodreads.com/search?q=${encodeURIComponent(e.target.textContent)}`, '_blank');
     if (!e.target.closest('.search-container')) document.getElementById('searchResults').innerHTML = '';
-      document.getElementById('viewArchiveBtn').addEventListener('click', openArchiveModal);
-  });
+  })
+  document.getElementById('viewArchiveBtn').addEventListener('click', openArchiveModal);
 </script>
 </body>
 </html>
