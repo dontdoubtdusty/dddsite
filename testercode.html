@@ -455,8 +455,6 @@
         (DEMO_BOOKS[`column${i}`] || []).forEach(b => {
           const card = createBookCard(b, i);
           card.style.opacity = '0.85';
-          card.setAttribute('draggable', 'false');
-          card.style.cursor = 'not-allowed';
           col.appendChild(card);
         });
       });
@@ -489,6 +487,7 @@
       
       // Load demo books
       loadDemoBooks();
+      setupDropZones();
     }
   });
 
