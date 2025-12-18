@@ -21,6 +21,78 @@
       color: #2a241f;
     }
     
+    /* ───────── Auth Modal ───────── */
+    
+    .auth-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    
+    .auth-modal {
+      background: linear-gradient(135deg, #fffdf8, #fefbf3);
+      padding: 50px 40px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      text-align: center;
+      max-width: 420px;
+      border: 1px solid #e2d6c4;
+    }
+    
+    .auth-modal h2 {
+      color: #2a241f;
+      margin-bottom: 12px;
+      font-size: 28px;
+      font-weight: 600;
+    }
+    
+    .auth-modal p {
+      color: #6f5f4d;
+      margin-bottom: 32px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .auth-btn {
+      padding: 14px 28px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .auth-btn:hover {
+      background: #357ae8;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(66, 133, 244, 0.4);
+    }
+    
+    .auth-btn:active {
+      transform: translateY(0);
+    }
+    
+    .auth-note {
+      margin-top: 24px;
+      font-size: 12px;
+      color: #8a7a67;
+      font-style: italic;
+    }
+    
     /* ───────── Top Bar ───────── */
     
     .top-bar {
@@ -31,6 +103,7 @@
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
+      gap: 20px;
     }
     
     .top-bar h1 {
@@ -41,11 +114,43 @@
       text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
     
+    /* ───────── User Info ───────── */
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .user-info span {
+      color: #f5ecd9;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .btn-sign-out {
+      padding: 8px 14px;
+      background: transparent;
+      border: 1px solid #f5ecd9;
+      color: #f5ecd9;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    
+    .btn-sign-out:hover {
+      background: #f5ecd9;
+      color: #3a2f25;
+    }
+    
     /* ───────── Search ───────── */
     
     .search-container {
       position: relative;
       width: 320px;
+      flex-shrink: 0;
     }
     
     .search-field {
@@ -286,6 +391,7 @@
       color: #2a241f;
       margin-bottom: 6px;
       text-decoration: none;
+      cursor: pointer;
     }
     
     .book-title:hover {
@@ -351,52 +457,6 @@
     
     .column-content::-webkit-scrollbar-track {
       background: transparent;
-    }
-
-    @media (max-width: 768px) {
-      body {
-        height: auto;
-        min-height: 100vh;
-      }
-      
-      .top-bar {
-        flex-direction: column;
-        gap: 12px;
-        padding: 16px;
-      }
-      
-      .top-bar h1 {
-        font-size: 18px;
-      }
-      
-      .search-container {
-        width: 100%;
-      }
-      
-      .columns-container {
-        flex-direction: column;
-        overflow-y: auto;
-        overflow-x: hidden;
-      }
-      
-      .column {
-        border-right: none;
-        border-bottom: 1px solid #d2c3ad;
-        min-height: auto;
-      }
-      
-      .column:last-child {
-        border-bottom: none;
-      }
-      
-      .column-content {
-        max-height: 400px;
-        min-height: 150px;
-      }
-      
-      .column-3 {
-        border-right: none;
-      }
     }
 
     /* ───────── Progress Timeline ───────── */
@@ -508,24 +568,97 @@
       font-size: 12px;
     }
 
-</style>
+    @media (max-width: 768px) {
+      body {
+        height: auto;
+        min-height: 100vh;
+      }
+      
+      .top-bar {
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+      }
+      
+      .top-bar h1 {
+        font-size: 18px;
+      }
+      
+      .search-container {
+        width: 100%;
+      }
+      
+      .columns-container {
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      
+      .column {
+        border-right: none;
+        border-bottom: 1px solid #d2c3ad;
+        min-height: auto;
+      }
+      
+      .column:last-child {
+        border-bottom: none;
+      }
+      
+      .column-content {
+        max-height: 400px;
+        min-height: 150px;
+      }
+      
+      .column-3 {
+        border-right: none;
+      }
+      
+      .auth-modal {
+        margin: 20px;
+        padding: 30px 25px;
+      }
+    }
+
+    </style>
 
 </head>
 <body>
+    <!-- Auth Modal -->
+    <div class="auth-container" id="authContainer">
+      <div class="auth-modal">
+        <h2>Welcome to Reading Flow</h2>
+        <p>Sign in to access your personal reading list. Your books will be private and synced across all your devices.</p>
+        <button class="auth-btn" id="googleSignIn">
+          <svg width="18" height="18" viewBox="0 0 18 18">
+            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+            <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
+            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+          </svg>
+          Sign in with Google
+        </button>
+        <p class="auth-note">Your reading list will be private and saved to your account</p>
+      </div>
+    </div>
+
     <div class="top-bar">
-    <h1>Reading Flow</h1>
-    <div class="search-container">
+      <h1>Reading Flow</h1>
+      <div class="search-container">
         <input type="text" class="search-field" placeholder="Search books...">
         <div class="search-results" id="searchResults"></div>
+      </div>
+      <div class="user-info" id="userInfo" style="display: none;">
+        <span id="userName"></span>
+        <button class="btn-sign-out" id="signOutBtn">Sign Out</button>
+      </div>
     </div>
-</div>
 
     <div class="columns-container">
         <!-- Column 1: Downloaded -->
         <div class="column column-1">
             <div class="column-header">
                 <div class="column-title">Downloaded</div>
-                <div class="column-subtitle">1 book</div>
+                <div class="column-subtitle">0 books</div>
             </div>
             <div class="column-content">
             </div>
@@ -535,7 +668,7 @@
         <div class="column column-2">
             <div class="column-header">
                 <div class="column-title">Currently Reading</div>
-                <div class="column-subtitle">1 book</div>
+                <div class="column-subtitle">0 books</div>
             </div>
             <div class="column-content">
             </div>
@@ -544,11 +677,8 @@
         <!-- Column 3: Finished Unrated -->
         <div class="column column-3">
             <div class="column-header">
-                <div class="column-title">
-                    Finished — Not Rated
-                    <span class="warning-badge">!</span>
-                </div>
-                <div class="column-subtitle">1 book waiting</div>
+                <div class="column-title">Finished — Not Rated</div>
+                <div class="column-subtitle">0 books</div>
             </div>
             <div class="column-content">
             </div>
@@ -558,7 +688,7 @@
         <div class="column column-4">
             <div class="column-header">
                 <div class="column-title">Finished & Rated</div>
-                <div class="column-subtitle">1 book</div>
+                <div class="column-subtitle">0 books</div>
             </div>
             <div class="column-content">
             </div>
@@ -568,6 +698,7 @@
 </body>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script>
   // Firebase config
   const firebaseConfig = {
@@ -581,9 +712,55 @@
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+  const auth = firebase.auth();
 
+  let currentUser = null;
   let searchTimeout;
   let draggedCard = null;
+
+  // ========== AUTHENTICATION ==========
+
+  // Google Sign In
+  document.getElementById('googleSignIn').addEventListener('click', async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      await auth.signInWithPopup(provider);
+    } catch (error) {
+      console.error('Sign in error:', error);
+      alert('Failed to sign in. Please try again.');
+    }
+  });
+
+  // Sign Out
+  document.getElementById('signOutBtn').addEventListener('click', async () => {
+    if (confirm('Are you sure you want to sign out?')) {
+      await auth.signOut();
+    }
+  });
+
+  // Auth State Observer
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('authContainer').style.display = 'none';
+      document.getElementById('userInfo').style.display = 'flex';
+      document.getElementById('userName').textContent = user.displayName || user.email;
+      
+      // Load user's books
+      await loadBooks();
+      setupDropZones();
+    } else {
+      currentUser = null;
+      document.getElementById('authContainer').style.display = 'flex';
+      document.getElementById('userInfo').style.display = 'none';
+      
+      // Clear the columns
+      document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
+      updateAllCounts();
+    }
+  });
+
+  // ========== UTILITY FUNCTIONS ==========
 
   function getTodayDate() {
     const now = new Date();
@@ -594,7 +771,14 @@
     });
   }
 
-  // ---------- SEARCH ----------
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // ========== SEARCH ==========
+
   async function searchBooks(query) {
     try {
       const response = await fetch(
@@ -630,250 +814,65 @@
     `).join('');
   }
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+  // ========== BOOK CREATION ==========
 
-  // ---------- BOOK CREATION ----------
   async function addBook(title, author) {
-      const column = document.querySelector('.column-1 .column-content');
-      const bookCard = createBookCard({
-        title,
-        author,
-        downloadedDate: getTodayDate(),
-        startedDate: null,
-        finishedDate: null
-      }, 1);
-    
-      column.prepend(bookCard);
-      updateColumnCount(1);
-    
-      document.querySelector('.search-field').value = '';
-      document.getElementById('searchResults').innerHTML = '';
-    
-      await saveBooks();
+    if (!currentUser) {
+      alert('Please sign in to add books');
+      return;
     }
 
-  function createBookCard(book, columnIndex) {
-      const bookCard = document.createElement('div');
-      bookCard.className = 'book-card';
-      bookCard.setAttribute('draggable', 'true');
-    
-      let html = `<div class="book-title">${book.title}</div>`;
-    
-      if (book.author) {
-        html += `<div class="book-author">${book.author}</div>`;
-      }
-    
-      // Build timeline - always show all 3 milestones
-      html += `<div class="book-timeline">`;
-      
-      // Downloaded - unlocked in column 1+
-      const downloadedState = columnIndex >= 1 ? 'unlocked milestone-1' : 'locked';
-      const downloadedText = book.downloadedDate ? `on ${book.downloadedDate}` : 'recently';
-      html += `
-        <div class="timeline-item ${downloadedState}">
-          <div class="timeline-dot"></div>
-          <div class="timeline-text">Downloaded ${downloadedText}</div>
-        </div>
-      `;
-      
-      // Started - unlocked in column 2+
-      const startedState = columnIndex >= 2 ? 'unlocked milestone-2' : 'locked';
-      const startedText = book.startedDate ? `on ${book.startedDate}` : 'recently';
-      html += `
-        <div class="timeline-item ${startedState}">
-          <div class="timeline-dot"></div>
-          <div class="timeline-text">Started ${startedText}</div>
-        </div>
-      `;
-      
-      // Finished - unlocked in column 3+
-      const finishedState = columnIndex >= 3 ? 'unlocked milestone-3' : 'locked';
-      const finishedText = book.finishedDate ? `on ${book.finishedDate}` : 'recently';
-      html += `
-        <div class="timeline-item ${finishedState}">
-          <div class="timeline-dot"></div>
-          <div class="timeline-text">Finished ${finishedText}</div>
-        </div>
-      `;
-      
-      html += `</div>`; // close timeline
-    
-      html += `
-        <div class="book-controls">
-          <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
-        </div>
-      `;
-    
-      bookCard.innerHTML = html;
-    
-      // Store book data on the element
-      bookCard.dataset.downloadedDate = book.downloadedDate || '';
-      bookCard.dataset.startedDate = book.startedDate || '';
-      bookCard.dataset.finishedDate = book.finishedDate || '';
-    
-      // Drag handlers
-      bookCard.addEventListener('dragstart', (e) => {
-        draggedCard = bookCard;
-        bookCard.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-      });
-    
-      bookCard.addEventListener('dragend', async () => {
-        bookCard.classList.remove('dragging');
-        draggedCard = null;
-        await saveBooks();
-      });
-    
-      return bookCard;
-    }
+    const column = document.querySelector('.column-1 .column-content');
+    const bookCard = createBookCard({
+      title,
+      author,
+      downloadedDate: getTodayDate(),
+      startedDate: null,
+      finishedDate: null
+    }, 1);
 
-  // ---------- DRAG TARGETS ----------
-  function setupDropZones() {
-      document.querySelectorAll('.column-content').forEach((content, contentIndex) => {
-    
-        content.addEventListener('dragover', (e) => {
-          e.preventDefault();
-        });
-    
-        content.addEventListener('dragenter', () => {
-          content.classList.add('drag-over');
-        });
-    
-        content.addEventListener('dragleave', () => {
-          content.classList.remove('drag-over');
-        });
-    
-        content.addEventListener('drop', async () => {
-          content.classList.remove('drag-over');
-    
-          if (!draggedCard) return;
-    
-          const targetColumn = contentIndex + 1;
-          
-          // Update dates based on target column
-          if (targetColumn === 2 && !draggedCard.dataset.startedDate) {
-            draggedCard.dataset.startedDate = getTodayDate();
-          } else if (targetColumn === 3 && !draggedCard.dataset.finishedDate) {
-            draggedCard.dataset.finishedDate = getTodayDate();
-          }
-    
-          // Rebuild the card with updated dates
-          const bookData = {
-            title: draggedCard.querySelector('.book-title').textContent,
-            author: draggedCard.querySelector('.book-author')?.textContent || '',
-            downloadedDate: draggedCard.dataset.downloadedDate,
-            startedDate: draggedCard.dataset.startedDate,
-            finishedDate: draggedCard.dataset.finishedDate
-          };
-    
-          const newCard = createBookCard(bookData, targetColumn);
-          draggedCard.replaceWith(newCard);
-          content.prepend(newCard);
-          
-          updateAllCounts();
-          await saveBooks();
-        });
-      });
-    }
+    column.prepend(bookCard);
+    updateColumnCount(1);
 
+    document.querySelector('.search-field').value = '';
+    document.getElementById('searchResults').innerHTML = '';
 
-  // ---------- COUNTS ----------
-  function updateColumnCount(columnNumber) {
-    const column = document.querySelector(`.column-${columnNumber}`);
-    const count = column.querySelectorAll('.book-card').length;
-    column.querySelector('.column-subtitle').textContent =
-      `${count} book${count !== 1 ? 's' : ''}`;
-  }
-
-  function updateAllCounts() {
-    document.querySelectorAll('.column').forEach((_, i) => {
-      updateColumnCount(i + 1);
-    });
-  }
-
-  // ---------- SAVE / LOAD ----------
-  async function saveBooks() {
-      const books = { column1: [], column2: [], column3: [], column4: [] };
-    
-      document.querySelectorAll('.column').forEach((column, index) => {
-        const key = `column${index + 1}`;
-        column.querySelectorAll('.book-card').forEach(card => {
-          books[key].push({
-            title: card.querySelector('.book-title').textContent,
-            author: card.querySelector('.book-author')?.textContent || '',
-            downloadedDate: card.dataset.downloadedDate || '',
-            startedDate: card.dataset.startedDate || '',
-            finishedDate: card.dataset.finishedDate || ''
-          });
-        });
-      });
-    
-      await db.collection('reading-flow').doc('user-books').set(books);
-    }
-    
-    async function loadBooks() {
-      const doc = await db.collection('reading-flow').doc('user-books').get();
-      if (!doc.exists) return;
-    
-      document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
-    
-      ['column1','column2','column3','column4'].forEach((key, i) => {
-        const column = document.querySelector(`.column-${i + 1} .column-content`);
-        doc.data()[key]?.forEach(book => {
-          column.appendChild(createBookCard(book, i + 1));
-        });
-      });
-    
-      updateAllCounts();
-    }
-
-  // ---------- DELETE ----------
-  async function deleteBook(button) {
-    const card = button.closest('.book-card');
-    card.remove();
-    updateAllCounts();
     await saveBooks();
   }
 
-  // ---------- GOODREADS (DELEGATION) ----------
-  document.addEventListener('click', (e) => {
-    const title = e.target.closest('.book-title');
-    if (!title) return;
-    window.open(
-      `https://www.goodreads.com/search?q=${encodeURIComponent(title.textContent)}`,
-      '_blank'
-    );
-  });
+  function createBookCard(book, columnIndex) {
+    const bookCard = document.createElement('div');
+    bookCard.className = 'book-card';
+    bookCard.setAttribute('draggable', 'true');
 
-  // ---------- SEARCH INPUT ----------
-  document.querySelector('.search-field').addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    const query = e.target.value.trim();
+    let html = `<div class="book-title">${book.title}</div>`;
 
-    if (query.length > 2) {
-      searchTimeout = setTimeout(async () => {
-        displayResults(await searchBooks(query));
-      }, 300);
-    } else {
-      document.getElementById('searchResults').innerHTML = '';
+    if (book.author) {
+      html += `<div class="book-author">${book.author}</div>`;
     }
-  });
 
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.top-bar')) {
-      document.getElementById('searchResults').innerHTML = '';
-    }
-  });
-
-  // ---------- INIT ----------
-  document.addEventListener('DOMContentLoaded', async () => {
-    await loadBooks();
-    setupDropZones();
-  });
-</script>
-
-</html>
+    // Build timeline - always show all 3 milestones
+    html += `<div class="book-timeline">`;
+    
+    // Downloaded - unlocked in column 1+
+    const downloadedState = columnIndex >= 1 ? 'unlocked milestone-1' : 'locked';
+    const downloadedText = book.downloadedDate ? `on ${book.downloadedDate}` : 'recently';
+    html += `
+      <div class="timeline-item ${downloadedState}">
+        <div class="timeline-dot"></div>
+        <div class="timeline-text">Downloaded ${downloadedText}</div>
+      </div>
+    `;
+    
+    // Started - unlocked in column 2+
+    const startedState = columnIndex >= 2 ? 'unlocked milestone-2' : 'locked';
+    const startedText = book.startedDate ? `on ${book.startedDate}` : 'recently';
+    html += `
+      <div class="timeline-item ${startedState}">
+        <div class="timeline-dot"></div>
+        <div class="timeline-text">Started ${startedText}</div>
+      </div>
+    `;
+    
+    // Finished - unlocked in column 3+
+    const finishedState = columnIndex >= 3 ? 'unl
