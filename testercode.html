@@ -486,6 +486,14 @@ function updateOnboardingHint() {
   }
 }
 
+function isFirstColumnEmpty() {
+  const col = document.querySelector('.column-1 .column-content');
+  if (!col) return true;
+
+  return col.querySelectorAll('.book-card').length === 0;
+}
+
+
 /* ───────── SEARCH & MANUAL ENTRY ───────── */
 
 async function searchBooks(query) {
