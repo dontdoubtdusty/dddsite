@@ -201,9 +201,35 @@
     .timeline-item.unlocked.milestone-2 .timeline-dot { background: #f6ad55; box-shadow: 0 0 0 3px rgba(246, 173, 85, 0.25); }
     .timeline-item.unlocked.milestone-2 .timeline-text { color: #7c2d12; font-weight: 600; }
 
-    .timeline-item.unlocked.milestone-3 { background: rgba(104, 211, 145, 0.08); }
-    .timeline-item.unlocked.milestone-3 .timeline-dot { background: #68d391; box-shadow: 0 0 0 3px rgba(104, 211, 145, 0.25); }
-    .timeline-item.unlocked.milestone-3 .timeline-text { color: #22543d; font-weight: 600; }
+    .timeline-item.unlocked.milestone-3 {
+      background: rgba(74, 222, 128, 0.08);
+    }
+    
+    .timeline-item.unlocked.milestone-3 .timeline-dot {
+      background: #4ade80;
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+    }
+    
+    .timeline-item.unlocked.milestone-3 .timeline-text {
+      color: #166534;
+      font-weight: 600;
+    }
+
+    .timeline-item.unlocked.milestone-4 {
+      background: rgba(168, 85, 247, 0.1);
+    }
+    
+    .timeline-item.unlocked.milestone-4 .timeline-dot {
+      background: #a855f7;
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.3);
+    }
+    
+    .timeline-item.unlocked.milestone-4 .timeline-text {
+      color: #581c87;
+      font-weight: 700;
+    }
+
+
 
     .btn-delete { padding: 6px 12px; border-radius: 6px; border: 1px solid #a65b4b; background: transparent; color: #a65b4b; font-size: 11px; cursor: pointer; float: right; transition: all 0.15s ease; }
     .btn-delete:hover { background: #a65b4b; color: #fffdf8; }
@@ -415,6 +441,9 @@
     const pDate = (book.downloadedDate && book.downloadedDate !== 'N/A') ? book.downloadedDate : "Recently";
     const sDate = (book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : (colIdx >= 2 ? "Recently" : "...");
     const fDate = (book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : (colIdx >= 3 ? "Recently" : "...");
+    const rDate = (book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : (colIdx >= 4 ? "Recently" : "...");
+
+      
 
     card.innerHTML = `
       <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
@@ -424,12 +453,16 @@
         <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${pDate}</div></div>
         <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Started ${sDate}</div></div>
         <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Finished ${fDate}</div></div>
+        <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div>
+      </div>
+
       </div>
     `;
 
     card.dataset.downloadedDate = pDate;
     card.dataset.startedDate = sDate === "..." ? "" : sDate;
     card.dataset.finishedDate = fDate === "..." ? "" : fDate;
+    card.dataset.ratedDate = rDate === "..." ? "" : rDate;
 
     card.addEventListener('dragstart', () => { draggedCard = card; card.classList.add('dragging'); });
     card.addEventListener('dragend', () => { draggedCard = null; card.classList.remove('dragging'); });
@@ -467,13 +500,18 @@
           if (targetIdx >= 3 && (!draggedCard.dataset.finishedDate || draggedCard.dataset.finishedDate === "Recently")) {
             draggedCard.dataset.finishedDate = getTodayDate();
           }
+          if (targetIdx >= 4 && (!draggedCard.dataset.ratedDate || draggedCard.dataset.ratedDate === "Recently")) {
+            draggedCard.dataset.ratedDate = getTodayDate();
+          }
+
           
           const newCard = createBookCard({
             title: draggedCard.querySelector('.book-title').textContent,
             author: draggedCard.querySelector('.book-author').textContent,
             downloadedDate: draggedCard.dataset.downloadedDate,
             startedDate: draggedCard.dataset.startedDate,
-            finishedDate: draggedCard.dataset.finishedDate
+            finishedDate: draggedCard.dataset.finishedDate,
+            ratedDate: draggedCard.dataset.ratedDate
           }, targetIdx);
           
           content.prepend(newCard);
@@ -494,7 +532,8 @@
           author: c.querySelector('.book-author').textContent,
           downloadedDate: c.dataset.downloadedDate,
           startedDate: c.dataset.startedDate,
-          finishedDate: c.dataset.finishedDate
+          finishedDate: c.dataset.finishedDate,
+          ratedDate: c.dataset.ratedDate
         });
       });
     });
