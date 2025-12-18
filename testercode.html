@@ -701,178 +701,348 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script>
   // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDe-AQ70nJ9Lah8ojh4pivmxD0KglHWGHo",
-    authDomain: "dusty-s-reading-flow.firebaseapp.com",
-    projectId: "dusty-s-reading-flow",
-    storageBucket: "dusty-s-reading-flow.firebasestorage.app",
-    messagingSenderId: "378730506034",
-    appId: "1:378730506034:web:16cc698d8ebb54430d592b"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDe-AQ70nJ9Lah8ojh4pivmxD0KglHWGHo",
+  authDomain: "dusty-s-reading-flow.firebaseapp.com",
+  projectId: "dusty-s-reading-flow",
+  storageBucket: "dusty-s-reading-flow.firebasestorage.app",
+  messagingSenderId: "378730506034",
+  appId: "1:378730506034:web:16cc698d8ebb54430d592b"
+};
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
 
-  let currentUser = null;
-  let searchTimeout;
-  let draggedCard = null;
+let currentUser = null;
+let searchTimeout;
+let draggedCard = null;
 
-  // ========== AUTHENTICATION ==========
+// ========== AUTH ==========
 
-  // Google Sign In
-  document.getElementById('googleSignIn').addEventListener('click', async () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    try {
-      await auth.signInWithPopup(provider);
-    } catch (error) {
-      console.error('Sign in error:', error);
-      alert('Failed to sign in. Please try again.');
-    }
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    currentUser = user;
+    console.log('Signed in:', user.email);
+    await loadBooks();
+    setupDropZones();
+  } else {
+    currentUser = null;
+    // Sign in anonymously so anyone can use it without Google account
+    await auth.signInAnonymously();
+  }
+});
+
+// ========== UTILITY ==========
+
+function getTodayDate() {
+  const now = new Date();
+  return now.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ========== SEARCH ==========
+
+async function searchBooks(query) {
+  try {
+    const response = await fetch(
+      `https://openlibrary.org/search.json?title=${encodeURIComponent(query)}&limit=10`
+    );
+    const data = await response.json();
+
+    return data.docs
+      .filter(book => book.title && book.title.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, 5)
+      .map(book => ({
+        title: book.title,
+        author: book.author_name ? book.author_name[0] : 'Unknown Author'
+      }));
+  } catch {
+    return [];
+  }
+}
+
+function displayResults(books) {
+  const container = document.getElementById('searchResults');
+
+  if (books.length === 0) {
+    container.innerHTML = '<div class="search-result empty">No results found</div>';
+    return;
+  }
+
+  container.innerHTML = books.map(book => `
+    <div class="search-result" onclick="addBook('${escapeHtml(book.title)}','${escapeHtml(book.author)}')">
+      <div class="result-title">${book.title}</div>
+      <div class="result-author">${book.author}</div>
+    </div>
+  `).join('');
+}
+
+// ========== BOOK CREATION ==========
+
+async function addBook(title, author) {
+  if (!currentUser) {
+    alert('Please wait, signing in...');
+    return;
+  }
+
+  const column = document.querySelector('.column-1 .column-content');
+  const bookCard = createBookCard({
+    title,
+    author,
+    downloadedDate: getTodayDate(),
+    startedDate: null,
+    finishedDate: null
+  }, 1);
+
+  column.prepend(bookCard);
+  updateColumnCount(1);
+
+  document.querySelector('.search-field').value = '';
+  document.getElementById('searchResults').innerHTML = '';
+
+  await saveBooks();
+}
+
+function createBookCard(book, columnIndex) {
+  const bookCard = document.createElement('div');
+  bookCard.className = 'book-card';
+  bookCard.setAttribute('draggable', 'true');
+
+  let html = `<div class="book-title">${book.title}</div>`;
+
+  if (book.author) {
+    html += `<div class="book-author">${book.author}</div>`;
+  }
+
+  // Build timeline
+  html += `<div class="book-timeline">`;
+  
+  const downloadedState = columnIndex >= 1 ? 'unlocked milestone-1' : 'locked';
+  const downloadedText = book.downloadedDate ? `on ${book.downloadedDate}` : 'recently';
+  html += `
+    <div class="timeline-item ${downloadedState}">
+      <div class="timeline-dot"></div>
+      <div class="timeline-text">Downloaded ${downloadedText}</div>
+    </div>
+  `;
+  
+  const startedState = columnIndex >= 2 ? 'unlocked milestone-2' : 'locked';
+  const startedText = book.startedDate ? `on ${book.startedDate}` : 'recently';
+  html += `
+    <div class="timeline-item ${startedState}">
+      <div class="timeline-dot"></div>
+      <div class="timeline-text">Started ${startedText}</div>
+    </div>
+  `;
+  
+  const finishedState = columnIndex >= 3 ? 'unlocked milestone-3' : 'locked';
+  const finishedText = book.finishedDate ? `on ${book.finishedDate}` : 'recently';
+  html += `
+    <div class="timeline-item ${finishedState}">
+      <div class="timeline-dot"></div>
+      <div class="timeline-text">Finished ${finishedText}</div>
+    </div>
+  `;
+  
+  html += `</div>`;
+
+  html += `
+    <div class="book-controls">
+      <button class="btn-delete" onclick="deleteBook(this)">Delete</button>
+    </div>
+  `;
+
+  bookCard.innerHTML = html;
+
+  bookCard.dataset.downloadedDate = book.downloadedDate || '';
+  bookCard.dataset.startedDate = book.startedDate || '';
+  bookCard.dataset.finishedDate = book.finishedDate || '';
+
+  bookCard.addEventListener('dragstart', (e) => {
+    draggedCard = bookCard;
+    bookCard.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
   });
 
-  // Sign Out
-  document.getElementById('signOutBtn').addEventListener('click', async () => {
-    if (confirm('Are you sure you want to sign out?')) {
-      await auth.signOut();
-    }
-  });
-
-  // Auth State Observer
-  auth.onAuthStateChanged(async (user) => {
-    if (user) {
-      currentUser = user;
-      document.getElementById('authContainer').style.display = 'none';
-      document.getElementById('userInfo').style.display = 'flex';
-      document.getElementById('userName').textContent = user.displayName || user.email;
-      
-      // Load user's books
-      await loadBooks();
-      setupDropZones();
-    } else {
-      currentUser = null;
-      document.getElementById('authContainer').style.display = 'flex';
-      document.getElementById('userInfo').style.display = 'none';
-      
-      // Clear the columns
-      document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
-      updateAllCounts();
-    }
-  });
-
-  // ========== UTILITY FUNCTIONS ==========
-
-  function getTodayDate() {
-    const now = new Date();
-    return now.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  }
-
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  // ========== SEARCH ==========
-
-  async function searchBooks(query) {
-    try {
-      const response = await fetch(
-        `https://openlibrary.org/search.json?title=${encodeURIComponent(query)}&limit=10`
-      );
-      const data = await response.json();
-
-      return data.docs
-        .filter(book => book.title && book.title.toLowerCase().includes(query.toLowerCase()))
-        .slice(0, 5)
-        .map(book => ({
-          title: book.title,
-          author: book.author_name ? book.author_name[0] : 'Unknown Author'
-        }));
-    } catch {
-      return [];
-    }
-  }
-
-  function displayResults(books) {
-    const container = document.getElementById('searchResults');
-
-    if (books.length === 0) {
-      container.innerHTML = '<div class="search-result empty">No results found</div>';
-      return;
-    }
-
-    container.innerHTML = books.map(book => `
-      <div class="search-result" onclick="addBook('${escapeHtml(book.title)}','${escapeHtml(book.author)}')">
-        <div class="result-title">${book.title}</div>
-        <div class="result-author">${book.author}</div>
-      </div>
-    `).join('');
-  }
-
-  // ========== BOOK CREATION ==========
-
-  async function addBook(title, author) {
-    if (!currentUser) {
-      alert('Please sign in to add books');
-      return;
-    }
-
-    const column = document.querySelector('.column-1 .column-content');
-    const bookCard = createBookCard({
-      title,
-      author,
-      downloadedDate: getTodayDate(),
-      startedDate: null,
-      finishedDate: null
-    }, 1);
-
-    column.prepend(bookCard);
-    updateColumnCount(1);
-
-    document.querySelector('.search-field').value = '';
-    document.getElementById('searchResults').innerHTML = '';
-
+  bookCard.addEventListener('dragend', async () => {
+    bookCard.classList.remove('dragging');
+    draggedCard = null;
     await saveBooks();
+  });
+
+  return bookCard;
+}
+
+// ========== DRAG & DROP ==========
+
+function setupDropZones() {
+  document.querySelectorAll('.column-content').forEach((content, contentIndex) => {
+
+    content.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    content.addEventListener('dragenter', () => {
+      content.classList.add('drag-over');
+    });
+
+    content.addEventListener('dragleave', () => {
+      content.classList.remove('drag-over');
+    });
+
+    content.addEventListener('drop', async () => {
+      content.classList.remove('drag-over');
+
+      if (!draggedCard) return;
+
+      const targetColumn = contentIndex + 1;
+      
+      if (targetColumn === 2 && !draggedCard.dataset.startedDate) {
+        draggedCard.dataset.startedDate = getTodayDate();
+      } else if (targetColumn === 3 && !draggedCard.dataset.finishedDate) {
+        draggedCard.dataset.finishedDate = getTodayDate();
+      }
+
+      const bookData = {
+        title: draggedCard.querySelector('.book-title').textContent,
+        author: draggedCard.querySelector('.book-author')?.textContent || '',
+        downloadedDate: draggedCard.dataset.downloadedDate,
+        startedDate: draggedCard.dataset.startedDate,
+        finishedDate: draggedCard.dataset.finishedDate
+      };
+
+      const newCard = createBookCard(bookData, targetColumn);
+      draggedCard.replaceWith(newCard);
+      content.prepend(newCard);
+      
+      updateAllCounts();
+      await saveBooks();
+    });
+  });
+}
+
+// ========== COUNTS ==========
+
+function updateColumnCount(columnNumber) {
+  const column = document.querySelector(`.column-${columnNumber}`);
+  const count = column.querySelectorAll('.book-card').length;
+  column.querySelector('.column-subtitle').textContent =
+    `${count} book${count !== 1 ? 's' : ''}`;
+}
+
+function updateAllCounts() {
+  document.querySelectorAll('.column').forEach((_, i) => {
+    updateColumnCount(i + 1);
+  });
+}
+
+// ========== SAVE / LOAD (Per-User) ==========
+
+async function saveBooks() {
+  if (!currentUser) return;
+  
+  const books = { column1: [], column2: [], column3: [], column4: [] };
+
+  document.querySelectorAll('.column').forEach((column, index) => {
+    const key = `column${index + 1}`;
+    column.querySelectorAll('.book-card').forEach(card => {
+      books[key].push({
+        title: card.querySelector('.book-title').textContent,
+        author: card.querySelector('.book-author')?.textContent || '',
+        downloadedDate: card.dataset.downloadedDate || '',
+        startedDate: card.dataset.startedDate || '',
+        finishedDate: card.dataset.finishedDate || ''
+      });
+    });
+  });
+
+  try {
+    await db.collection('users').doc(currentUser.uid).collection('books').doc('data').set(books);
+    console.log('Books saved for user:', currentUser.uid);
+  } catch (error) {
+    console.error('Save error:', error);
   }
+}
 
-  function createBookCard(book, columnIndex) {
-    const bookCard = document.createElement('div');
-    bookCard.className = 'book-card';
-    bookCard.setAttribute('draggable', 'true');
+async function loadBooks() {
+  if (!currentUser) return;
 
-    let html = `<div class="book-title">${book.title}</div>`;
+  try {
+    const doc = await db.collection('users').doc(currentUser.uid).collection('books').doc('data').get();
+    
+    document.querySelectorAll('.column-content').forEach(c => c.innerHTML = '');
 
-    if (book.author) {
-      html += `<div class="book-author">${book.author}</div>`;
+    if (doc.exists) {
+      ['column1','column2','column3','column4'].forEach((key, i) => {
+        const column = document.querySelector(`.column-${i + 1} .column-content`);
+        doc.data()[key]?.forEach(book => {
+          column.appendChild(createBookCard(book, i + 1));
+        });
+      });
     }
 
-    // Build timeline - always show all 3 milestones
-    html += `<div class="book-timeline">`;
-    
-    // Downloaded - unlocked in column 1+
-    const downloadedState = columnIndex >= 1 ? 'unlocked milestone-1' : 'locked';
-    const downloadedText = book.downloadedDate ? `on ${book.downloadedDate}` : 'recently';
-    html += `
-      <div class="timeline-item ${downloadedState}">
-        <div class="timeline-dot"></div>
-        <div class="timeline-text">Downloaded ${downloadedText}</div>
-      </div>
-    `;
-    
-    // Started - unlocked in column 2+
-    const startedState = columnIndex >= 2 ? 'unlocked milestone-2' : 'locked';
-    const startedText = book.startedDate ? `on ${book.startedDate}` : 'recently';
-    html += `
-      <div class="timeline-item ${startedState}">
-        <div class="timeline-dot"></div>
-        <div class="timeline-text">Started ${startedText}</div>
-      </div>
-    `;
-    
-    // Finished - unlocked in column 3+
-    const finishedState = columnIndex >= 3 ? 'unl
+    updateAllCounts();
+    console.log('Books loaded for user:', currentUser.uid);
+  } catch (error) {
+    console.error('Load error:', error);
+  }
+}
+
+// ========== DELETE ==========
+
+async function deleteBook(button) {
+  const card = button.closest('.book-card');
+  card.remove();
+  updateAllCounts();
+  await saveBooks();
+}
+
+// ========== GOODREADS ==========
+
+document.addEventListener('click', (e) => {
+  const title = e.target.closest('.book-title');
+  if (!title) return;
+  window.open(
+    `https://www.goodreads.com/search?q=${encodeURIComponent(title.textContent)}`,
+    '_blank'
+  );
+});
+
+// ========== SEARCH INPUT ==========
+
+document.querySelector('.search-field').addEventListener('input', (e) => {
+  clearTimeout(searchTimeout);
+  const query = e.target.value.trim();
+
+  if (query.length > 2) {
+    searchTimeout = setTimeout(async () => {
+      displayResults(await searchBooks(query));
+    }, 300);
+  } else {
+    document.getElementById('searchResults').innerHTML = '';
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.top-bar')) {
+    document.getElementById('searchResults').innerHTML = '';
+  }
+});
+
+// ========== INIT ==========
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('App initialized, waiting for auth...');
+});
+</script>
+</html>
