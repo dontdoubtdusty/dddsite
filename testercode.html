@@ -51,14 +51,10 @@
       background-position: center;
       margin-right: 12px;
       vertical-align: middle;
-      filter: brightness(0) saturate(100%) invert(93%) sepia(15%) saturate(557%) hue-rotate(333deg) brightness(103%) contrast(95%);
-      transition: transform 0.3s ease;
+      mix-blend-mode: multiply;
+      opacity: 0.9;
     }
-
-    .top-bar h1:hover::before {
-      transform: scale(1.1);
-    }
-
+        
     .auth-controls {
       display: flex;
       align-items: center;
