@@ -648,9 +648,9 @@
 
     // Safety net logic
     const aDate = (book.addedDate && book.addedDate !== 'N/A') ? book.addedDate : "Recently";
-    const sDate = (book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : (colIdx >= 2 ? "Recently" : "...");
-    const fDate = (book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : (colIdx >= 3 ? "Recently" : "...");
-    const rDate = (book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : (colIdx >= 4 ? "Recently" : "...");
+    const sDate = colIdx >= 2 ? ((book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : "Recently") : "...";
+    const fDate = colIdx >= 3 ? ((book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : "Recently") : "...";
+    const rDate = colIdx >= 4 ? ((book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : "Recently") : "...";
 
       
 
@@ -671,9 +671,9 @@
     `;
 
     card.dataset.addedDate = aDate;
-    card.dataset.startedDate = sDate === "..." ? "" : sDate;
-    card.dataset.finishedDate = fDate === "..." ? "" : fDate;
-    card.dataset.ratedDate = rDate === "..." ? "" : rDate;
+    card.dataset.startedDate = colIdx >= 2 ? (sDate === "..." ? "" : sDate) : "";
+    card.dataset.finishedDate = colIdx >= 3 ? (fDate === "..." ? "" : fDate) : "";
+    card.dataset.ratedDate = colIdx >= 4 ? (rDate === "..." ? "" : rDate) : "";
 
     card.addEventListener('dragstart', () => { draggedCard = card; card.classList.add('dragging'); });
     card.addEventListener('dragend', () => { draggedCard = null; card.classList.remove('dragging'); });
