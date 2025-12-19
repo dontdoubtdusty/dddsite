@@ -43,17 +43,16 @@
     .top-bar h1::before {
       content: '';
       display: inline-block;
-      width: 40px; 
-      height: 29px;
-      /* Updated filename */
-      background-image: url('openbookicon.png'); 
+      width: 38px;
+      height: 28px;
+      background-image: url('bookopenicon.png');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
       margin-right: 12px;
       vertical-align: middle;
-      /* Removed mix-blend-mode: multiply; */
-      /* Removed opacity: 0.9; */
+      mix-blend-mode: multiply;
+      opacity: 0.9;
     }
         
     .auth-controls {
@@ -366,7 +365,7 @@
 
     <div class="columns-container">
         <div class="column column-1">
-            <div class="column-header"><div class="column-title">PURCHASED</div><div class="column-subtitle">0 books</div></div>
+            <div class="column-header"><div class="column-title">ADDED</div><div class="column-subtitle">0 books</div></div>
             <div class="column-content"></div>
         </div>
         <div class="column column-2">
@@ -436,16 +435,16 @@
 
   const DEMO_BOOKS = {
       column1: [
-        { title: "The Hobbit", author: "J.R.R. Tolkien", downloadedDate: "Dec 1, 2024" }
+        { title: "The Hobbit", author: "J.R.R. Tolkien", addedDate: "Dec 1, 2024" }
       ],
       column2: [
-        { title: "1984", author: "George Orwell", downloadedDate: "Nov 15, 2024", startedDate: "Nov 20, 2024" }
+        { title: "1984", author: "George Orwell", addedDate: "Nov 15, 2024", startedDate: "Nov 20, 2024" }
       ],
       column3: [
-        { title: "Project Hail Mary", author: "Andy Weir", downloadedDate: "Oct 10, 2024", startedDate: "Oct 15, 2024", finishedDate: "Nov 28, 2024" }
+        { title: "Project Hail Mary", author: "Andy Weir", addedDate: "Oct 10, 2024", startedDate: "Oct 15, 2024", finishedDate: "Nov 28, 2024" }
       ],
       column4: [
-        { title: "Dune", author: "Frank Herbert", downloadedDate: "Sep 5, 2024", startedDate: "Sep 10, 2024", finishedDate: "Oct 22, 2024", ratedDate: "Oct 23, 2024" }
+        { title: "Dune", author: "Frank Herbert", addedDate: "Sep 5, 2024", startedDate: "Sep 10, 2024", finishedDate: "Oct 22, 2024", ratedDate: "Oct 23, 2024" }
       ]
     };
     
@@ -595,7 +594,7 @@
               <div class="book-title">${book.title}</div>
               <div class="book-author">${book.author}</div>
               <div class="book-timeline">
-                <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${book.downloadedDate}</div></div>
+                <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Added ${book.addedDate}</div></div>
                 <div class="timeline-item unlocked milestone-2"><div class="timeline-dot"></div><div class="timeline-text">Started ${book.startedDate}</div></div>
                 <div class="timeline-item unlocked milestone-3"><div class="timeline-dot"></div><div class="timeline-text">Finished ${book.finishedDate}</div></div>
                 <div class="timeline-item unlocked milestone-4"><div class="timeline-dot"></div><div class="timeline-text">Rated ${book.ratedDate}</div></div>
@@ -631,7 +630,7 @@
       }
     
     const col = document.querySelector('.column-1 .column-content');
-    const bookCard = createBookCard({ title, author, downloadedDate: getTodayDate() }, 1);
+    const bookCard = createBookCard({ title, author, addedDate: getTodayDate() }, 1);
     col.prepend(bookCard);
     
     // Clear the main search field and results dropdown
@@ -648,7 +647,7 @@
     card.setAttribute('draggable', 'true');
 
     // Safety net logic
-    const pDate = (book.downloadedDate && book.downloadedDate !== 'N/A') ? book.downloadedDate : "Recently";
+    const aDate = (book.addedDate && book.addedDate !== 'N/A') ? book.addedDate : "Recently";
     const sDate = (book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : (colIdx >= 2 ? "Recently" : "...");
     const fDate = (book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : (colIdx >= 3 ? "Recently" : "...");
     const rDate = (book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : (colIdx >= 4 ? "Recently" : "...");
@@ -662,7 +661,7 @@
       <div class="book-title">${book.title}</div>
       <div class="book-author">${book.author}</div>
       <div class="book-timeline">
-        <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${pDate}</div></div>
+        <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Added ${aDate}</div></div>
         <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Started ${sDate}</div></div>
         <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Finished ${fDate}</div></div>
         <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div>
@@ -671,7 +670,7 @@
       </div>
     `;
 
-    card.dataset.downloadedDate = pDate;
+    card.dataset.addedDate = aDate;
     card.dataset.startedDate = sDate === "..." ? "" : sDate;
     card.dataset.finishedDate = fDate === "..." ? "" : fDate;
     card.dataset.ratedDate = rDate === "..." ? "" : rDate;
@@ -682,60 +681,57 @@
   }
 
   function setupDropZones() {
-    document.querySelectorAll('.column-content').forEach((content, i) => {
-      // 1. Highlight column when card enters
-      content.addEventListener('dragover', (e) => {
-        e.preventDefault(); // Required to allow drop
-        if (!content.classList.contains('drag-over')) {
-          content.classList.add('drag-over');
-        }
-      });
-  
-      // 2. Remove highlight when card leaves
-      content.addEventListener('dragleave', () => {
-        content.classList.remove('drag-over');
-      });
-  
-      // 3. Handle the drop
-      content.addEventListener('drop', async (e) => {
-        e.preventDefault();
-        content.classList.remove('drag-over'); // Clear feedback immediately
-        
-        if (!draggedCard) return;
-        
-        const targetIdx = i + 1;
-        const originalCard = draggedCard; // Store reference before any operations
-        
-        // Update dates based on column
-        if (targetIdx >= 2 && (!originalCard.dataset.startedDate || originalCard.dataset.startedDate === "Recently")) {
-          originalCard.dataset.startedDate = getTodayDate();
-        }
-        if (targetIdx >= 3 && (!originalCard.dataset.finishedDate || originalCard.dataset.finishedDate === "Recently")) {
-          originalCard.dataset.finishedDate = getTodayDate();
-        }
-        if (targetIdx >= 4 && (!originalCard.dataset.ratedDate || originalCard.dataset.ratedDate === "Recently")) {
-          originalCard.dataset.ratedDate = getTodayDate();
-        }
+      document.querySelectorAll('.column-content').forEach((content, i) => {
+        // 1. Highlight column when card enters
+        content.addEventListener('dragover', (e) => {
+          e.preventDefault(); // Required to allow drop
+          if (!content.classList.contains('drag-over')) {
+            content.classList.add('drag-over');
+          }
+        });
+    
+        // 2. Remove highlight when card leaves
+        content.addEventListener('dragleave', () => {
+          content.classList.remove('drag-over');
+        });
+    
+        // 3. Handle the drop
+        content.addEventListener('drop', async (e) => {
+          e.preventDefault();
+          content.classList.remove('drag-over'); // Clear feedback immediately
+          
+          if (!draggedCard) return;
+          
+          const targetIdx = i + 1;
+          
+          // Update dates based on column
+          if (targetIdx >= 2 && (!draggedCard.dataset.startedDate || draggedCard.dataset.startedDate === "Recently")) {
+            draggedCard.dataset.startedDate = getTodayDate();
+          }
+          if (targetIdx >= 3 && (!draggedCard.dataset.finishedDate || draggedCard.dataset.finishedDate === "Recently")) {
+            draggedCard.dataset.finishedDate = getTodayDate();
+          }
+          if (targetIdx >= 4 && (!draggedCard.dataset.ratedDate || draggedCard.dataset.ratedDate === "Recently")) {
+            draggedCard.dataset.ratedDate = getTodayDate();
+          }
 
-        
-        const newCard = createBookCard({
-          title: originalCard.querySelector('.book-title').textContent,
-          author: originalCard.querySelector('.book-author').textContent,
-          downloadedDate: originalCard.dataset.downloadedDate,
-          startedDate: originalCard.dataset.startedDate,
-          finishedDate: originalCard.dataset.finishedDate,
-          ratedDate: originalCard.dataset.ratedDate
-        }, targetIdx);
-        
-        // Remove the original FIRST, then add the new one
-        originalCard.remove();
-        content.prepend(newCard);
-        
-        updateAllCounts();
-        await saveBooks();
+          
+          const newCard = createBookCard({
+            title: draggedCard.querySelector('.book-title').textContent,
+            author: draggedCard.querySelector('.book-author').textContent,
+            addedDate: draggedCard.dataset.addedDate,
+            startedDate: draggedCard.dataset.startedDate,
+            finishedDate: draggedCard.dataset.finishedDate,
+            ratedDate: draggedCard.dataset.ratedDate
+          }, targetIdx);
+          
+          content.prepend(newCard);
+          draggedCard.remove();
+          updateAllCounts();
+          await saveBooks();
+        });
       });
-    });
-  }
+    }
 
   async function saveBooks() {
     if (!currentUser) return;
@@ -745,7 +741,7 @@
         data[`column${i+1}`].push({
           title: c.querySelector('.book-title').textContent,
           author: c.querySelector('.book-author').textContent,
-          downloadedDate: c.dataset.downloadedDate,
+          addedDate: c.dataset.addedDate,
           startedDate: c.dataset.startedDate,
           finishedDate: c.dataset.finishedDate,
           ratedDate: c.dataset.ratedDate
@@ -782,7 +778,7 @@
       const bookData = {
         title: card.querySelector('.book-title').textContent,
         author: card.querySelector('.book-author').textContent,
-        downloadedDate: card.dataset.downloadedDate,
+        addedDate: card.dataset.addedDate,
         startedDate: card.dataset.startedDate,
         finishedDate: card.dataset.finishedDate,
         ratedDate: card.dataset.ratedDate,
