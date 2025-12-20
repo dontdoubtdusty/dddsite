@@ -426,23 +426,28 @@
         </div>
         
         <div style="margin-bottom:16px;">
-          <label style="display:block; font-size:13px; font-weight:600; color:#1e40af; margin-bottom:6px;">📚 Added Date</label>
+          <label style="display:block; font-size:13px; font-weight:600; color:#1e40af; margin-bottom:6px;">📚 Added</label>
           <input type="date" id="editAdded" class="search-field" style="background: #e6f2ff; border-color: #93c5fd;">
         </div>
         
         <div style="margin-bottom:16px;">
-          <label style="display:block; font-size:13px; font-weight:600; color:#c2410c; margin-bottom:6px;">📖 Started Date</label>
+          <label style="display:block; font-size:13px; font-weight:600; color:#c2410c; margin-bottom:6px;">📖 Started</label>
           <input type="date" id="editStarted" class="search-field" style="background: #fff7ed; border-color: #fb923c;">
         </div>
         
         <div style="margin-bottom:16px;">
-          <label style="display:block; font-size:13px; font-weight:600; color:#d97706; margin-bottom:6px;">✅ Finished Date</label>
+          <label style="display:block; font-size:13px; font-weight:600; color:#d97706; margin-bottom:6px;">✅ Finished</label>
           <input type="date" id="editFinished" class="search-field" style="background: #fff9ed; border-color: #f5a623;">
         </div>
         
         <div style="margin-bottom:24px;">
-          <label style="display:block; font-size:13px; font-weight:600; color:#15803d; margin-bottom:6px;">⭐ Rated Date</label>
+          <label style="display:block; font-size:13px; font-weight:600; color:#15803d; margin-bottom:6px;">⭐ Rated</label>
           <input type="date" id="editRated" class="search-field" style="background: #f0fdf4; border-color: #4ade80;">
+        </div>
+
+        <div id="archivedDateField" style="margin-bottom:24px; display:none;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#581c87; margin-bottom:6px;">🏆 Archived</label>
+          <input type="date" id="editArchived" class="search-field" style="background: #f3e8ff; border-color: #a855f7;">
         </div>
         
         <div style="display:flex; gap:12px">
@@ -630,19 +635,20 @@
         snapshot.forEach(doc => {
           const book = doc.data();
           html += `
-            <div class="book-card" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #d4af37; box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);">
-              <button class="btn-delete" onclick="deleteArchivedBook('${doc.id}')">Delete</button>
-              <div class="book-title">${book.title}</div>
-              <div class="book-author">${book.author}</div>
-              <div class="book-timeline">
-                <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Added ${book.addedDate}</div></div>
-                <div class="timeline-item unlocked milestone-2"><div class="timeline-dot"></div><div class="timeline-text">Started ${book.startedDate}</div></div>
-                <div class="timeline-item unlocked milestone-3"><div class="timeline-dot"></div><div class="timeline-text">Finished ${book.finishedDate}</div></div>
-                <div class="timeline-item unlocked milestone-4"><div class="timeline-dot"></div><div class="timeline-text">Rated ${book.ratedDate}</div></div>
-                <div class="timeline-item unlocked" style="background: rgba(168, 85, 247, 0.15);"><div class="timeline-dot" style="background: #a855f7;"></div><div class="timeline-text" style="color: #581c87; font-weight: 700;">⭐ Archived ${book.archivedDate}</div></div>
+              <div class="book-card" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #d4af37; box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);">
+                <button class="btn-delete" onclick="editArchivedBook('${doc.id}')" style="background: transparent; color: #4285f4; border-color: #4285f4; margin-right: 8px;">Edit</button>
+                <button class="btn-delete" onclick="deleteArchivedBook('${doc.id}')">Delete</button>
+                <div class="book-title">${book.title}</div>
+                <div class="book-author">${book.author}</div>
+                <div class="book-timeline">
+                  <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Added ${book.addedDate}</div></div>
+                  <div class="timeline-item unlocked milestone-2"><div class="timeline-dot"></div><div class="timeline-text">Started ${book.startedDate}</div></div>
+                  <div class="timeline-item unlocked milestone-3"><div class="timeline-dot"></div><div class="timeline-text">Finished ${book.finishedDate}</div></div>
+                  <div class="timeline-item unlocked milestone-4"><div class="timeline-dot"></div><div class="timeline-text">Rated ${book.ratedDate}</div></div>
+                  <div class="timeline-item unlocked" style="background: rgba(168, 85, 247, 0.15);"><div class="timeline-dot" style="background: #a855f7;"></div><div class="timeline-text" style="color: #581c87; font-weight: 700;">⭐ Archived ${book.archivedDate}</div></div>
+                </div>
               </div>
-            </div>
-          `;
+            `;
         });
         
         archiveList.innerHTML = html;
@@ -855,7 +861,9 @@
     
     function closeEditModal() {
       document.getElementById('editModal').style.display = 'none';
+      document.getElementById('archivedDateField').style.display = 'none';
       editingCard = null;
+      editingArchivedId = null;
     }
     
     function dateToISO(dateStr) {
@@ -875,8 +883,6 @@
     }
     
     async function submitEdit() {
-      if (!editingCard) return;
-      
       const title = document.getElementById('editTitle').value.trim();
       const author = document.getElementById('editAuthor').value.trim() || 'Unknown Author';
       const addedDate = formatDate(document.getElementById('editAdded').value);
@@ -888,6 +894,28 @@
         alert('Title is required');
         return;
       }
+      
+      // Check if editing an archived book
+      if (editingArchivedId) {
+        const archivedDate = formatDate(document.getElementById('editArchived').value);
+        
+        await db.collection('users').doc(currentUser.uid).collection('archived').doc(editingArchivedId).update({
+          title,
+          author,
+          addedDate,
+          startedDate,
+          finishedDate,
+          ratedDate,
+          archivedDate
+        });
+        
+        await loadArchivedBooks();
+        closeEditModal();
+        return;
+      }
+      
+      // Otherwise editing a regular card
+      if (!editingCard) return;
       
       // Find which column the card is in
       const columnContent = editingCard.closest('.column-content');
@@ -908,6 +936,33 @@
       
       closeEditModal();
       await saveBooks();
+    }
+
+    let editingArchivedId = null;
+
+    async function editArchivedBook(docId) {
+      try {
+        const doc = await db.collection('users').doc(currentUser.uid).collection('archived').doc(docId).get();
+        if (!doc.exists) return;
+        
+        const book = doc.data();
+        editingArchivedId = docId;
+        
+        document.getElementById('editTitle').value = book.title;
+        document.getElementById('editAuthor').value = book.author;
+        document.getElementById('editAdded').value = dateToISO(book.addedDate);
+        document.getElementById('editStarted').value = dateToISO(book.startedDate);
+        document.getElementById('editFinished').value = dateToISO(book.finishedDate);
+        document.getElementById('editRated').value = dateToISO(book.ratedDate);
+        document.getElementById('editArchived').value = dateToISO(book.archivedDate);
+        
+        // Show archived date field
+        document.getElementById('archivedDateField').style.display = 'block';
+        
+        document.getElementById('editModal').style.display = 'flex';
+      } catch (error) {
+        console.error('Error loading archived book:', error);
+      }
     }
 
   document.querySelector('.search-field').addEventListener('input', (e) => {
