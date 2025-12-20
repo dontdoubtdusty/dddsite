@@ -365,7 +365,7 @@
 
     <div class="columns-container">
         <div class="column column-1">
-            <div class="column-header"><div class="column-title">PURCHASED</div><div class="column-subtitle">0 books</div></div>
+            <div class="column-header"><div class="column-title">ADDED</div><div class="column-subtitle">0 books</div></div>
             <div class="column-content"></div>
         </div>
         <div class="column column-2">
@@ -396,20 +396,36 @@
     </div>
 
     <div id="archiveModal" class="modal-overlay">
-  <div class="modal-content" style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
-    <div style="text-align: center; margin-bottom: 20px;">
-      <img src="/booktrophy.png" alt="Trophy" style="width: 80px; height: 80px; filter: brightness(0) saturate(100%) invert(60%) sepia(80%) saturate(500%) hue-rotate(10deg) brightness(95%) contrast(90%); margin-bottom: 12px;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="color:#2a241f; font-size:28px; margin: 0; flex: 1;">Your Archive</h2>
-        <button onclick="closeArchiveModal()" class="btn-sign-out" style="color:#2a241f; border-color:#2a241f;">Close</button>
+      <div class="modal-content" style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <img src="/booktrophy.png" alt="Trophy" style="width: 80px; height: 80px; filter: brightness(0) saturate(100%) invert(60%) sepia(80%) saturate(500%) hue-rotate(10deg) brightness(95%) contrast(90%); margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="color:#2a241f; font-size:28px; margin: 0; flex: 1;">Your Archive</h2>
+            <button onclick="closeArchiveModal()" class="btn-sign-out" style="color:#2a241f; border-color:#2a241f;">Close</button>
+          </div>
+        </div>
+        <p style="color:#6f5f4d; margin-bottom:24px; font-size:14px;">Books you've conquered and celebrated.</p>
+        <div id="archiveList" style="display: grid; gap: 16px;">
+          <!-- Archive cards will go here -->
+        </div>
       </div>
     </div>
-    <p style="color:#6f5f4d; margin-bottom:24px; font-size:14px;">Books you've conquered and celebrated.</p>
-    <div id="archiveList" style="display: grid; gap: 16px;">
-      <!-- Archive cards will go here -->
+
+    <div id="editModal" class="modal-overlay">
+      <div class="modal-content">
+        <h2 style="color:#2a241f; margin-bottom:12px; font-size:24px">Edit Book</h2>
+        <input type="text" id="editTitle" class="search-field" style="margin-bottom:12px" placeholder="Book Title">
+        <input type="text" id="editAuthor" class="search-field" style="margin-bottom:12px" placeholder="Author Name">
+        <input type="date" id="editAdded" class="search-field" style="margin-bottom:12px">
+        <input type="date" id="editStarted" class="search-field" style="margin-bottom:12px">
+        <input type="date" id="editFinished" class="search-field" style="margin-bottom:12px">
+        <input type="date" id="editRated" class="search-field" style="margin-bottom:24px">
+        <div style="display:flex; gap:12px">
+          <button onclick="closeEditModal()" class="btn-sign-out" style="color:#a65b4b; border-color:#a65b4b; flex:1">Cancel</button>
+          <button onclick="submitEdit()" class="auth-btn" style="flex:1; justify-content:center; background:#3a2f25; color:white; border:none">Save Changes</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -435,16 +451,16 @@
 
   const DEMO_BOOKS = {
       column1: [
-        { title: "The Hobbit", author: "J.R.R. Tolkien", downloadedDate: "Dec 1, 2024" }
+        { title: "The Hobbit", author: "J.R.R. Tolkien", addedDate: "Dec 1, 2024" }
       ],
       column2: [
-        { title: "1984", author: "George Orwell", downloadedDate: "Nov 15, 2024", startedDate: "Nov 20, 2024" }
+        { title: "1984", author: "George Orwell", addedDate: "Nov 15, 2024", startedDate: "Nov 20, 2024" }
       ],
       column3: [
-        { title: "Project Hail Mary", author: "Andy Weir", downloadedDate: "Oct 10, 2024", startedDate: "Oct 15, 2024", finishedDate: "Nov 28, 2024" }
+        { title: "Project Hail Mary", author: "Andy Weir", addedDate: "Oct 10, 2024", startedDate: "Oct 15, 2024", finishedDate: "Nov 28, 2024" }
       ],
       column4: [
-        { title: "Dune", author: "Frank Herbert", downloadedDate: "Sep 5, 2024", startedDate: "Sep 10, 2024", finishedDate: "Oct 22, 2024", ratedDate: "Oct 23, 2024" }
+        { title: "Dune", author: "Frank Herbert", addedDate: "Sep 5, 2024", startedDate: "Sep 10, 2024", finishedDate: "Oct 22, 2024", ratedDate: "Oct 23, 2024" }
       ]
     };
     
@@ -594,7 +610,7 @@
               <div class="book-title">${book.title}</div>
               <div class="book-author">${book.author}</div>
               <div class="book-timeline">
-                <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${book.downloadedDate}</div></div>
+                <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Added ${book.addedDate}</div></div>
                 <div class="timeline-item unlocked milestone-2"><div class="timeline-dot"></div><div class="timeline-text">Started ${book.startedDate}</div></div>
                 <div class="timeline-item unlocked milestone-3"><div class="timeline-dot"></div><div class="timeline-text">Finished ${book.finishedDate}</div></div>
                 <div class="timeline-item unlocked milestone-4"><div class="timeline-dot"></div><div class="timeline-text">Rated ${book.ratedDate}</div></div>
@@ -630,7 +646,7 @@
       }
     
     const col = document.querySelector('.column-1 .column-content');
-    const bookCard = createBookCard({ title, author, downloadedDate: getTodayDate() }, 1);
+    const bookCard = createBookCard({ title, author, addedDate: getTodayDate() }, 1);
     col.prepend(bookCard);
     
     // Clear the main search field and results dropdown
@@ -647,10 +663,10 @@
     card.setAttribute('draggable', 'true');
 
     // Safety net logic
-    const pDate = (book.downloadedDate && book.downloadedDate !== 'N/A') ? book.downloadedDate : "Recently";
-    const sDate = (book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : (colIdx >= 2 ? "Recently" : "...");
-    const fDate = (book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : (colIdx >= 3 ? "Recently" : "...");
-    const rDate = (book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : (colIdx >= 4 ? "Recently" : "...");
+    const aDate = (book.addedDate && book.addedDate !== 'N/A') ? book.addedDate : "Recently";
+    const sDate = colIdx >= 2 ? ((book.startedDate && book.startedDate !== 'N/A') ? book.startedDate : "Recently") : "...";
+    const fDate = colIdx >= 3 ? ((book.finishedDate && book.finishedDate !== 'N/A') ? book.finishedDate : "Recently") : "...";
+    const rDate = colIdx >= 4 ? ((book.ratedDate && book.ratedDate !== 'N/A') ? book.ratedDate : "Recently") : "...";
 
       
 
@@ -658,10 +674,11 @@
       <button class="btn-delete" onclick="${colIdx === 4 ? 'archiveBook(this)' : 'deleteBook(this)'}">
         ${colIdx === 4 ? '⭐ Archive' : 'Delete'}
       </button>
+      <button class="btn-delete" onclick="editBook(this)" style="background: transparent; color: #4285f4; border-color: #4285f4; margin-right: 8px;">Edit</button>
       <div class="book-title">${book.title}</div>
       <div class="book-author">${book.author}</div>
       <div class="book-timeline">
-        <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Purchased ${pDate}</div></div>
+        <div class="timeline-item unlocked milestone-1"><div class="timeline-dot"></div><div class="timeline-text">Added ${aDate}</div></div>
         <div class="timeline-item ${colIdx >= 2 ? 'unlocked milestone-2' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Started ${sDate}</div></div>
         <div class="timeline-item ${colIdx >= 3 ? 'unlocked milestone-3' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Finished ${fDate}</div></div>
         <div class="timeline-item ${colIdx >= 4 ? 'unlocked milestone-4' : 'locked'}"><div class="timeline-dot"></div><div class="timeline-text">Rated ${rDate}</div>
@@ -670,10 +687,10 @@
       </div>
     `;
 
-    card.dataset.downloadedDate = pDate;
-    card.dataset.startedDate = sDate === "..." ? "" : sDate;
-    card.dataset.finishedDate = fDate === "..." ? "" : fDate;
-    card.dataset.ratedDate = rDate === "..." ? "" : rDate;
+    card.dataset.addedDate = aDate;
+    card.dataset.startedDate = colIdx >= 2 ? (sDate === "..." ? "" : sDate) : "";
+    card.dataset.finishedDate = colIdx >= 3 ? (fDate === "..." ? "" : fDate) : "";
+    card.dataset.ratedDate = colIdx >= 4 ? (rDate === "..." ? "" : rDate) : "";
 
     card.addEventListener('dragstart', () => { draggedCard = card; card.classList.add('dragging'); });
     card.addEventListener('dragend', () => { draggedCard = null; card.classList.remove('dragging'); });
@@ -719,7 +736,7 @@
           const newCard = createBookCard({
             title: draggedCard.querySelector('.book-title').textContent,
             author: draggedCard.querySelector('.book-author').textContent,
-            downloadedDate: draggedCard.dataset.downloadedDate,
+            addedDate: draggedCard.dataset.addedDate,
             startedDate: draggedCard.dataset.startedDate,
             finishedDate: draggedCard.dataset.finishedDate,
             ratedDate: draggedCard.dataset.ratedDate
@@ -741,7 +758,7 @@
         data[`column${i+1}`].push({
           title: c.querySelector('.book-title').textContent,
           author: c.querySelector('.book-author').textContent,
-          downloadedDate: c.dataset.downloadedDate,
+          addedDate: c.dataset.addedDate,
           startedDate: c.dataset.startedDate,
           finishedDate: c.dataset.finishedDate,
           ratedDate: c.dataset.ratedDate
@@ -778,7 +795,7 @@
       const bookData = {
         title: card.querySelector('.book-title').textContent,
         author: card.querySelector('.book-author').textContent,
-        downloadedDate: card.dataset.downloadedDate,
+        addedDate: card.dataset.addedDate,
         startedDate: card.dataset.startedDate,
         finishedDate: card.dataset.finishedDate,
         ratedDate: card.dataset.ratedDate,
@@ -791,6 +808,80 @@
       // Remove from view
       card.remove();
       updateAllCounts();
+      await saveBooks();
+    }
+    
+    let editingCard = null;
+
+    function editBook(btn) {
+      editingCard = btn.closest('.book-card');
+      const title = editingCard.querySelector('.book-title').textContent;
+      const author = editingCard.querySelector('.book-author').textContent;
+      
+      document.getElementById('editTitle').value = title;
+      document.getElementById('editAuthor').value = author;
+      document.getElementById('editAdded').value = dateToISO(editingCard.dataset.addedDate);
+      document.getElementById('editStarted').value = dateToISO(editingCard.dataset.startedDate);
+      document.getElementById('editFinished').value = dateToISO(editingCard.dataset.finishedDate);
+      document.getElementById('editRated').value = dateToISO(editingCard.dataset.ratedDate);
+      
+      document.getElementById('editModal').style.display = 'flex';
+    }
+    
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+      editingCard = null;
+    }
+    
+    function dateToISO(dateStr) {
+      if (!dateStr || dateStr === 'Recently' || dateStr === '...') return '';
+      try {
+        const date = new Date(dateStr);
+        return date.toISOString().split('T')[0];
+      } catch {
+        return '';
+      }
+    }
+    
+    function formatDate(isoDate) {
+      if (!isoDate) return 'Recently';
+      const date = new Date(isoDate);
+      return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+    
+    async function submitEdit() {
+      if (!editingCard) return;
+      
+      const title = document.getElementById('editTitle').value.trim();
+      const author = document.getElementById('editAuthor').value.trim() || 'Unknown Author';
+      const addedDate = formatDate(document.getElementById('editAdded').value);
+      const startedDate = formatDate(document.getElementById('editStarted').value);
+      const finishedDate = formatDate(document.getElementById('editFinished').value);
+      const ratedDate = formatDate(document.getElementById('editRated').value);
+      
+      if (!title) {
+        alert('Title is required');
+        return;
+      }
+      
+      // Find which column the card is in
+      const columnContent = editingCard.closest('.column-content');
+      const columnIndex = Array.from(document.querySelectorAll('.column-content')).indexOf(columnContent) + 1;
+      
+      // Create updated card
+      const newCard = createBookCard({
+        title,
+        author,
+        addedDate,
+        startedDate,
+        finishedDate,
+        ratedDate
+      }, columnIndex);
+      
+      // Replace old card with new card
+      editingCard.replaceWith(newCard);
+      
+      closeEditModal();
       await saveBooks();
     }
 
