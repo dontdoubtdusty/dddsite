@@ -396,20 +396,36 @@
     </div>
 
     <div id="archiveModal" class="modal-overlay">
-  <div class="modal-content" style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
-    <div style="text-align: center; margin-bottom: 20px;">
-      <img src="/booktrophy.png" alt="Trophy" style="width: 80px; height: 80px; filter: brightness(0) saturate(100%) invert(60%) sepia(80%) saturate(500%) hue-rotate(10deg) brightness(95%) contrast(90%); margin-bottom: 12px;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="color:#2a241f; font-size:28px; margin: 0; flex: 1;">Your Archive</h2>
-        <button onclick="closeArchiveModal()" class="btn-sign-out" style="color:#2a241f; border-color:#2a241f;">Close</button>
+      <div class="modal-content" style="max-width: 800px; max-height: 85vh; overflow-y: auto;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <img src="/booktrophy.png" alt="Trophy" style="width: 80px; height: 80px; filter: brightness(0) saturate(100%) invert(60%) sepia(80%) saturate(500%) hue-rotate(10deg) brightness(95%) contrast(90%); margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="color:#2a241f; font-size:28px; margin: 0; flex: 1;">Your Archive</h2>
+            <button onclick="closeArchiveModal()" class="btn-sign-out" style="color:#2a241f; border-color:#2a241f;">Close</button>
+          </div>
+        </div>
+        <p style="color:#6f5f4d; margin-bottom:24px; font-size:14px;">Books you've conquered and celebrated.</p>
+        <div id="archiveList" style="display: grid; gap: 16px;">
+          <!-- Archive cards will go here -->
+        </div>
       </div>
     </div>
-    <p style="color:#6f5f4d; margin-bottom:24px; font-size:14px;">Books you've conquered and celebrated.</p>
-    <div id="archiveList" style="display: grid; gap: 16px;">
-      <!-- Archive cards will go here -->
+
+    <div id="editModal" class="modal-overlay">
+      <div class="modal-content">
+        <h2 style="color:#2a241f; margin-bottom:12px; font-size:24px">Edit Book</h2>
+        <input type="text" id="editTitle" class="search-field" style="margin-bottom:12px" placeholder="Book Title">
+        <input type="text" id="editAuthor" class="search-field" style="margin-bottom:12px" placeholder="Author Name">
+        <input type="date" id="editAdded" class="search-field" style="margin-bottom:12px">
+        <input type="date" id="editStarted" class="search-field" style="margin-bottom:12px">
+        <input type="date" id="editFinished" class="search-field" style="margin-bottom:12px">
+        <input type="date" id="editRated" class="search-field" style="margin-bottom:24px">
+        <div style="display:flex; gap:12px">
+          <button onclick="closeEditModal()" class="btn-sign-out" style="color:#a65b4b; border-color:#a65b4b; flex:1">Cancel</button>
+          <button onclick="submitEdit()" class="auth-btn" style="flex:1; justify-content:center; background:#3a2f25; color:white; border:none">Save Changes</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -658,6 +674,7 @@
       <button class="btn-delete" onclick="${colIdx === 4 ? 'archiveBook(this)' : 'deleteBook(this)'}">
         ${colIdx === 4 ? '⭐ Archive' : 'Delete'}
       </button>
+      <button class="btn-delete" onclick="editBook(this)" style="background: transparent; color: #4285f4; border-color: #4285f4; margin-right: 8px;">Edit</button>
       <div class="book-title">${book.title}</div>
       <div class="book-author">${book.author}</div>
       <div class="book-timeline">
@@ -791,6 +808,80 @@
       // Remove from view
       card.remove();
       updateAllCounts();
+      await saveBooks();
+    }
+    
+    let editingCard = null;
+
+    function editBook(btn) {
+      editingCard = btn.closest('.book-card');
+      const title = editingCard.querySelector('.book-title').textContent;
+      const author = editingCard.querySelector('.book-author').textContent;
+      
+      document.getElementById('editTitle').value = title;
+      document.getElementById('editAuthor').value = author;
+      document.getElementById('editAdded').value = dateToISO(editingCard.dataset.addedDate);
+      document.getElementById('editStarted').value = dateToISO(editingCard.dataset.startedDate);
+      document.getElementById('editFinished').value = dateToISO(editingCard.dataset.finishedDate);
+      document.getElementById('editRated').value = dateToISO(editingCard.dataset.ratedDate);
+      
+      document.getElementById('editModal').style.display = 'flex';
+    }
+    
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+      editingCard = null;
+    }
+    
+    function dateToISO(dateStr) {
+      if (!dateStr || dateStr === 'Recently' || dateStr === '...') return '';
+      try {
+        const date = new Date(dateStr);
+        return date.toISOString().split('T')[0];
+      } catch {
+        return '';
+      }
+    }
+    
+    function formatDate(isoDate) {
+      if (!isoDate) return 'Recently';
+      const date = new Date(isoDate);
+      return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+    
+    async function submitEdit() {
+      if (!editingCard) return;
+      
+      const title = document.getElementById('editTitle').value.trim();
+      const author = document.getElementById('editAuthor').value.trim() || 'Unknown Author';
+      const addedDate = formatDate(document.getElementById('editAdded').value);
+      const startedDate = formatDate(document.getElementById('editStarted').value);
+      const finishedDate = formatDate(document.getElementById('editFinished').value);
+      const ratedDate = formatDate(document.getElementById('editRated').value);
+      
+      if (!title) {
+        alert('Title is required');
+        return;
+      }
+      
+      // Find which column the card is in
+      const columnContent = editingCard.closest('.column-content');
+      const columnIndex = Array.from(document.querySelectorAll('.column-content')).indexOf(columnContent) + 1;
+      
+      // Create updated card
+      const newCard = createBookCard({
+        title,
+        author,
+        addedDate,
+        startedDate,
+        finishedDate,
+        ratedDate
+      }, columnIndex);
+      
+      // Replace old card with new card
+      editingCard.replaceWith(newCard);
+      
+      closeEditModal();
       await saveBooks();
     }
 
