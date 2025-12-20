@@ -262,19 +262,19 @@
     // Load flipped state from storage
     async function getFlippedState() {
         try {
-            const result = await window.storage.get('flipped-boxes');
-            return result ? JSON.parse(result.value) : {};
+            const stored = localStorage.getItem('flipped-boxes');
+            return stored ? JSON.parse(stored) : {};
         } catch (error) {
             return {};
         }
     }
-
+    
     // Save flipped state to storage
     async function saveFlippedState(day, isFlipped) {
         try {
             const flippedState = await getFlippedState();
             flippedState[day] = isFlipped;
-            await window.storage.set('flipped-boxes', JSON.stringify(flippedState));
+            localStorage.setItem('flipped-boxes', JSON.stringify(flippedState));
         } catch (error) {
             console.error('Failed to save state:', error);
         }
