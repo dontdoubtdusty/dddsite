@@ -196,6 +196,42 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.6);
         }
+        /* Sparkle effect */
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 1.5em;
+            animation: sparkle-animation 0.8s ease-out forwards;
+            z-index: 100;
+        }
+        
+        @keyframes sparkle-animation {
+            0% {
+                transform: translate(0, 0) scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Box flip glow effect */
+        .calendar-box.flipping .box-inner {
+            animation: flip-glow 0.6s ease-out;
+        }
+        
+        @keyframes flip-glow {
+            0%, 100% {
+                filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0));
+            }
+            50% {
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+            }
+        }
 
         @media (max-width: 768px) {
             h1 {
@@ -265,6 +301,32 @@
 
     // Generate snowflakes periodically
     setInterval(createSnowflake, 200);
+
+    // Create sparkle effect
+    function createSparkles(x, y) {
+        const sparkleSymbols = ['✨', '⭐', '💫', '🌟'];
+        const sparkleCount = 8;
+        
+        for (let i = 0; i < sparkleCount; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.textContent = sparkleSymbols[Math.floor(Math.random() * sparkleSymbols.length)];
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            
+            const angle = (i / sparkleCount) * Math.PI * 2;
+            const distance = 50 + Math.random() * 30;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+            
+            sparkle.style.setProperty('--tx', tx + 'px');
+            sparkle.style.setProperty('--ty', ty + 'px');
+            
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => sparkle.remove(), 800);
+        }
+    }
 
     // Get current date
     const now = new Date();
@@ -340,10 +402,17 @@
             `;
             
             if (unlocked) {
-                box.addEventListener('click', function() {
+                box.addEventListener('click', function(e) {
                     this.classList.toggle('flipped');
                     const isFlipped = this.classList.contains('flipped');
                     saveFlippedState(i, isFlipped);
+                    
+                    // Add sparkle effect when flipping
+                    if (isFlipped) {
+                        this.classList.add('flipping');
+                        createSparkles(e.clientX, e.clientY);
+                        setTimeout(() => this.classList.remove('flipping'), 600);
+                    }
                 });
             }
             
