@@ -266,6 +266,9 @@
     </style>
 </head>
 <body>
+    <audio id="bellSound" preload="auto">
+        <source src="christmas-bells-02-439604.mp3" type="audio/mpeg">
+    </audio>
     <h1>❄️ Draft Mashup Advent Calendar ❄️</h1>
     <p class="subtitle">25 Chaotic Limited Environments</p>
     <button class="reset-button" id="resetButton">Reset All Boxes</button>
@@ -412,6 +415,12 @@
                         this.classList.add('flipping');
                         createSparkles(e.clientX, e.clientY);
                         setTimeout(() => this.classList.remove('flipping'), 600);
+                        
+                        // Play bell sound
+                        const bellSound = document.getElementById('bellSound');
+                        bellSound.currentTime = 0; // Reset to start
+                        bellSound.volume = 0.3; // Set volume (0.0 to 1.0)
+                        bellSound.play().catch(err => console.log('Audio play failed:', err));
                     }
                 });
             }
