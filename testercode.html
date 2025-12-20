@@ -849,12 +849,39 @@
       const title = editingCard.querySelector('.book-title').textContent;
       const author = editingCard.querySelector('.book-author').textContent;
       
+      // Find which column the card is in
+      const columnContent = editingCard.closest('.column-content');
+      const columnIndex = Array.from(document.querySelectorAll('.column-content')).indexOf(columnContent) + 1;
+      
       document.getElementById('editTitle').value = title;
       document.getElementById('editAuthor').value = author;
       document.getElementById('editAdded').value = dateToISO(editingCard.dataset.addedDate);
       document.getElementById('editStarted').value = dateToISO(editingCard.dataset.startedDate);
       document.getElementById('editFinished').value = dateToISO(editingCard.dataset.finishedDate);
       document.getElementById('editRated').value = dateToISO(editingCard.dataset.ratedDate);
+      
+      // Update labels to show locked status
+      const startedLabel = document.querySelector('label[for="editStarted"]') || document.querySelectorAll('#editModal label')[3];
+      const finishedLabel = document.querySelector('label[for="editFinished"]') || document.querySelectorAll('#editModal label')[4];
+      const ratedLabel = document.querySelector('label[for="editRated"]') || document.querySelectorAll('#editModal label')[5];
+      
+      if (columnIndex < 2) {
+        startedLabel.innerHTML = '📖 Started Date <span style="color:#999; font-weight:400; font-size:11px;">(Not unlocked yet)</span>';
+      } else {
+        startedLabel.innerHTML = '📖 Started Date';
+      }
+      
+      if (columnIndex < 3) {
+        finishedLabel.innerHTML = '✅ Finished Date <span style="color:#999; font-weight:400; font-size:11px;">(Not unlocked yet)</span>';
+      } else {
+        finishedLabel.innerHTML = '✅ Finished Date';
+      }
+      
+      if (columnIndex < 4) {
+        ratedLabel.innerHTML = '⭐ Rated Date <span style="color:#999; font-weight:400; font-size:11px;">(Not unlocked yet)</span>';
+      } else {
+        ratedLabel.innerHTML = '⭐ Rated Date';
+      }
       
       document.getElementById('editModal').style.display = 'flex';
     }
