@@ -412,14 +412,39 @@
     </div>
 
     <div id="editModal" class="modal-overlay">
-      <div class="modal-content">
-        <h2 style="color:#2a241f; margin-bottom:12px; font-size:24px">Edit Book</h2>
-        <input type="text" id="editTitle" class="search-field" style="margin-bottom:12px" placeholder="Book Title">
-        <input type="text" id="editAuthor" class="search-field" style="margin-bottom:12px" placeholder="Author Name">
-        <input type="date" id="editAdded" class="search-field" style="margin-bottom:12px">
-        <input type="date" id="editStarted" class="search-field" style="margin-bottom:12px">
-        <input type="date" id="editFinished" class="search-field" style="margin-bottom:12px">
-        <input type="date" id="editRated" class="search-field" style="margin-bottom:24px">
+      <div class="modal-content" style="max-width: 480px;">
+        <h2 style="color:#2a241f; margin-bottom:20px; font-size:24px">Edit Book</h2>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#2a241f; margin-bottom:6px;">Book Title</label>
+          <input type="text" id="editTitle" class="search-field" placeholder="Enter book title">
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#2a241f; margin-bottom:6px;">Author</label>
+          <input type="text" id="editAuthor" class="search-field" placeholder="Enter author name">
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#1e40af; margin-bottom:6px;">📚 Added Date</label>
+          <input type="date" id="editAdded" class="search-field" style="background: #e6f2ff; border-color: #93c5fd;">
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#c2410c; margin-bottom:6px;">📖 Started Date</label>
+          <input type="date" id="editStarted" class="search-field" style="background: #fff7ed; border-color: #fb923c;">
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#d97706; margin-bottom:6px;">✅ Finished Date</label>
+          <input type="date" id="editFinished" class="search-field" style="background: #fff9ed; border-color: #f5a623;">
+        </div>
+        
+        <div style="margin-bottom:24px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#15803d; margin-bottom:6px;">⭐ Rated Date</label>
+          <input type="date" id="editRated" class="search-field" style="background: #f0fdf4; border-color: #4ade80;">
+        </div>
+        
         <div style="display:flex; gap:12px">
           <button onclick="closeEditModal()" class="btn-sign-out" style="color:#a65b4b; border-color:#a65b4b; flex:1">Cancel</button>
           <button onclick="submitEdit()" class="auth-btn" style="flex:1; justify-content:center; background:#3a2f25; color:white; border:none">Save Changes</button>
