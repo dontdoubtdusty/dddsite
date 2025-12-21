@@ -14,6 +14,9 @@
         body {
             font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         .splash-container {
             min-height: 100vh;
@@ -23,7 +26,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 20px;
+            padding: 40px 20px;
         }
         .logo {
             width: 200px;
@@ -36,6 +39,9 @@
             text-align: center;
             color: white;
             animation: fadeInUp 1.2s ease-out;
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 15px;
         }
         h1 {
             font-size: 4rem;
@@ -213,8 +219,14 @@
                 gap: 20px;
                 animation: scroll 25s linear infinite;
             }
+            .review-text {
+                font-size: 0.9rem;
+            }
             .splash-container {
-                padding: 15px;
+                padding: 30px 15px;
+            }
+            .main-content {
+                padding: 0 10px;
             }
             .sparkle {
                 display: none;
