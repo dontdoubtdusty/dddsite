@@ -230,9 +230,117 @@
                 margin-bottom: 20px;
             }
         }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #d4a574;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        .navbar-logo-img {
+            width: 40px;
+            height: 40px;
+            filter: brightness(0) saturate(100%) invert(75%) sepia(40%) saturate(600%) hue-rotate(0deg) brightness(95%) contrast(90%);
+        }
+        .navbar-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        .navbar-links a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-size: 1rem;
+        }
+        .navbar-links a:hover {
+            color: #d4a574;
+        }
+        .navbar-book-btn {
+            background: #e8b86d;
+            color: #5a4a3a;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .navbar-book-btn:hover {
+            background: #f2c98a;
+            transform: translateY(-2px);
+        }
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+            .navbar-links {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+            .navbar-links.active {
+                display: flex;
+            }
+            .mobile-menu-toggle {
+                display: block;
+            }
+            .navbar-logo {
+                font-size: 1.1rem;
+            }
+            .navbar-logo-img {
+                width: 35px;
+                height: 35px;
+            }
+        }
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <a href="index.html" class="navbar-logo">
+            <img src="dcslogo.svg" alt="Logo" class="navbar-logo-img">
+            <span>Dusty's</span>
+        </a>
+        <button class="mobile-menu-toggle" onclick="toggleMenu()">☰</button>
+        <div class="navbar-links" id="navLinks">
+            <a href="services.html">Services</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="about.html">About</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="contact.html">Contact</a>
+            <a href="booking.html" class="navbar-book-btn">Book Now</a>
+        </div>
+    </nav>
     <div class="splash-container">      
         <div class="main-content">
             <img src="dcslogo.svg" alt="Dusty's Cleaning Service Logo" class="logo">
@@ -351,6 +459,19 @@
         </div>
     </div>
     <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('navLinks');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            if (!event.target.closest('.navbar')) {
+                navLinks.classList.remove('active');
+            }
+        });
     </script>
 </body>
 </html>
