@@ -138,22 +138,6 @@
             line-height: 1.6;
             font-size: 0.95rem;
         }
-        .floating-sparkles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            pointer-events: none;
-        }
-        .sparkle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #8b2635;
-            border-radius: 50%;
-            animation: float 4s infinite ease-in-out;
-            opacity: 0.6;
-        }
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -172,16 +156,6 @@
             to {
                 opacity: 1;
                 transform: translateY(0);
-            }
-        }
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) translateX(0);
-                opacity: 0.6;
-            }
-            50% {
-                transform: translateY(-100px) translateX(20px);
-                opacity: 0;
             }
         }
         @keyframes scroll {
@@ -229,9 +203,6 @@
             .main-content {
                 padding: 0 10px;
             }
-            .sparkle {
-                display: none;
-            }
         }
         @media (max-width: 480px) {
             h1 {
@@ -258,15 +229,11 @@
                 font-size: 1.3rem;
                 margin-bottom: 20px;
             }
-            .sparkle {
-                display: none;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="splash-container">
-        <div class="floating-sparkles" id="sparkles"></div>        
+    <div class="splash-container">      
         <div class="main-content">
             <img src="dcslogo.svg" alt="Dusty's Cleaning Service Logo" class="logo">
             <h1>Dusty's Cleaning Service</h1>
@@ -384,17 +351,6 @@
         </div>
     </div>
     <script>
-        // Create floating sparkles
-        const sparklesContainer = document.getElementById('sparkles');
-        for (let i = 0; i < 15; i++) {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
-            sparkle.style.left = Math.random() * 100 + '%';
-            sparkle.style.top = Math.random() * 100 + '%';
-            sparkle.style.animationDelay = Math.random() * 4 + 's';
-            sparkle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-            sparklesContainer.appendChild(sparkle);
-        }
     </script>
 </body>
 </html>
