@@ -42,6 +42,8 @@
             font-weight: 700;
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            word-break: keep-all;
+            white-space: nowrap;
         }
         .tagline {
             font-size: 1.5rem;
@@ -93,7 +95,9 @@
             border-radius: 15px;
             padding: 25px;
             min-width: 350px;
+            max-width: 350px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            flex-shrink: 0;
         }
         .review-header {
             display: flex;
@@ -183,7 +187,8 @@
         }
         @media (max-width: 768px) {
             h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
+                white-space: normal;
             }
             .tagline {
                 font-size: 1.2rem;
@@ -198,6 +203,7 @@
             }
             .review-card {
                 min-width: 280px;
+                max-width: 280px;
                 padding: 20px;
             }
             .reviews-title {
@@ -209,6 +215,9 @@
             }
             .splash-container {
                 padding: 15px;
+            }
+            .sparkle {
+                display: none;
             }
         }
         @media (max-width: 480px) {
@@ -229,11 +238,15 @@
             }
             .review-card {
                 min-width: 260px;
+                max-width: 260px;
                 padding: 18px;
             }
             .reviews-title {
                 font-size: 1.3rem;
                 margin-bottom: 20px;
+            }
+            .sparkle {
+                display: none;
             }
         }
     </style>
