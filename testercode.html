@@ -3,239 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MTG Draft Mashup Advent Calendar</title>
+    <title>Dusty's Cleaning Service</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Georgia', serif;
-            background: 
-                linear-gradient(180deg, rgba(26,42,78,0.6) 0%, rgba(15,22,38,0.7) 50%, rgba(45,27,78,0.6) 100%),
-                url('https://i.imgur.com/lP6b13v.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            color: #fff;
-            position: relative;
+            font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
         }
-
-        /* Animated snow effect */
-        .snowflake {
-            position: fixed;
-            top: -10px;
-            z-index: 1;
-            user-select: none;
-            cursor: default;
-            animation: fall linear infinite;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1em;
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
-            }
-        }
-
-        h1 {
-            font-size: 2.5em;
-            margin: 20px 0 10px;
-            text-align: center;
-            color: #a8d5ff;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.7), 0 0 20px rgba(168, 213, 255, 0.5);
-            z-index: 2;
-            position: relative;
-        }
-
-        .subtitle {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-            text-align: center;
-            color: #7fc7ff;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
-            font-style: italic;
-            z-index: 2;
-            position: relative;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            max-width: 1000px;
-            width: 100%;
-            padding: 20px;
-            z-index: 2;
-            position: relative;
-        }
-
-        .calendar-box {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1;
-            perspective: 1000px;
-            cursor: pointer;
-        }
-
-        .calendar-box.locked {
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .calendar-box.locked .box-front {
-            background: linear-gradient(135deg, #2a2a3e 0%, #3a3a4e 100%);
-            border-color: #555;
-        }
-
-        .lock-icon {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1.2em;
-            z-index: 10;
-        }
-
-        .box-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-
-        .calendar-box.flipped .box-inner {
-            transform: rotateX(180deg);
-        }
-
-        .box-front, .box-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 10px;
+        .splash-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-        }
-
-        .box-front {
-            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8f 100%);
-            border: 3px solid #7fc7ff;
-        }
-
-        .box-number {
-            font-size: 3em;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.7), 0 0 15px rgba(127, 199, 255, 0.6);
-        }
-
-        .box-back {
-            background: linear-gradient(135deg, #0a1628 0%, #1a2845 100%);
-            border: 3px solid #4a90e2;
-            transform: rotateX(180deg);
-            overflow: auto;
-        }
-
-        .draft-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #ffd700;
-            text-align: center;
-            margin-bottom: 10px;
-            line-height: 1.2;
-        }
-
-        .sets {
-            font-size: 0.85em;
-            color: #a8d5ff;
-            text-align: center;
-            margin-bottom: 8px;
-            font-style: italic;
-        }
-
-        .description {
-            font-size: 0.75em;
-            color: #7fc7ff;
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        .reset-button {
-            background: rgba(42, 42, 62, 0.6);
-            color: #a8d5ff;
-            border: 1px solid rgba(127, 199, 255, 0.3);
-            padding: 8px 16px;
-            font-size: 0.9em;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            font-family: 'Georgia', serif;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            z-index: 2;
+            justify-content: center;
             position: relative;
+            padding: 20px;
+        }
+        .logo {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 10px;
+            animation: fadeInDown 1s ease-out;
+            filter: invert(1) brightness(1.2);
+        }
+        .main-content {
+            text-align: center;
+            color: white;
+            animation: fadeInUp 1.2s ease-out;
+        }
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+        .cta-button {
+            background: white;
+            color: #667eea;
+            padding: 18px 45px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
             transition: all 0.3s ease;
-            opacity: 0.7;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-        
-        .reset-button:hover {
-            background: rgba(42, 42, 62, 0.8);
-            border-color: rgba(127, 199, 255, 0.5);
-            opacity: 1;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            background: #f8f9fa;
         }
-        /* Sparkle effect */
+        .reviews-section {
+            margin-top: 60px;
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+        }
+        .reviews-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: white;
+            font-weight: 600;
+        }
+        .reviews-track {
+            display: flex;
+            gap: 30px;
+            animation: scroll 20s linear infinite;
+        }
+        .review-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            min-width: 350px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .reviewer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        .reviewer-info h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 3px;
+        }
+        .stars {
+            color: #ffd700;
+            font-size: 1rem;
+        }
+        .review-text {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        .floating-sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
         .sparkle {
             position: absolute;
-            pointer-events: none;
-            font-size: 1.5em;
-            animation: sparkle-animation 0.8s ease-out forwards;
-            z-index: 100;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: float 4s infinite ease-in-out;
+            opacity: 0.6;
         }
-        
-        @keyframes sparkle-animation {
-            0% {
-                transform: translate(0, 0) scale(0) rotate(0deg);
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
                 opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.6;
             }
             50% {
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(360deg);
+                transform: translateY(-100px) translateX(20px);
                 opacity: 0;
             }
         }
-        
-        /* Box flip glow effect */
-        .calendar-box.flipping .box-inner {
-            animation: flip-glow 0.6s ease-out;
-        }
-        
-        @keyframes flip-glow {
-            0%, 100% {
-                filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0));
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
             }
-            50% {
-                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+            100% {
+                transform: translateX(-50%);
             }
         }
-
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5rem;
@@ -258,174 +197,139 @@
             .reviews-title {
                 font-size: 1.5rem;
             }
+          }
         }
     </style>
 </head>
 <body>
-    <audio id="bellSound" preload="auto">
-        <source src="christmas-bells-02-439604.mp3" type="audio/mpeg">
-    </audio>
-    <h1>❄️ Draft Mashup Advent Calendar ❄️</h1>
-    <p class="subtitle">25 Chaotic Limited Environments</p>
-    <button class="reset-button" id="resetButton">Reset All Boxes</button>
-    <div class="calendar-grid" id="calendar"></div>
-
-    <script>
-    // Load draft mashups
-    let draftMashups = [];
-
-    async function loadDraftMashups() {
-        const response = await fetch('draftsets.json');
-        draftMashups = await response.json();
-        return draftMashups;
-    }
-
-    const calendar = document.getElementById('calendar');
-
-    // Create snowflakes
-    function createSnowflake() {
-        const snowflake = document.createElement('div');
-        snowflake.className = 'snowflake';
-        snowflake.textContent = '❄';
-        snowflake.style.left = Math.random() * 100 + '%';
-        snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-        snowflake.style.fontSize = (Math.random() * 0.5 + 0.5) + 'em';
-        snowflake.style.opacity = Math.random() * 0.6 + 0.4;
-        document.body.appendChild(snowflake);
-        
-        setTimeout(() => {
-            snowflake.remove();
-        }, 5000);
-    }
-
-    // Generate snowflakes periodically
-    setInterval(createSnowflake, 200);
-
-    // Create sparkle effect
-    function createSparkles(x, y) {
-        const sparkleSymbols = ['✨', '⭐', '💫', '🌟'];
-        const sparkleCount = 8;
-        
-        for (let i = 0; i < sparkleCount; i++) {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
-            sparkle.textContent = sparkleSymbols[Math.floor(Math.random() * sparkleSymbols.length)];
-            sparkle.style.left = x + 'px';
-            sparkle.style.top = y + 'px';
+    <div class="splash-container">
+        <div class="floating-sparkles" id="sparkles"></div>        
+        <div class="main-content">
+            <img src="dcslogo.svg" alt="Dusty's Cleaning Service Logo" class="logo">
+            <h1>Dusty's Cleaning Service</h1>
+            <p class="tagline">Sparkling Clean, Every Time</p>
+            <button class="cta-button" onclick="alert('Booking system coming soon!')">Book Now</button>
             
-            const angle = (i / sparkleCount) * Math.PI * 2;
-            const distance = 50 + Math.random() * 30;
-            const tx = Math.cos(angle) * distance;
-            const ty = Math.sin(angle) * distance;
-            
-            sparkle.style.setProperty('--tx', tx + 'px');
-            sparkle.style.setProperty('--ty', ty + 'px');
-            
-            document.body.appendChild(sparkle);
-            
-            setTimeout(() => sparkle.remove(), 800);
-        }
-    }
-
-    // Get current date
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
-    const currentDay = now.getDate();
-
-    // Check if a day should be unlocked (December 2025)
-    function isUnlocked(day) {
-        if (currentYear > 2025 || (currentYear === 2025 && currentMonth === 11)) {
-            return currentDay >= day;
-        }
-        if (currentYear > 2025 || (currentYear === 2025 && currentMonth > 11)) {
-            return true;
-        }
-        return false;
-    }
-
-    // Load flipped state from storage
-    async function getFlippedState() {
-        try {
-            const stored = localStorage.getItem('flipped-boxes');
-            return stored ? JSON.parse(stored) : {};
-        } catch (error) {
-            return {};
-        }
-    }
-    
-    // Save flipped state to storage
-    async function saveFlippedState(day, isFlipped) {
-        try {
-            const flippedState = await getFlippedState();
-            flippedState[day] = isFlipped;
-            localStorage.setItem('flipped-boxes', JSON.stringify(flippedState));
-        } catch (error) {
-            console.error('Failed to save state:', error);
-        }
-    }
-
-    // Reset button functionality
-        document.getElementById('resetButton').addEventListener('click', function() {
-            if (confirm('Are you sure you want to reset all boxes?')) {
-                localStorage.removeItem('flipped-boxes');
-                location.reload();
-            }
-        });
-
-    // Create calendar boxes
-    async function initializeCalendar() {
-        await loadDraftMashups();
-        const flippedState = await getFlippedState();
-        
-        for (let i = 1; i <= 25; i++) {
-            const mashup = draftMashups[i - 1];
-            const unlocked = isUnlocked(i);
-            const wasFlipped = flippedState[i] || false;
-            
-            const box = document.createElement('div');
-            box.className = 'calendar-box' + (unlocked ? '' : ' locked') + (wasFlipped ? ' flipped' : '');
-            
-            box.innerHTML = `
-                <div class="box-inner">
-                    <div class="box-front">
-                        ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
-                        <div class="box-number">${i}</div>
+            <div class="reviews-section">
+                <h2 class="reviews-title">What Our Customers Say</h2>
+                <div class="reviews-track">
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">KD</div>
+                            <div class="reviewer-info">
+                                <h3>Karen Dustworth</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Finally, a cleaning service that lives up to its name! My house went from 'disaster zone' to 'magazine cover' in just three hours. I'd give six stars if I could."</p>
                     </div>
-                    <div class="box-back">
-                        <div class="draft-title">${mashup.title}</div>
-                        <div class="sets">${mashup.sets}</div>
-                        <div class="description">${mashup.description}</div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">BS</div>
+                            <div class="reviewer-info">
+                                <h3>Bob Sparkleton</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"I haven't seen my kitchen counters this clean since 2019. Pretty sure they found a remote control I lost in 2017. Absolute wizards with a mop."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">MW</div>
+                            <div class="reviewer-info">
+                                <h3>Mop Winchester</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"They cleaned places I didn't even know existed in my apartment. Found out I actually have hardwood floors under all that... stuff. Mind = blown."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">SC</div>
+                            <div class="reviewer-info">
+                                <h3>Stella Cleanbright</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"My mother-in-law visited and had NOTHING to criticize. Let me repeat: NOTHING. That's when I knew Dusty's was the real deal."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">VB</div>
+                            <div class="reviewer-info">
+                                <h3>Victor Broom</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Professional, punctual, and they made my bachelor pad look like an actual adult lives there. My dates are significantly more impressed now. 10/10."</p>
+                    </div>
+                    <!-- Duplicate set for seamless loop -->
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">KD</div>
+                            <div class="reviewer-info">
+                                <h3>Karen Dustworth</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Finally, a cleaning service that lives up to its name! My house went from 'disaster zone' to 'magazine cover' in just three hours. I'd give six stars if I could."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">BS</div>
+                            <div class="reviewer-info">
+                                <h3>Bob Sparkleton</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"I haven't seen my kitchen counters this clean since 2019. Pretty sure they found a remote control I lost in 2017. Absolute wizards with a mop."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">MW</div>
+                            <div class="reviewer-info">
+                                <h3>Mop Winchester</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"They cleaned places I didn't even know existed in my apartment. Found out I actually have hardwood floors under all that... stuff. Mind = blown."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">SC</div>
+                            <div class="reviewer-info">
+                                <h3>Stella Cleanbright</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"My mother-in-law visited and had NOTHING to criticize. Let me repeat: NOTHING. That's when I knew Dusty's was the real deal."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">VB</div>
+                            <div class="reviewer-info">
+                                <h3>Victor Broom</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Professional, punctual, and they made my bachelor pad look like an actual adult lives there. My dates are significantly more impressed now. 10/10."</p>
                     </div>
                 </div>
-            `;
-            
-            if (unlocked) {
-                box.addEventListener('click', function(e) {
-                    this.classList.toggle('flipped');
-                    const isFlipped = this.classList.contains('flipped');
-                    saveFlippedState(i, isFlipped);
-                    
-                    // Add sparkle effect when flipping
-                    if (isFlipped) {
-                        this.classList.add('flipping');
-                        createSparkles(e.clientX, e.clientY);
-                        setTimeout(() => this.classList.remove('flipping'), 600);
-                        
-                        // Play bell sound
-                        const bellSound = document.getElementById('bellSound');
-                        bellSound.currentTime = 0; // Reset to start
-                        bellSound.volume = 0.3; // Set volume (0.0 to 1.0)
-                        bellSound.play().catch(err => console.log('Audio play failed:', err));
-                    }
-                });
-            }
-            
-            calendar.appendChild(box);
+            </div>
+        </div>
+    </div>
+    <script>
+        // Create floating sparkles
+        const sparklesContainer = document.getElementById('sparkles');
+        for (let i = 0; i < 15; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.top = Math.random() * 100 + '%';
+            sparkle.style.animationDelay = Math.random() * 4 + 's';
+            sparkle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            sparklesContainer.appendChild(sparkle);
         }
-    }
-
-    initializeCalendar();
-</script>
+    </script>
 </body>
 </html>
