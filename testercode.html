@@ -70,6 +70,11 @@
             width: 100%;
             max-width: 1200px;
             overflow: hidden;
+            position: relative;
+        }
+        .reviews-container {
+            overflow: hidden;
+            width: 100%;
         }
         .reviews-title {
             font-size: 1.8rem;
@@ -80,7 +85,8 @@
         .reviews-track {
             display: flex;
             gap: 30px;
-            animation: scroll 20s linear infinite;
+            animation: scroll 30s linear infinite;
+            width: max-content;
         }
         .review-card {
             background: rgba(255, 255, 255, 0.95);
@@ -197,6 +203,38 @@
             .reviews-title {
                 font-size: 1.5rem;
             }
+            .reviews-track {
+                gap: 20px;
+                animation: scroll 25s linear infinite;
+            }
+            .splash-container {
+                padding: 15px;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .tagline {
+                font-size: 1rem;
+                margin-bottom: 30px;
+            }
+            .logo {
+                width: 120px;
+                height: 120px;
+            }
+            .cta-button {
+                padding: 12px 30px;
+                font-size: 0.95rem;
+            }
+            .review-card {
+                min-width: 260px;
+                padding: 18px;
+            }
+            .reviews-title {
+                font-size: 1.3rem;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
@@ -211,107 +249,109 @@
             
             <div class="reviews-section">
                 <h2 class="reviews-title">What Our Customers Say</h2>
-                <div class="reviews-track">
-                    <div class="review-card">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">KD</div>
-                            <div class="reviewer-info">
-                                <h3>Karen Dustworth</h3>
-                                <div class="stars">★★★★★</div>
+                <div class="reviews-container">
+                    <div class="reviews-track">
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">KD</div>
+                                <div class="reviewer-info">
+                                    <h3>Karen Dustworth</h3>
+                                    <div class="stars">★★★★★</div>
+                                </div>
                             </div>
+                            <p class="review-text">"Finally, a cleaning service that lives up to its name! My house went from 'disaster zone' to 'magazine cover' in just three hours. I'd give six stars if I could."</p>
                         </div>
-                        <p class="review-text">"Finally, a cleaning service that lives up to its name! My house went from 'disaster zone' to 'magazine cover' in just three hours. I'd give six stars if I could."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">BS</div>
-                            <div class="reviewer-info">
-                                <h3>Bob Sparkleton</h3>
-                                <div class="stars">★★★★★</div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">BS</div>
+                                <div class="reviewer-info">
+                                    <h3>Bob Sparkleton</h3>
+                                    <div class="stars">★★★★★</div>
+                                </div>
                             </div>
+                            <p class="review-text">"I haven't seen my kitchen counters this clean since 2019. Pretty sure they found a remote control I lost in 2017. Absolute wizards with a mop."</p>
                         </div>
-                        <p class="review-text">"I haven't seen my kitchen counters this clean since 2019. Pretty sure they found a remote control I lost in 2017. Absolute wizards with a mop."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">MW</div>
-                            <div class="reviewer-info">
-                                <h3>Mop Winchester</h3>
-                                <div class="stars">★★★★★</div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">MW</div>
+                                <div class="reviewer-info">
+                                    <h3>Mop Winchester</h3>
+                                    <div class="stars">★★★★★</div>
+                                </div>
                             </div>
+                            <p class="review-text">"They cleaned places I didn't even know existed in my apartment. Found out I actually have hardwood floors under all that... stuff. Mind = blown."</p>
                         </div>
-                        <p class="review-text">"They cleaned places I didn't even know existed in my apartment. Found out I actually have hardwood floors under all that... stuff. Mind = blown."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">SC</div>
-                            <div class="reviewer-info">
-                                <h3>Stella Cleanbright</h3>
-                                <div class="stars">★★★★★</div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">SC</div>
+                                <div class="reviewer-info">
+                                    <h3>Stella Cleanbright</h3>
+                                    <div class="stars">★★★★★</div>
+                                </div>
                             </div>
+                            <p class="review-text">"My mother-in-law visited and had NOTHING to criticize. Let me repeat: NOTHING. That's when I knew Dusty's was the real deal."</p>
                         </div>
-                        <p class="review-text">"My mother-in-law visited and had NOTHING to criticize. Let me repeat: NOTHING. That's when I knew Dusty's was the real deal."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">VB</div>
-                            <div class="reviewer-info">
-                                <h3>Victor Broom</h3>
-                                <div class="stars">★★★★★</div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">VB</div>
+                                <div class="reviewer-info">
+                                    <h3>Victor Broom</h3>
+                                    <div class="stars">★★★★★</div>
+                                </div>
                             </div>
+                            <p class="review-text">"Professional, punctual, and they made my bachelor pad look like an actual adult lives there. My dates are significantly more impressed now. 10/10."</p>
                         </div>
-                        <p class="review-text">"Professional, punctual, and they made my bachelor pad look like an actual adult lives there. My dates are significantly more impressed now. 10/10."</p>
-                    </div>
-                    <!-- Duplicate set for seamless loop -->
-                    <div class="review-card">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">KD</div>
-                            <div class="reviewer-info">
-                                <h3>Karen Dustworth</h3>
-                                <div class="stars">★★★★★</div>
+                        <!-- Duplicate set for seamless loop -->
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">KD</div>
+                                <div class="reviewer-info">
+                                    <h3>Karen Dustworth</h3>
+                                    <div class="stars">★★★★★</div>
+                                </div>
                             </div>
+                            <p class="review-text">"Finally, a cleaning service that lives up to its name! My house went from 'disaster zone' to 'magazine cover' in just three hours. I'd give six stars if I could."</p>
                         </div>
-                        <p class="review-text">"Finally, a cleaning service that lives up to its name! My house went from 'disaster zone' to 'magazine cover' in just three hours. I'd give six stars if I could."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">BS</div>
-                            <div class="reviewer-info">
-                                <h3>Bob Sparkleton</h3>
-                                <div class="stars">★★★★★</div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">BS</div>
+                                <div class="reviewer-info">
+                                    <h3>Bob Sparkleton</h3>
+                                    <div class="stars">★★★★★</div>
+                                </div>
                             </div>
+                            <p class="review-text">"I haven't seen my kitchen counters this clean since 2019. Pretty sure they found a remote control I lost in 2017. Absolute wizards with a mop."</p>
                         </div>
-                        <p class="review-text">"I haven't seen my kitchen counters this clean since 2019. Pretty sure they found a remote control I lost in 2017. Absolute wizards with a mop."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">MW</div>
-                            <div class="reviewer-info">
-                                <h3>Mop Winchester</h3>
-                                <div class="stars">★★★★★</div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">MW</div>
+                                <div class="reviewer-info">
+                                    <h3>Mop Winchester</h3>
+                                    <div class="stars">★★★★★</div>
+                                </div>
                             </div>
+                            <p class="review-text">"They cleaned places I didn't even know existed in my apartment. Found out I actually have hardwood floors under all that... stuff. Mind = blown."</p>
                         </div>
-                        <p class="review-text">"They cleaned places I didn't even know existed in my apartment. Found out I actually have hardwood floors under all that... stuff. Mind = blown."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">SC</div>
-                            <div class="reviewer-info">
-                                <h3>Stella Cleanbright</h3>
-                                <div class="stars">★★★★★</div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">SC</div>
+                                <div class="reviewer-info">
+                                    <h3>Stella Cleanbright</h3>
+                                    <div class="stars">★★★★★</div>
+                                </div>
                             </div>
+                            <p class="review-text">"My mother-in-law visited and had NOTHING to criticize. Let me repeat: NOTHING. That's when I knew Dusty's was the real deal."</p>
                         </div>
-                        <p class="review-text">"My mother-in-law visited and had NOTHING to criticize. Let me repeat: NOTHING. That's when I knew Dusty's was the real deal."</p>
-                    </div>
-                    <div class="review-card">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">VB</div>
-                            <div class="reviewer-info">
-                                <h3>Victor Broom</h3>
-                                <div class="stars">★★★★★</div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-avatar">VB</div>
+                                <div class="reviewer-info">
+                                    <h3>Victor Broom</h3>
+                                    <div class="stars">★★★★★</div>
+                                </div>
                             </div>
+                            <p class="review-text">"Professional, punctual, and they made my bachelor pad look like an actual adult lives there. My dates are significantly more impressed now. 10/10."</p>
                         </div>
-                        <p class="review-text">"Professional, punctual, and they made my bachelor pad look like an actual adult lives there. My dates are significantly more impressed now. 10/10."</p>
                     </div>
                 </div>
             </div>
