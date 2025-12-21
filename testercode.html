@@ -16,11 +16,11 @@
             overflow-x: hidden;
             margin: 0;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f1f5 100%);
         }
         .splash-container {
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f1f5 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -33,11 +33,11 @@
             height: 200px;
             margin-bottom: 10px;
             animation: fadeInDown 1s ease-out;
-            filter: invert(1) brightness(1.2);
+            filter: brightness(0) saturate(100%) invert(17%) sepia(70%) saturate(1500%) hue-rotate(330deg) brightness(90%) contrast(90%);
         }
         .main-content {
             text-align: center;
-            color: white;
+            color: #2c3e50;
             animation: fadeInUp 1.2s ease-out;
             width: 100%;
             max-width: 1200px;
@@ -47,7 +47,8 @@
             font-size: 4rem;
             font-weight: 700;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            color: #8b2635;
             word-break: keep-all;
             white-space: nowrap;
         }
@@ -57,8 +58,8 @@
             opacity: 0.95;
         }
         .cta-button {
-            background: white;
-            color: #667eea;
+            background: #8b2635;
+            color: white;
             padding: 18px 45px;
             font-size: 1.2rem;
             border: none;
@@ -70,8 +71,8 @@
         }
         .cta-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            background: #f8f9fa;
+            box-shadow: 0 15px 35px rgba(139,38,53,0.4);
+            background: #a32d42;
         }
         .reviews-section {
             margin-top: 60px;
@@ -87,13 +88,13 @@
         .reviews-title {
             font-size: 1.8rem;
             margin-bottom: 30px;
-            color: white;
+            color: #2c3e50;
             font-weight: 600;
         }
         .reviews-track {
             display: flex;
             gap: 30px;
-            animation: scroll 30s linear infinite;
+            animation: scroll 50s linear infinite;
             width: max-content;
         }
         .review-card {
@@ -114,7 +115,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #8b2635 0%, #a32d42 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -148,7 +149,7 @@
             position: absolute;
             width: 4px;
             height: 4px;
-            background: white;
+            background: #8b2635;
             border-radius: 50%;
             animation: float 4s infinite ease-in-out;
             opacity: 0.6;
@@ -217,7 +218,7 @@
             }
             .reviews-track {
                 gap: 20px;
-                animation: scroll 25s linear infinite;
+                animation: scroll 50s linear infinite;
             }
             .review-text {
                 font-size: 0.9rem;
