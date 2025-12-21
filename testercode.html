@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dusty's Cleaning Service</title>
+    <title>Our Services - Dusty's Cleaning Service</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -17,218 +17,6 @@
             margin: 0;
             min-height: 100vh;
             background: linear-gradient(135deg, #fff9e6 0%, #fef5dc 100%);
-        }
-        .splash-container {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #fff9e6 0%, #fef5dc 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: 40px 20px;
-        }
-        .logo {
-            width: 200px;
-            height: 200px;
-            margin-bottom: 10px;
-            animation: fadeInDown 1s ease-out;
-            filter: brightness(0) saturate(100%) invert(75%) sepia(40%) saturate(600%) hue-rotate(0deg) brightness(95%) contrast(90%);
-        }
-        .main-content {
-            text-align: center;
-            color: #2c3e50;
-            animation: fadeInUp 1.2s ease-out;
-            width: 100%;
-            max-width: 1200px;
-            padding: 0 15px;
-        }
-        h1 {
-            font-size: 4rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            color: #d4a574;
-            word-break: keep-all;
-            white-space: nowrap;
-        }
-        .tagline {
-            font-size: 1.5rem;
-            margin-bottom: 40px;
-            opacity: 0.95;
-        }
-        .cta-button {
-            background: #e8b86d;
-            color: #5a4a3a;
-            padding: 18px 45px;
-            font-size: 1.2rem;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(232,184,109,0.4);
-            background: #f2c98a;
-        }
-        .reviews-section {
-            margin-top: 60px;
-            width: 100%;
-            max-width: 1200px;
-            overflow: hidden;
-            position: relative;
-        }
-        .reviews-container {
-            overflow: hidden;
-            width: 100%;
-        }
-        .reviews-title {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            color: #2c3e50;
-            font-weight: 600;
-        }
-        .reviews-track {
-            display: flex;
-            gap: 30px;
-            animation: scroll 50s linear infinite;
-            width: max-content;
-        }
-        .review-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
-            min-width: 350px;
-            max-width: 350px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            flex-shrink: 0;
-        }
-        .review-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .reviewer-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f4d58d 0%, #e8b86d 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin-right: 15px;
-        }
-        .reviewer-info h3 {
-            color: #333;
-            font-size: 1.1rem;
-            margin-bottom: 3px;
-        }
-        .stars {
-            color: #ffd700;
-            font-size: 1rem;
-        }
-        .review-text {
-            color: #555;
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        @keyframes scroll {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-                white-space: normal;
-            }
-            .tagline {
-                font-size: 1.2rem;
-            }
-            .logo {
-                width: 150px;
-                height: 150px;
-            }
-            .cta-button {
-                padding: 15px 35px;
-                font-size: 1rem;
-            }
-            .review-card {
-                min-width: 280px;
-                max-width: 280px;
-                padding: 20px;
-            }
-            .reviews-title {
-                font-size: 1.5rem;
-            }
-            .reviews-track {
-                gap: 20px;
-                animation: scroll 50s linear infinite;
-            }
-            .review-text {
-                font-size: 0.9rem;
-            }
-            .splash-container {
-                padding: 30px 15px;
-            }
-            .main-content {
-                padding: 0 10px;
-            }
-        }
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 2rem;
-            }
-            .tagline {
-                font-size: 1rem;
-                margin-bottom: 30px;
-            }
-            .logo {
-                width: 120px;
-                height: 120px;
-            }
-            .cta-button {
-                padding: 12px 30px;
-                font-size: 0.95rem;
-            }
-            .review-card {
-                min-width: 260px;
-                max-width: 260px;
-                padding: 18px;
-            }
-            .reviews-title {
-                font-size: 1.3rem;
-                margin-bottom: 20px;
-            }
         }
         .navbar {
             position: fixed;
@@ -293,6 +81,161 @@
             color: #2c3e50;
             cursor: pointer;
         }
+        .hero-section {
+            padding: 140px 20px 60px;
+            text-align: center;
+            background: linear-gradient(135deg, #fff9e6 0%, #fef5dc 100%);
+        }
+        .hero-section h1 {
+            font-size: 3.5rem;
+            color: #d4a574;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .hero-section p {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .services-container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        .service-card {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 80px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        .service-card.reverse {
+            flex-direction: row-reverse;
+        }
+        .service-image {
+            flex: 1;
+            min-height: 350px;
+            background: linear-gradient(135deg, #f4d58d 0%, #e8b86d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .service-content {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .service-content h2 {
+            font-size: 2.2rem;
+            color: #d4a574;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .service-content p {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+        .service-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        .service-features li {
+            padding: 10px 0;
+            color: #2c3e50;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .service-features li:before {
+            content: "✓";
+            color: #e8b86d;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        .service-btn {
+            background: #e8b86d;
+            color: #5a4a3a;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .service-btn:hover {
+            background: #f2c98a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(232,184,109,0.4);
+        }
+        .cta-section {
+            background: white;
+            padding: 80px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+        .cta-section h2 {
+            font-size: 2.5rem;
+            color: #d4a574;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .cta-section p {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .cta-button {
+            background: #e8b86d;
+            color: #5a4a3a;
+            padding: 18px 45px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(232,184,109,0.4);
+            background: #f2c98a;
+        }
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        footer p {
+            margin: 10px 0;
+        }
         @media (max-width: 768px) {
             .navbar {
                 padding: 15px 20px;
@@ -322,6 +265,40 @@
                 width: 35px;
                 height: 35px;
             }
+            .hero-section {
+                padding: 120px 20px 40px;
+            }
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+            .hero-section p {
+                font-size: 1.1rem;
+            }
+            .service-card {
+                flex-direction: column;
+                margin-bottom: 40px;
+            }
+            .service-card.reverse {
+                flex-direction: column;
+            }
+            .service-image {
+                min-height: 250px;
+            }
+            .service-content {
+                padding: 30px;
+            }
+            .service-content h2 {
+                font-size: 1.8rem;
+            }
+            .service-content p {
+                font-size: 1rem;
+            }
+            .cta-section {
+                padding: 50px 20px;
+            }
+            .cta-section h2 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -341,130 +318,84 @@
             <a href="booking.html" class="navbar-book-btn">Book Now</a>
         </div>
     </nav>
-    <div class="splash-container">      
-        <div class="main-content">
-            <img src="dcslogo.svg" alt="Dusty's Cleaning Service Logo" class="logo">
-            <h1>Dusty's Cleaning Service</h1>
-            <p class="tagline">Sparkling Clean, Every Time</p>
-            <button class="cta-button" onclick="alert('Booking system coming soon!')">Book Now</button>
-            
-            <div class="reviews-section">
-                <h2 class="reviews-title">What Our Customers Say</h2>
-                <div class="reviews-container">
-                    <div class="reviews-track">
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer-avatar">KD</div>
-                                <div class="reviewer-info">
-                                    <h3>Karen Dustworth</h3>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                            </div>
-                            <p class="review-text">"Finally, a cleaning service that lives up to its name! My house went from 'disaster zone' to 'magazine cover' in just three hours. I'd give six stars if I could."</p>
-                        </div>
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer-avatar">BS</div>
-                                <div class="reviewer-info">
-                                    <h3>Bob Sparkleton</h3>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                            </div>
-                            <p class="review-text">"I haven't seen my kitchen counters this clean since 2019. Pretty sure they found a remote control I lost in 2017. Absolute wizards with a mop."</p>
-                        </div>
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer-avatar">MW</div>
-                                <div class="reviewer-info">
-                                    <h3>Mop Winchester</h3>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                            </div>
-                            <p class="review-text">"They cleaned places I didn't even know existed in my apartment. Found out I actually have hardwood floors under all that... stuff. Mind = blown."</p>
-                        </div>
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer-avatar">SC</div>
-                                <div class="reviewer-info">
-                                    <h3>Stella Cleanbright</h3>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                            </div>
-                            <p class="review-text">"My mother-in-law visited and had NOTHING to criticize. Let me repeat: NOTHING. That's when I knew Dusty's was the real deal."</p>
-                        </div>
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer-avatar">VB</div>
-                                <div class="reviewer-info">
-                                    <h3>Victor Broom</h3>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                            </div>
-                            <p class="review-text">"Professional, punctual, and they made my bachelor pad look like an actual adult lives there. My dates are significantly more impressed now. 10/10."</p>
-                        </div>
-                        <!-- Duplicate set for seamless loop -->
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer-avatar">KD</div>
-                                <div class="reviewer-info">
-                                    <h3>Karen Dustworth</h3>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                            </div>
-                            <p class="review-text">"Finally, a cleaning service that lives up to its name! My house went from 'disaster zone' to 'magazine cover' in just three hours. I'd give six stars if I could."</p>
-                        </div>
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer-avatar">BS</div>
-                                <div class="reviewer-info">
-                                    <h3>Bob Sparkleton</h3>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                            </div>
-                            <p class="review-text">"I haven't seen my kitchen counters this clean since 2019. Pretty sure they found a remote control I lost in 2017. Absolute wizards with a mop."</p>
-                        </div>
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer-avatar">MW</div>
-                                <div class="reviewer-info">
-                                    <h3>Mop Winchester</h3>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                            </div>
-                            <p class="review-text">"They cleaned places I didn't even know existed in my apartment. Found out I actually have hardwood floors under all that... stuff. Mind = blown."</p>
-                        </div>
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer-avatar">SC</div>
-                                <div class="reviewer-info">
-                                    <h3>Stella Cleanbright</h3>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                            </div>
-                            <p class="review-text">"My mother-in-law visited and had NOTHING to criticize. Let me repeat: NOTHING. That's when I knew Dusty's was the real deal."</p>
-                        </div>
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="reviewer-avatar">VB</div>
-                                <div class="reviewer-info">
-                                    <h3>Victor Broom</h3>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                            </div>
-                            <p class="review-text">"Professional, punctual, and they made my bachelor pad look like an actual adult lives there. My dates are significantly more impressed now. 10/10."</p>
-                        </div>
-                    </div>
-                </div>
+
+    <section class="hero-section">
+        <h1>Our Services</h1>
+        <p>From routine maintenance to deep cleaning transformations, we offer comprehensive cleaning solutions tailored to your needs.</p>
+    </section>
+
+    <div class="services-container">
+        <div class="service-card">
+            <div class="service-image">
+                [Photo: Sparkling clean living room]
+            </div>
+            <div class="service-content">
+                <h2>Regular House Cleaning</h2>
+                <p>Keep your home consistently clean with our scheduled maintenance service. Perfect for busy families and professionals who want to come home to a pristine space every week.</p>
+                <ul class="service-features">
+                    <li>Weekly, bi-weekly, or monthly scheduling</li>
+                    <li>Dusting, vacuuming, and mopping all rooms</li>
+                    <li>Kitchen and bathroom sanitization</li>
+                    <li>Trash removal and recycling</li>
+                    <li>Customizable cleaning checklist</li>
+                </ul>
+                <a href="booking.html" class="service-btn">Book This Service</a>
             </div>
         </div>
-    </div>
+
+        <div class="service-card reverse">
+            <div class="service-image">
+                [Photo: Deep cleaned kitchen with gleaming surfaces]
+            </div>
+            <div class="service-content">
+                <h2>Deep Cleaning</h2>
+                <p>Our most thorough service gets into every nook and cranny. Ideal for spring cleaning, preparing for special events, or tackling neglected spaces that need extra attention.</p>
+                <ul class="service-features">
+                    <li>Baseboards, ceiling fans, and light fixtures</li>
+                    <li>Inside cabinets and appliances</li>
+                    <li>Window washing (interior)</li>
+                    <li>Detailed grout and tile cleaning</li>
+                    <li>Behind and under furniture</li>
+                </ul>
+                <a href="booking.html" class="service-btn">Book This Service</a>
+            </div>
+        </div>
+
+        <div class="service-card">
+            <div class="service-image">
+                [Photo: Empty, spotless apartment ready for new tenants]
+            </div>
+            <div class="service-content">
+                <h2>Move-In/Move-Out Cleaning</h2>
+                <p>Starting fresh or leaving your mark? We ensure properties are immaculate for the next chapter. Perfect for landlords, tenants, and homeowners during transitions.</p>
+                <ul class="service-features">
+                    <li>Complete property sanitization</li>
+                    <li>All surfaces scrubbed and disinfected</li>
+                    <li>Interior windows and mirrors</li>
+                    <li>Appliance deep clean (oven, fridge, etc.)</li>
+                    <li>Closets and storage areas</li>
+                </ul>
+                <a href="booking.html" class="service-btn">Book This Service</a>
+            </div>
+        </div>
+
+    <section class="cta-section">
+        <h2>Ready to Experience the Difference?</h2>
+        <p>Let us handle the cleaning while you focus on what matters most. Schedule your first service today and see why our customers keep coming back. Don't Doubt Dusty's!</p>
+        <a href="booking.html" class="cta-button">Get Started Today</a>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Dusty's Cleaning Service. All rights reserved.</p>
+        <p>Sparkling Clean, Every Time</p>
+    </footer>
+
     <script>
         function toggleMenu() {
             const navLinks = document.getElementById('navLinks');
             navLinks.classList.toggle('active');
         }
         
-        // Close mobile menu when clicking outside
         document.addEventListener('click', function(event) {
             const navLinks = document.getElementById('navLinks');
             const toggle = document.querySelector('.mobile-menu-toggle');
