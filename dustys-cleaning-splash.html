@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dusty's Cleaning Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .splash-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .logo {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            width: 120px;
+            height: 120px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .main-content {
+            text-align: center;
+            color: white;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        .cta-button {
+            background: white;
+            color: #667eea;
+            padding: 18px 45px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            background: #f8f9fa;
+        }
+
+        .floating-sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: float 4s infinite ease-in-out;
+            opacity: 0.6;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-100px) translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            .tagline {
+                font-size: 1.2rem;
+            }
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-container">
+        <div class="floating-sparkles" id="sparkles"></div>
+        
+        <svg class="logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+            <!-- Shield background -->
+            <path d="M60 10 L100 30 L100 70 Q100 95 60 110 Q20 95 20 70 L20 30 Z" 
+                  fill="white" opacity="0.95"/>
+            
+            <!-- Broom handle -->
+            <rect x="52" y="35" width="4" height="45" fill="#667eea" rx="2"/>
+            
+            <!-- Broom bristles -->
+            <path d="M45 75 L50 80 L52 85 L54 80 L56 85 L58 80 L60 85 L62 80 L64 85 L66 80 L68 85 L70 80 L75 75" 
+                  fill="#764ba2" stroke="#764ba2" stroke-width="2"/>
+            
+            <!-- Sparkle 1 -->
+            <circle cx="35" cy="45" r="3" fill="#ffd700"/>
+            <path d="M35 40 L35 50 M30 45 L40 45" stroke="#ffd700" stroke-width="1.5"/>
+            
+            <!-- Sparkle 2 -->
+            <circle cx="85" cy="55" r="2.5" fill="#ffd700"/>
+            <path d="M85 51 L85 59 M81 55 L89 55" stroke="#ffd700" stroke-width="1.5"/>
+            
+            <!-- Sparkle 3 -->
+            <circle cx="60" cy="25" r="2" fill="#ffd700"/>
+            <path d="M60 22 L60 28 M57 25 L63 25" stroke="#ffd700" stroke-width="1"/>
+        </svg>
+
+        <div class="main-content">
+            <h1>Dusty's Cleaning Service</h1>
+            <p class="tagline">Sparkling Clean, Every Time</p>
+            <button class="cta-button" onclick="alert('Booking system coming soon!')">Book Now</button>
+        </div>
+    </div>
+
+    <script>
+        // Create floating sparkles
+        const sparklesContainer = document.getElementById('sparkles');
+        for (let i = 0; i < 15; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.top = Math.random() * 100 + '%';
+            sparkle.style.animationDelay = Math.random() * 4 + 's';
+            sparkle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            sparklesContainer.appendChild(sparkle);
+        }
+    </script>
+</body>
+</html>
