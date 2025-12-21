@@ -11,12 +11,10 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
         }
-
         .splash-container {
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -27,33 +25,28 @@
             position: relative;
             padding: 20px;
         }
-
         .logo {
             width: 200px;
             height: 200px;
             margin-bottom: 10px;
             animation: fadeInDown 1s ease-out;
         }
-
         .main-content {
             text-align: center;
             color: white;
             animation: fadeInUp 1.2s ease-out;
         }
-
         h1 {
             font-size: 4rem;
             font-weight: 700;
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-
         .tagline {
             font-size: 1.5rem;
             margin-bottom: 40px;
             opacity: 0.95;
         }
-
         .cta-button {
             background: white;
             color: #667eea;
@@ -66,13 +59,67 @@
             transition: all 0.3s ease;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-
         .cta-button:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             background: #f8f9fa;
         }
-
+        .reviews-section {
+            margin-top: 60px;
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+        }
+        .reviews-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: white;
+            font-weight: 600;
+        }
+        .reviews-track {
+            display: flex;
+            gap: 30px;
+            animation: scroll 20s linear infinite;
+        }
+        .review-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            min-width: 350px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .reviewer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        .reviewer-info h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 3px;
+        }
+        .stars {
+            color: #ffd700;
+            font-size: 1rem;
+        }
+        .review-text {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
         .floating-sparkles {
             position: absolute;
             width: 100%;
@@ -80,7 +127,6 @@
             overflow: hidden;
             pointer-events: none;
         }
-
         .sparkle {
             position: absolute;
             width: 4px;
@@ -90,7 +136,6 @@
             animation: float 4s infinite ease-in-out;
             opacity: 0.6;
         }
-
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -101,7 +146,6 @@
                 transform: translateY(0);
             }
         }
-
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -112,7 +156,6 @@
                 transform: translateY(0);
             }
         }
-
         @keyframes float {
             0%, 100% {
                 transform: translateY(0) translateX(0);
@@ -123,7 +166,14 @@
                 opacity: 0;
             }
         }
-
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5rem;
@@ -148,9 +198,115 @@
             <h1>Dusty's Cleaning Service</h1>
             <p class="tagline">Sparkling Clean, Every Time</p>
             <button class="cta-button" onclick="alert('Booking system coming soon!')">Book Now</button>
+            
+            <div class="reviews-section">
+                <h2 class="reviews-title">What Our Customers Say</h2>
+                <div class="reviews-track">
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">SM</div>
+                            <div class="reviewer-info">
+                                <h3>Sarah Martinez</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Absolutely fantastic service! My home has never looked better. The team was professional, thorough, and paid attention to every detail."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">JT</div>
+                            <div class="reviewer-info">
+                                <h3>James Thompson</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"I've tried several cleaning services, but Dusty's is by far the best. They're reliable, efficient, and always go above and beyond."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">EP</div>
+                            <div class="reviewer-info">
+                                <h3>Emily Parker</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Amazing work! They cleaned areas I didn't even know needed cleaning. Highly recommend for anyone looking for quality service."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">MC</div>
+                            <div class="reviewer-info">
+                                <h3>Michael Chen</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Professional, punctual, and pristine results. Dusty's team transformed my office space. Will definitely be using them again!"</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">LR</div>
+                            <div class="reviewer-info">
+                                <h3>Lisa Rodriguez</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Best cleaning service in town! They're friendly, trustworthy, and do an incredible job every single time. Worth every penny!"</p>
+                    </div>
+                    <!-- Duplicate set for seamless loop -->
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">SM</div>
+                            <div class="reviewer-info">
+                                <h3>Sarah Martinez</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Absolutely fantastic service! My home has never looked better. The team was professional, thorough, and paid attention to every detail."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">JT</div>
+                            <div class="reviewer-info">
+                                <h3>James Thompson</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"I've tried several cleaning services, but Dusty's is by far the best. They're reliable, efficient, and always go above and beyond."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">EP</div>
+                            <div class="reviewer-info">
+                                <h3>Emily Parker</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Amazing work! They cleaned areas I didn't even know needed cleaning. Highly recommend for anyone looking for quality service."</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">MC</div>
+                            <div class="reviewer-info">
+                                <h3>Michael Chen</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Professional, punctual, and pristine results. Dusty's team transformed my office space. Will definitely be using them again!"</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">LR</div>
+                            <div class="reviewer-info">
+                                <h3>Lisa Rodriguez</h3>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Best cleaning service in town! They're friendly, trustworthy, and do an incredible job every single time. Worth every penny!"</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
     <script>
         // Create floating sparkles
         const sparklesContainer = document.getElementById('sparkles');
