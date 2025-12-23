@@ -508,10 +508,10 @@
         function initializeBoard() {
             const boardGrid = document.getElementById('boardGrid');
             
-            // Create back row (slots 0-4)
+            // Create front row FIRST (slots 0-4)
             for (let i = 0; i < 5; i++) {
                 const slot = document.createElement('div');
-                slot.className = 'card-slot back-row';
+                slot.className = 'card-slot front-row';
                 slot.dataset.slotId = i;
                 slot.innerHTML = `<span class="slot-label">Slot ${i + 1}</span>`;
                 
@@ -522,10 +522,10 @@
                 boardGrid.appendChild(slot);
             }
             
-            // Create front row (slots 5-9)
+            // Create back row SECOND (slots 5-9)
             for (let i = 5; i < 10; i++) {
                 const slot = document.createElement('div');
-                slot.className = 'card-slot front-row';
+                slot.className = 'card-slot back-row';
                 slot.dataset.slotId = i;
                 slot.innerHTML = `<span class="slot-label">Slot ${i + 1}</span>`;
                 
