@@ -308,11 +308,72 @@
         .era-section.twilight { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); }
         .era-section.crystal { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
         .era-section.void { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+
+        .lock-in-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .lock-in-button {
+            background: linear-gradient(145deg, #4ade80, #22c55e);
+            border: 3px solid #16a34a;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .lock-in-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            background: linear-gradient(145deg, #22c55e, #16a34a);
+        }
+        
+        .lock-in-button:active {
+            transform: translateY(0);
+        }
+        
+        .board.locking {
+            animation: lockPulse 0.6s ease;
+        }
+        
+        @keyframes lockPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+            }
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 30px 10px rgba(74, 222, 128, 0.4);
+            }
+        }
+        
+        .card-slot.locked-flash {
+            animation: slotFlash 0.6s ease;
+        }
+        
+        @keyframes slotFlash {
+            0%, 100% {
+                border-color: rgba(255, 255, 255, 0.3);
+                background: rgba(255, 255, 255, 0.05);
+            }
+            50% {
+                border-color: #4ade80;
+                background: rgba(74, 222, 128, 0.3);
+            }
+        }
     </style>
 </head>
 <body>
     <div class="game-container">
         <h1>Card Game Board</h1>
+        <div class="lock-in-container">
+            <button class="lock-in-button" id="lockInButton" onclick="lockInCards()">Lock In</button>
+        </div>
         <div class="eras-tracker">
             <div class="eras-title">ERAS</div>
             <div class="eras-grid">
@@ -621,6 +682,45 @@
         
         for (let i = 0; i < 5; i++) {
             drawCard();
+        }
+        function lockInCards() {
+            const board = document.querySelector('.board');
+            const frontRowSlots = document.querySelectorAll('.card-slot.front-row');
+            
+            // Add animation to board
+            board.classList.add('locking');
+            
+            // Animate each slot
+            frontRowSlots.forEach((slot, index) => {
+                setTimeout(() => {
+                    slot.classList.add('locked-flash');
+                    
+                    // Remove animation class after it completes
+                    setTimeout(() => {
+                        slot.classList.remove('locked-flash');
+                    }, 600);
+                    
+                    // Fill empty slots
+                    if (!slot.classList.contains('filled')) {
+                        const emptyCard = {
+                            id: Date.now() + index, // Unique ID
+                            name: 'Empty Slot',
+                            symbol: '⬜',
+                            power: 0
+                        };
+                        
+                        slot.innerHTML = '';
+                        slot.appendChild(createCard(emptyCard));
+                        slot.classList.add('filled');
+                        boardState[slot.dataset.slotId] = emptyCard.id;
+                    }
+                }, index * 100); // Stagger the animation
+            });
+            
+            // Remove board animation class
+            setTimeout(() => {
+                board.classList.remove('locking');
+            }, 600);
         }
     </script>
 </body>
