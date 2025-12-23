@@ -375,7 +375,7 @@
             display: flex;
             align-items: center;
             gap: 30px;
-            margin-bottom: 20px;
+            margin-top: 20px; /* Changed from margin-bottom */
         }
         
         .player-avatar {
@@ -476,31 +476,6 @@
         <div class="lock-in-container">
             <button class="lock-in-button" id="lockInButton" onclick="lockInCards()">Lock In</button>
         </div>
-        <div class="player-panel">
-            <div class="player-avatar">👤</div>
-            <div class="player-stats">
-                <div class="stat-container life-counter">
-                    <div class="stat-label">Life</div>
-                    <div class="stat-display">
-                        <div class="stat-value" id="lifeValue">20</div>
-                        <div class="stat-buttons">
-                            <button class="stat-button" onclick="changeLife(1)">+</button>
-                            <button class="stat-button" onclick="changeLife(-1)">−</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-container spirit-counter">
-                    <div class="stat-label">Spirit</div>
-                    <div class="stat-display">
-                        <div class="stat-value" id="spiritValue">5</div>
-                        <div class="stat-buttons">
-                            <button class="stat-button" onclick="changeSpirit(1)">+</button>
-                            <button class="stat-button" onclick="changeSpirit(-1)">−</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="eras-tracker">
             <div class="eras-title">ERAS</div>
             <div class="eras-grid">
@@ -572,6 +547,31 @@
                     <div class="deck-back" id="deckBack" onclick="drawCard()">🂠</div>
                 </div>
                 <div class="deck-count" id="deckCount">Cards: 15</div>
+            </div>
+        </div>
+        <div class="player-panel">
+            <div class="player-avatar">👤</div>
+            <div class="player-stats">
+                <div class="stat-container life-counter">
+                    <div class="stat-label">Life</div>
+                    <div class="stat-display">
+                        <div class="stat-value" id="lifeValue">20</div>
+                        <div class="stat-buttons">
+                            <button class="stat-button" onclick="changeLife(1)">+</button>
+                            <button class="stat-button" onclick="changeLife(-1)">−</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-container spirit-counter">
+                    <div class="stat-label">Spirit</div>
+                    <div class="stat-display">
+                        <div class="stat-value" id="spiritValue">5</div>
+                        <div class="stat-buttons">
+                            <button class="stat-button" onclick="changeSpirit(1)">+</button>
+                            <button class="stat-button" onclick="changeSpirit(-1)">−</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
