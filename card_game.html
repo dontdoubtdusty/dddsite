@@ -294,18 +294,16 @@
             color: rgba(255, 255, 255, 0.3);
             font-size: 14px;
         }
+        .era-section.ancient { border-color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+        .era-section.dawn { border-color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+        .era-section.twilight { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); }
+        .era-section.crystal { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+        .era-section.void { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
     </style>
 </head>
 <body>
     <div class="game-container">
         <h1>Card Game Board</h1>
-        
-        <div class="board">
-            <div class="board-grid" id="boardGrid">
-                <!-- Card slots will be generated here -->
-            </div>
-        </div>
-
         <div class="eras-tracker">
             <div class="eras-title">ERAS</div>
             <div class="eras-grid">
@@ -344,6 +342,12 @@
                         <div class="era-slot">Bottom</div>
                     </div>
                 </div>
+            </div>
+        </div>
+        
+        <div class="board">
+            <div class="board-grid" id="boardGrid">
+                <!-- Card slots will be generated here -->
             </div>
         </div>
 
