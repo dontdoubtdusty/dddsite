@@ -101,9 +101,6 @@
                 disabled
                 class="w-full flex items-center justify-center gap-2 py-4 rounded-lg transition-all transform hover:scale-105 shadow-md opacity-50 cursor-not-allowed"
             >
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                </svg>
                 <span>Loading...</span>
             </button>
         </div>
@@ -127,9 +124,6 @@
                 onclick="generateQuote()"
                 class="w-full flex items-center justify-center gap-2 py-4 rounded-lg transition-all transform hover:scale-105 shadow-md"
             >
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                </svg>
                 <span>Get Another Quote</span>
             </button>
         </div>
@@ -177,7 +171,7 @@ function initApp() {
     topBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
     const startPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    topBtn.querySelector('span').textContent = startPhrase;
+    topBtn.querySelector('span').textContent = `◉ ${startPhrase}`;
 
     topBtn.onclick = generateQuote;
 }
@@ -206,10 +200,9 @@ async function generateQuote() {
 
     // 2. Update Buttons
     const newPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    const iconSvg = topBtn.querySelector('svg').outerHTML; 
-    
-    topBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
-    if(bottomBtn) bottomBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
+    // Just set the text span without the icon
+    topBtn.innerHTML = `<span>◉ ${newPhrase}</span>`;
+    if(bottomBtn) bottomBtn.innerHTML = `<span>◉ ${newPhrase}</span>`;
 
     try {
         let validBlock = null;
