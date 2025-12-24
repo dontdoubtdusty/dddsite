@@ -88,6 +88,8 @@
 
         <div id="randomQuoteDisplay" class="hidden parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
             <div id="randomContentArea" class="flex flex-col gap-6 text-center"></div>
+
+            <p id="randomFirstsInfo" class="text-center text-sm font-bold text-gray-800 mt-6 mb-2"></p>
             
             <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-end">
                 <p class="text-sm text-gray-600" id="randomQuoteInfo"></p>
@@ -161,12 +163,13 @@ function initApp() {
     topBtn.onclick = generateQuote;
 }
 
-// --- 4. THE MAIN LOGIC (Now Global) ---
+// --- 4. THE MAIN LOGIC ---
 async function generateQuote() {
     const quotes = window.quotes;
     const displayBox = document.getElementById('randomQuoteDisplay');
     const contentArea = document.getElementById('randomContentArea');
     const infoBox = document.getElementById('randomQuoteInfo');
+    const firstsBox = document.getElementById('randomFirstsInfo'); // New Element
     const linkBox = document.getElementById('randomLink');
     const topBtn = document.getElementById('randomBtn');
     const bottomBtn = document.getElementById('bottomBtn');
@@ -175,14 +178,13 @@ async function generateQuote() {
     displayBox.classList.remove('hidden');
     contentArea.innerHTML = '<p class="italic text-gray-500 py-8">Scanning archives...</p>';
     infoBox.textContent = "";
+    firstsBox.textContent = ""; // Clear previous "Firsts"
 
     // 2. Update Text on BOTH Buttons
     const newPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    const iconSvg = topBtn.querySelector('svg').outerHTML; // Reuse the icon
+    const iconSvg = topBtn.querySelector('svg').outerHTML; 
     
-    // Update top button
     topBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
-    // Update bottom button (if it exists)
     if(bottomBtn) bottomBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
 
     try {
@@ -191,6 +193,7 @@ async function generateQuote() {
         let parsedTitle = "Unknown Title";
         let parsedSeason = "Specials";
         let parsedDateUrl = ""; 
+        let firstsText = ""; 
 
         // Try up to 50 times to find a good image-text block
         for (let attempt = 0; attempt < 50; attempt++) {
@@ -201,6 +204,7 @@ async function generateQuote() {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             
+            // Extract Title
             parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
             const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
             if(seasonMatch) parsedSeason = "Season " + seasonMatch[1];
@@ -212,13 +216,24 @@ async function generateQuote() {
                 if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
             }
 
-            // Parse nodes
+            // --- NEW: Extract "Firsts" ---
+            // Finds the first paragraph that starts with "Firsts:"
+            const firstsEl = Array.from(doc.querySelectorAll('p')).find(p => 
+                p.textContent.trim().startsWith('Firsts:')
+            );
+            if (firstsEl) {
+                firstsText = firstsEl.textContent.trim();
+            }
+
+            // Parse nodes for the content sandwich
             const allPs = Array.from(doc.querySelectorAll('p'));
             const nodes = allPs.map(p => {
                 if (p.querySelector('img')) return { type: 'IMG', el: p };
                 const text = p.textContent.trim();
                 // Filter out metadata lines
-                if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:')) {
+                if (text && !text.includes('Original Date') 
+                         && !text.toLowerCase().includes('source:')
+                         && !text.startsWith('Firsts:')) { // Don't put "Firsts" inside the sandwich
                     return { type: 'TEXT', el: p };
                 }
                 return { type: 'SKIP' };
@@ -275,7 +290,7 @@ async function generateQuote() {
             contentArea.appendChild(textDiv);
         }
 
-        // 4. Update Footer Links
+        // 4. Update Footer Links & Info
         const slug = parsedTitle.toLowerCase()
             .replace(/['"“”‘’]/g, '')
             .replace(/[^a-z0-9]+/g, '-')
@@ -286,6 +301,10 @@ async function generateQuote() {
             : `https://therealfullhousereviewed.wordpress.com/`;
 
         infoBox.textContent = `${parsedTitle} • ${parsedSeason}`;
+        
+        // Render the extracted "Firsts" text
+        firstsBox.textContent = firstsText;
+
         linkBox.href = realUrl; 
 
     } catch (e) {
