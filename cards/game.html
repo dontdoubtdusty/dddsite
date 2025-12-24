@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eras of Conflict - Game Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .board {
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .eras-tracker {
+            background: rgba(0, 0, 0, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .eras-title {
+            color: white;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+        }
+
+        .eras-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .era-section {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .era-label {
+            color: white;
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .era-slots {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .era-slot {
+            height: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 10px;
+        }
+
+        .card-slot {
+            aspect-ratio: 2/3;
+            max-height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card-slot.back-row {
+            background: rgba(255, 200, 150, 0.1);
+            border-color: rgba(255, 200, 150, 0.3);
+        }
+        
+        .card-slot.front-row {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card-slot.drag-over {
+            background: rgba(100, 200, 255, 0.3);
+            border-color: #64c8ff;
+            transform: scale(1.05);
+        }
+
+        .card-slot.filled {
+            border-style: solid;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: grab;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .card-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .card-power {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-bottom: 5px;
+        }
+
+        .card-footer {
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #999;
+            padding-top: 5px;
+        }
+
+        .bottom-area {
+            display: grid;
+            grid-template-columns: 150px 1fr 150px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .deck-pile, .discard-pile {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .pile-title {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .pile-container {
+            width: 120px;
+            height: 180px;
+            position: relative;
+        }
+
+        .deck-back, .discard-top {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .deck-back {
+            background: linear-gradient(145deg, #8b4513, #654321);
+            border: 2px solid #333;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .deck-back:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .deck-back:active {
+            transform: translateY(-2px);
+        }
+
+        .discard-top {
+            background: rgba(100, 100, 100, 0.3);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        .discard-top.drag-over {
+            background: rgba(200, 100, 100, 0.3);
+            border-color: #ff6464;
+            transform: scale(1.05);
+        }
+
+        .deck-count {
+            color: white;
+            font-size: 14px;
+        }
+
+        .hand {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            min-height: 220px;
+        }
+
+        .hand-title {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .hand-cards {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            min-height: 180px;
+        }
+
+        .hand-cards.drag-over {
+            background: rgba(100, 200, 100, 0.2);
+            border-radius: 10px;
+        }
+
+        .hand-card-container {
+            width: 120px;
+            height: 180px;
+        }
+
+        .slot-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+
+        .empty-message {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+        }
+
+        .era-section.ancient { border-color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+        .era-section.dawn { border-color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+        .era-section.twilight { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); }
+        .era-section.crystal { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+        .era-section.void { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+
+        .lock-in-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .lock-in-button {
+            background: linear-gradient(145deg, #4ade80, #22c55e);
+            border: 3px solid #16a34a;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .lock-in-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            background: linear-gradient(145deg, #22c55e, #16a34a);
+        }
+        
+        .lock-in-button:active {
+            transform: translateY(0);
+        }
+        
+        .board.locking {
+            animation: lockPulse 0.6s ease;
+        }
+        
+        @keyframes lockPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+            }
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 30px 10px rgba(74, 222, 128, 0.4);
+            }
+        }
+        
+        .card-slot.locked-flash {
+            animation: slotFlash 0.6s ease;
+        }
+        
+        @keyframes slotFlash {
+            0%, 100% {
+                border-color: rgba(255, 255, 255, 0.3);
+                background: rgba(255, 255, 255, 0.05);
+            }
+            50% {
+                border-color: #4ade80;
+                background: rgba(74, 222, 128, 0.3);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Eras of Conflict</h1>
+        <div class="lock-in-container">
+            <button class="lock-in-button" id="lockInButton" onclick="lockInCards()">Lock In</button>
+        </div>
+        <div class="eras-tracker">
+            <div class="eras-title">ERAS</div>
+            <div class="eras-grid">
+                <div class="era-section ancient">
+                    <div class="era-label">Ancient</div>
+                    <div class="era-slots">
+                        <div class="era-slot">Turn 1</div>
+                        <div class="era-slot">Turn 2</div>
+                    </div>
+                </div>
+                <div class="era-section dawn">
+                    <div class="era-label">Dawn</div>
+                    <div class="era-slots">
+                        <div class="era-slot">Turn 3</div>
+                        <div class="era-slot">Turn 4</div>
+                    </div>
+                </div>
+                <div class="era-section twilight">
+                    <div class="era-label">Twilight</div>
+                    <div class="era-slots">
+                        <div class="era-slot">Turn 5</div>
+                        <div class="era-slot">Turn 6</div>
+                    </div>
+                </div>
+                <div class="era-section crystal">
+                    <div class="era-label">Crystal</div>
+                    <div class="era-slots">
+                        <div class="era-slot">Turn 7</div>
+                        <div class="era-slot">Turn 8</div>
+                    </div>
+                </div>
+                <div class="era-section void">
+                    <div class="era-label">Void</div>
+                    <div class="era-slots">
+                        <div class="era-slot">Turn 9</div>
+                        <div class="era-slot">Turn 10</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="board">
+            <div class="board-grid" id="boardGrid">
+                <!-- Card slots will be generated here -->
+            </div>
+        </div>
+
+        <div class="bottom-area">
+            <div class="discard-pile">
+                <div class="pile-title">Discard</div>
+                <div class="pile-container">
+                    <div class="discard-top" id="discardPile">
+                        <span class="empty-message">Empty</span>
+                    </div>
+                </div>
+                <div class="deck-count" id="discardCount">Cards: 0</div>
+            </div>
+        
+            <div class="hand">
+                <div class="hand-title">Your Hand</div>
+                <div class="hand-cards" id="handCards">
+                    <!-- Cards will be generated here -->
+                </div>
+            </div>
+        
+            <div class="deck-pile">
+                <div class="pile-title">Deck</div>
+                <div class="pile-container">
+                    <div class="deck-back" id="deckBack" onclick="drawCard()">🂠</div>
+                </div>
+                <div class="deck-count" id="deckCount">Cards: 0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load card data from cardlist.html -->
+    <script src="cardlist.html"></script>
+    
+    <script>
+        // Game state variables
+        let deck = [];
+        let hand = [];
+        let discard = [];
+        let boardState = {};
+        let draggedCard = null;
+        let dragSource = null;
+
+        // Generate deck with 2 copies of each card
+        function initializeDeck() {
+            deck = [];
+            cards.forEach(card => {
+                // Add 2 copies of each card with unique instance IDs
+                deck.push({...card, instanceId: card.id * 100 + 1});
+                deck.push({...card, instanceId: card.id * 100 + 2});
+            });
+            shuffleDeck();
+        }
+
+        function shuffleDeck() {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function getCardSymbol(card) {
+            // Map card types to symbols
+            const typeSymbols = {
+                'Creature': '⚔️',
+                'Relic': '🛡️',
+                'Construct': '🏛️',
+                'Instant': '⚡'
+            };
+            return typeSymbols[card.type] || '🃏';
+        }
+
+        function createCard(cardData) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.draggable = true;
+            card.dataset.cardId = cardData.id;
+            card.dataset.instanceId = cardData.instanceId;
+            
+            const symbol = getCardSymbol(cardData);
+            const typeText = cardData.subtype ? `${card.type} - ${cardData.subtype}` : cardData.type;
+            
+            card.innerHTML = `
+                <div class="card-header">${cardData.name}</div>
+                <div class="card-content">
+                    <div style="font-size: 36px; margin-bottom: 5px;">${symbol}</div>
+                    ${cardData.power !== undefined ? `<div class="card-power">⚔ ${cardData.power}</div>` : ''}
+                    <div style="font-size: 9px; color: #666;">${cardData.text.substring(0, 50)}${cardData.text.length > 50 ? '...' : ''}</div>
+                </div>
+                <div class="card-footer">Cost: ${cardData.cost} Spirit</div>
+            `;
+
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+
+            return card;
+        }
+
+        function initializeBoard() {
+            const boardGrid = document.getElementById('boardGrid');
+            
+            // Create front row FIRST (slots 0-4)
+            for (let i = 0; i < 5; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'card-slot front-row';
+                slot.dataset.slotId = i;
+                slot.innerHTML = `<span class="slot-label">Front ${i + 1}</span>`;
+                
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('dragleave', handleDragLeave);
+                slot.addEventListener('drop', handleDrop);
+                
+                boardGrid.appendChild(slot);
+            }
+            
+            // Create back row SECOND (slots 5-9)
+            for (let i = 5; i < 10; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'card-slot back-row';
+                slot.dataset.slotId = i;
+                slot.innerHTML = `<span class="slot-label">Back ${i - 4}</span>`;
+                
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('dragleave', handleDragLeave);
+                slot.addEventListener('drop', handleDrop);
+                
+                boardGrid.appendChild(slot);
+            }
+        }
+
+        function drawCard() {
+            if (deck.length === 0) {
+                alert('Deck is empty!');
+                return;
+            }
+
+            const card = deck.pop();
+            hand.push(card);
+            renderHand();
+            updateDeckCount();
+        }
+
+        function renderHand() {
+            const handCards = document.getElementById('handCards');
+            handCards.innerHTML = '';
+            
+            hand.forEach(cardData => {
+                const container = document.createElement('div');
+                container.className = 'hand-card-container';
+                container.appendChild(createCard(cardData));
+                handCards.appendChild(container);
+            });
+        }
+
+        function updateDeckCount() {
+            document.getElementById('deckCount').textContent = `Cards: ${deck.length}`;
+        }
+
+        function updateDiscardCount() {
+            document.getElementById('discardCount').textContent = `Cards: ${discard.length}`;
+            
+            const discardPile = document.getElementById('discardPile');
+            if (discard.length > 0) {
+                const topCard = discard[discard.length - 1];
+                const symbol = getCardSymbol(topCard);
+                discardPile.innerHTML = `<span style="font-size: 48px">${symbol}</span>`;
+            } else {
+                discardPile.innerHTML = `<span class="empty-message">Empty</span>`;
+            }
+        }
+
+        function handleDragStart(e) {
+            draggedCard = e.target;
+            const instanceId = parseInt(e.target.dataset.instanceId);
+            
+            const parent = e.target.parentElement;
+            if (parent.classList.contains('hand-card-container')) {
+                dragSource = 'hand';
+            } else if (parent.classList.contains('card-slot')) {
+                dragSource = 'board';
+            }
+            
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const slot = e.currentTarget;
+            slot.classList.remove('drag-over');
+            
+            if (!draggedCard) return;
+            
+            const instanceId = parseInt(draggedCard.dataset.instanceId);
+            
+            if (slot.classList.contains('card-slot')) {
+                if (!slot.classList.contains('filled')) {
+                    const slotId = slot.dataset.slotId;
+                    
+                    if (dragSource === 'hand') {
+                        const cardIndex = hand.findIndex(c => c.instanceId === instanceId);
+                        const cardData = hand[cardIndex];
+                        hand.splice(cardIndex, 1);
+                    } else if (dragSource === 'board') {
+                        const oldSlot = draggedCard.parentElement;
+                        oldSlot.classList.remove('filled');
+                        delete boardState[oldSlot.dataset.slotId];
+                    }
+                    
+                    slot.innerHTML = '';
+                    slot.appendChild(draggedCard);
+                    slot.classList.add('filled');
+                    boardState[slotId] = instanceId;
+                    
+                    renderHand();
+                }
+            } else if (slot.id === 'handCards' || slot.classList.contains('hand-cards')) {
+                if (dragSource === 'board') {
+                    const oldSlot = draggedCard.parentElement;
+                    oldSlot.classList.remove('filled');
+                    const isBackRow = oldSlot.classList.contains('back-row');
+                    oldSlot.innerHTML = `<span class="slot-label">${isBackRow ? 'Back' : 'Front'} ${isBackRow ? parseInt(oldSlot.dataset.slotId) - 4 : parseInt(oldSlot.dataset.slotId) + 1}</span>`;
+                    
+                    const cardData = [...deck, ...hand, ...discard].find(c => c.instanceId === instanceId);
+                    if (cardData) {
+                        hand.push(cardData);
+                    }
+                    delete boardState[oldSlot.dataset.slotId];
+                    
+                    renderHand();
+                }
+            } else if (slot.id === 'discardPile' || slot.classList.contains('discard-top')) {
+                let cardData;
+                
+                if (dragSource === 'hand') {
+                    const cardIndex = hand.findIndex(c => c.instanceId === instanceId);
+                    cardData = hand[cardIndex];
+                    hand.splice(cardIndex, 1);
+                } else if (dragSource === 'board') {
+                    const oldSlot = draggedCard.parentElement;
+                    oldSlot.classList.remove('filled');
+                    const isBackRow = oldSlot.classList.contains('back-row');
+                    oldSlot.innerHTML = `<span class="slot-label">${isBackRow ? 'Back' : 'Front'} ${isBackRow ? parseInt(oldSlot.dataset.slotId) - 4 : parseInt(oldSlot.dataset.slotId) + 1}</span>`;
+                    cardData = [...deck, ...hand, ...discard].find(c => c.instanceId === instanceId);
+                    delete boardState[oldSlot.dataset.slotId];
+                }
+                
+                if (cardData) {
+                    discard.push(cardData);
+                }
+                renderHand();
+                updateDiscardCount();
+            }
+            
+            draggedCard = null;
+            dragSource = null;
+        }
+
+        function lockInCards() {
+            const board = document.querySelector('.board');
+            const frontRowSlots = document.querySelectorAll('.card-slot.front-row');
+            
+            // Add animation to board
+            board.classList.add('locking');
+            
+            // Animate each slot
+            frontRowSlots.forEach((slot, index) => {
+                setTimeout(() => {
+                    slot.classList.add('locked-flash');
+                    
+                    // Remove animation class after it completes
+                    setTimeout(() => {
+                        slot.classList.remove('locked-flash');
+                    }, 600);
+                    
+                    // Fill empty slots
+                    if (!slot.classList.contains('filled')) {
+                        const emptyCard = {
+                            id: 999,
+                            instanceId: Date.now() + index,
+                            name: 'Empty Slot',
+                            type: 'Empty',
+                            cost: 0,
+                            text: 'This slot is empty'
+                        };
+                        
+                        slot.innerHTML = '';
+                        slot.appendChild(createCard(emptyCard));
+                        slot.classList.add('filled');
+                        boardState[slot.dataset.slotId] = emptyCard.instanceId;
+                    }
+                }, index * 100);
+            });
+            
+            // Remove board animation class
+            setTimeout(() => {
+                board.classList.remove('locking');
+            }, 600);
+        }
+
+        // Set up drag and drop for hand and discard
+        const handCards = document.getElementById('handCards');
+        handCards.addEventListener('dragover', handleDragOver);
+        handCards.addEventListener('dragleave', handleDragLeave);
+        handCards.addEventListener('drop', handleDrop);
+
+        const discardPile = document.getElementById('discardPile');
+        discardPile.addEventListener('dragover', handleDragOver);
+        discardPile.addEventListener('dragleave', handleDragLeave);
+        discardPile.addEventListener('drop', handleDrop);
+
+        // Initialize game on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeDeck();
+            initializeBoard();
+            
+            // Draw starting hand of 7 cards
+            for (let i = 0; i < 7; i++) {
+                drawCard();
+            }
+        });
+    </script>
+</body>
+</html>
