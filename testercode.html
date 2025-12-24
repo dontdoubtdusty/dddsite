@@ -195,6 +195,7 @@ async function generateQuote() {
         let parsedTitle = "Unknown Title";
         let parsedSeason = "Specials";
         let parsedDateUrl = ""; 
+        let displayDate = ""; // Store the date text here
         let firstsText = ""; 
 
         // Try up to 50 times to find a good image-text block
@@ -206,25 +207,27 @@ async function generateQuote() {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             
-            // --- CHANGED: Extract Date for Display AND Url ---
-            let displayDate = ""; 
+            // --- EXTRACT METADATA ---
+            
+            // 1. Get Title (Restored)
+            parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
+            
+            // 2. Get Season
+            const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
+            if(seasonMatch) parsedSeason = "Season " + seasonMatch[1];
+
+            // 3. Get Date (For URL and Display)
             const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
             if (dateEl) {
-                // Get the raw text (e.g. "Original Date: 2011-10-07")
-                displayDate = dateEl.textContent.replace('Original Date:', '').trim(); 
+                // Remove "Original Date:" text to get just the date
+                displayDate = dateEl.textContent.replace('Original Date:', '').trim();
                 
-                // Still parse it for the URL
+                // Parse numbers for the URL
                 const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
                 if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
             }
 
-            const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-            if (dateEl) {
-                const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
-                if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
-            }
-
-            // Extract "Firsts"
+            // 4. Get "Firsts"
             const firstsEl = Array.from(doc.querySelectorAll('p')).find(p => 
                 p.textContent.trim().startsWith('Firsts:')
             );
@@ -232,7 +235,7 @@ async function generateQuote() {
                 firstsText = firstsEl.textContent.trim();
             }
 
-            // Parse Content Sandwich
+            // --- FIND CONTENT SANDWICH ---
             const allPs = Array.from(doc.querySelectorAll('p'));
             const nodes = allPs.map(p => {
                 if (p.querySelector('img')) return { type: 'IMG', el: p };
@@ -297,25 +300,22 @@ async function generateQuote() {
         }
 
         // 4. Update Footer & Firsts
-        // --- CHANGED: Add Date to the Footer Info ---
-        // If we found a date, add it after the season with a bullet point
+        const slug = parsedTitle.toLowerCase()
+            .replace(/['"“”‘’]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        
+        const realUrl = parsedDateUrl 
+            ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
+            : `https://therealfullhousereviewed.wordpress.com/`;
+
+        // Add date to footer if we found one
         const dateString = displayDate ? ` • ${displayDate}` : "";
         infoBox.textContent = `${parsedTitle} • ${parsedSeason}${dateString}`;
         
         linkBox.href = realUrl; 
 
-        // [EXISTING CODE] Show Firsts container...
-        if (firstsText) {
-            firstsContainer.classList.remove('hidden');
-            firstsBox.textContent = firstsText;
-        } else {
-            firstsContainer.classList.add('hidden');
-        }
-
-        infoBox.textContent = `${parsedTitle} • ${parsedSeason}`;
-        linkBox.href = realUrl; 
-
-        // LOGIC: Show Firsts container ONLY if we found text
+        // Show Firsts container ONLY if we found text
         if (firstsText) {
             firstsContainer.classList.remove('hidden');
             firstsBox.textContent = firstsText;
