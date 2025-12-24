@@ -300,7 +300,13 @@ async function generateQuote() {
             contentArea.appendChild(img1);
 
             const textDiv = document.createElement('div');
-            textDiv.className = "text-lg text-black px-2 leading-relaxed";
+            textDiv.className = "text-black px-2";
+            
+            // "Twenty Ten" uses Georgia for the main text
+            textDiv.style.fontFamily = "Georgia, 'Bitstream Charter', serif";
+            textDiv.style.fontSize = '16px';
+            textDiv.style.lineHeight = '1.5'; // Adds that nice spacing between lines
+            
             validBlock.texts.forEach(p => {
                 const clone = p.cloneNode(true);
                 clone.className = "mb-4";
