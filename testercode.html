@@ -311,10 +311,8 @@ async function generateQuote() {
             ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
             : `https://therealfullhousereviewed.wordpress.com/`;
 
-        // Add date to footer if we found one
-        // Note: The <br> will work now because we use .innerHTML below
-        const dateString = displayDate ? ` • <br>Review Date: ${displayDate}` : "";
-        infoBox.innerHTML = `${parsedTitle} • ${parsedSeason}${dateString}`;
+        const dateString = displayDate ? `<br>Review Date: ${displayDate}` : "";
+        infoBox.innerHTML = `${parsedTitle}${dateString}`;
         
         linkBox.href = realUrl; 
 
