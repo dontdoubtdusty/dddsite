@@ -89,6 +89,10 @@
         <div id="randomQuoteDisplay" class="hidden parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
             <div id="randomContentArea" class="flex flex-col gap-6 text-center"></div>
             
+            <div id="firstsContainer" class="hidden">
+                <hr class="border-t border-gray-100 my-4"> <p id="randomFirstsInfo" class="text-center text-sm text-gray-500 italic"></p>
+            </div>
+            
             <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-end">
                 <p class="text-sm text-gray-600" id="randomQuoteInfo"></p>
                 <a id="randomLink" href="#" class="read-review-btn">Read Review</a>
@@ -146,43 +150,43 @@ async function loadFhrArchive() {
 function initApp() {
     document.getElementById('quoteCount').textContent = `A complete codex of 193 reviews.`;
     
-    // Get the top button
     const topBtn = document.getElementById('randomBtn');
-    
-    // Enable it
     topBtn.disabled = false;
     topBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
-    // Set initial random phrase
     const startPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
     topBtn.querySelector('span').textContent = startPhrase;
 
-    // Attach the function to the top button
     topBtn.onclick = generateQuote;
 }
 
-// --- 4. THE MAIN LOGIC (Now Global) ---
+// --- 4. THE MAIN LOGIC ---
 async function generateQuote() {
     const quotes = window.quotes;
     const displayBox = document.getElementById('randomQuoteDisplay');
     const contentArea = document.getElementById('randomContentArea');
     const infoBox = document.getElementById('randomQuoteInfo');
     const linkBox = document.getElementById('randomLink');
+    
+    // NEW ELEMENTS
+    const firstsContainer = document.getElementById('firstsContainer');
+    const firstsBox = document.getElementById('randomFirstsInfo');
+
     const topBtn = document.getElementById('randomBtn');
     const bottomBtn = document.getElementById('bottomBtn');
 
     // 1. Reset UI
     displayBox.classList.remove('hidden');
+    firstsContainer.classList.add('hidden'); // Hide firsts by default
     contentArea.innerHTML = '<p class="italic text-gray-500 py-8">Scanning archives...</p>';
     infoBox.textContent = "";
+    firstsBox.textContent = ""; 
 
-    // 2. Update Text on BOTH Buttons
+    // 2. Update Buttons
     const newPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    const iconSvg = topBtn.querySelector('svg').outerHTML; // Reuse the icon
+    const iconSvg = topBtn.querySelector('svg').outerHTML; 
     
-    // Update top button
     topBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
-    // Update bottom button (if it exists)
     if(bottomBtn) bottomBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
 
     try {
@@ -191,6 +195,8 @@ async function generateQuote() {
         let parsedTitle = "Unknown Title";
         let parsedSeason = "Specials";
         let parsedDateUrl = ""; 
+        let displayDate = ""; // Store the date text here
+        let firstsText = ""; 
 
         // Try up to 50 times to find a good image-text block
         for (let attempt = 0; attempt < 50; attempt++) {
@@ -201,30 +207,50 @@ async function generateQuote() {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             
+            // --- EXTRACT METADATA ---
+            
+            // 1. Get Title (Restored)
             parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
+            
+            // 2. Get Season
             const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
             if(seasonMatch) parsedSeason = "Season " + seasonMatch[1];
 
-            // Extract Date for URL
+            // 3. Get Date (For URL and Display)
             const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
             if (dateEl) {
+                // Remove "Original Date:" text to get just the date
+                displayDate = dateEl.textContent.replace('Original Date:', '').trim();
+                
+                // Parse numbers for the URL
                 const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
                 if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
             }
 
-            // Parse nodes
+            // 4. Get "Firsts"
+            const firstsEl = Array.from(doc.querySelectorAll('p')).find(p => 
+                p.textContent.trim().startsWith('Firsts:')
+            );
+            if (firstsEl) {
+                // replace('Firsts:', '') removes the label
+                // trim() removes the space that was left behind
+                firstsText = firstsEl.textContent.replace('Firsts:', '').trim();
+            }
+
+            // --- FIND CONTENT SANDWICH ---
             const allPs = Array.from(doc.querySelectorAll('p'));
             const nodes = allPs.map(p => {
                 if (p.querySelector('img')) return { type: 'IMG', el: p };
                 const text = p.textContent.trim();
-                // Filter out metadata lines
-                if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:')) {
+                
+                if (text && !text.includes('Original Date') 
+                         && !text.toLowerCase().includes('source:')
+                         && !text.startsWith('Firsts:')) { 
                     return { type: 'TEXT', el: p };
                 }
                 return { type: 'SKIP' };
             });
 
-            // Look for Image -> Text -> Image sandwich
             const candidates = [];
             for (let i = 0; i < nodes.length; i++) {
                 if (nodes[i].type === 'IMG') {
@@ -275,7 +301,7 @@ async function generateQuote() {
             contentArea.appendChild(textDiv);
         }
 
-        // 4. Update Footer Links
+        // 4. Update Footer & Firsts
         const slug = parsedTitle.toLowerCase()
             .replace(/['"“”‘’]/g, '')
             .replace(/[^a-z0-9]+/g, '-')
@@ -285,19 +311,28 @@ async function generateQuote() {
             ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
             : `https://therealfullhousereviewed.wordpress.com/`;
 
-        infoBox.textContent = `${parsedTitle} • ${parsedSeason}`;
+        const dateString = displayDate ? `<br>Review Date: ${displayDate}` : "";
+        infoBox.innerHTML = `${parsedTitle}${dateString}`;
+        
         linkBox.href = realUrl; 
+
+        // Show Firsts container ONLY if we found text
+        if (firstsText) {
+            firstsContainer.classList.remove('hidden');
+            // Re-adding the label "Firsts in this episode:" for display purposes
+            firstsBox.textContent = `Firsts in this episode: ${firstsText}`;
+        } else {
+            firstsContainer.classList.add('hidden');
+        }
 
     } catch (e) {
         console.error(e);
         contentArea.innerHTML = '<p class="text-red-600">The archives are dusty. Please try again.</p>';
     }
 
-    // 5. Reveal Bottom Button
     document.getElementById("bottom-button-container").style.display = "block";
 }
 
-// Start everything
 loadFhrArchive();
 </script>
 </body>
