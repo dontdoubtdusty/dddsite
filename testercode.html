@@ -318,7 +318,7 @@ async function generateQuote() {
         // Show Firsts container ONLY if we found text
         if (firstsText) {
             firstsContainer.classList.remove('hidden');
-            firstsBox.textContent = firstsText;
+            firstsBox.textContent = `Firsts in this episode: ${firstsText}`;
         } else {
             firstsContainer.classList.add('hidden');
         }
