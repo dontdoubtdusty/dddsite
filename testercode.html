@@ -107,6 +107,10 @@
                 <span>Loading...</span>
             </button>
         </div>
+
+        <div id="bottom-button-container" style="display: none; margin-top: 20px;">
+            <button onclick="generateQuote()">Get Another Quote</button>
+        </div>
         
     </div>
 
@@ -305,6 +309,8 @@ function initApp() {
             console.error(e);
             contentArea.innerHTML = '<p class="text-red-600">The archives are dusty today. Please try again.</p>';
         }
+
+        document.getElementById("bottom-button-container").style.display = "block";
     });
 }
 </script>
