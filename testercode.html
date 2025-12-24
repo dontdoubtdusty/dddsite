@@ -111,22 +111,26 @@
     </div>
 
 <script>
-// 1) Load the file list
+// --- 1. GLOBAL VARIABLES ---
+const catchphrases = [
+    "Cut. It. Out!", "Have Mercy!", "How Rude!", "You Got It, Dude!",
+    "Oh, My Lanta!", "Hola, Tanneritos!", "Watch The Hair!", 
+    "Pin a Rose on Your Nose!", "Clean is Good, Dirt is Bad."
+];
+
+// --- 2. LOAD THE ARCHIVE ---
 async function loadFhrArchive() {
     try {
         const response = await fetch('fhr/filelist.txt');
         if (!response.ok) throw new Error("Could not find fhr/filelist.txt");
 
         const listText = await response.text();
-        // Filter for .html only to avoid parsing text files
         const files = listText.split('\n')
             .map(line => line.trim())
             .filter(line => line.length > 0 && line.endsWith('.html'));
 
         document.getElementById('subStatus').textContent = `A permanent tribute to Billy Superstar. No new reviews will be found; he has finally escaped.`;
 
-        // We build a simple index (ID and Filename) to save memory
-        // We will fetch the full HTML only when the button is clicked
         window.quotes = files.map((f, i) => ({ id: i, filename: f }));
         
         initApp();
@@ -138,164 +142,163 @@ async function loadFhrArchive() {
     }
 }
 
-loadFhrArchive();
-
-// 2) Application Logic
+// --- 3. INITIALIZE BUTTONS ---
 function initApp() {
-    const quotes = window.quotes;
     document.getElementById('quoteCount').textContent = `A complete codex of 193 reviews.`;
     
-    // Catchphrases list
-    const catchphrases = [
-        "Cut. It. Out!", "Have Mercy!", "How Rude!", "You Got It, Dude!",
-        "Oh, My Lanta!", "Hola, Tanneritos!", "Watch The Hair!", 
-        "Pin a Rose on Your Nose!", "Clean is Good, Dirt is Bad."
-    ];
-
-    // SETUP: Enable Top Button
+    // Get the top button
     const topBtn = document.getElementById('randomBtn');
+    
+    // Enable it
     topBtn.disabled = false;
     topBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-    // Set initial text
+
+    // Set initial random phrase
     const startPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
     topBtn.querySelector('span').textContent = startPhrase;
-    
-    // Assign click to top button (Bottom button has onclick="generateQuote()" in HTML)
+
+    // Attach the function to the top button
     topBtn.onclick = generateQuote;
+}
 
-    // --- SHARED FUNCTION ---
-    // We attach this to window so the HTML onclick can see it
-    window.generateQuote = async function() {
-        const displayBox = document.getElementById('randomQuoteDisplay');
-        const contentArea = document.getElementById('randomContentArea');
-        const infoBox = document.getElementById('randomQuoteInfo');
-        const linkBox = document.getElementById('randomLink');
-        const topBtn = document.getElementById('randomBtn');
-        const bottomBtn = document.getElementById('bottomBtn');
+// --- 4. THE MAIN LOGIC (Now Global) ---
+async function generateQuote() {
+    const quotes = window.quotes;
+    const displayBox = document.getElementById('randomQuoteDisplay');
+    const contentArea = document.getElementById('randomContentArea');
+    const infoBox = document.getElementById('randomQuoteInfo');
+    const linkBox = document.getElementById('randomLink');
+    const topBtn = document.getElementById('randomBtn');
+    const bottomBtn = document.getElementById('bottomBtn');
 
-        // 1. Reset UI
-        displayBox.classList.remove('hidden');
-        contentArea.innerHTML = '<p class="italic text-gray-500 py-8">Scanning archives...</p>';
-        infoBox.textContent = "";
+    // 1. Reset UI
+    displayBox.classList.remove('hidden');
+    contentArea.innerHTML = '<p class="italic text-gray-500 py-8">Scanning archives...</p>';
+    infoBox.textContent = "";
 
-        // 2. Update Text on BOTH Buttons
-        const newPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-        const iconSvg = topBtn.querySelector('svg').outerHTML; // Grab SVG to reuse
-        
-        // Update top button
-        topBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
-        // Update bottom button
-        if(bottomBtn) bottomBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
+    // 2. Update Text on BOTH Buttons
+    const newPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
+    const iconSvg = topBtn.querySelector('svg').outerHTML; // Reuse the icon
+    
+    // Update top button
+    topBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
+    // Update bottom button (if it exists)
+    if(bottomBtn) bottomBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
 
-        try {
-            let validBlock = null;
-            let chosenEpisode = null;
-            let parsedTitle = "";
-            let parsedSeason = "";
-            let parsedDateUrl = "";
+    try {
+        let validBlock = null;
+        let chosenEpisode = null;
+        let parsedTitle = "Unknown Title";
+        let parsedSeason = "Specials";
+        let parsedDateUrl = ""; 
 
-            // Try up to 50 times to find a "Sandwich" (Image-Text-Image)
-            for (let attempt = 0; attempt < 50; attempt++) {
-                chosenEpisode = quotes[Math.floor(Math.random() * quotes.length)];
-                
-                const response = await fetch(`fhr/${chosenEpisode.filename}`);
-                const htmlText = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlText, 'text/html');
-                
-                parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
-                const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
-                parsedSeason = seasonMatch ? "Season " + seasonMatch[1] : "Specials";
-
-                const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-                if (dateEl) {
-                    const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
-                    if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
-                }
-
-                const allPs = Array.from(doc.querySelectorAll('p'));
-                const nodes = allPs.map(p => {
-                    if (p.querySelector('img')) return { type: 'IMG', el: p };
-                    const text = p.textContent.trim();
-                    if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:')) {
-                        return { type: 'TEXT', el: p };
-                    }
-                    return { type: 'SKIP' };
-                });
-
-                const candidates = [];
-                for (let i = 0; i < nodes.length; i++) {
-                    if (nodes[i].type === 'IMG') {
-                        let texts = [];
-                        let j = i + 1;
-                        while (j < nodes.length) {
-                            if (nodes[j].type === 'TEXT') {
-                                texts.push(nodes[j].el);
-                            } else if (nodes[j].type === 'IMG') {
-                                if (texts.length > 0) {
-                                    candidates.push({ start: nodes[i].el, texts: texts, end: nodes[j].el });
-                                }
-                                break; 
-                            }
-                            j++;
-                        }
-                    }
-                }
-
-                if (candidates.length > 0) {
-                    validBlock = candidates[Math.floor(Math.random() * candidates.length)];
-                    break; 
-                }
-            }
-
-            // 3. Render Content
-            contentArea.innerHTML = '';
-            if (validBlock) {
-                const img1 = validBlock.start.querySelector('img').cloneNode(true);
-                img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-                contentArea.appendChild(img1);
-
-                const textDiv = document.createElement('div');
-                textDiv.className = "text-lg text-black px-2 leading-relaxed";
-                validBlock.texts.forEach(p => {
-                    const clone = p.cloneNode(true);
-                    clone.className = "mb-4";
-                    textDiv.appendChild(clone);
-                });
-                contentArea.appendChild(textDiv);
-
-                const img2 = validBlock.end.querySelector('img').cloneNode(true);
-                img2.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-                contentArea.appendChild(img2);
-            } else {
-                const textDiv = document.createElement('div');
-                textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
-                contentArea.appendChild(textDiv);
-            }
-
-            // 4. Update Footer Links
-            const slug = parsedTitle.toLowerCase()
-                .replace(/['"“”‘’]/g, '')
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-+|-+$/g, '');
+        // Try up to 50 times to find a good image-text block
+        for (let attempt = 0; attempt < 50; attempt++) {
+            chosenEpisode = quotes[Math.floor(Math.random() * quotes.length)];
             
-            const realUrl = parsedDateUrl 
-                ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
-                : `https://therealfullhousereviewed.wordpress.com/`;
+            const response = await fetch(`fhr/${chosenEpisode.filename}`);
+            const htmlText = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            
+            parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
+            const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
+            if(seasonMatch) parsedSeason = "Season " + seasonMatch[1];
 
-            infoBox.textContent = `${parsedTitle} • ${parsedSeason}`;
-            linkBox.href = realUrl; 
-            linkBox.target = "_blank"; 
+            // Extract Date for URL
+            const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
+            if (dateEl) {
+                const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
+                if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
+            }
 
-        } catch (e) {
-            console.error(e);
-            contentArea.innerHTML = '<p class="text-red-600">The archives are dusty. Please try again.</p>';
+            // Parse nodes
+            const allPs = Array.from(doc.querySelectorAll('p'));
+            const nodes = allPs.map(p => {
+                if (p.querySelector('img')) return { type: 'IMG', el: p };
+                const text = p.textContent.trim();
+                // Filter out metadata lines
+                if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:')) {
+                    return { type: 'TEXT', el: p };
+                }
+                return { type: 'SKIP' };
+            });
+
+            // Look for Image -> Text -> Image sandwich
+            const candidates = [];
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i].type === 'IMG') {
+                    let texts = [];
+                    let j = i + 1;
+                    while (j < nodes.length) {
+                        if (nodes[j].type === 'TEXT') {
+                            texts.push(nodes[j].el);
+                        } else if (nodes[j].type === 'IMG') {
+                            if (texts.length > 0) {
+                                candidates.push({ start: nodes[i].el, texts: texts, end: nodes[j].el });
+                            }
+                            break; 
+                        }
+                        j++;
+                    }
+                }
+            }
+
+            if (candidates.length > 0) {
+                validBlock = candidates[Math.floor(Math.random() * candidates.length)];
+                break; 
+            }
         }
 
-        // 5. Reveal Bottom Button
-        document.getElementById("bottom-button-container").style.display = "block";
+        // 3. Render Content
+        contentArea.innerHTML = '';
+        if (validBlock) {
+            const img1 = validBlock.start.querySelector('img').cloneNode(true);
+            img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+            contentArea.appendChild(img1);
+
+            const textDiv = document.createElement('div');
+            textDiv.className = "text-lg text-black px-2 leading-relaxed";
+            validBlock.texts.forEach(p => {
+                const clone = p.cloneNode(true);
+                clone.className = "mb-4";
+                textDiv.appendChild(clone);
+            });
+            contentArea.appendChild(textDiv);
+
+            const img2 = validBlock.end.querySelector('img').cloneNode(true);
+            img2.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+            contentArea.appendChild(img2);
+        } else {
+            const textDiv = document.createElement('div');
+            textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
+            contentArea.appendChild(textDiv);
+        }
+
+        // 4. Update Footer Links
+        const slug = parsedTitle.toLowerCase()
+            .replace(/['"“”‘’]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        
+        const realUrl = parsedDateUrl 
+            ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
+            : `https://therealfullhousereviewed.wordpress.com/`;
+
+        infoBox.textContent = `${parsedTitle} • ${parsedSeason}`;
+        linkBox.href = realUrl; 
+
+    } catch (e) {
+        console.error(e);
+        contentArea.innerHTML = '<p class="text-red-600">The archives are dusty. Please try again.</p>';
     }
+
+    // 5. Reveal Bottom Button
+    document.getElementById("bottom-button-container").style.display = "block";
 }
+
+// Start everything
+loadFhrArchive();
 </script>
 </body>
 </html>
