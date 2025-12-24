@@ -84,67 +84,6 @@
         <span class="px-4 py-1" style="border-color: #6b21a8;">
             THE FHR ARCHIVE
         </span>
-        </h1>
-
-        <div class="flex justify-center mt-2 mb-6">
-            <div class="h-1 w-24 bg-purple-900 rounded-full opacity-70"></div>
-        </div>
-
-        <p class="text-purple-700 text-center mb-2" id="quoteCount">
-            Loading Archives...
-        </p>
-        <p class="text-purple-600 text-center mb-8 text-sm italic" id="subStatus">
-            Fetching scrolls from the library...
-        </p>
-
-        <div id="quoteOfDayBox"
-             class="bg-gradient-to-r from-pink-100 to-purple-100 backdrop-blur-lg rounded-lg p-6 mb-6 border-2 border-pink-300 shadow-lg hidden">
-
-            <h2 class="text-xl font-bold text-purple-900 mb-3">
-                Featured Episode
-            </h2>
-
-            <p class="text-xl text-purple-900 mb-2 italic font-serif" id="quoteOfDayText"></p>
-            <div class="flex justify-between items-end">
-                <p class="text-sm text-purple-700" id="quoteOfDayInfo"></p>
-                <a id="qodLink" href="#" class="text-xs bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-800 transition">Read Review</a>
-            </div>
-        </div>
-
-        <div class="parchment rounded-lg p-6 mb-6 shadow-lg">
-            <div class="relative mb-4">
-                <svg class="absolute left-3 top-3 text-purple-400" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Search titles (e.g. 'Sisterly Love')..."
-                    class="w-full pl-10 pr-4 py-3 bg-purple-50 border border-purple-200 rounded-lg text-purple-900 placeholder-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                />
-            </div>
-
-            <div class="mb-4">
-                <p class="text-sm text-purple-700 mb-2">Filter by Season:</p>
-                <div class="flex flex-wrap gap-2" id="popularTerms"></div>
-            </div>
-
-            <div class="mb-4">
-                <p class="text-sm text-purple-700 mb-2">Filter by Year:</p>
-                <div class="flex flex-wrap gap-2" id="yearFilters"></div>
-            </div>
-
-            <button
-                id="randomBtn"
-                class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-105 shadow-md"
-            >
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                </svg>
-                Random Episode
-            </button>
-        </div>
 
         <div id="randomQuoteDisplay" class="hidden parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
             <div id="randomContentArea" class="flex flex-col gap-6 text-center"></div>
