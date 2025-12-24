@@ -142,12 +142,25 @@
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                 </svg>
-                Random Quote
+                Random Episode
             </button>
         </div>
 
         <div id="randomQuoteDisplay" class="hidden parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
             <div id="randomContentArea" class="flex flex-col gap-6 text-center"></div>
+            
+            <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-end">
+                <p class="text-sm text-gray-600" id="randomQuoteInfo"></p>
+                <a id="randomLink" href="#" class="text-xs bg-gray-800 text-white px-3 py-1 rounded hover:bg-black transition">Read Review</a>
+            </div>
+        </div>
+
+        <div class="parchment rounded-lg p-6 shadow-lg">
+            <p class="text-purple-900 mb-4 font-semibold" id="resultCount"></p>
+            <div class="space-y-4 max-h-[600px] overflow-y-auto" id="quotesList"></div>
+            <div id="paginationContainer"></div>
+        </div>
+    </div>
 
 <script>
 // 1) Load the file list, then fetch every HTML file
@@ -210,32 +223,6 @@ function initApp() {
     const quotes = window.quotes;
     document.getElementById('quoteCount').textContent = `Search through ${quotes.length} reviews`;
     document.getElementById('subStatus').textContent = "";
-
-    // --- CATCHPHRASE LOGIC ---
-    const catchphrases = [
-        "Cut. It. Out!",
-        "Have Mercy!",
-        "How Rude!",
-        "You Got It, Dude!",
-        "Oh, My Lanta!",
-        "Hola, Tanneritos!",
-        "Watch The Hair!",
-        "Pin a Rose on Your Nose!",
-        "Clean is Good, Dirt is Bad."
-    ];
-
-    function updateRandomButtonLabel() {
-        const btn = document.getElementById('randomBtn');
-        const phrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-        
-        // We reconstruct the HTML to keep the icon + new text
-        const iconSvg = `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>`;
-        
-        btn.innerHTML = `${iconSvg} ${phrase}`;
-    }
-
-    // Set initial label
-    updateRandomButtonLabel();
 
     function formatDate(yyyymmdd) {
         if (!yyyymmdd || yyyymmdd.length !== 8) return yyyymmdd;
@@ -313,7 +300,7 @@ function initApp() {
             list.appendChild(div);
         });
         
-        // Pagination
+        // Simple Pagination (Previous/Next)
         const pContainer = document.getElementById('paginationContainer');
         pContainer.innerHTML = '';
         if (Math.ceil(out.length / itemsPerPage) > 1) {
@@ -333,7 +320,7 @@ function initApp() {
         }
     }
 
-    // --- RANDOM LOGIC (Image-Text-Image Sandwich) ---
+    // --- NEW RANDOM LOGIC (Image-Text-Image Sandwich) ---
     document.getElementById('randomBtn').addEventListener('click', async () => {
         const displayBox = document.getElementById('randomQuoteDisplay');
         const contentArea = document.getElementById('randomContentArea');
@@ -343,9 +330,6 @@ function initApp() {
         displayBox.classList.remove('hidden');
         contentArea.innerHTML = '<p class="italic text-gray-500">Scanning archives for image sequences...</p>';
         infoBox.textContent = "";
-
-        // Change the button label for next time
-        updateRandomButtonLabel();
 
         try {
             // Keep retrying until we find a valid block or run out of attempts
@@ -368,7 +352,7 @@ function initApp() {
                 // Map them to types
                 const nodes = allPs.map(p => {
                     if (p.querySelector('img')) return { type: 'IMG', el: p };
-                    // Check for substantial text
+                    // Check for substantial text (filter out dates, source links, empty lines)
                     const text = p.textContent.trim();
                     if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:')) {
                         return { type: 'TEXT', el: p };
@@ -388,6 +372,7 @@ function initApp() {
                                 texts.push(nodes[j].el);
                             } else if (nodes[j].type === 'IMG') {
                                 // We found the closing image. 
+                                // Only save if we actually have text in between
                                 if (texts.length > 0) {
                                     candidates.push({
                                         startImg: nodes[i].el,
@@ -395,7 +380,7 @@ function initApp() {
                                         endImg: nodes[j].el
                                     });
                                 }
-                                break; 
+                                break; // Stop looking for the end of this block
                             }
                             j++;
                         }
@@ -408,7 +393,7 @@ function initApp() {
             }
 
             if (!validBlock) {
-                contentArea.innerHTML = '<p class="text-red-500">Could not find a valid image-text-image block after 15 tries. Try again!</p>';
+                contentArea.innerHTML = '<p class="text-red-500">Could not find a valid image-text-image block after 10 tries. Try again!</p>';
                 return;
             }
 
@@ -425,7 +410,7 @@ function initApp() {
             textContainer.className = "text-lg text-black font-serif leading-relaxed px-4";
             validBlock.texts.forEach(p => {
                 const pClone = p.cloneNode(true);
-                pClone.className = "mb-4 last:mb-0";
+                pClone.className = "mb-4 last:mb-0"; // Add spacing between paragraphs
                 textContainer.appendChild(pClone);
             });
             contentArea.appendChild(textContainer);
@@ -448,6 +433,7 @@ function initApp() {
     // Events
     document.getElementById('searchInput').addEventListener('input', e => { currentSearch = e.target.value; currentPage = 1; renderQuotes(); });
     
+    // Initial Render
     renderQuotes();
 }
 </script>
