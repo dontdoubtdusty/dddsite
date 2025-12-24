@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Book of Carp</title>
+    <title>Wake Up, San Francisco</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -34,6 +34,27 @@
         button:hover {
             background-color: #000000 !important;
             transform: none !important;
+        }
+            /* Custom style for the Read Review button */
+        .read-review-btn {
+            display: inline-block;
+            background-color: #000000;
+            color: #ffffff !important;     /* Force text white */
+            text-decoration: none !important; /* Remove underline */
+            padding: 8px 20px;
+            border: 2px solid #000000;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+        }
+    
+        .read-review-btn:hover {
+            background-color: #ffffff;
+            color: #000000 !important;     /* Turn text black on hover */
+            cursor: pointer;
         }
     </style>
 </head>
@@ -67,7 +88,7 @@
             
             <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-end">
                 <p class="text-sm text-gray-600" id="randomQuoteInfo"></p>
-                <a id="randomLink" href="#" class="text-xs bg-gray-800 text-white px-3 py-1 rounded hover:bg-black transition">Read Review</a>
+                <a id="randomLink" href="#" class="read-review-btn">Read Review</a>
             </div>
         </div>
         
