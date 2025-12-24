@@ -232,7 +232,9 @@ async function generateQuote() {
                 p.textContent.trim().startsWith('Firsts:')
             );
             if (firstsEl) {
-                firstsText = firstsEl.textContent.trim();
+                // replace('Firsts:', '') removes the label
+                // trim() removes the space that was left behind
+                firstsText = firstsEl.textContent.replace('Firsts:', '').trim();
             }
 
             // --- FIND CONTENT SANDWICH ---
