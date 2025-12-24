@@ -261,16 +261,22 @@ async function generateQuote() {
                             texts.push(nodes[j].el);
                         } else if (nodes[j].type === 'IMG') {
                             if (texts.length > 0) {
-                                // Found the first end image. 
-                                // NOW: Check if there are more images immediately following it.
                                 let endImages = [nodes[j].el];
                                 let k = j + 1;
+                                
+                                // Look ahead for more consecutive images
                                 while (k < nodes.length && nodes[k].type === 'IMG') {
+                                    // FIX: Check if this "image" paragraph also has text.
+                                    // If it has text (length > 0), it's the start of a new story segment.
+                                    // So we BREAK the loop and don't add it to the current pile.
+                                    if (nodes[k].el.textContent.trim().length > 0) {
+                                        break;
+                                    }
+
                                     endImages.push(nodes[k].el);
                                     k++;
                                 }
 
-                                // Push the candidate with the array of end images
                                 candidates.push({ start: nodes[i].el, texts: texts, endImages: endImages });
                             }
                             break; 
