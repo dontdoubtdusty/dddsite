@@ -108,26 +108,32 @@ function initApp() {
     const quotes = window.quotes;
     document.getElementById('quoteCount').textContent = `${quotes.length} Episodes Ready`;
     
-    // Enable the button
-    const btn = document.getElementById('randomBtn');
-    btn.disabled = false;
-    btn.classList.remove('opacity-50', 'cursor-not-allowed');
-    // Enable the button
-    const btn = document.getElementById('randomBtn');
-    btn.disabled = false;
-    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    // --- BUTTON SETUP START ---
     
-    // 1. Define the phrases first
+    // 1. Get the button
+    const btn = document.getElementById('randomBtn');
+    
+    // 2. Enable it
+    btn.disabled = false;
+    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+    // 3. Define catchphrases
     const catchphrases = [
         "Cut. It. Out!", "Have Mercy!", "How Rude!", "You Got It, Dude!",
         "Oh, My Lanta!", "Hola, Tanneritos!", "Watch The Hair!", 
         "Pin a Rose on Your Nose!", "Clean is Good, Dirt is Bad."
     ];
 
-    // 2. Pick one immediately for the initial label
+    // 4. Set the initial random label immediately
     const startPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    btn.querySelector('span').textContent = startPhrase;
+    // We use querySelector to find the <span> inside the button and change its text
+    // leaving the SVG icon alone.
+    const span = btn.querySelector('span');
+    if (span) {
+        span.textContent = startPhrase;
+    }
 
+    // --- BUTTON SETUP END ---
 
     document.getElementById('randomBtn').addEventListener('click', async () => {
         const displayBox = document.getElementById('randomQuoteDisplay');
