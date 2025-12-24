@@ -96,7 +96,16 @@
         </div>
 
         <div id="bottom-button-container" style="display: none; margin-top: 20px;">
-            <button onclick="generateQuote()">Get Another Quote</button>
+            <button 
+                id="bottomBtn" 
+                onclick="generateQuote()"
+                class="w-full flex items-center justify-center gap-2 py-4 rounded-lg transition-all transform hover:scale-105 shadow-md"
+            >
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                <span>Get Another Quote</span>
+            </button>
         </div>
         
     </div>
@@ -136,56 +145,54 @@ function initApp() {
     const quotes = window.quotes;
     document.getElementById('quoteCount').textContent = `A complete codex of 193 reviews.`;
     
-    // --- BUTTON SETUP START ---
-    
-    // 1. Get the button
-    const btn = document.getElementById('randomBtn');
-    
-    // 2. Enable it
-    btn.disabled = false;
-    btn.classList.remove('opacity-50', 'cursor-not-allowed');
-
-    // 3. Define catchphrases
+    // Catchphrases list
     const catchphrases = [
         "Cut. It. Out!", "Have Mercy!", "How Rude!", "You Got It, Dude!",
         "Oh, My Lanta!", "Hola, Tanneritos!", "Watch The Hair!", 
         "Pin a Rose on Your Nose!", "Clean is Good, Dirt is Bad."
     ];
 
-    // 4. Set the initial random label immediately
+    // SETUP: Enable Top Button
+    const topBtn = document.getElementById('randomBtn');
+    topBtn.disabled = false;
+    topBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    // Set initial text
     const startPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    // We use querySelector to find the <span> inside the button and change its text
-    // leaving the SVG icon alone.
-    const span = btn.querySelector('span');
-    if (span) {
-        span.textContent = startPhrase;
-    }
+    topBtn.querySelector('span').textContent = startPhrase;
+    
+    // Assign click to top button (Bottom button has onclick="generateQuote()" in HTML)
+    topBtn.onclick = generateQuote;
 
-    // --- BUTTON SETUP END ---
-
-    document.getElementById('randomBtn').addEventListener('click', async () => {
+    // --- SHARED FUNCTION ---
+    // We attach this to window so the HTML onclick can see it
+    window.generateQuote = async function() {
         const displayBox = document.getElementById('randomQuoteDisplay');
         const contentArea = document.getElementById('randomContentArea');
         const infoBox = document.getElementById('randomQuoteInfo');
         const linkBox = document.getElementById('randomLink');
+        const topBtn = document.getElementById('randomBtn');
+        const bottomBtn = document.getElementById('bottomBtn');
 
-        // Reset UI
+        // 1. Reset UI
         displayBox.classList.remove('hidden');
         contentArea.innerHTML = '<p class="italic text-gray-500 py-8">Scanning archives...</p>';
         infoBox.textContent = "";
+
+        // 2. Update Text on BOTH Buttons
+        const newPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
+        const iconSvg = topBtn.querySelector('svg').outerHTML; // Grab SVG to reuse
         
-        // Update Button Text (Cycle to a new catchphrase)
-        const phrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-        // Keep the SVG icon, update the text span
-        const icon = btn.querySelector('svg').outerHTML;
-        btn.innerHTML = `${icon} <span>${phrase}</span>`;
+        // Update top button
+        topBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
+        // Update bottom button
+        if(bottomBtn) bottomBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
 
         try {
             let validBlock = null;
             let chosenEpisode = null;
             let parsedTitle = "";
             let parsedSeason = "";
-            let parsedDateUrl = ""; // To store YYYY/MM/DD
+            let parsedDateUrl = "";
 
             // Try up to 50 times to find a "Sandwich" (Image-Text-Image)
             for (let attempt = 0; attempt < 50; attempt++) {
@@ -196,23 +203,16 @@ function initApp() {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlText, 'text/html');
                 
-                // Extract Title
                 parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
-                
-                // Extract Season
                 const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
                 parsedSeason = seasonMatch ? "Season " + seasonMatch[1] : "Specials";
 
-                // Extract Date for URL (e.g., "Original Date: 2010-06-05")
                 const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
                 if (dateEl) {
                     const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
-                    if (match) {
-                        parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
-                    }
+                    if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
                 }
 
-                // Scan paragraphs for content
                 const allPs = Array.from(doc.querySelectorAll('p'));
                 const nodes = allPs.map(p => {
                     if (p.querySelector('img')) return { type: 'IMG', el: p };
@@ -223,7 +223,6 @@ function initApp() {
                     return { type: 'SKIP' };
                 });
 
-                // Hunt for patterns: IMG -> TEXT -> IMG
                 const candidates = [];
                 for (let i = 0; i < nodes.length; i++) {
                     if (nodes[i].type === 'IMG') {
@@ -249,9 +248,8 @@ function initApp() {
                 }
             }
 
-            // --- RENDER ---
+            // 3. Render Content
             contentArea.innerHTML = '';
-
             if (validBlock) {
                 const img1 = validBlock.start.querySelector('img').cloneNode(true);
                 img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
@@ -271,34 +269,32 @@ function initApp() {
                 contentArea.appendChild(img2);
             } else {
                 const textDiv = document.createElement('div');
-                textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory, but here is a thought...</p>`;
+                textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
                 contentArea.appendChild(textDiv);
             }
 
-            // --- URL BUILDER ---
-            // Convert title to WordPress slug: "Season 1, Episode 13..." -> "season-1-episode-13..."
+            // 4. Update Footer Links
             const slug = parsedTitle.toLowerCase()
-                .replace(/['"“”‘’]/g, '') // Remove quotes
-                .replace(/[^a-z0-9]+/g, '-') // Replace spaces/symbols with dash
-                .replace(/^-+|-+$/g, ''); // Trim dashes
+                .replace(/['"“”‘’]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
             
-            // Construct the real link (Fall back to homepage if date is missing)
             const realUrl = parsedDateUrl 
                 ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
                 : `https://therealfullhousereviewed.wordpress.com/`;
 
-            // Update Footer
             infoBox.textContent = `${parsedTitle} • ${parsedSeason}`;
-            linkBox.href = realUrl; // Point to the real WordPress site
-            linkBox.target = "_blank"; // Open in new tab
+            linkBox.href = realUrl; 
+            linkBox.target = "_blank"; 
 
         } catch (e) {
             console.error(e);
-            contentArea.innerHTML = '<p class="text-red-600">The archives are dusty today. Please try again.</p>';
+            contentArea.innerHTML = '<p class="text-red-600">The archives are dusty. Please try again.</p>';
         }
 
+        // 5. Reveal Bottom Button
         document.getElementById("bottom-button-container").style.display = "block";
-    });
+    }
 }
 </script>
 </body>
