@@ -86,7 +86,7 @@ async function loadFhrArchive() {
             .map(line => line.trim())
             .filter(line => line.length > 0 && line.endsWith('.html'));
 
-        document.getElementById('subStatus').textContent = `Found ${files.length} episodes.`;
+        document.getElementById('subStatus').textContent = `A permanent tribute to Billy Superstar. No new reviews will be found; he has finally escaped.`;
 
         // We build a simple index (ID and Filename) to save memory
         // We will fetch the full HTML only when the button is clicked
@@ -106,7 +106,7 @@ loadFhrArchive();
 // 2) Application Logic
 function initApp() {
     const quotes = window.quotes;
-    document.getElementById('quoteCount').textContent = `${quotes.length} Episodes Ready`;
+    document.getElementById('quoteCount').textContent = `A complete codex of 193 reviews.`;
     
     // --- BUTTON SETUP START ---
     
