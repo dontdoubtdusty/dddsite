@@ -90,7 +90,7 @@
             <div id="randomContentArea" class="flex flex-col gap-6 text-center"></div>
             
             <div id="firstsContainer" class="hidden">
-                <hr class="border-t border-gray-300 my-6"> <p id="randomFirstsInfo" class="text-center font-bold text-lg text-black font-serif"></p>
+                <hr class="border-t border-gray-100 my-4"> <p id="randomFirstsInfo" class="text-center text-sm text-gray-500 italic"></p>
             </div>
             
             <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-end">
@@ -206,10 +206,17 @@ async function generateQuote() {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             
-            // Extract Metadata
-            parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
-            const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
-            if(seasonMatch) parsedSeason = "Season " + seasonMatch[1];
+            // --- CHANGED: Extract Date for Display AND Url ---
+            let displayDate = ""; 
+            const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
+            if (dateEl) {
+                // Get the raw text (e.g. "Original Date: 2011-10-07")
+                displayDate = dateEl.textContent.replace('Original Date:', '').trim(); 
+                
+                // Still parse it for the URL
+                const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
+                if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
+            }
 
             const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
             if (dateEl) {
@@ -290,14 +297,20 @@ async function generateQuote() {
         }
 
         // 4. Update Footer & Firsts
-        const slug = parsedTitle.toLowerCase()
-            .replace(/['"“”‘’]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
+        // --- CHANGED: Add Date to the Footer Info ---
+        // If we found a date, add it after the season with a bullet point
+        const dateString = displayDate ? ` • ${displayDate}` : "";
+        infoBox.textContent = `${parsedTitle} • ${parsedSeason}${dateString}`;
         
-        const realUrl = parsedDateUrl 
-            ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
-            : `https://therealfullhousereviewed.wordpress.com/`;
+        linkBox.href = realUrl; 
+
+        // [EXISTING CODE] Show Firsts container...
+        if (firstsText) {
+            firstsContainer.classList.remove('hidden');
+            firstsBox.textContent = firstsText;
+        } else {
+            firstsContainer.classList.add('hidden');
+        }
 
         infoBox.textContent = `${parsedTitle} • ${parsedSeason}`;
         linkBox.href = realUrl; 
