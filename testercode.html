@@ -300,7 +300,11 @@ async function generateQuote() {
             contentArea.appendChild(img1);
 
             const textDiv = document.createElement('div');
-            textDiv.className = "text-lg text-black px-2 leading-relaxed";
+            // Removed 'text-lg'. Added inline styles to match the Twenty Ten theme exactly.
+            textDiv.className = "text-black px-2 leading-relaxed";
+            textDiv.style.fontFamily = '"Helvetica Neue", Arial, Helvetica, "Nimbus Sans L", sans-serif';
+            textDiv.style.fontSize = '16px'; 
+            
             validBlock.texts.forEach(p => {
                 const clone = p.cloneNode(true);
                 clone.className = "mb-4";
