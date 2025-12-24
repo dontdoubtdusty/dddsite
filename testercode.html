@@ -171,7 +171,7 @@ function initApp() {
     topBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
     const startPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    topBtn.querySelector('span').textContent = startPhrase;
+    topBtn.querySelector('span').textContent = `◉ ${startPhrase}`;
 
     topBtn.onclick = generateQuote;
 }
