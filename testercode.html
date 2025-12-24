@@ -310,7 +310,7 @@ async function generateQuote() {
             : `https://therealfullhousereviewed.wordpress.com/`;
 
         // Add date to footer if we found one
-        const dateString = displayDate ? ` • Review Date: ${displayDate}` : "";
+        const dateString = displayDate ? ` • <br>Review Date: ${displayDate}` : "";
         infoBox.textContent = `${parsedTitle} • ${parsedSeason}${dateString}`;
         
         linkBox.href = realUrl; 
