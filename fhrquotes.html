@@ -146,11 +146,12 @@
             </button>
         </div>
 
-        <div id="randomQuoteDisplay" class="hidden bg-gradient-to-r from-purple-100 to-pink-100 backdrop-blur-lg rounded-lg p-6 mb-6 border-2 border-purple-300 shadow-lg">
-            <p class="text-xl text-purple-900 mb-2 italic font-serif" id="randomQuoteText"></p>
-            <div class="flex justify-between items-end">
-                <p class="text-sm text-purple-700" id="randomQuoteInfo"></p>
-                <a id="randomLink" href="#" class="text-xs bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-800 transition">Read Review</a>
+        <div id="randomQuoteDisplay" class="hidden parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
+            <div id="randomContentArea" class="flex flex-col gap-6 text-center"></div>
+            
+            <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-end">
+                <p class="text-sm text-gray-600" id="randomQuoteInfo"></p>
+                <a id="randomLink" href="#" class="text-xs bg-gray-800 text-white px-3 py-1 rounded hover:bg-black transition">Read Review</a>
             </div>
         </div>
 
@@ -165,25 +166,18 @@
 // 1) Load the file list, then fetch every HTML file
 async function loadFhrArchive() {
     try {
-        // Fetch the list of filenames
         const response = await fetch('fhr/filelist.txt');
-        
-        if (!response.ok) {
-            throw new Error("Could not find fhr/filelist.txt. Please create this file listing all HTML files.");
-        }
+        if (!response.ok) throw new Error("Could not find fhr/filelist.txt");
 
         const listText = await response.text();
         const files = listText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
 
         document.getElementById('subStatus').textContent = `Found ${files.length} scrolls. Deciphering...`;
 
-        // Parse files in parallel to build the index
         const parsedData = await Promise.all(files.map(async (filename, index) => {
             try {
                 const fileResp = await fetch(`fhr/${filename}`);
                 const htmlText = await fileResp.text();
-                
-                // Parse HTML string into a document just to get Title/Date
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlText, 'text/html');
 
@@ -191,46 +185,33 @@ async function loadFhrArchive() {
                 
                 // Extract Date
                 const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-                let dateStr = "";
-                let rawDate = "";
-
+                let dateStr = "", rawDate = "";
                 if (dateEl) {
                     const match = dateEl.textContent.match(/(\d{4}-\d{2}-\d{2})/);
-                    if (match) {
-                        rawDate = match[1]; 
-                        dateStr = rawDate.replace(/-/g, ''); 
-                    }
+                    if (match) { rawDate = match[1]; dateStr = rawDate.replace(/-/g, ''); }
                 }
 
                 // Extract Season
                 let season = "Specials";
                 const seasonMatch = title.match(/Season\s*(\d+)/i);
-                if (seasonMatch) {
-                    season = "Season " + seasonMatch[1];
-                }
+                if (seasonMatch) season = "Season " + seasonMatch[1];
 
                 return {
                     id: index + 1,
-                    text: title,   // For the list view, we still show Title
+                    text: title,
                     game: season,  
                     date: dateStr, 
-                    displayDate: rawDate,
                     filename: filename
                 };
 
-            } catch (err) {
-                console.warn(`Failed to parse ${filename}`, err);
-                return null;
-            }
+            } catch (err) { return null; }
         }));
 
         window.quotes = parsedData.filter(q => q !== null);
-        console.log(`Loaded ${window.quotes.length} episodes`);
         initApp(); 
     } 
     catch (error) {
         document.getElementById('quoteCount').textContent = "Error Loading Archive";
-        document.getElementById('subStatus').textContent = error.message;
         console.error(error);
     }
 }
@@ -240,84 +221,52 @@ loadFhrArchive();
 // 2) Main Application Logic
 function initApp() {
     const quotes = window.quotes;
-    
     document.getElementById('quoteCount').textContent = `Search through ${quotes.length} reviews`;
     document.getElementById('subStatus').textContent = "";
 
-    // Helper: Format Date
     function formatDate(yyyymmdd) {
         if (!yyyymmdd || yyyymmdd.length !== 8) return yyyymmdd;
-        const y = yyyymmdd.substring(0,4);
-        const m = parseInt(yyyymmdd.substring(4,6)) - 1;
-        const d = yyyymmdd.substring(6,8);
-        const dateObj = new Date(y, m, d);
+        const dateObj = new Date(yyyymmdd.substring(0,4), parseInt(yyyymmdd.substring(4,6)) - 1, yyyymmdd.substring(6,8));
         return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-    let currentSearch = '';
-    let selectedYear = null;
-    let selectedSeason = null;
-    let currentPage = 1;
+    let currentSearch = '', selectedYear = null, selectedSeason = null, currentPage = 1;
     const itemsPerPage = 50;
 
-    // --- FILTERS SETUP (Same as before) ---
+    // --- FILTERS (Seasons & Years) ---
     const seasons = [...new Set(quotes.map(q => q.game))].sort();
     const seasonContainer = document.getElementById('popularTerms');
     
-    const allSeasonsBtn = document.createElement('button');
-    allSeasonsBtn.textContent = 'All';
-    allSeasonsBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
-    allSeasonsBtn.onclick = () => { selectedSeason = null; updateSeasonButtons(); currentPage = 1; renderQuotes(); };
-    seasonContainer.appendChild(allSeasonsBtn);
-
-    seasons.forEach(s => {
+    // Season Buttons
+    const mkBtn = (txt, container, cb) => {
         const btn = document.createElement('button');
-        btn.textContent = s;
-        btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-        btn.dataset.season = s;
-        btn.onclick = () => { selectedSeason = s; updateSeasonButtons(); currentPage = 1; renderQuotes(); };
-        seasonContainer.appendChild(btn);
-    });
+        btn.textContent = txt;
+        btn.className = 'px-3 py-1 bg-gray-200 hover:bg-gray-300 text-black rounded-full text-sm transition-colors';
+        btn.onclick = cb;
+        container.appendChild(btn);
+        return btn;
+    };
 
-    function updateSeasonButtons() {
-        Array.from(seasonContainer.children).forEach(btn => {
-            btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-            if ((selectedSeason === null && btn.textContent === 'All') || (btn.dataset.season === selectedSeason)) {
-                btn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors shadow-md';
-            }
-        });
-    }
+    mkBtn('All', seasonContainer, () => { selectedSeason = null; updateBtns(seasonContainer, null); renderQuotes(); });
+    seasons.forEach(s => mkBtn(s, seasonContainer, () => { selectedSeason = s; updateBtns(seasonContainer, s); renderQuotes(); }));
 
+    // Year Buttons
     const years = [...new Set(quotes.map(q => q.date.substring(0,4)))].sort().reverse();
     const yearContainer = document.getElementById('yearFilters');
-    
-    const allYearsBtn = document.createElement('button');
-    allYearsBtn.textContent = 'All';
-    allYearsBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
-    allYearsBtn.onclick = () => { selectedYear = null; updateYearButtons(); currentPage = 1; renderQuotes(); };
-    yearContainer.appendChild(allYearsBtn);
+    mkBtn('All', yearContainer, () => { selectedYear = null; updateBtns(yearContainer, null); renderQuotes(); });
+    years.forEach(y => { if(y) mkBtn(y, yearContainer, () => { selectedYear = y; updateBtns(yearContainer, y); renderQuotes(); }); });
 
-    years.forEach(year => {
-        if(!year) return;
-        const btn = document.createElement('button');
-        btn.textContent = year;
-        btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-        btn.dataset.year = year;
-        btn.onclick = () => { selectedYear = year; updateYearButtons(); currentPage = 1; renderQuotes(); };
-        yearContainer.appendChild(btn);
-    });
-
-    function updateYearButtons() {
-        Array.from(yearContainer.children).forEach(btn => {
-            btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-            if ((selectedYear === null && btn.textContent === 'All') || (btn.dataset.year === selectedYear)) {
-                btn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors shadow-md';
-            }
+    function updateBtns(container, selected) {
+        Array.from(container.children).forEach(btn => {
+            const isSelected = (selected === null && btn.textContent === 'All') || (btn.textContent === selected);
+            btn.className = isSelected 
+                ? 'px-3 py-1 bg-black text-white rounded-full text-sm transition-colors shadow-md'
+                : 'px-3 py-1 bg-gray-200 hover:bg-gray-300 text-black rounded-full text-sm transition-colors';
         });
     }
 
-    // --- RENDER LOGIC ---
-    function filterQuotes() {
+    // --- RENDER LIST ---
+    function renderQuotes() {
         let out = quotes;
         if (selectedYear) out = out.filter(q => q.date.startsWith(selectedYear));
         if (selectedSeason) out = out.filter(q => q.game === selectedSeason);
@@ -325,156 +274,166 @@ function initApp() {
             const s = currentSearch.toLowerCase();
             out = out.filter(q => q.text.toLowerCase().includes(s) || q.date.includes(s));
         }
-        return out;
-    }
 
-    function renderQuotes() {
-        const filtered = filterQuotes();
         const list = document.getElementById('quotesList');
-        const resultCount = document.getElementById('resultCount');
-
-        resultCount.textContent = `${filtered.length} result${filtered.length !== 1 ? 's' : ''}`;
+        document.getElementById('resultCount').textContent = `${out.length} result${out.length !== 1 ? 's' : ''}`;
         list.innerHTML = '';
-
-        const totalPages = Math.ceil(filtered.length / itemsPerPage);
-        const startIdx = (currentPage - 1) * itemsPerPage;
-        const endIdx = startIdx + itemsPerPage;
-        const display = filtered.slice(startIdx, endIdx);
-
+        
+        const start = (currentPage - 1) * itemsPerPage;
+        const display = out.slice(start, start + itemsPerPage);
+        
         if (!display.length) {
-            list.innerHTML = '<p class="text-center text-purple-600">No episodes found matching that search.</p>';
+            list.innerHTML = '<p class="text-center text-gray-600">No episodes found.</p>';
             return;
         }
 
         display.forEach(q => {
             const div = document.createElement('div');
-            div.className = 'bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition-colors flex justify-between items-center';
-            
+            div.className = 'bg-white hover:bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center';
             div.innerHTML = `
                 <div>
-                    <a href="fhr/${q.filename}" class="text-purple-900 mb-1 font-bold block hover:underline text-lg">
-                        ${q.text}
-                    </a>
-                    <p class="text-sm text-purple-700">${q.game} • ${formatDate(q.date)}</p>
+                    <a href="fhr/${q.filename}" class="text-black font-bold text-lg hover:underline">${q.text}</a>
+                    <p class="text-sm text-gray-500">${q.game} • ${formatDate(q.date)}</p>
                 </div>
-                <a href="fhr/${q.filename}" 
-                   class="ml-4 px-4 py-2 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-lg text-sm transition-colors whitespace-nowrap">
-                   Read Review
-                </a>
+                <a href="fhr/${q.filename}" class="text-xs bg-gray-200 text-black px-3 py-1 rounded hover:bg-gray-300">Read</a>
             `;
             list.appendChild(div);
         });
-
-        // Pagination setup (same as before)
+        
+        // Simple Pagination (Previous/Next)
         const pContainer = document.getElementById('paginationContainer');
         pContainer.innerHTML = '';
-        if (totalPages > 1) {
-            const paginationDiv = document.createElement('div');
-            paginationDiv.className = 'flex justify-center items-center gap-3 mt-6';
+        if (Math.ceil(out.length / itemsPerPage) > 1) {
+            const row = document.createElement('div');
+            row.className = 'flex justify-center gap-4 mt-4';
+            row.innerHTML = `
+                <button id="prevPage" class="px-4 py-2 bg-gray-800 text-white rounded disabled:opacity-50">Previous</button>
+                <span class="py-2">Page ${currentPage}</span>
+                <button id="nextPage" class="px-4 py-2 bg-gray-800 text-white rounded disabled:opacity-50">Next</button>
+            `;
+            pContainer.appendChild(row);
             
-            const prevBtn = document.createElement('button');
-            prevBtn.textContent = '← Previous';
-            prevBtn.className = `px-4 py-2 rounded-lg transition-colors ${currentPage === 1 ? 'bg-purple-200 text-purple-400 cursor-not-allowed' : 'bg-purple-400 hover:bg-purple-500 text-white'}`;
-            prevBtn.disabled = currentPage === 1;
-            prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderQuotes(); document.getElementById('quotesList').scrollIntoView({behavior:'smooth'}); }};
-            
-            const pageInfo = document.createElement('span');
-            pageInfo.className = 'text-purple-900 font-semibold';
-            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-            
-            const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'Next →';
-            nextBtn.className = `px-4 py-2 rounded-lg transition-colors ${currentPage === totalPages ? 'bg-purple-200 text-purple-400 cursor-not-allowed' : 'bg-purple-400 hover:bg-purple-500 text-white'}`;
-            nextBtn.disabled = currentPage === totalPages;
-            nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderQuotes(); document.getElementById('quotesList').scrollIntoView({behavior:'smooth'}); }};
-            
-            paginationDiv.appendChild(prevBtn);
-            paginationDiv.appendChild(pageInfo);
-            paginationDiv.appendChild(nextBtn);
-            pContainer.appendChild(paginationDiv);
+            document.getElementById('prevPage').onclick = () => { if(currentPage > 1) { currentPage--; renderQuotes(); }};
+            document.getElementById('nextPage').onclick = () => { if(currentPage * itemsPerPage < out.length) { currentPage++; renderQuotes(); }};
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage * itemsPerPage >= out.length;
         }
     }
 
-    // --- EVENTS ---
-    document.getElementById('searchInput').addEventListener('input', e => {
-        currentSearch = e.target.value;
-        currentPage = 1;
-        renderQuotes();
-    });
-
-    // *** UPDATED RANDOM LOGIC ***
+    // --- NEW RANDOM LOGIC (Image-Text-Image Sandwich) ---
     document.getElementById('randomBtn').addEventListener('click', async () => {
         const displayBox = document.getElementById('randomQuoteDisplay');
-        const textBox = document.getElementById('randomQuoteText');
+        const contentArea = document.getElementById('randomContentArea');
         const infoBox = document.getElementById('randomQuoteInfo');
         const linkBox = document.getElementById('randomLink');
 
-        // Show loading state
         displayBox.classList.remove('hidden');
-        textBox.textContent = "Summoning a random moment from the archives...";
-        textBox.style.fontStyle = "italic";
+        contentArea.innerHTML = '<p class="italic text-gray-500">Scanning archives for image sequences...</p>';
         infoBox.textContent = "";
-        
+
         try {
-            // 1. Pick a random episode object
-            const r = quotes[Math.floor(Math.random() * quotes.length)];
-            
-            // 2. Fetch the HTML content
-            const response = await fetch(`fhr/${r.filename}`);
-            if(!response.ok) throw new Error("Failed to fetch episode");
-            const htmlText = await response.text();
+            // Keep retrying until we find a valid block or run out of attempts
+            let attempts = 0;
+            let validBlock = null;
+            let chosenEpisode = null;
 
-            // 3. Parse and find <p> tags
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlText, 'text/html');
-            
-            // 4. Filter logic:
-            // - Must have text
-            // - Must NOT be the "Original Date" line
-            // - Must NOT be an image-only paragraph
-            const paragraphs = Array.from(doc.querySelectorAll('p')).filter(p => {
-                const text = p.textContent.trim();
-                if (!text) return false; 
-                if (text.includes('Original Date:')) return false;
-                if (text.toLowerCase().includes('source:')) return false; // often blog junk
-                return true;
-            });
+            while (!validBlock && attempts < 15) {
+                attempts++;
+                chosenEpisode = quotes[Math.floor(Math.random() * quotes.length)];
+                
+                const response = await fetch(`fhr/${chosenEpisode.filename}`);
+                const htmlText = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                
+                // Get all paragraphs in order
+                const allPs = Array.from(doc.querySelectorAll('p'));
+                
+                // Map them to types
+                const nodes = allPs.map(p => {
+                    if (p.querySelector('img')) return { type: 'IMG', el: p };
+                    // Check for substantial text (filter out dates, source links, empty lines)
+                    const text = p.textContent.trim();
+                    if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:')) {
+                        return { type: 'TEXT', el: p };
+                    }
+                    return { type: 'SKIP' };
+                });
 
-            if (paragraphs.length === 0) {
-                textBox.textContent = "No readable text found in this review.";
+                // Find "sandwiches": IMG -> TEXT(s) -> IMG
+                const candidates = [];
+                for (let i = 0; i < nodes.length; i++) {
+                    if (nodes[i].type === 'IMG') {
+                        let texts = [];
+                        let j = i + 1;
+                        // Gather texts until we hit another image
+                        while (j < nodes.length) {
+                            if (nodes[j].type === 'TEXT') {
+                                texts.push(nodes[j].el);
+                            } else if (nodes[j].type === 'IMG') {
+                                // We found the closing image. 
+                                // Only save if we actually have text in between
+                                if (texts.length > 0) {
+                                    candidates.push({
+                                        startImg: nodes[i].el,
+                                        texts: texts,
+                                        endImg: nodes[j].el
+                                    });
+                                }
+                                break; // Stop looking for the end of this block
+                            }
+                            j++;
+                        }
+                    }
+                }
+
+                if (candidates.length > 0) {
+                    validBlock = candidates[Math.floor(Math.random() * candidates.length)];
+                }
+            }
+
+            if (!validBlock) {
+                contentArea.innerHTML = '<p class="text-red-500">Could not find a valid image-text-image block after 10 tries. Try again!</p>';
                 return;
             }
 
-            // 5. Pick random paragraph
-            const randomP = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+            // Render the Block
+            contentArea.innerHTML = '';
 
-            // 6. Update UI
-            textBox.textContent = `"${randomP.textContent.trim()}"`;
-            // Change font size for long text
-            textBox.className = randomP.textContent.length > 200 
-                ? "text-lg text-purple-900 mb-2 font-serif" 
-                : "text-xl text-purple-900 mb-2 italic font-serif";
-            
-            infoBox.textContent = `${r.text} • ${r.game}`;
-            linkBox.href = `fhr/${r.filename}`;
+            // 1. Start Image
+            const img1 = validBlock.startImg.querySelector('img').cloneNode(true);
+            img1.className = "max-w-full h-auto mx-auto rounded shadow-md border border-gray-200";
+            contentArea.appendChild(img1);
+
+            // 2. Text Paragraphs
+            const textContainer = document.createElement('div');
+            textContainer.className = "text-lg text-black font-serif leading-relaxed px-4";
+            validBlock.texts.forEach(p => {
+                const pClone = p.cloneNode(true);
+                pClone.className = "mb-4 last:mb-0"; // Add spacing between paragraphs
+                textContainer.appendChild(pClone);
+            });
+            contentArea.appendChild(textContainer);
+
+            // 3. End Image
+            const img2 = validBlock.endImg.querySelector('img').cloneNode(true);
+            img2.className = "max-w-full h-auto mx-auto rounded shadow-md border border-gray-200";
+            contentArea.appendChild(img2);
+
+            // Metadata
+            infoBox.textContent = `${chosenEpisode.text} • ${chosenEpisode.game}`;
+            linkBox.href = `fhr/${chosenEpisode.filename}`;
 
         } catch (e) {
             console.error(e);
-            textBox.textContent = "The archives are silent (Error loading quote).";
+            contentArea.innerHTML = '<p>Error loading content.</p>';
         }
     });
 
-    // --- FEATURED EPISODE (Logic unchanged) ---
-    const seed = new Date().getFullYear() * 1000 + (Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000));
-    const qod = quotes[seed % quotes.length];
+    // Events
+    document.getElementById('searchInput').addEventListener('input', e => { currentSearch = e.target.value; currentPage = 1; renderQuotes(); });
     
-    if (qod) {
-        document.getElementById('quoteOfDayBox').classList.remove('hidden');
-        document.getElementById('quoteOfDayText').textContent = qod.text;
-        document.getElementById('quoteOfDayInfo').textContent = `${qod.game} • ${formatDate(qod.date)}`;
-        document.getElementById('qodLink').href = `fhr/${qod.filename}`;
-    }
-
+    // Initial Render
     renderQuotes();
 }
 </script>
