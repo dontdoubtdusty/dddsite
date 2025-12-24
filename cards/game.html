@@ -528,36 +528,66 @@
             return card;
         }
 
-        function initializeBoard() {
-            const boardGrid = document.getElementById('boardGrid');
+        // Generate deck with specific rules: 
+        // Max 30 cards, Max 2 of any card, At least 2 1-cost cards
+        function initializeDeck() {
+            deck = [];
+            let tempDeck = [];
+            const maxDeckSize = 30;
+
+            // 1. MANDATORY: Ensure at least two 1-cost cards
+            // Filter to find cards with cost 1 (like Stone Guardian)
+            const oneCostCards = cards.filter(card => card.cost === 1);
             
-            // Create front row FIRST (slots 0-4)
-            for (let i = 0; i < 5; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'card-slot front-row';
-                slot.dataset.slotId = i;
-                slot.innerHTML = `<span class="slot-label">Front ${i + 1}</span>`;
-                
-                slot.addEventListener('dragover', handleDragOver);
-                slot.addEventListener('dragleave', handleDragLeave);
-                slot.addEventListener('drop', handleDrop);
-                
-                boardGrid.appendChild(slot);
+            // Add 2 copies of the first available 1-cost card found
+            if (oneCostCards.length > 0) {
+                const cheapCard = oneCostCards[0];
+                tempDeck.push({...cheapCard}); 
+                tempDeck.push({...cheapCard});
             }
+
+            // 2. POOL: Create a pool of all other allowed cards
+            // We want a pool that allows up to 2 of EVERY card type, 
+            // taking into account what we already added.
+            let pool = [];
             
-            // Create back row SECOND (slots 5-9)
-            for (let i = 5; i < 10; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'card-slot back-row';
-                slot.dataset.slotId = i;
-                slot.innerHTML = `<span class="slot-label">Back ${i - 4}</span>`;
+            cards.forEach(card => {
+                // Check how many of this card are already in our tempDeck (from step 1)
+                const existingCount = tempDeck.filter(c => c.name === card.name).length;
                 
-                slot.addEventListener('dragover', handleDragOver);
-                slot.addEventListener('dragleave', handleDragLeave);
-                slot.addEventListener('drop', handleDrop);
+                // We can add copies to the pool until we hit the limit of 2
+                const copiesToAdd = 2 - existingCount;
                 
-                boardGrid.appendChild(slot);
+                for (let i = 0; i < copiesToAdd; i++) {
+                    pool.push({...card});
+                }
+            });
+
+            // 3. SHUFFLE POOL: Randomize the available options
+            // Fisher-Yates shuffle for the pool
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
             }
+
+            // 4. FILL: Add cards from the random pool until we hit 30
+            while (tempDeck.length < maxDeckSize && pool.length > 0) {
+                tempDeck.push(pool.pop());
+            }
+
+            // 5. FINALIZE: Assign unique Instance IDs
+            // We use Date.now() + index to ensures valid unique IDs for drag-and-drop
+            // (Your card list didn't have 'id' properties, so this fixes potential NaN errors)
+            deck = tempDeck.map((card, index) => ({
+                ...card,
+                instanceId: Date.now() + index 
+            }));
+
+            // 6. Shuffle the final built deck so the 1-cost cards aren't always on top
+            shuffleDeck();
+            
+            // Update the UI counter immediately
+            updateDeckCount();
         }
 
         function drawCard() {
