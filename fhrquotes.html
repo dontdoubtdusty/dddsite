@@ -59,7 +59,7 @@
     </style>
 </head>
 <header>
-  <img src="fhr/fhrbanner.jpg" alt="FHR Archives Banner" style="width: 100%; max-width: 900px; height: auto; display: block; margin: 0 auto;">
+  <img src="fhr/fhrbanner.jpg" alt="FHR Archives Banner" style="width: 100%; max-width: 450px; height: auto; display: block; margin: 0 auto;">
 </header>
 <body class="p-6">
     <div class="max-w-4xl mx-auto" style="max-width: 700px; padding: 60px 24px;">
@@ -94,26 +94,43 @@
                 <a id="randomLink" href="#" class="read-review-btn">Read Review</a>
             </div>
         </div>
-        
+
+        <div id="bottom-button-container" style="display: none; margin-top: 20px;">
+            <button 
+                id="bottomBtn" 
+                onclick="generateQuote()"
+                class="w-full flex items-center justify-center gap-2 py-4 rounded-lg transition-all transform hover:scale-105 shadow-md"
+            >
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                <span>Get Another Quote</span>
+            </button>
         </div>
+        
+    </div>
 
 <script>
-// 1) Load the file list
+// --- 1. GLOBAL VARIABLES ---
+const catchphrases = [
+    "Cut. It. Out!", "Have Mercy!", "How Rude!", "You Got It, Dude!",
+    "Oh, My Lanta!", "Hola, Tanneritos!", "Watch The Hair!", 
+    "Pin a Rose on Your Nose!", "Clean is Good, Dirt is Bad."
+];
+
+// --- 2. LOAD THE ARCHIVE ---
 async function loadFhrArchive() {
     try {
         const response = await fetch('fhr/filelist.txt');
         if (!response.ok) throw new Error("Could not find fhr/filelist.txt");
 
         const listText = await response.text();
-        // Filter for .html only to avoid parsing text files
         const files = listText.split('\n')
             .map(line => line.trim())
             .filter(line => line.length > 0 && line.endsWith('.html'));
 
         document.getElementById('subStatus').textContent = `A permanent tribute to Billy Superstar. No new reviews will be found; he has finally escaped.`;
 
-        // We build a simple index (ID and Filename) to save memory
-        // We will fetch the full HTML only when the button is clicked
         window.quotes = files.map((f, i) => ({ id: i, filename: f }));
         
         initApp();
@@ -125,175 +142,163 @@ async function loadFhrArchive() {
     }
 }
 
-loadFhrArchive();
-
-// 2) Application Logic
+// --- 3. INITIALIZE BUTTONS ---
 function initApp() {
-    const quotes = window.quotes;
     document.getElementById('quoteCount').textContent = `A complete codex of 193 reviews.`;
     
-    // --- BUTTON SETUP START ---
+    // Get the top button
+    const topBtn = document.getElementById('randomBtn');
     
-    // 1. Get the button
-    const btn = document.getElementById('randomBtn');
-    
-    // 2. Enable it
-    btn.disabled = false;
-    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    // Enable it
+    topBtn.disabled = false;
+    topBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
-    // 3. Define catchphrases
-    const catchphrases = [
-        "Cut. It. Out!", "Have Mercy!", "How Rude!", "You Got It, Dude!",
-        "Oh, My Lanta!", "Hola, Tanneritos!", "Watch The Hair!", 
-        "Pin a Rose on Your Nose!", "Clean is Good, Dirt is Bad."
-    ];
-
-    // 4. Set the initial random label immediately
+    // Set initial random phrase
     const startPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    // We use querySelector to find the <span> inside the button and change its text
-    // leaving the SVG icon alone.
-    const span = btn.querySelector('span');
-    if (span) {
-        span.textContent = startPhrase;
+    topBtn.querySelector('span').textContent = startPhrase;
+
+    // Attach the function to the top button
+    topBtn.onclick = generateQuote;
+}
+
+// --- 4. THE MAIN LOGIC (Now Global) ---
+async function generateQuote() {
+    const quotes = window.quotes;
+    const displayBox = document.getElementById('randomQuoteDisplay');
+    const contentArea = document.getElementById('randomContentArea');
+    const infoBox = document.getElementById('randomQuoteInfo');
+    const linkBox = document.getElementById('randomLink');
+    const topBtn = document.getElementById('randomBtn');
+    const bottomBtn = document.getElementById('bottomBtn');
+
+    // 1. Reset UI
+    displayBox.classList.remove('hidden');
+    contentArea.innerHTML = '<p class="italic text-gray-500 py-8">Scanning archives...</p>';
+    infoBox.textContent = "";
+
+    // 2. Update Text on BOTH Buttons
+    const newPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
+    const iconSvg = topBtn.querySelector('svg').outerHTML; // Reuse the icon
+    
+    // Update top button
+    topBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
+    // Update bottom button (if it exists)
+    if(bottomBtn) bottomBtn.innerHTML = `${iconSvg} <span>${newPhrase}</span>`;
+
+    try {
+        let validBlock = null;
+        let chosenEpisode = null;
+        let parsedTitle = "Unknown Title";
+        let parsedSeason = "Specials";
+        let parsedDateUrl = ""; 
+
+        // Try up to 50 times to find a good image-text block
+        for (let attempt = 0; attempt < 50; attempt++) {
+            chosenEpisode = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            const response = await fetch(`fhr/${chosenEpisode.filename}`);
+            const htmlText = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            
+            parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
+            const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
+            if(seasonMatch) parsedSeason = "Season " + seasonMatch[1];
+
+            // Extract Date for URL
+            const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
+            if (dateEl) {
+                const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
+                if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
+            }
+
+            // Parse nodes
+            const allPs = Array.from(doc.querySelectorAll('p'));
+            const nodes = allPs.map(p => {
+                if (p.querySelector('img')) return { type: 'IMG', el: p };
+                const text = p.textContent.trim();
+                // Filter out metadata lines
+                if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:')) {
+                    return { type: 'TEXT', el: p };
+                }
+                return { type: 'SKIP' };
+            });
+
+            // Look for Image -> Text -> Image sandwich
+            const candidates = [];
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i].type === 'IMG') {
+                    let texts = [];
+                    let j = i + 1;
+                    while (j < nodes.length) {
+                        if (nodes[j].type === 'TEXT') {
+                            texts.push(nodes[j].el);
+                        } else if (nodes[j].type === 'IMG') {
+                            if (texts.length > 0) {
+                                candidates.push({ start: nodes[i].el, texts: texts, end: nodes[j].el });
+                            }
+                            break; 
+                        }
+                        j++;
+                    }
+                }
+            }
+
+            if (candidates.length > 0) {
+                validBlock = candidates[Math.floor(Math.random() * candidates.length)];
+                break; 
+            }
+        }
+
+        // 3. Render Content
+        contentArea.innerHTML = '';
+        if (validBlock) {
+            const img1 = validBlock.start.querySelector('img').cloneNode(true);
+            img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+            contentArea.appendChild(img1);
+
+            const textDiv = document.createElement('div');
+            textDiv.className = "text-lg text-black px-2 leading-relaxed";
+            validBlock.texts.forEach(p => {
+                const clone = p.cloneNode(true);
+                clone.className = "mb-4";
+                textDiv.appendChild(clone);
+            });
+            contentArea.appendChild(textDiv);
+
+            const img2 = validBlock.end.querySelector('img').cloneNode(true);
+            img2.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+            contentArea.appendChild(img2);
+        } else {
+            const textDiv = document.createElement('div');
+            textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
+            contentArea.appendChild(textDiv);
+        }
+
+        // 4. Update Footer Links
+        const slug = parsedTitle.toLowerCase()
+            .replace(/['"“”‘’]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        
+        const realUrl = parsedDateUrl 
+            ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
+            : `https://therealfullhousereviewed.wordpress.com/`;
+
+        infoBox.textContent = `${parsedTitle} • ${parsedSeason}`;
+        linkBox.href = realUrl; 
+
+    } catch (e) {
+        console.error(e);
+        contentArea.innerHTML = '<p class="text-red-600">The archives are dusty. Please try again.</p>';
     }
 
-    // --- BUTTON SETUP END ---
-
-    document.getElementById('randomBtn').addEventListener('click', async () => {
-        const displayBox = document.getElementById('randomQuoteDisplay');
-        const contentArea = document.getElementById('randomContentArea');
-        const infoBox = document.getElementById('randomQuoteInfo');
-        const linkBox = document.getElementById('randomLink');
-
-        // Reset UI
-        displayBox.classList.remove('hidden');
-        contentArea.innerHTML = '<p class="italic text-gray-500 py-8">Scanning archives...</p>';
-        infoBox.textContent = "";
-        
-        // Update Button Text (Cycle to a new catchphrase)
-        const phrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-        // Keep the SVG icon, update the text span
-        const icon = btn.querySelector('svg').outerHTML;
-        btn.innerHTML = `${icon} <span>${phrase}</span>`;
-
-        try {
-            let validBlock = null;
-            let chosenEpisode = null;
-            let parsedTitle = "";
-            let parsedSeason = "";
-            let parsedDateUrl = ""; // To store YYYY/MM/DD
-
-            // Try up to 50 times to find a "Sandwich" (Image-Text-Image)
-            for (let attempt = 0; attempt < 50; attempt++) {
-                chosenEpisode = quotes[Math.floor(Math.random() * quotes.length)];
-                
-                const response = await fetch(`fhr/${chosenEpisode.filename}`);
-                const htmlText = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlText, 'text/html');
-                
-                // Extract Title
-                parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
-                
-                // Extract Season
-                const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
-                parsedSeason = seasonMatch ? "Season " + seasonMatch[1] : "Specials";
-
-                // Extract Date for URL (e.g., "Original Date: 2010-06-05")
-                const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-                if (dateEl) {
-                    const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
-                    if (match) {
-                        parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
-                    }
-                }
-
-                // Scan paragraphs for content
-                const allPs = Array.from(doc.querySelectorAll('p'));
-                const nodes = allPs.map(p => {
-                    if (p.querySelector('img')) return { type: 'IMG', el: p };
-                    const text = p.textContent.trim();
-                    if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:')) {
-                        return { type: 'TEXT', el: p };
-                    }
-                    return { type: 'SKIP' };
-                });
-
-                // Hunt for patterns: IMG -> TEXT -> IMG
-                const candidates = [];
-                for (let i = 0; i < nodes.length; i++) {
-                    if (nodes[i].type === 'IMG') {
-                        let texts = [];
-                        let j = i + 1;
-                        while (j < nodes.length) {
-                            if (nodes[j].type === 'TEXT') {
-                                texts.push(nodes[j].el);
-                            } else if (nodes[j].type === 'IMG') {
-                                if (texts.length > 0) {
-                                    candidates.push({ start: nodes[i].el, texts: texts, end: nodes[j].el });
-                                }
-                                break; 
-                            }
-                            j++;
-                        }
-                    }
-                }
-
-                if (candidates.length > 0) {
-                    validBlock = candidates[Math.floor(Math.random() * candidates.length)];
-                    break; 
-                }
-            }
-
-            // --- RENDER ---
-            contentArea.innerHTML = '';
-
-            if (validBlock) {
-                const img1 = validBlock.start.querySelector('img').cloneNode(true);
-                img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-                contentArea.appendChild(img1);
-
-                const textDiv = document.createElement('div');
-                textDiv.className = "text-lg text-black px-2 leading-relaxed";
-                validBlock.texts.forEach(p => {
-                    const clone = p.cloneNode(true);
-                    clone.className = "mb-4";
-                    textDiv.appendChild(clone);
-                });
-                contentArea.appendChild(textDiv);
-
-                const img2 = validBlock.end.querySelector('img').cloneNode(true);
-                img2.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-                contentArea.appendChild(img2);
-            } else {
-                const textDiv = document.createElement('div');
-                textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory, but here is a thought...</p>`;
-                contentArea.appendChild(textDiv);
-            }
-
-            // --- URL BUILDER ---
-            // Convert title to WordPress slug: "Season 1, Episode 13..." -> "season-1-episode-13..."
-            const slug = parsedTitle.toLowerCase()
-                .replace(/['"“”‘’]/g, '') // Remove quotes
-                .replace(/[^a-z0-9]+/g, '-') // Replace spaces/symbols with dash
-                .replace(/^-+|-+$/g, ''); // Trim dashes
-            
-            // Construct the real link (Fall back to homepage if date is missing)
-            const realUrl = parsedDateUrl 
-                ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
-                : `https://therealfullhousereviewed.wordpress.com/`;
-
-            // Update Footer
-            infoBox.textContent = `${parsedTitle} • ${parsedSeason}`;
-            linkBox.href = realUrl; // Point to the real WordPress site
-            linkBox.target = "_blank"; // Open in new tab
-
-        } catch (e) {
-            console.error(e);
-            contentArea.innerHTML = '<p class="text-red-600">The archives are dusty today. Please try again.</p>';
-        }
-    });
+    // 5. Reveal Bottom Button
+    document.getElementById("bottom-button-container").style.display = "block";
 }
+
+// Start everything
+loadFhrArchive();
 </script>
 </body>
 </html>
