@@ -177,20 +177,19 @@ async function loadFhrArchive() {
 
         document.getElementById('subStatus').textContent = `Found ${files.length} scrolls. Deciphering...`;
 
-        // Parse files in parallel
+        // Parse files in parallel to build the index
         const parsedData = await Promise.all(files.map(async (filename, index) => {
             try {
                 const fileResp = await fetch(`fhr/${filename}`);
                 const htmlText = await fileResp.text();
                 
-                // Parse HTML string into a document
+                // Parse HTML string into a document just to get Title/Date
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlText, 'text/html');
 
-                // Extract Details based on your template
                 const title = doc.querySelector('h1')?.textContent.trim() || doc.querySelector('title')?.textContent.trim() || "Unknown Title";
                 
-                // Extract Date: "Original Date: 2010-06-05"
+                // Extract Date
                 const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
                 let dateStr = "";
                 let rawDate = "";
@@ -198,13 +197,12 @@ async function loadFhrArchive() {
                 if (dateEl) {
                     const match = dateEl.textContent.match(/(\d{4}-\d{2}-\d{2})/);
                     if (match) {
-                        rawDate = match[1]; // 2010-06-05
-                        dateStr = rawDate.replace(/-/g, ''); // 20100605
+                        rawDate = match[1]; 
+                        dateStr = rawDate.replace(/-/g, ''); 
                     }
                 }
 
-                // Extract "Season" for the tag category
-                // Assuming title format: "Season 1, Episode 13..."
+                // Extract Season
                 let season = "Specials";
                 const seasonMatch = title.match(/Season\s*(\d+)/i);
                 if (seasonMatch) {
@@ -213,9 +211,9 @@ async function loadFhrArchive() {
 
                 return {
                     id: index + 1,
-                    text: title,   // The "Quote" is the Title
-                    game: season,  // The "Game" is the Season
-                    date: dateStr, // YYYYMMDD
+                    text: title,   // For the list view, we still show Title
+                    game: season,  
+                    date: dateStr, 
                     displayDate: rawDate,
                     filename: filename
                 };
@@ -226,11 +224,9 @@ async function loadFhrArchive() {
             }
         }));
 
-        // Filter out any failed loads
         window.quotes = parsedData.filter(q => q !== null);
-
         console.log(`Loaded ${window.quotes.length} episodes`);
-        initApp(); // Start the app
+        initApp(); 
     } 
     catch (error) {
         document.getElementById('quoteCount').textContent = "Error Loading Archive";
@@ -248,9 +244,7 @@ function initApp() {
     document.getElementById('quoteCount').textContent = `Search through ${quotes.length} reviews`;
     document.getElementById('subStatus').textContent = "";
 
-    // -------------------------------
-    // HELPERS
-    // -------------------------------
+    // Helper: Format Date
     function formatDate(yyyymmdd) {
         if (!yyyymmdd || yyyymmdd.length !== 8) return yyyymmdd;
         const y = yyyymmdd.substring(0,4);
@@ -262,28 +256,18 @@ function initApp() {
 
     let currentSearch = '';
     let selectedYear = null;
-    let selectedSeason = null; // New filter
+    let selectedSeason = null;
     let currentPage = 1;
     const itemsPerPage = 50;
 
-    // -------------------------------
-    // FILTERS GENERATION
-    // -------------------------------
-    
-    // 1. Seasons (Game equivalent)
+    // --- FILTERS SETUP (Same as before) ---
     const seasons = [...new Set(quotes.map(q => q.game))].sort();
     const seasonContainer = document.getElementById('popularTerms');
     
-    // Add "All" button for seasons
     const allSeasonsBtn = document.createElement('button');
     allSeasonsBtn.textContent = 'All';
     allSeasonsBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
-    allSeasonsBtn.onclick = () => {
-        selectedSeason = null;
-        updateSeasonButtons();
-        currentPage = 1;
-        renderQuotes();
-    };
+    allSeasonsBtn.onclick = () => { selectedSeason = null; updateSeasonButtons(); currentPage = 1; renderQuotes(); };
     seasonContainer.appendChild(allSeasonsBtn);
 
     seasons.forEach(s => {
@@ -291,45 +275,26 @@ function initApp() {
         btn.textContent = s;
         btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
         btn.dataset.season = s;
-        btn.onclick = () => {
-            selectedSeason = s;
-            updateSeasonButtons();
-            currentPage = 1;
-            renderQuotes();
-        };
+        btn.onclick = () => { selectedSeason = s; updateSeasonButtons(); currentPage = 1; renderQuotes(); };
         seasonContainer.appendChild(btn);
     });
 
     function updateSeasonButtons() {
-        const btns = Array.from(seasonContainer.children);
-        btns.forEach(btn => {
-            // Reset all
+        Array.from(seasonContainer.children).forEach(btn => {
             btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-            // Highlight selected
-            if (selectedSeason === null && btn.textContent === 'All') {
-                btn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors shadow-md';
-            }
-            if (btn.dataset.season === selectedSeason) {
+            if ((selectedSeason === null && btn.textContent === 'All') || (btn.dataset.season === selectedSeason)) {
                 btn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors shadow-md';
             }
         });
     }
 
-
-    // 2. Years
     const years = [...new Set(quotes.map(q => q.date.substring(0,4)))].sort().reverse();
     const yearContainer = document.getElementById('yearFilters');
     
-    // All Years Button
     const allYearsBtn = document.createElement('button');
     allYearsBtn.textContent = 'All';
     allYearsBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
-    allYearsBtn.onclick = () => {
-        selectedYear = null;
-        updateYearButtons();
-        currentPage = 1;
-        renderQuotes();
-    };
+    allYearsBtn.onclick = () => { selectedYear = null; updateYearButtons(); currentPage = 1; renderQuotes(); };
     yearContainer.appendChild(allYearsBtn);
 
     years.forEach(year => {
@@ -338,53 +303,31 @@ function initApp() {
         btn.textContent = year;
         btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
         btn.dataset.year = year;
-        btn.onclick = () => {
-            selectedYear = year;
-            updateYearButtons();
-            currentPage = 1;
-            renderQuotes();
-        };
+        btn.onclick = () => { selectedYear = year; updateYearButtons(); currentPage = 1; renderQuotes(); };
         yearContainer.appendChild(btn);
     });
 
     function updateYearButtons() {
-        const btns = Array.from(yearContainer.children);
-        btns.forEach(btn => {
+        Array.from(yearContainer.children).forEach(btn => {
             btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-            if (selectedYear === null && btn.textContent === 'All') {
-                btn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors shadow-md';
-            }
-            if (btn.dataset.year === selectedYear) {
+            if ((selectedYear === null && btn.textContent === 'All') || (btn.dataset.year === selectedYear)) {
                 btn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors shadow-md';
             }
         });
     }
 
-    // -------------------------------
-    // FILTER LOGIC
-    // -------------------------------
+    // --- RENDER LOGIC ---
     function filterQuotes() {
         let out = quotes;
-
-        if (selectedYear) {
-            out = out.filter(q => q.date.startsWith(selectedYear));
-        }
-        if (selectedSeason) {
-            out = out.filter(q => q.game === selectedSeason);
-        }
+        if (selectedYear) out = out.filter(q => q.date.startsWith(selectedYear));
+        if (selectedSeason) out = out.filter(q => q.game === selectedSeason);
         if (currentSearch) {
             const s = currentSearch.toLowerCase();
-            out = out.filter(q => 
-                q.text.toLowerCase().includes(s) || 
-                q.date.includes(s)
-            );
+            out = out.filter(q => q.text.toLowerCase().includes(s) || q.date.includes(s));
         }
         return out;
     }
 
-    // -------------------------------
-    // RENDER LOGIC
-    // -------------------------------
     function renderQuotes() {
         const filtered = filterQuotes();
         const list = document.getElementById('quotesList');
@@ -407,14 +350,12 @@ function initApp() {
             const div = document.createElement('div');
             div.className = 'bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition-colors flex justify-between items-center';
             
-            const formattedDate = formatDate(q.date);
-            
             div.innerHTML = `
                 <div>
                     <a href="fhr/${q.filename}" class="text-purple-900 mb-1 font-bold block hover:underline text-lg">
                         ${q.text}
                     </a>
-                    <p class="text-sm text-purple-700">${q.game} • ${formattedDate}</p>
+                    <p class="text-sm text-purple-700">${q.game} • ${formatDate(q.date)}</p>
                 </div>
                 <a href="fhr/${q.filename}" 
                    class="ml-4 px-4 py-2 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-lg text-sm transition-colors whitespace-nowrap">
@@ -424,7 +365,7 @@ function initApp() {
             list.appendChild(div);
         });
 
-        // Pagination
+        // Pagination setup (same as before)
         const pContainer = document.getElementById('paginationContainer');
         pContainer.innerHTML = '';
         if (totalPages > 1) {
@@ -454,29 +395,77 @@ function initApp() {
         }
     }
 
-    // -------------------------------
-    // EVENTS
-    // -------------------------------
+    // --- EVENTS ---
     document.getElementById('searchInput').addEventListener('input', e => {
         currentSearch = e.target.value;
         currentPage = 1;
         renderQuotes();
     });
 
-    document.getElementById('randomBtn').addEventListener('click', () => {
-        const r = quotes[Math.floor(Math.random() * quotes.length)];
-        const disp = document.getElementById('randomQuoteDisplay');
-        document.getElementById('randomQuoteText').textContent = r.text;
-        document.getElementById('randomQuoteInfo').textContent = `${r.game} • ${formatDate(r.date)}`;
-        document.getElementById('randomLink').href = `fhr/${r.filename}`;
-        disp.classList.remove('hidden');
+    // *** UPDATED RANDOM LOGIC ***
+    document.getElementById('randomBtn').addEventListener('click', async () => {
+        const displayBox = document.getElementById('randomQuoteDisplay');
+        const textBox = document.getElementById('randomQuoteText');
+        const infoBox = document.getElementById('randomQuoteInfo');
+        const linkBox = document.getElementById('randomLink');
+
+        // Show loading state
+        displayBox.classList.remove('hidden');
+        textBox.textContent = "Summoning a random moment from the archives...";
+        textBox.style.fontStyle = "italic";
+        infoBox.textContent = "";
+        
+        try {
+            // 1. Pick a random episode object
+            const r = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            // 2. Fetch the HTML content
+            const response = await fetch(`fhr/${r.filename}`);
+            if(!response.ok) throw new Error("Failed to fetch episode");
+            const htmlText = await response.text();
+
+            // 3. Parse and find <p> tags
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            
+            // 4. Filter logic:
+            // - Must have text
+            // - Must NOT be the "Original Date" line
+            // - Must NOT be an image-only paragraph
+            const paragraphs = Array.from(doc.querySelectorAll('p')).filter(p => {
+                const text = p.textContent.trim();
+                if (!text) return false; 
+                if (text.includes('Original Date:')) return false;
+                if (text.toLowerCase().includes('source:')) return false; // often blog junk
+                return true;
+            });
+
+            if (paragraphs.length === 0) {
+                textBox.textContent = "No readable text found in this review.";
+                return;
+            }
+
+            // 5. Pick random paragraph
+            const randomP = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+
+            // 6. Update UI
+            textBox.textContent = `"${randomP.textContent.trim()}"`;
+            // Change font size for long text
+            textBox.className = randomP.textContent.length > 200 
+                ? "text-lg text-purple-900 mb-2 font-serif" 
+                : "text-xl text-purple-900 mb-2 italic font-serif";
+            
+            infoBox.textContent = `${r.text} • ${r.game}`;
+            linkBox.href = `fhr/${r.filename}`;
+
+        } catch (e) {
+            console.error(e);
+            textBox.textContent = "The archives are silent (Error loading quote).";
+        }
     });
 
-    // -------------------------------
-    // FEATURED EPISODE
-    // -------------------------------
-    const now = new Date();
-    const seed = now.getFullYear() * 1000 + (Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000));
+    // --- FEATURED EPISODE (Logic unchanged) ---
+    const seed = new Date().getFullYear() * 1000 + (Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000));
     const qod = quotes[seed % quotes.length];
     
     if (qod) {
