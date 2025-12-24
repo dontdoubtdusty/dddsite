@@ -56,6 +56,28 @@
             color: #000000 !important;     /* Turn text black on hover */
             cursor: pointer;
         }
+        /* specific styles for the Random Quote buttons */
+        #randomBtn, #bottomBtn {
+            /* 1. The Image with a Light Overlay (0.8 opacity white) */
+            background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('fhr/dark-full-house-fan-theories.jpg') !important;
+            
+            /* 2. Center and cover the button */
+            background-position: center !important;
+            background-size: cover !important;
+            background-repeat: no-repeat !important;
+
+            /* 3. Text Color (Black text looks best on a light overlay) */
+            color: #000000 !important;
+            
+            /* 4. Border to make it look sharp */
+            border: 2px solid #000000 !important;
+        }
+
+        /* Optional: Change the overlay slightly on hover for effect */
+        #randomBtn:hover, #bottomBtn:hover {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('fhr/dark-full-house-fan-theories.jpg') !important;
+            color: #000000 !important;
+        }
     </style>
 </head>
 <header>
