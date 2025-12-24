@@ -167,8 +167,9 @@ function initApp() {
         contentArea.innerHTML = '<p class="italic text-gray-500 py-8">Scanning archives...</p>';
         infoBox.textContent = "";
         
-        // Update Button Text
+        // Update Button Text (Cycle to a new catchphrase)
         const phrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
+        // Keep the SVG icon, update the text span
         const icon = btn.querySelector('svg').outerHTML;
         btn.innerHTML = `${icon} <span>${phrase}</span>`;
 
@@ -177,6 +178,7 @@ function initApp() {
             let chosenEpisode = null;
             let parsedTitle = "";
             let parsedSeason = "";
+            let parsedDateUrl = ""; // To store YYYY/MM/DD
 
             // Try up to 50 times to find a "Sandwich" (Image-Text-Image)
             for (let attempt = 0; attempt < 50; attempt++) {
@@ -187,17 +189,26 @@ function initApp() {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlText, 'text/html');
                 
-                // Extract Metadata on the fly
+                // Extract Title
                 parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
+                
+                // Extract Season
                 const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
                 parsedSeason = seasonMatch ? "Season " + seasonMatch[1] : "Specials";
 
-                // Scan paragraphs
+                // Extract Date for URL (e.g., "Original Date: 2010-06-05")
+                const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
+                if (dateEl) {
+                    const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
+                    if (match) {
+                        parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
+                    }
+                }
+
+                // Scan paragraphs for content
                 const allPs = Array.from(doc.querySelectorAll('p'));
                 const nodes = allPs.map(p => {
-                    // Check for image
                     if (p.querySelector('img')) return { type: 'IMG', el: p };
-                    // Check for text
                     const text = p.textContent.trim();
                     if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:')) {
                         return { type: 'TEXT', el: p };
@@ -227,7 +238,7 @@ function initApp() {
 
                 if (candidates.length > 0) {
                     validBlock = candidates[Math.floor(Math.random() * candidates.length)];
-                    break; // Found one! Stop searching.
+                    break; 
                 }
             }
 
@@ -235,7 +246,6 @@ function initApp() {
             contentArea.innerHTML = '';
 
             if (validBlock) {
-                // Render Sandwich
                 const img1 = validBlock.start.querySelector('img').cloneNode(true);
                 img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
                 contentArea.appendChild(img1);
@@ -253,16 +263,27 @@ function initApp() {
                 img2.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
                 contentArea.appendChild(img2);
             } else {
-                // FALLBACK: If we couldn't find a sandwich after 50 tries, just show a text block
-                // This prevents the "Hanging" issue
                 const textDiv = document.createElement('div');
                 textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory, but here is a thought...</p>`;
                 contentArea.appendChild(textDiv);
             }
 
+            // --- URL BUILDER ---
+            // Convert title to WordPress slug: "Season 1, Episode 13..." -> "season-1-episode-13..."
+            const slug = parsedTitle.toLowerCase()
+                .replace(/['"“”‘’]/g, '') // Remove quotes
+                .replace(/[^a-z0-9]+/g, '-') // Replace spaces/symbols with dash
+                .replace(/^-+|-+$/g, ''); // Trim dashes
+            
+            // Construct the real link (Fall back to homepage if date is missing)
+            const realUrl = parsedDateUrl 
+                ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
+                : `https://therealfullhousereviewed.wordpress.com/`;
+
             // Update Footer
             infoBox.textContent = `${parsedTitle} • ${parsedSeason}`;
-            linkBox.href = `fhr/${chosenEpisode.filename}`;
+            linkBox.href = realUrl; // Point to the real WordPress site
+            linkBox.target = "_blank"; // Open in new tab
 
         } catch (e) {
             console.error(e);
