@@ -261,7 +261,23 @@ async function generateQuote() {
                             texts.push(nodes[j].el);
                         } else if (nodes[j].type === 'IMG') {
                             if (texts.length > 0) {
-                                candidates.push({ start: nodes[i].el, texts: texts, end: nodes[j].el });
+                                let endImages = [nodes[j].el];
+                                let k = j + 1;
+                                
+                                // Look ahead for more consecutive images
+                                while (k < nodes.length && nodes[k].type === 'IMG') {
+                                    // FIX: Check if this "image" paragraph also has text.
+                                    // If it has text (length > 0), it's the start of a new story segment.
+                                    // So we BREAK the loop and don't add it to the current pile.
+                                    if (nodes[k].el.textContent.trim().length > 0) {
+                                        break;
+                                    }
+
+                                    endImages.push(nodes[k].el);
+                                    k++;
+                                }
+
+                                candidates.push({ start: nodes[i].el, texts: texts, endImages: endImages });
                             }
                             break; 
                         }
@@ -292,9 +308,12 @@ async function generateQuote() {
             });
             contentArea.appendChild(textDiv);
 
-            const img2 = validBlock.end.querySelector('img').cloneNode(true);
-            img2.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-            contentArea.appendChild(img2);
+            // Loop through all detected end images and append them
+            validBlock.endImages.forEach(pTag => {
+                const imgClone = pTag.querySelector('img').cloneNode(true);
+                imgClone.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+                contentArea.appendChild(imgClone);
+            });
         } else {
             const textDiv = document.createElement('div');
             textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
