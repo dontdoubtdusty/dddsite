@@ -312,14 +312,16 @@ async function generateQuote() {
             : `https://therealfullhousereviewed.wordpress.com/`;
 
         // Add date to footer if we found one
+        // Note: The <br> will work now because we use .innerHTML below
         const dateString = displayDate ? ` • <br>Review Date: ${displayDate}` : "";
-        infoBox.textContent = `${parsedTitle} • ${parsedSeason}${dateString}`;
+        infoBox.innerHTML = `${parsedTitle} • ${parsedSeason}${dateString}`;
         
         linkBox.href = realUrl; 
 
         // Show Firsts container ONLY if we found text
         if (firstsText) {
             firstsContainer.classList.remove('hidden');
+            // Re-adding the label "Firsts in this episode:" for display purposes
             firstsBox.textContent = `Firsts in this episode: ${firstsText}`;
         } else {
             firstsContainer.classList.add('hidden');
