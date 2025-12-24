@@ -3,864 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card Game Mockup</title>
+    <title>Full House Reviewed Archive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* 1. The Main Background (Pale Salmon/Peach) */
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background-color: #f4dcd6; /* Matches the side margins in your image */
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
+            font-family: 'Georgia', 'Times New Roman', serif; /* Classic serif font */
+            color: #000000;
         }
-
-        .game-container {
-            max-width: 1400px;
-            width: 100%;
+    
+        /* 2. The Content Container (White Column) */
+        /* We redefine .parchment to look like the white paper in your image */
+        .parchment {
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Very subtle shadow */
+            border: 1px solid #e5e5e5;
+            border-radius: 0; /* Removing rounded corners for a sharper look */
         }
-
-        h1 {
-            color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    
+        /* 3. Typography & Overrides */
+        /* Your HTML uses "text-purple-900". We override that here so you don't have to change the HTML tags */
+        h1, h2, h3, 
+        .text-purple-900, 
+        .text-purple-700, 
+        .text-purple-600 {
+            color: #000000 !important; /* Force black text */
         }
-
-        .board {
-            background: rgba(255, 255, 255, 0.1);
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-        }
-
-        .board-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px; /* Reduce from 15px */
-            margin-bottom: 20px;
-        }
-
-        .eras-tracker {
-            background: rgba(0, 0, 0, 0.3);
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 30px 0;
-            backdrop-filter: blur(10px);
-        }
-
-        .eras-title {
-            color: white;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            letter-spacing: 3px;
-        }
-
-        .eras-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-        }
-
-        .era-section {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            padding: 10px;
-        }
-
-        .era-label {
-            color: white;
-            text-align: center;
-            font-size: 12px;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .era-slots {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .era-slot {
-            height: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 10px;
-        }
-
-        .card-slot {
-            aspect-ratio: 2/3;
-            max-height: 200px; /* Adjust this value to make them smaller */
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .card-slot.back-row {
-            background: rgba(255, 200, 150, 0.1); /* Different color for back row */
-            border-color: rgba(255, 200, 150, 0.3);
+    
+        /* 4. Link Styling (Classic Blue) */
+        a {
+            color: #0000EE !important; /* Standard Internet Blue */
+            text-decoration: underline;
         }
         
-        .card-slot.front-row {
-            background: rgba(255, 255, 255, 0.05); /* Keep current color for front row */
+        a:hover {
+            color: #551A8B !important; /* Visited/Hover purple style */
+            text-decoration: none;
         }
-
-        .card-slot.drag-over {
-            background: rgba(100, 200, 255, 0.3);
-            border-color: #64c8ff;
-            transform: scale(1.05);
-        }
-
-        .card-slot.filled {
-            border-style: solid;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .card {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, #ffffff, #e6e6e6);
-            border: 2px solid #333;
-            border-radius: 10px;
-            padding: 10px;
-            cursor: grab;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-        }
-
-        .card.dragging {
-            opacity: 0.5;
-            cursor: grabbing;
-        }
-
-        .card-header {
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-            color: #333;
-            border-bottom: 2px solid #333;
-            padding-bottom: 5px;
-        }
-
-        .card-content {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-        }
-
-        .card-footer {
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-            border-top: 1px solid #999;
-            padding-top: 5px;
-        }
-
-        .bottom-area {
-            display: grid;
-            grid-template-columns: 150px 1fr 150px;
-            gap: 20px;
-            align-items: start;
-        }
-
-        .deck-pile, .discard-pile {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .pile-title {
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .pile-container {
-            width: 120px;
-            height: 180px;
-            position: relative;
-        }
-
-        .deck-back, .discard-top {
-            width: 100%;
-            height: 100%;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .deck-back {
-            background: linear-gradient(145deg, #8b4513, #654321);
-            border: 2px solid #333;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .deck-back:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-        }
-
-        .deck-back:active {
-            transform: translateY(-2px);
-        }
-
-        .discard-top {
-            background: rgba(100, 100, 100, 0.3);
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-        }
-
-        .discard-top.drag-over {
-            background: rgba(200, 100, 100, 0.3);
-            border-color: #ff6464;
-            transform: scale(1.05);
-        }
-
-        .deck-count {
-            color: white;
-            font-size: 14px;
-        }
-
-        .hand {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            min-height: 220px;
-        }
-
-        .hand-title {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        .hand-cards {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            min-height: 180px;
-        }
-
-        .hand-cards.drag-over {
-            background: rgba(100, 200, 100, 0.2);
-            border-radius: 10px;
-        }
-
-        .hand-card-container {
-            width: 120px;
-            height: 180px;
-        }
-
-        .slot-label {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 12px;
-        }
-
-        .empty-message {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 14px;
-        }
-        .era-section.ancient { border-color: #4ade80; background: rgba(74, 222, 128, 0.1); }
-        .era-section.dawn { border-color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
-        .era-section.twilight { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); }
-        .era-section.crystal { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
-        .era-section.void { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
-
-        .lock-in-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .lock-in-button {
-            background: linear-gradient(145deg, #4ade80, #22c55e);
-            border: 3px solid #16a34a;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 15px 40px;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .lock-in-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-            background: linear-gradient(145deg, #22c55e, #16a34a);
-        }
-        
-        .lock-in-button:active {
-            transform: translateY(0);
-        }
-        
-        .board.locking {
-            animation: lockPulse 0.6s ease;
-        }
-        
-        @keyframes lockPulse {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
-            }
-            50% {
-                transform: scale(1.02);
-                box-shadow: 0 0 30px 10px rgba(74, 222, 128, 0.4);
-            }
-        }
-        
-        .card-slot.locked-flash {
-            animation: slotFlash 0.6s ease;
-        }
-        
-        @keyframes slotFlash {
-            0%, 100% {
-                border-color: rgba(255, 255, 255, 0.3);
-                background: rgba(255, 255, 255, 0.05);
-            }
-            50% {
-                border-color: #4ade80;
-                background: rgba(74, 222, 128, 0.3);
-            }
-        }
-        .player-panel {
-            background: rgba(0, 0, 0, 0.3);
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            margin-top: 20px; /* Changed from margin-bottom */
-        }
-        
-        .player-avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(145deg, #4ade80, #22c55e);
-            border: 3px solid #16a34a;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        
-        .player-stats {
-            display: flex;
-            gap: 40px;
-            flex: 1;
-        }
-        
-        .stat-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .stat-label {
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
+    
+        /* 5. Button Styling */
+        /* Changing the purple buttons to black/grey to fit the cleaner look */
+        button {
+            background-image: none !important;
+            background-color: #333333 !important;
+            color: #ffffff !important;
+            border: 1px solid #000000;
             text-transform: uppercase;
+            font-weight: bold;
             letter-spacing: 1px;
         }
-        
-        .stat-display {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+    
+        button:hover {
+            background-color: #000000 !important;
+            transform: none !important; /* Remove the bounce effect for a serious tone */
         }
-        
-        .stat-value {
-            color: white;
-            font-size: 32px;
-            font-weight: bold;
-            min-width: 60px;
-            text-align: center;
+    
+        /* 6. Search Input */
+        input[type="text"] {
+            background-color: #ffffff !important;
+            border: 1px solid #cccccc !important;
+            color: #000000 !important;
+            border-radius: 4px !important;
         }
-        
-        .stat-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .stat-button {
-            width: 30px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            border-radius: 5px;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-        
-        .stat-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
-        
-        .stat-button:active {
-            transform: scale(0.95);
-        }
-        
-        .life-counter .stat-display {
-            border-color: #ef4444;
-        }
-        
-        .spirit-counter .stat-display {
-            border-color: #3b82f6;
+    
+        /* Hide the decorative purple bar under the title */
+        .bg-purple-900 {
+            background-color: #000000 !important;
         }
     </style>
 </head>
-<body>
-    <div class="game-container">
-        <h1>Card Game Board</h1>
-        <div class="lock-in-container">
-            <button class="lock-in-button" id="lockInButton" onclick="lockInCards()">Lock In</button>
+<body class="p-6">
+    <div class="max-w-4xl mx-auto" style="max-width: 700px; padding: 60px 24px;">
+        <h1 
+        class="text-4xl font-bold text-purple-900 mb-2 text-center tracking-wide 
+               drop-shadow-md relative block mx-auto pb-3"
+        style="letter-spacing: 0.05em;"
+        >
+        <span class="px-4 py-1" style="border-color: #6b21a8;">
+            THE FHR ARCHIVE
+        </span>
+        </h1>
+
+        <div class="flex justify-center mt-2 mb-6">
+            <div class="h-1 w-24 bg-purple-900 rounded-full opacity-70"></div>
         </div>
-        <div class="eras-tracker">
-            <div class="eras-title">ERAS</div>
-            <div class="eras-grid">
-                <div class="era-section">
-                    <div class="era-label">Era 1</div>
-                    <div class="era-slots">
-                        <div class="era-slot">Top</div>
-                        <div class="era-slot">Bottom</div>
-                    </div>
-                </div>
-                <div class="era-section">
-                    <div class="era-label">Era 2</div>
-                    <div class="era-slots">
-                        <div class="era-slot">Top</div>
-                        <div class="era-slot">Bottom</div>
-                    </div>
-                </div>
-                <div class="era-section">
-                    <div class="era-label">Era 3</div>
-                    <div class="era-slots">
-                        <div class="era-slot">Top</div>
-                        <div class="era-slot">Bottom</div>
-                    </div>
-                </div>
-                <div class="era-section">
-                    <div class="era-label">Era 4</div>
-                    <div class="era-slots">
-                        <div class="era-slot">Top</div>
-                        <div class="era-slot">Bottom</div>
-                    </div>
-                </div>
-                <div class="era-section">
-                    <div class="era-label">Era 5</div>
-                    <div class="era-slots">
-                        <div class="era-slot">Top</div>
-                        <div class="era-slot">Bottom</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="board">
-            <div class="board-grid" id="boardGrid">
-                <!-- Card slots will be generated here -->
+
+        <p class="text-purple-700 text-center mb-2" id="quoteCount">
+            Loading Archives...
+        </p>
+        <p class="text-purple-600 text-center mb-8 text-sm italic" id="subStatus">
+            Fetching scrolls from the library...
+        </p>
+
+        <div id="quoteOfDayBox"
+             class="bg-gradient-to-r from-pink-100 to-purple-100 backdrop-blur-lg rounded-lg p-6 mb-6 border-2 border-pink-300 shadow-lg hidden">
+
+            <h2 class="text-xl font-bold text-purple-900 mb-3">
+                Featured Episode
+            </h2>
+
+            <p class="text-xl text-purple-900 mb-2 italic font-serif" id="quoteOfDayText"></p>
+            <div class="flex justify-between items-end">
+                <p class="text-sm text-purple-700" id="quoteOfDayInfo"></p>
+                <a id="qodLink" href="#" class="text-xs bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-800 transition">Read Review</a>
             </div>
         </div>
 
-        <div class="bottom-area">
-            <div class="discard-pile">
-                <div class="pile-title">Discard</div>
-                <div class="pile-container">
-                    <div class="discard-top" id="discardPile">
-                        <span class="empty-message">Empty</span>
-                    </div>
-                </div>
-                <div class="deck-count" id="discardCount">Cards: 0</div>
+        <div class="parchment rounded-lg p-6 mb-6 shadow-lg">
+            <div class="relative mb-4">
+                <svg class="absolute left-3 top-3 text-purple-400" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search titles (e.g. 'Sisterly Love')..."
+                    class="w-full pl-10 pr-4 py-3 bg-purple-50 border border-purple-200 rounded-lg text-purple-900 placeholder-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                />
             </div>
-        
-            <div class="hand">
-                <div class="hand-title">Your Hand</div>
-                <div class="hand-cards" id="handCards">
-                    <!-- Cards will be generated here -->
-                </div>
+
+            <div class="mb-4">
+                <p class="text-sm text-purple-700 mb-2">Filter by Season:</p>
+                <div class="flex flex-wrap gap-2" id="popularTerms"></div>
             </div>
-        
-            <div class="deck-pile">
-                <div class="pile-title">Deck</div>
-                <div class="pile-container">
-                    <div class="deck-back" id="deckBack" onclick="drawCard()">🂠</div>
-                </div>
-                <div class="deck-count" id="deckCount">Cards: 15</div>
+
+            <div class="mb-4">
+                <p class="text-sm text-purple-700 mb-2">Filter by Year:</p>
+                <div class="flex flex-wrap gap-2" id="yearFilters"></div>
+            </div>
+
+            <button
+                id="randomBtn"
+                class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-105 shadow-md"
+            >
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                Random Episode
+            </button>
+        </div>
+
+        <div id="randomQuoteDisplay" class="hidden parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
+            <div id="randomContentArea" class="flex flex-col gap-6 text-center"></div>
+            
+            <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-end">
+                <p class="text-sm text-gray-600" id="randomQuoteInfo"></p>
+                <a id="randomLink" href="#" class="text-xs bg-gray-800 text-white px-3 py-1 rounded hover:bg-black transition">Read Review</a>
             </div>
         </div>
-        <div class="player-panel">
-            <div class="player-avatar">👤</div>
-            <div class="player-stats">
-                <div class="stat-container life-counter">
-                    <div class="stat-label">Life</div>
-                    <div class="stat-display">
-                        <div class="stat-value" id="lifeValue">20</div>
-                        <div class="stat-buttons">
-                            <button class="stat-button" onclick="changeLife(1)">+</button>
-                            <button class="stat-button" onclick="changeLife(-1)">−</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-container spirit-counter">
-                    <div class="stat-label">Spirit</div>
-                    <div class="stat-display">
-                        <div class="stat-value" id="spiritValue">5</div>
-                        <div class="stat-buttons">
-                            <button class="stat-button" onclick="changeSpirit(1)">+</button>
-                            <button class="stat-button" onclick="changeSpirit(-1)">−</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+        <div class="parchment rounded-lg p-6 shadow-lg">
+            <p class="text-purple-900 mb-4 font-semibold" id="resultCount"></p>
+            <div class="space-y-4 max-h-[600px] overflow-y-auto" id="quotesList"></div>
+            <div id="paginationContainer"></div>
         </div>
     </div>
 
-    <script>
-        const allCards = [
-            { id: 1, name: 'Fire Card', symbol: '🔥', power: 5 },
-            { id: 2, name: 'Water Card', symbol: '💧', power: 4 },
-            { id: 3, name: 'Earth Card', symbol: '🌍', power: 6 },
-            { id: 4, name: 'Air Card', symbol: '💨', power: 3 },
-            { id: 5, name: 'Lightning Card', symbol: '⚡', power: 7 },
-            { id: 6, name: 'Ice Card', symbol: '❄️', power: 5 },
-            { id: 7, name: 'Nature Card', symbol: '🌿', power: 4 },
-            { id: 8, name: 'Star Card', symbol: '⭐', power: 6 },
-            { id: 9, name: 'Moon Card', symbol: '🌙', power: 5 },
-            { id: 10, name: 'Sun Card', symbol: '☀️', power: 8 },
-            { id: 11, name: 'Crystal Card', symbol: '💎', power: 7 },
-            { id: 12, name: 'Shadow Card', symbol: '🌑', power: 6 },
-            { id: 13, name: 'Light Card', symbol: '✨', power: 5 },
-            { id: 14, name: 'Storm Card', symbol: '⛈️', power: 7 },
-            { id: 15, name: 'Flame Card', symbol: '🔥', power: 6 },
-            { id: 16, name: 'Wave Card', symbol: '🌊', power: 5 },
-            { id: 17, name: 'Rock Card', symbol: '🪨', power: 4 },
-            { id: 18, name: 'Wind Card', symbol: '🌪️', power: 6 },
-            { id: 19, name: 'Mystic Card', symbol: '🔮', power: 8 },
-            { id: 20, name: 'Dragon Card', symbol: '🐉', power: 9 }
-        ];
+<script>
+// 1) Load the file list, then fetch every HTML file
+async function loadFhrArchive() {
+    try {
+        const response = await fetch('fhr/filelist.txt');
+        if (!response.ok) throw new Error("Could not find fhr/filelist.txt");
 
-        let deck = [...allCards];
-        let hand = [];
-        let discard = [];
-        let boardState = {};
-        let draggedCard = null;
-        let dragSource = null;
-        let life = 20;
-        let spirit = 5;
+        const listText = await response.text();
+        const files = listText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+        document.getElementById('subStatus').textContent = `Found ${files.length} scrolls. Deciphering...`;
+
+        const parsedData = await Promise.all(files.map(async (filename, index) => {
+            try {
+                const fileResp = await fetch(`fhr/${filename}`);
+                const htmlText = await fileResp.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+
+                const title = doc.querySelector('h1')?.textContent.trim() || doc.querySelector('title')?.textContent.trim() || "Unknown Title";
+                
+                // Extract Date
+                const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
+                let dateStr = "", rawDate = "";
+                if (dateEl) {
+                    const match = dateEl.textContent.match(/(\d{4}-\d{2}-\d{2})/);
+                    if (match) { rawDate = match[1]; dateStr = rawDate.replace(/-/g, ''); }
+                }
+
+                // Extract Season
+                let season = "Specials";
+                const seasonMatch = title.match(/Season\s*(\d+)/i);
+                if (seasonMatch) season = "Season " + seasonMatch[1];
+
+                return {
+                    id: index + 1,
+                    text: title,
+                    game: season,  
+                    date: dateStr, 
+                    filename: filename
+                };
+
+            } catch (err) { return null; }
+        }));
+
+        window.quotes = parsedData.filter(q => q !== null);
+        initApp(); 
+    } 
+    catch (error) {
+        document.getElementById('quoteCount').textContent = "Error Loading Archive";
+        console.error(error);
+    }
+}
+
+loadFhrArchive();
+
+// 2) Main Application Logic
+function initApp() {
+    const quotes = window.quotes;
+    document.getElementById('quoteCount').textContent = `Search through ${quotes.length} reviews`;
+    document.getElementById('subStatus').textContent = "";
+
+    function formatDate(yyyymmdd) {
+        if (!yyyymmdd || yyyymmdd.length !== 8) return yyyymmdd;
+        const dateObj = new Date(yyyymmdd.substring(0,4), parseInt(yyyymmdd.substring(4,6)) - 1, yyyymmdd.substring(6,8));
+        return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    let currentSearch = '', selectedYear = null, selectedSeason = null, currentPage = 1;
+    const itemsPerPage = 50;
+
+    // --- FILTERS (Seasons & Years) ---
+    const seasons = [...new Set(quotes.map(q => q.game))].sort();
+    const seasonContainer = document.getElementById('popularTerms');
+    
+    // Season Buttons
+    const mkBtn = (txt, container, cb) => {
+        const btn = document.createElement('button');
+        btn.textContent = txt;
+        btn.className = 'px-3 py-1 bg-gray-200 hover:bg-gray-300 text-black rounded-full text-sm transition-colors';
+        btn.onclick = cb;
+        container.appendChild(btn);
+        return btn;
+    };
+
+    mkBtn('All', seasonContainer, () => { selectedSeason = null; updateBtns(seasonContainer, null); renderQuotes(); });
+    seasons.forEach(s => mkBtn(s, seasonContainer, () => { selectedSeason = s; updateBtns(seasonContainer, s); renderQuotes(); }));
+
+    // Year Buttons
+    const years = [...new Set(quotes.map(q => q.date.substring(0,4)))].sort().reverse();
+    const yearContainer = document.getElementById('yearFilters');
+    mkBtn('All', yearContainer, () => { selectedYear = null; updateBtns(yearContainer, null); renderQuotes(); });
+    years.forEach(y => { if(y) mkBtn(y, yearContainer, () => { selectedYear = y; updateBtns(yearContainer, y); renderQuotes(); }); });
+
+    function updateBtns(container, selected) {
+        Array.from(container.children).forEach(btn => {
+            const isSelected = (selected === null && btn.textContent === 'All') || (btn.textContent === selected);
+            btn.className = isSelected 
+                ? 'px-3 py-1 bg-black text-white rounded-full text-sm transition-colors shadow-md'
+                : 'px-3 py-1 bg-gray-200 hover:bg-gray-300 text-black rounded-full text-sm transition-colors';
+        });
+    }
+
+    // --- RENDER LIST ---
+    function renderQuotes() {
+        let out = quotes;
+        if (selectedYear) out = out.filter(q => q.date.startsWith(selectedYear));
+        if (selectedSeason) out = out.filter(q => q.game === selectedSeason);
+        if (currentSearch) {
+            const s = currentSearch.toLowerCase();
+            out = out.filter(q => q.text.toLowerCase().includes(s) || q.date.includes(s));
+        }
+
+        const list = document.getElementById('quotesList');
+        document.getElementById('resultCount').textContent = `${out.length} result${out.length !== 1 ? 's' : ''}`;
+        list.innerHTML = '';
         
-        function changeLife(amount) {
-            life = Math.max(0, life + amount);
-            document.getElementById('lifeValue').textContent = life;
-        }
+        const start = (currentPage - 1) * itemsPerPage;
+        const display = out.slice(start, start + itemsPerPage);
         
-        function changeSpirit(amount) {
-            spirit = Math.max(0, spirit + amount);
-            document.getElementById('spiritValue').textContent = spirit;
+        if (!display.length) {
+            list.innerHTML = '<p class="text-center text-gray-600">No episodes found.</p>';
+            return;
         }
 
-        function shuffleDeck() {
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]];
-            }
-        }
-
-        function createCard(cardData) {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.draggable = true;
-            card.dataset.cardId = cardData.id;
-            
-            card.innerHTML = `
-                <div class="card-header">${cardData.name}</div>
-                <div class="card-content">${cardData.symbol}</div>
-                <div class="card-footer">Power: ${cardData.power}</div>
+        display.forEach(q => {
+            const div = document.createElement('div');
+            div.className = 'bg-white hover:bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center';
+            div.innerHTML = `
+                <div>
+                    <a href="fhr/${q.filename}" class="text-black font-bold text-lg hover:underline">${q.text}</a>
+                    <p class="text-sm text-gray-500">${q.game} • ${formatDate(q.date)}</p>
+                </div>
+                <a href="fhr/${q.filename}" class="text-xs bg-gray-200 text-black px-3 py-1 rounded hover:bg-gray-300">Read</a>
             `;
-
-            card.addEventListener('dragstart', handleDragStart);
-            card.addEventListener('dragend', handleDragEnd);
-
-            return card;
-        }
-
-        function initializeBoard() {
-            const boardGrid = document.getElementById('boardGrid');
+            list.appendChild(div);
+        });
+        
+        // Simple Pagination (Previous/Next)
+        const pContainer = document.getElementById('paginationContainer');
+        pContainer.innerHTML = '';
+        if (Math.ceil(out.length / itemsPerPage) > 1) {
+            const row = document.createElement('div');
+            row.className = 'flex justify-center gap-4 mt-4';
+            row.innerHTML = `
+                <button id="prevPage" class="px-4 py-2 bg-gray-800 text-white rounded disabled:opacity-50">Previous</button>
+                <span class="py-2">Page ${currentPage}</span>
+                <button id="nextPage" class="px-4 py-2 bg-gray-800 text-white rounded disabled:opacity-50">Next</button>
+            `;
+            pContainer.appendChild(row);
             
-            // Create front row FIRST (slots 0-4)
-            for (let i = 0; i < 5; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'card-slot front-row';
-                slot.dataset.slotId = i;
-                slot.innerHTML = `<span class="slot-label">Slot ${i + 1}</span>`;
-                
-                slot.addEventListener('dragover', handleDragOver);
-                slot.addEventListener('dragleave', handleDragLeave);
-                slot.addEventListener('drop', handleDrop);
-                
-                boardGrid.appendChild(slot);
-            }
-            
-            // Create back row SECOND (slots 5-9)
-            for (let i = 5; i < 10; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'card-slot back-row';
-                slot.dataset.slotId = i;
-                slot.innerHTML = `<span class="slot-label">Slot ${i + 1}</span>`;
-                
-                slot.addEventListener('dragover', handleDragOver);
-                slot.addEventListener('dragleave', handleDragLeave);
-                slot.addEventListener('drop', handleDrop);
-                
-                boardGrid.appendChild(slot);
-            }
+            document.getElementById('prevPage').onclick = () => { if(currentPage > 1) { currentPage--; renderQuotes(); }};
+            document.getElementById('nextPage').onclick = () => { if(currentPage * itemsPerPage < out.length) { currentPage++; renderQuotes(); }};
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage * itemsPerPage >= out.length;
         }
+    }
 
-        function drawCard() {
-            if (deck.length === 0) {
-                alert('Deck is empty!');
+    // --- NEW RANDOM LOGIC (Image-Text-Image Sandwich) ---
+    document.getElementById('randomBtn').addEventListener('click', async () => {
+        const displayBox = document.getElementById('randomQuoteDisplay');
+        const contentArea = document.getElementById('randomContentArea');
+        const infoBox = document.getElementById('randomQuoteInfo');
+        const linkBox = document.getElementById('randomLink');
+
+        displayBox.classList.remove('hidden');
+        contentArea.innerHTML = '<p class="italic text-gray-500">Scanning archives for image sequences...</p>';
+        infoBox.textContent = "";
+
+        try {
+            // Keep retrying until we find a valid block or run out of attempts
+            let attempts = 0;
+            let validBlock = null;
+            let chosenEpisode = null;
+
+            while (!validBlock && attempts < 15) {
+                attempts++;
+                chosenEpisode = quotes[Math.floor(Math.random() * quotes.length)];
+                
+                const response = await fetch(`fhr/${chosenEpisode.filename}`);
+                const htmlText = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                
+                // Get all paragraphs in order
+                const allPs = Array.from(doc.querySelectorAll('p'));
+                
+                // Map them to types
+                const nodes = allPs.map(p => {
+                    if (p.querySelector('img')) return { type: 'IMG', el: p };
+                    // Check for substantial text (filter out dates, source links, empty lines)
+                    const text = p.textContent.trim();
+                    if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:')) {
+                        return { type: 'TEXT', el: p };
+                    }
+                    return { type: 'SKIP' };
+                });
+
+                // Find "sandwiches": IMG -> TEXT(s) -> IMG
+                const candidates = [];
+                for (let i = 0; i < nodes.length; i++) {
+                    if (nodes[i].type === 'IMG') {
+                        let texts = [];
+                        let j = i + 1;
+                        // Gather texts until we hit another image
+                        while (j < nodes.length) {
+                            if (nodes[j].type === 'TEXT') {
+                                texts.push(nodes[j].el);
+                            } else if (nodes[j].type === 'IMG') {
+                                // We found the closing image. 
+                                // Only save if we actually have text in between
+                                if (texts.length > 0) {
+                                    candidates.push({
+                                        startImg: nodes[i].el,
+                                        texts: texts,
+                                        endImg: nodes[j].el
+                                    });
+                                }
+                                break; // Stop looking for the end of this block
+                            }
+                            j++;
+                        }
+                    }
+                }
+
+                if (candidates.length > 0) {
+                    validBlock = candidates[Math.floor(Math.random() * candidates.length)];
+                }
+            }
+
+            if (!validBlock) {
+                contentArea.innerHTML = '<p class="text-red-500">Could not find a valid image-text-image block after 10 tries. Try again!</p>';
                 return;
             }
 
-            const card = deck.pop();
-            hand.push(card);
-            renderHand();
-            updateDeckCount();
-        }
+            // Render the Block
+            contentArea.innerHTML = '';
 
-        function renderHand() {
-            const handCards = document.getElementById('handCards');
-            handCards.innerHTML = '';
-            
-            hand.forEach(cardData => {
-                const container = document.createElement('div');
-                container.className = 'hand-card-container';
-                container.appendChild(createCard(cardData));
-                handCards.appendChild(container);
+            // 1. Start Image
+            const img1 = validBlock.startImg.querySelector('img').cloneNode(true);
+            img1.className = "max-w-full h-auto mx-auto rounded shadow-md border border-gray-200";
+            contentArea.appendChild(img1);
+
+            // 2. Text Paragraphs
+            const textContainer = document.createElement('div');
+            textContainer.className = "text-lg text-black font-serif leading-relaxed px-4";
+            validBlock.texts.forEach(p => {
+                const pClone = p.cloneNode(true);
+                pClone.className = "mb-4 last:mb-0"; // Add spacing between paragraphs
+                textContainer.appendChild(pClone);
             });
-        }
+            contentArea.appendChild(textContainer);
 
-        function updateDeckCount() {
-            document.getElementById('deckCount').textContent = `Cards: ${deck.length}`;
-        }
+            // 3. End Image
+            const img2 = validBlock.endImg.querySelector('img').cloneNode(true);
+            img2.className = "max-w-full h-auto mx-auto rounded shadow-md border border-gray-200";
+            contentArea.appendChild(img2);
 
-        function updateDiscardCount() {
-            document.getElementById('discardCount').textContent = `Cards: ${discard.length}`;
-            
-            const discardPile = document.getElementById('discardPile');
-            if (discard.length > 0) {
-                const topCard = discard[discard.length - 1];
-                discardPile.innerHTML = `<span style="font-size: 48px">${topCard.symbol}</span>`;
-            } else {
-                discardPile.innerHTML = `<span class="empty-message">Empty</span>`;
-            }
-        }
+            // Metadata
+            infoBox.textContent = `${chosenEpisode.text} • ${chosenEpisode.game}`;
+            linkBox.href = `fhr/${chosenEpisode.filename}`;
 
-        function handleDragStart(e) {
-            draggedCard = e.target;
-            const cardId = parseInt(e.target.dataset.cardId);
-            
-            const parent = e.target.parentElement;
-            if (parent.classList.contains('hand-card-container')) {
-                dragSource = 'hand';
-            } else if (parent.classList.contains('card-slot')) {
-                dragSource = 'board';
-            }
-            
-            e.target.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
+        } catch (e) {
+            console.error(e);
+            contentArea.innerHTML = '<p>Error loading content.</p>';
         }
+    });
 
-        function handleDragEnd(e) {
-            e.target.classList.remove('dragging');
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            e.currentTarget.classList.add('drag-over');
-        }
-
-        function handleDragLeave(e) {
-            e.currentTarget.classList.remove('drag-over');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            const slot = e.currentTarget;
-            slot.classList.remove('drag-over');
-            
-            if (!draggedCard) return;
-            
-            const cardId = parseInt(draggedCard.dataset.cardId);
-            
-            if (slot.classList.contains('card-slot')) {
-                if (!slot.classList.contains('filled')) {
-                    const slotId = slot.dataset.slotId;
-                    
-                    if (dragSource === 'hand') {
-                        hand = hand.filter(c => c.id !== cardId);
-                    } else if (dragSource === 'board') {
-                        const oldSlot = draggedCard.parentElement;
-                        oldSlot.classList.remove('filled');
-                        delete boardState[oldSlot.dataset.slotId];
-                    }
-                    
-                    slot.innerHTML = '';
-                    slot.appendChild(draggedCard);
-                    slot.classList.add('filled');
-                    boardState[slotId] = cardId;
-                    
-                    renderHand();
-                }
-            } else if (slot.id === 'handCards' || slot.classList.contains('hand-cards')) {
-                if (dragSource === 'board') {
-                    const oldSlot = draggedCard.parentElement;
-                    oldSlot.classList.remove('filled');
-                    oldSlot.innerHTML = `<span class="slot-label">Slot ${parseInt(oldSlot.dataset.slotId) + 1}</span>`;
-                    
-                    const cardData = allCards.find(c => c.id === cardId);
-                    hand.push(cardData);
-                    delete boardState[oldSlot.dataset.slotId];
-                    
-                    renderHand();
-                }
-            } else if (slot.id === 'discardPile' || slot.classList.contains('discard-top')) {
-                const cardData = allCards.find(c => c.id === cardId);
-                
-                if (dragSource === 'hand') {
-                    hand = hand.filter(c => c.id !== cardId);
-                } else if (dragSource === 'board') {
-                    const oldSlot = draggedCard.parentElement;
-                    oldSlot.classList.remove('filled');
-                    oldSlot.innerHTML = `<span class="slot-label">Slot ${parseInt(oldSlot.dataset.slotId) + 1}</span>`;
-                    delete boardState[oldSlot.dataset.slotId];
-                }
-                
-                discard.push(cardData);
-                renderHand();
-                updateDiscardCount();
-            }
-            
-            draggedCard = null;
-            dragSource = null;
-        }
-
-        const handCards = document.getElementById('handCards');
-        handCards.addEventListener('dragover', handleDragOver);
-        handCards.addEventListener('dragleave', handleDragLeave);
-        handCards.addEventListener('drop', handleDrop);
-
-        const discardPile = document.getElementById('discardPile');
-        discardPile.addEventListener('dragover', handleDragOver);
-        discardPile.addEventListener('dragleave', handleDragLeave);
-        discardPile.addEventListener('drop', handleDrop);
-
-        shuffleDeck();
-        initializeBoard();
-        
-        for (let i = 0; i < 5; i++) {
-            drawCard();
-        }
-        function lockInCards() {
-            const board = document.querySelector('.board');
-            const frontRowSlots = document.querySelectorAll('.card-slot.front-row');
-            
-            // Add animation to board
-            board.classList.add('locking');
-            
-            // Animate each slot
-            frontRowSlots.forEach((slot, index) => {
-                setTimeout(() => {
-                    slot.classList.add('locked-flash');
-                    
-                    // Remove animation class after it completes
-                    setTimeout(() => {
-                        slot.classList.remove('locked-flash');
-                    }, 600);
-                    
-                    // Fill empty slots
-                    if (!slot.classList.contains('filled')) {
-                        const emptyCard = {
-                            id: Date.now() + index, // Unique ID
-                            name: 'Empty Slot',
-                            symbol: '⬜',
-                            power: 0
-                        };
-                        
-                        slot.innerHTML = '';
-                        slot.appendChild(createCard(emptyCard));
-                        slot.classList.add('filled');
-                        boardState[slot.dataset.slotId] = emptyCard.id;
-                    }
-                }, index * 100); // Stagger the animation
-            });
-            
-            // Remove board animation class
-            setTimeout(() => {
-                board.classList.remove('locking');
-            }, 600);
-        }
-    </script>
+    // Events
+    document.getElementById('searchInput').addEventListener('input', e => { currentSearch = e.target.value; currentPage = 1; renderQuotes(); });
+    
+    // Initial Render
+    renderQuotes();
+}
+</script>
 </body>
 </html>
