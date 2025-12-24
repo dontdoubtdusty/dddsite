@@ -112,14 +112,22 @@ function initApp() {
     const btn = document.getElementById('randomBtn');
     btn.disabled = false;
     btn.classList.remove('opacity-50', 'cursor-not-allowed');
-    btn.querySelector('span').textContent = "Generate Random Moment";
-
-    // Catchphrases
+    // Enable the button
+    const btn = document.getElementById('randomBtn');
+    btn.disabled = false;
+    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    
+    // 1. Define the phrases first
     const catchphrases = [
         "Cut. It. Out!", "Have Mercy!", "How Rude!", "You Got It, Dude!",
         "Oh, My Lanta!", "Hola, Tanneritos!", "Watch The Hair!", 
         "Pin a Rose on Your Nose!", "Clean is Good, Dirt is Bad."
     ];
+
+    // 2. Pick one immediately for the initial label
+    const startPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
+    btn.querySelector('span').textContent = startPhrase;
+
 
     document.getElementById('randomBtn').addEventListener('click', async () => {
         const displayBox = document.getElementById('randomQuoteDisplay');
