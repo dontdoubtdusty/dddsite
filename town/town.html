@@ -104,6 +104,7 @@
         <div id="instructions">Arrows: Move • SPACE: Action</div>
         
         <div id="plant" class="furniture">🪴</div>
+        <div id="fireplace" class="furniture">🪵</div>
         <div id="neighbor" class="entity">🐻</div>
         <div id="player" class="entity">🙂</div>
 
@@ -123,7 +124,8 @@
         let playerObj = { x: 230, y: 300, w: 40, h: 40, el: player };
         let neighborObj = { x: 230, y: 50, w: 40, h: 40, el: neighbor };
         let plantObj = { x: 100, y: 200, w: 40, h: 40, el: plant, isHeld: false };
-        let colliders = [neighborObj, plantObj];
+        let fireplaceObj = { x: 400, y: 100, w: 40, h: 40, el: document.getElementById('fireplace'), isLit: false };
+        let colliders = [neighborObj, plantObj, fireplaceObj];
         const speed = 4;
         const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false };
         let facing = 'down'; 
@@ -235,6 +237,10 @@
                     // Just show the message we generated at the start
                     dialogueText.innerText = todaysMessage;
                     dialogueBox.style.display = 'block';
+                }
+                else if (getDistance(playerObj, fireplaceObj) < 60) {
+                    fireplaceObj.isLit = !fireplaceObj.isLit;
+                    fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
                 }
             }
         }
