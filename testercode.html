@@ -166,13 +166,23 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+            
             #mobile-controls {
                 display: flex;
                 align-items: flex-end;
             }
             
             #game-world {
-                transform: scale(0.9);
+                margin-bottom: 120px;
+            }
+            
+            #instructions {
+                top: 10px;
+                position: relative;
             }
         }
     </style>
