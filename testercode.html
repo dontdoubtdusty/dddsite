@@ -64,6 +64,17 @@
             align-items: center;
             font-size: 20px;
         }
+        
+        .furniture::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 0 0 5px 5px;
+        }
 
         .held {
             border-color: #ff6b6b;
@@ -177,26 +188,31 @@
             const tileCenterX = col * tileWidth + tileWidth / 2;
             const tileCenterY = row * tileHeight + tileHeight / 2;
             
+            let isLit = false;
+            
             if (fireplaceObj.isLit) {
+                // Light source at the bottom-front of the fireplace
                 const fireX = fireplaceObj.x + 20;
-                const fireY = fireplaceObj.y + 20;
+                const fireY = fireplaceObj.y + 40; // Bottom edge
                 
-                // Cone shape: check if tile is above fireplace and within cone angle
+                // Calculate angle from fire to tile
                 const dx = tileCenterX - fireX;
                 const dy = tileCenterY - fireY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 const angle = Math.atan2(dy, dx) * (180 / Math.PI);
                 
-                // Upward cone: -90 degrees (straight up) with spread
-                const isAbove = dy < 0;
-                const isInCone = Math.abs(angle + 90) < 60; // 60 degree spread
-                const isClose = distance < 200;
+                // Downward cone: 90 degrees (straight down) with spread
+                const isBelow = dy > 0;
+                const isInCone = Math.abs(angle - 90) < 45; // 45 degree spread on each side
+                const isClose = distance < 180;
                 
-                if (isAbove && isInCone && isClose) {
-                    tile.classList.add('lit');
-                } else {
-                    tile.classList.remove('lit');
+                if (isBelow && isInCone && isClose) {
+                    isLit = true;
                 }
+            }
+            
+            if (isLit) {
+                tile.classList.add('lit');
             } else {
                 tile.classList.remove('lit');
             }
