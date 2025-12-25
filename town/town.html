@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Cozy Village</title>
+    <style>
+        /* --- 1. The Styles (The Look) --- */
+        body {
+            background-color: #f0f8ff;
+            font-family: 'Courier New', Courier, monospace; /* Retro feel */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* The Game Container (The House) */
+        #game-world {
+            width: 500px;
+            height: 400px;
+            background-color: #855E42; /* Wooden floor color */
+            border: 10px solid #5C4033;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            /* Rug pattern */
+            background-image: radial-gradient(#9e7052 20%, transparent 20%),
+                              radial-gradient(#9e7052 20%, transparent 20%);
+            background-position: 0 0, 25px 25px;
+            background-size: 50px 50px;
+        }
+
+        /* Generic Entity Styles */
+        .entity {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            transition: all 0.1s linear; /* Smooth movement */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            border-radius: 50%;
+            box-shadow: 0 4px 5px rgba(0,0,0,0.3);
+        }
+
+        /* The Player */
+        #player {
+            background-color: #ff6b6b;
+            color: white;
+            z-index: 10;
+        }
+
+        /* The Neighbor */
+        #neighbor {
+            background-color: #4ecdc4;
+            color: white;
+            top: 50px;
+            left: 230px; /* Center top */
+        }
+
+        /* Furniture Item */
+        .furniture {
+            width: 40px;
+            height: 40px;
+            background-color: #ffe66d;
+            position: absolute;
+            top: 200px;
+            left: 100px;
+            border-radius: 5px;
+            border: 2px solid #d4c04d;
+        }
+
+        /* UI: Dialogue Box */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background: white;
+            border: 4px solid #4ecdc4; /* Matches neighbor */
+            border-radius: 15px;
+            padding: 15px;
+            display: none; /* Hidden by default */
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        #instructions {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: #555;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-world">
+        <div id="instructions">Use Arrow Keys to Move • Press SPACE to Talk</div>
+        
+        <div class="furniture">🪴</div>
+
+        <div id="neighbor" class="entity">🐻</div>
+
+        <div id="player" class="entity" style="top: 300px; left: 230px;">🙂</div>
+
+        <div id="dialogue-box">
+            <strong style="color:#4ecdc4">Bear:</strong> <span id="dialogue-text">...</span>
+        </div>
+    </div>
+
+    <script>
+        /* --- 2. The Logic (The Brains) --- */
+        
+        const player = document.getElementById('player');
+        const neighbor = document.getElementById('neighbor');
+        const dialogueBox = document.getElementById('dialogue-box');
+        const dialogueText = document.getElementById('dialogue-text');
+        
+        // Game State
+        let playerX = 230;
+        let playerY = 300;
+        const speed = 10;
+        const moveLimitX = 460; // Container width - player width
+        const moveLimitY = 360; // Container height - player height
+
+        // 1. MOVEMENT SYSTEM
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' && playerY > 0) playerY -= speed;
+            if (e.key === 'ArrowDown' && playerY < moveLimitY) playerY += speed;
+            if (e.key === 'ArrowLeft' && playerX > 0) playerX -= speed;
+            if (e.key === 'ArrowRight' && playerX < moveLimitX) playerX += speed;
+            
+            // Interaction key
+            if (e.key === ' ') {
+                checkInteraction();
+            } else {
+                // Hide dialogue if moving
+                dialogueBox.style.display = 'none';
+                updatePosition();
+            }
+        });
+
+        function updatePosition() {
+            player.style.top = playerY + 'px';
+            player.style.left = playerX + 'px';
+        }
+
+        // 2. INTERACTION SYSTEM
+        function checkInteraction() {
+            // Get positions
+            const pRect = player.getBoundingClientRect();
+            const nRect = neighbor.getBoundingClientRect();
+
+            // Simple distance formula
+            const distance = Math.hypot(pRect.x - nRect.x, pRect.y - nRect.y);
+
+            // If close enough (less than 80px)
+            if (distance < 80) {
+                showDailyDialogue();
+            }
+        }
+
+        // 3. REAL TIME SYSTEM (The Animal Crossing Soul)
+        function showDailyDialogue() {
+            const date = new Date();
+            const hour = date.getHours();
+            const day = date.getDay(); // 0 is Sunday, 1 is Monday...
+
+            let message = "";
+
+            // Logic based on Real World Day
+            const weeklyDialogues = [
+                "Happy Sunday! I'm buying turnips today.",
+                "It's Monday... need coffee...",
+                "Taco Tuesday! Let's eat!",
+                "It's Wednesday, we're halfway there!",
+                "Thursday feels like a good day for fishing.",
+                "Friday! Party at my place later?",
+                "Saturday is for K.K. Slider songs!"
+            ];
+
+            // Logic based on Real World Time
+            if (hour < 9) {
+                message = "You're up early! " + weeklyDialogues[day];
+            } else if (hour > 20) {
+                message = "Getting late, huh? " + weeklyDialogues[day];
+            } else {
+                message = weeklyDialogues[day];
+            }
+
+            dialogueText.innerText = message;
+            dialogueBox.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
