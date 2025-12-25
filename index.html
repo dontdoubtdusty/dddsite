@@ -278,6 +278,30 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
         }
+
+        .archives-section {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: rgba(156, 39, 176, 0.1);
+            border: 2px solid rgba(156, 39, 176, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(156, 39, 176, 0.2);
+        }
+        
+        .archives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .archives-card {
+            border-color: rgba(156, 39, 176, 0.3);
+        }
+        
+        .archives-card:hover {
+            border-color: #9C27B0;
+            box-shadow: 0 10px 40px rgba(156, 39, 176, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -336,11 +360,23 @@
                         <div class="card-desc">Organize your reading journey with a simple, satisfying flow from bookshelf to finished</div>
                     </a>
                 </div>
+            </div>
+        </section>
 
-                <div class="card toolkit-card">
+        <section class="archives-section">
+            <h2 class="section-title">The Archives</h2>
+            <div class="archives-grid">
+                <div class="card archives-card">
                     <a href="thebookofcarp.html" class="link-wrapper">
                         <div class="card-title">The Book of Carp</div>
                         <div class="card-desc">Sacred wisdom and profound musings from the ancient texts</div>
+                    </a>
+                </div>
+        
+                <div class="card archives-card">
+                    <a href="fhrquotes.html" class="link-wrapper">
+                        <div class="card-title">The FHR Archives</div>
+                        <div class="card-desc">A codex of 193 posts from Full House Reviewed celebrating Billy Superstar</div>
                     </a>
                 </div>
             </div>
