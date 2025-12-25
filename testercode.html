@@ -149,27 +149,16 @@ async function captureScreenshot() {
     const element = document.getElementById('randomQuoteDisplay');
     
     try {
-        // Get the current width of the element
         const originalWidth = element.offsetWidth;
         const mobileWidth = 375;
         const scale = mobileWidth / originalWidth;
         
         const canvas = await html2canvas(element, {
-            scale: scale * 2, // multiply by 2 for better quality
+            scale: scale * 2,
             backgroundColor: '#ffffff',
             logging: false,
-            useCORS: true,
-            allowTaint: true,
-            proxy: null,
-            imageTimeout: 0,
-            onclone: function(clonedDoc) {
-                // Find all images in the cloned document
-                const images = clonedDoc.querySelectorAll('img');
-                images.forEach(img => {
-                    // Force crossOrigin attribute
-                    img.crossOrigin = 'anonymous';
-                });
-            }
+            foreignObjectRendering: true,  // This helps capture external images
+            allowTaint: true
         });
         
         canvas.toBlob(function(blob) {
@@ -343,39 +332,36 @@ async function generateQuote() {
         }
 
         // 3. Render Content
+        // 3. Render Content
         contentArea.innerHTML = '';
         if (validBlock) {
-            // Function to convert image to base64
-            // Function to convert image to base64
-        async function imageToBase64(imgElement) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    resolve(canvas.toDataURL('image/png'));
-                };
-                img.onerror = function() {
-                    // If direct load fails, try with CORS proxy
-                    const proxiedImg = new Image();
-                    proxiedImg.crossOrigin = 'anonymous';
-                    proxiedImg.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = proxiedImg.width;
-                        canvas.height = proxiedImg.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(proxiedImg, 0, 0);
-                        resolve(canvas.toDataURL('image/png'));
-                    };
-                    proxiedImg.onerror = reject;
-                    proxiedImg.src = `https://corsproxy.io/?${encodeURIComponent(imgElement.src)}`;
-                };
-                img.src = imgElement.src;
+            const img1 = validBlock.start.querySelector('img').cloneNode(true);
+            img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+            contentArea.appendChild(img1);
+        
+            const textDiv = document.createElement('div');
+            textDiv.className = "text-black px-2";
+            textDiv.style.fontFamily = "Georgia, 'Bitstream Charter', serif";
+            textDiv.style.fontSize = '16px';
+            textDiv.style.lineHeight = '1.5';
+            
+            validBlock.texts.forEach(p => {
+                const clone = p.cloneNode(true);
+                clone.className = "mb-4";
+                textDiv.appendChild(clone);
             });
+            contentArea.appendChild(textDiv);
+        
+            // Loop through all detected end images and append them
+            validBlock.endImages.forEach(pTag => {
+                const imgClone = pTag.querySelector('img').cloneNode(true);
+                imgClone.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+                contentArea.appendChild(imgClone);
+            });
+        } else {
+            const textDiv = document.createElement('div');
+            textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
+            contentArea.appendChild(textDiv);
         }
         
             // First image
