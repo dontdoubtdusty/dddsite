@@ -149,10 +149,14 @@ async function captureScreenshot() {
     const element = document.getElementById('randomQuoteDisplay');
     
     try {
+        // Get the current width of the element
+        const originalWidth = element.offsetWidth;
+        const mobileWidth = 375;
+        const scale = mobileWidth / originalWidth;
+        
         const canvas = await html2canvas(element, {
-            scale: 2,
+            scale: scale * 2, // multiply by 2 for better quality
             backgroundColor: '#ffffff',
-            width: 375,
             logging: false,
             useCORS: true,
             allowTaint: true
