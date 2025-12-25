@@ -118,6 +118,17 @@
             pointer-events: none;
             mix-blend-mode: lighten;
         }
+        .light-cone {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 200px solid rgba(255, 200, 100, 0.8);
+            pointer-events: none;
+            filter: blur(30px);
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -149,7 +160,7 @@
         let plantObj = { x: 100, y: 200, w: 40, h: 40, el: plant, isHeld: false };
         let fireplaceObj = { x: 400, y: 100, w: 40, h: 40, el: document.getElementById('fireplace'), isLit: false };
         const lightingOverlay = document.getElementById('lighting-overlay');
-        let lightCircle = null;
+        let lightCone = null;
         let colliders = [neighborObj, plantObj, fireplaceObj];
         const speed = 4;
         const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false };
@@ -269,20 +280,16 @@
                     fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
                     
                     if (fireplaceObj.isLit) {
-                        lightingOverlay.classList.add('lit');
-                        if (!lightCircle) {
-                            lightCircle = document.createElement('div');
-                            lightCircle.className = 'light-circle';
-                            lightingOverlay.appendChild(lightCircle);
+                        if (!lightCone) {
+                            lightCone = document.createElement('div');
+                            lightCone.className = 'light-cone';
+                            lightingOverlay.appendChild(lightCone);
                         }
-                        lightCircle.style.width = '200px';
-                        lightCircle.style.height = '200px';
-                        lightCircle.style.left = (fireplaceObj.x - 80) + 'px';
-                        lightCircle.style.top = (fireplaceObj.y - 80) + 'px';
-                        lightCircle.style.display = 'block';
+                        lightCone.style.left = (fireplaceObj.x + 20) + 'px';
+                        lightCone.style.top = (fireplaceObj.y - 180) + 'px';
+                        lightCone.style.display = 'block';
                     } else {
-                        lightingOverlay.classList.remove('lit');
-                        if (lightCircle) lightCircle.style.display = 'none';
+                        if (lightCone) lightCone.style.display = 'none';
                     }
                 }
             }
