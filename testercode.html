@@ -159,7 +159,17 @@ async function captureScreenshot() {
             backgroundColor: '#ffffff',
             logging: false,
             useCORS: true,
-            allowTaint: true
+            allowTaint: true,
+            proxy: null,
+            imageTimeout: 0,
+            onclone: function(clonedDoc) {
+                // Find all images in the cloned document
+                const images = clonedDoc.querySelectorAll('img');
+                images.forEach(img => {
+                    // Force crossOrigin attribute
+                    img.crossOrigin = 'anonymous';
+                });
+            }
         });
         
         canvas.toBlob(function(blob) {
