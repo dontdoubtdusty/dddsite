@@ -91,8 +91,9 @@
         Quote of the Day
     </h2>
     <div id="quoteOfDayContent" class="flex flex-col gap-4 text-center"></div>
-    <div class="mt-4 pt-3 border-t border-gray-200">
+    <div class="mt-4 pt-3 border-t border-gray-200 flex justify-between items-end">
         <p class="text-sm text-gray-600" id="quoteOfDayInfo"></p>
+        <a id="quoteOfDayLink" href="#" class="read-review-btn">Read Review</a>
     </div>
 </div>
     
@@ -416,9 +417,12 @@ async function displayQuoteOfTheDay() {
         const parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
         
         let displayDate = "";
+        let parsedDateUrl = "";
         const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
         if (dateEl) {
             displayDate = dateEl.textContent.replace('Original Date:', '').trim();
+            const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
+            if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
         }
         
         // Find content
@@ -432,20 +436,35 @@ async function displayQuoteOfTheDay() {
             return { type: 'SKIP' };
         });
         
-        // Find first image-text combo
+        // Find first image-text-image combo
         let validBlock = null;
         for (let i = 0; i < nodes.length; i++) {
             if (nodes[i].type === 'IMG') {
                 let texts = [];
                 let j = i + 1;
-                while (j < nodes.length && nodes[j].type === 'TEXT') {
-                    texts.push(nodes[j].el);
+                while (j < nodes.length) {
+                    if (nodes[j].type === 'TEXT') {
+                        texts.push(nodes[j].el);
+                    } else if (nodes[j].type === 'IMG') {
+                        if (texts.length > 0) {
+                            let endImages = [nodes[j].el];
+                            let k = j + 1;
+                            
+                            while (k < nodes.length && nodes[k].type === 'IMG') {
+                                if (nodes[k].el.textContent.trim().length > 0) {
+                                    break;
+                                }
+                                endImages.push(nodes[k].el);
+                                k++;
+                            }
+                            
+                            validBlock = { start: nodes[i].el, texts: texts.slice(0, 1), endImages: endImages };
+                            break;
+                        }
+                    }
                     j++;
                 }
-                if (texts.length > 0) {
-                    validBlock = { start: nodes[i].el, texts: texts.slice(0, 1) }; // Just first paragraph
-                    break;
-                }
+                if (validBlock) break;
             }
         }
         
@@ -467,10 +486,29 @@ async function displayQuoteOfTheDay() {
             const clone = validBlock.texts[0].cloneNode(true);
             textDiv.appendChild(clone);
             contentArea.appendChild(textDiv);
+            
+            // Add ending images
+            validBlock.endImages.forEach(pTag => {
+                const imgClone = pTag.querySelector('img').cloneNode(true);
+                imgClone.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+                contentArea.appendChild(imgClone);
+            });
         }
         
         const dateString = displayDate ? ` • ${displayDate}` : "";
         infoBox.textContent = parsedTitle + dateString;
+
+        // Create the review link
+        const slug = parsedTitle.toLowerCase()
+            .replace(/['"""'']/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        
+        const realUrl = parsedDateUrl 
+            ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
+            : `https://therealfullhousereviewed.wordpress.com/`;
+        
+        document.getElementById('quoteOfDayLink').href = realUrl;
         
     } catch (e) {
         console.error('QOTD failed:', e);
