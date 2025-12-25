@@ -2,471 +2,313 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dusty's Goober Stop</title>
+    <title>My Cozy Village - Puns</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            color: #fff;
-            overflow-x: hidden;
+            background-color: #f0f8ff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            user-select: none; 
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+        #game-world {
+            width: 500px;
+            height: 400px;
+            background-color: #855E42;
+            border: 10px solid #5C4033;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            background-image: radial-gradient(#9e7052 20%, transparent 20%),
+                              radial-gradient(#9e7052 20%, transparent 20%);
+            background-position: 0 0, 25px 25px;
+            background-size: 50px 50px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem 0;
+        .entity {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
         }
 
-        h1 {
-            font-size: 4rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f7dc6f);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient 4s ease infinite;
-            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
-            margin-bottom: 0.5rem;
+        #player {
+            background-color: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            border-bottom: 3px solid rgba(0,0,0,0.2); 
         }
 
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        #neighbor {
+            background-color: #4ecdc4;
+            color: white;
+            border-radius: 50%;
         }
 
-        .subtitle {
-            font-size: 1.2rem;
-            color: #4ecdc4;
-            letter-spacing: 0.3rem;
-            text-transform: uppercase;
+        .furniture {
+            width: 40px;
+            height: 40px;
+            background-color: #ffe66d;
+            position: absolute;
+            border-radius: 5px;
+            border: 2px solid #d4c04d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+
+        .held {
+            border-color: #ff6b6b;
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            z-index: 9999 !important;
             opacity: 0.8;
         }
 
-        .advent-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(255, 107, 107, 0.1);
-            border: 2px solid rgba(255, 107, 107, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(255, 107, 107, 0.2);
-        }
-
-        .section-title {
-            font-size: 2rem;
-            color: #f7dc6f;
-            text-align: center;
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2rem;
-        }
-
-        .advent-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .advent-card {
-            border-color: rgba(255, 107, 107, 0.3);
-        }
-
-        .advent-card:hover {
-            border-color: #ff6b6b;
-            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
-        }
-
-        .toolkit-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(78, 205, 196, 0.1);
-            border: 2px solid rgba(78, 205, 196, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(78, 205, 196, 0.2);
-        }
-
-        .toolkit-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .toolkit-card {
-            border-color: rgba(78, 205, 196, 0.3);
-        }
-
-        .toolkit-card:hover {
-            border-color: #4ecdc4;
-            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.4);
-        }
-
-      .shrek-section {
-          margin-bottom: 4rem;
-          padding: 2rem;
-          background: linear-gradient(135deg, rgba(139, 195, 74, 0.15), rgba(104, 159, 56, 0.15));
-          border: 3px solid #7CB342;
-          border-radius: 20px;
-          box-shadow: 0 0 40px rgba(124, 179, 66, 0.3);
-          position: relative;
-          overflow: visible;
-      }
-      
-      .shrek-section .section-title {
-          color: #AED581;
-          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 195, 74, 0.6);
-          position: relative;
-          z-index: 1;
-      }
-      
-      .shrek-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 1.5rem;
-          position: relative;
-          z-index: 1;
-      }
-      
-      .shrek-card {
-          background: rgba(104, 159, 56, 0.2);
-          border-color: rgba(139, 195, 74, 0.4);
-      }
-      
-      .shrek-card:hover {
-          border-color: #8BC34A;
-          box-shadow: 0 10px 40px rgba(139, 195, 74, 0.5);
-          background: rgba(139, 195, 74, 0.15);
-      }
-      
-      .shrek-card .card-title {
-          color: #C5E1A5;
-      }
-      
-      .shrek-card:hover .card-title {
-          color: #DCEDC8;
-      }
-
-        .goober-stops-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(69, 183, 209, 0.1);
-            border: 2px solid rgba(69, 183, 209, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(69, 183, 209, 0.2);
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background: white;
+            border: 4px solid #4ecdc4;
+            border-radius: 15px;
+            padding: 15px;
+            display: none;
+            font-size: 14px;
+            z-index: 10000;
         }
         
-        .goober-stops-section .section-title {
-            margin-bottom: 2rem;
+        #instructions {
+            position: absolute;
+            top: -40px;
+            width: 100%;
+            text-align: center;
+            color: #555;
+            font-size: 12px;
         }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
+        #lighting-overlay {
             position: absolute;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .card:hover::before {
-            left: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: #4ecdc4;
-            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.3);
-        }
-
-        .grid .card::before {
-            display: none;
-        }
-
-        .grid .card:hover {
-            transform: none;
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: none;
-        }
-
-        .card-title {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #f7dc6f;
-            margin-bottom: 0.8rem;
-            text-decoration: none;
-            display: block;
-            transition: color 0.3s ease;
-        }
-
-        .card:hover .card-title {
-            color: #4ecdc4;
-        }
-
-        .card-desc {
-            color: #ddd;
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-
-        .link-wrapper {
-            text-decoration: none;
-            display: block;
-            height: 100%;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
-            }
-            
-            .subtitle {
-                font-size: 1rem;
-                letter-spacing: 0.2rem;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .advent-grid, .toolkit-grid {
-                grid-template-columns: 1fr;
-            }
-
-          .shrek-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .floating {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .archives-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(156, 39, 176, 0.1);
-            border: 2px solid rgba(156, 39, 176, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(156, 39, 176, 0.2);
+            background-color: rgba(0, 0, 0, 0.7);
+            pointer-events: none;
+            transition: background-color 0.5s;
         }
         
-        .archives-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+        #lighting-overlay.lit {
+            background-color: rgba(0, 0, 0, 0);
         }
         
-        .archives-card {
-            border-color: rgba(156, 39, 176, 0.3);
-        }
-        
-        .archives-card:hover {
-            border-color: #9C27B0;
-            box-shadow: 0 10px 40px rgba(156, 39, 176, 0.4);
+        .light-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 200, 100, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
+            pointer-events: none;
+            mix-blend-mode: lighten;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="floating">
-            <h1>Dusty's Goober Stop</h1>
-            <div class="subtitle">Web Experiments & Digital Oddities</div>
-        </header>
 
-        <section class="advent-section">
-            <h2 class="section-title">Advent Calendars</h2>
-            <div class="advent-grid">
-                <div class="card advent-card">
-                    <a href="horroradvent.html" class="link-wrapper">
-                        <div class="card-title">Horror Advent</div>
-                        <div class="card-desc">Open each door to discover a chilling blend of classic and contemporary horror and sci‑fi tales</div>
-                    </a>
-                </div>
-                
-                <div class="card advent-card">
-                    <a href="mtgadvent.html" class="link-wrapper">
-                        <div class="card-title">MTG Draft Mashup Advent</div>
-                        <div class="card-desc">MTG Draft Mashup Advent Calendar with daily card reveals</div>
-                    </a>
-                </div>
-
-                <div class="card advent-card">
-                    <a href="otherworldlyadventcalendar.html" class="link-wrapper">
-                        <div class="card-title">Otherworldly Advent</div>
-                        <div class="card-desc">A new otherworldly horror every day to haunt your dreams</div>
-                    </a>
-                </div>
-
-                <div class="card advent-card">
-                    <a href="silly_reasons_advent_calendar.html" class="link-wrapper">
-                        <div class="card-title">Silly Reasons Advent</div>
-                        <div class="card-desc">An advent calendar filled with absurd and delightful reasons to live</div>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <section class="toolkit-section">
-            <h2 class="section-title">Goober Toolkit</h2>
-            <div class="toolkit-grid">
-                <div class="card toolkit-card">
-                    <a href="8ball.html" class="link-wrapper">
-                        <div class="card-title">Magic 8-Ball</div>
-                        <div class="card-desc">Get cryptic answers to life's burning questions from the digital oracle</div>
-                    </a>
-                </div>
-
-                <div class="card toolkit-card">
-                    <a href="bookchart.html" class="link-wrapper">
-                        <div class="card-title">Dusty's Book Flow Tool</div>
-                        <div class="card-desc">Organize your reading journey with a simple, satisfying flow from bookshelf to finished</div>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <section class="archives-section">
-            <h2 class="section-title">The Archives</h2>
-            <div class="archives-grid">
-                <div class="card archives-card">
-                    <a href="thebookofcarp.html" class="link-wrapper">
-                        <div class="card-title">The Book of Carp</div>
-                        <div class="card-desc">Sacred wisdom and profound musings from the ancient texts</div>
-                    </a>
-                </div>
+    <div id="game-world">
+        <div id="lighting-overlay"></div>
+        <div id="instructions">Arrows: Move • SPACE: Action</div>
         
-                <div class="card archives-card">
-                    <a href="fhr_archives.html" class="link-wrapper">
-                        <div class="card-title">The FHR Archives</div>
-                        <div class="card-desc">A codex of 193 posts from Full House Reviewed celebrating Billy Superstar</div>
-                    </a>
-                </div>
-            </div>
-        </section>
+        <div id="plant" class="furniture">🪴</div>
+        <div id="fireplace" class="furniture">🪵</div>
+        <div id="neighbor" class="entity">🐻</div>
+        <div id="player" class="entity">🙂</div>
 
-        <section class="shrek-section">
-                <h2 class="section-title">The Swamp Sanctuary</h2>
-                <div class="shrek-grid">
-                    <div class="card shrek-card">
-                        <a href="shoracle.html" class="link-wrapper">
-                            <div class="card-title">Swamp Tarot</div>
-                            <div class="card-desc">Divine your destiny with the ancient wisdom of the swamp oracle</div>
-                        </a>
-                    </div>
-            
-                    <div class="card shrek-card">
-                        <a href="booster.html" class="link-wrapper">
-                            <div class="card-title">Shrek Booster Pack</div>
-                            <div class="card-desc">Shrek Booster Pack Simulator with layers of collectible surprises</div>
-                        </a>
-                    </div>
-            
-                    <div class="card shrek-card">
-                        <a href="dice.html" class="link-wrapper">
-                            <div class="card-title">Shrek Dice</div>
-                            <div class="card-desc">And you thought it was ogre</div>
-                        </a>
-                    </div>
-            
-                    <div class="card shrek-card">
-                        <a href="notepad-recreation.html" class="link-wrapper">
-                            <div class="card-title">ShrekPad</div>
-                            <div class="card-desc">A fully functional Notepad variant for all your swampy note-taking needs</div>
-                        </a>
-                    </div>
-                </div>
-            </section>
-        <section class="goober-stops-section">
-            <h2 class="section-title">Goober Stops</h2>
-                <div class="grid">
-                    <div class="card">
-                        <a href="beards.html" class="link-wrapper">
-                            <div class="card-title">Beards PSA</div>
-                            <div class="card-desc">An anti AI-beard public service announcement - there's too many!</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="freaksgiving.html" class="link-wrapper">
-                            <div class="card-title">Big Beautiful Bill's Freaksgiving</div>
-                            <div class="card-desc">A twisted holiday celebration you won't soon forget</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="donotresist.html" class="link-wrapper">
-                            <div class="card-title">Do Not Resist</div>
-                            <div class="card-desc">An experimental interactive experience that tests your will</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="horse.html" class="link-wrapper">
-                            <div class="card-title">Horse Rain</div>
-                            <div class="card-desc">The timeline of the horse rain horror - a catastrophic event</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="like_mike.html" class="link-wrapper">
-                            <div class="card-title">Like Mike Awards</div>
-                            <div class="card-desc">Basketball-inspired awards celebrating legendary achievements</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="space_transfer.html" class="link-wrapper">
-                            <div class="card-title">Space Transfer</div>
-                            <div class="card-desc">Intergalactic shoe shopping experience - transfer to a footwear boutique in another galaxy</div>
-                        </a>
-                    </div>
-
-                    <div class="card">
-                        <a href="usps_mockery.html" class="link-wrapper">
-                            <div class="card-title">USPS Mockery</div>
-                            <div class="card-desc">A quick side thought about the mockery of mail</div>
-                        </a>
-                    </div>
-                </div>
-        </section>
+        <div id="dialogue-box">
+            <strong style="color:#4ecdc4">Bear:</strong> <span id="dialogue-text">...</span>
+        </div>
     </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const neighbor = document.getElementById('neighbor');
+        const plant = document.getElementById('plant');
+        const dialogueBox = document.getElementById('dialogue-box');
+        const dialogueText = document.getElementById('dialogue-text');
+        
+        // --- GAME VARIABLES ---
+        let playerObj = { x: 230, y: 300, w: 40, h: 40, el: player };
+        let neighborObj = { x: 230, y: 50, w: 40, h: 40, el: neighbor };
+        let plantObj = { x: 100, y: 200, w: 40, h: 40, el: plant, isHeld: false };
+        let fireplaceObj = { x: 400, y: 100, w: 40, h: 40, el: document.getElementById('fireplace'), isLit: false };
+        const lightingOverlay = document.getElementById('lighting-overlay');
+        let lightCircle = null;
+        let colliders = [neighborObj, plantObj, fireplaceObj];
+        const speed = 4;
+        const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false };
+        let facing = 'down'; 
+        
+        // --- DIALOGUE SETUP (RUNS ONCE ON LOAD) ---
+        let todaysMessage = "";
+
+        function generateDailyMessage() {
+            const date = new Date();
+            const day = date.getDay(); // 0=Sun, 1=Mon, ..., 4=Thu
+
+            // Specific Logic for Thursday (Day 4)
+            if (day === 4) {
+                const puns = [
+                    "I'm feeling paws-itively relaxed today.",
+                    "Have a bear-y good Thursday!",
+                    "My schedule is completely bear today.",
+                    "Un-bear-lievable weather we're having!",
+                    "Just grinning and bearing it until Friday."
+                ];
+                // Pick a random number between 0 and 4
+                const randomIndex = Math.floor(Math.random() * puns.length);
+                todaysMessage = puns[randomIndex];
+            } else {
+                // Fallback for other days
+                const generic = ["Sunday Funday!", "Monday blues...", "Taco Tuesday!", "Hump Day!", "It's Thursday.", "Fri-yay!", "K.K. Saturday!"];
+                todaysMessage = generic[day];
+            }
+        }
+        
+        // Run this immediately so the message is ready
+        generateDailyMessage();
+
+
+        // --- INPUT LISTENERS ---
+        document.addEventListener('keydown', (e) => {
+            if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+            if (e.key === ' ' && !e.repeat) handleInteraction();
+        });
+        document.addEventListener('keyup', (e) => {
+            if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+        });
+
+        // --- GAME LOOP ---
+        function gameLoop() {
+            let dx = 0; let dy = 0;
+            if (keys.ArrowUp) { dy = -speed; facing = 'up'; }
+            if (keys.ArrowDown) { dy = speed; facing = 'down'; }
+            if (keys.ArrowLeft) { dx = -speed; facing = 'left'; }
+            if (keys.ArrowRight) { dx = speed; facing = 'right'; }
+
+            let nextX = playerObj.x + dx;
+            let nextY = playerObj.y + dy;
+
+            if (!checkCollision(nextX, playerObj.y)) playerObj.x = nextX;
+            if (!checkCollision(playerObj.x, nextY)) playerObj.y = nextY;
+
+            // Boundaries
+            if (playerObj.x < 0) playerObj.x = 0;
+            if (playerObj.y < 0) playerObj.y = 0;
+            if (playerObj.x > 460) playerObj.x = 460;
+            if (playerObj.y > 360) playerObj.y = 360;
+
+            updateEntity(playerObj);
+            updateEntity(neighborObj);
+            updateEntity(plantObj);
+            updateEntity(fireplaceObj);
+
+            if (dx !== 0 || dy !== 0) dialogueBox.style.display = 'none';
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- HELPERS ---
+        function checkCollision(newX, newY) {
+            let pRect = { x: newX, y: newY, w: playerObj.w, h: playerObj.h };
+            for (let obj of colliders) {
+                if (obj === plantObj && plantObj.isHeld) continue;
+                if (isOverlapping(pRect, obj)) return true;
+            }
+            return false;
+        }
+
+        function isOverlapping(rect1, rect2) {
+            return (rect1.x < rect2.x + rect2.w && rect1.x + rect1.w > rect2.x &&
+                    rect1.y < rect2.y + rect2.h && rect1.y + rect1.h > rect2.y);
+        }
+
+        function updateEntity(obj) {
+            if (obj === plantObj && obj.isHeld) {
+                obj.x = playerObj.x;
+                obj.y = playerObj.y - 25; 
+            }
+            obj.el.style.left = obj.x + 'px';
+            obj.el.style.top = obj.y + 'px';
+            if (obj.isHeld) obj.el.style.zIndex = 1000;
+            else obj.el.style.zIndex = Math.floor(obj.y);
+        }
+
+        function handleInteraction() {
+            if (plantObj.isHeld) {
+                dropItem();
+            } else {
+                let dPlant = getDistance(playerObj, plantObj);
+                let dNeigh = getDistance(playerObj, neighborObj);
+
+                if (dPlant < 50) {
+                    plantObj.isHeld = true;
+                    plantObj.el.classList.add('held');
+                } else if (dNeigh < 60) {
+                    // Just show the message we generated at the start
+                    dialogueText.innerText = todaysMessage;
+                    dialogueBox.style.display = 'block';
+                }
+                else if (getDistance(playerObj, fireplaceObj) < 60) {
+                    fireplaceObj.isLit = !fireplaceObj.isLit;
+                    fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
+                    
+                    if (fireplaceObj.isLit) {
+                        lightingOverlay.classList.add('lit');
+                        if (!lightCircle) {
+                            lightCircle = document.createElement('div');
+                            lightCircle.className = 'light-circle';
+                            lightingOverlay.appendChild(lightCircle);
+                        }
+                        lightCircle.style.width = '200px';
+                        lightCircle.style.height = '200px';
+                        lightCircle.style.left = (fireplaceObj.x - 80) + 'px';
+                        lightCircle.style.top = (fireplaceObj.y - 80) + 'px';
+                        lightCircle.style.display = 'block';
+                    } else {
+                        lightingOverlay.classList.remove('lit');
+                        if (lightCircle) lightCircle.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        function dropItem() {
+            plantObj.isHeld = false;
+            plantObj.el.classList.remove('held');
+            let dropDist = 45; 
+            if (facing === 'up')    plantObj.y = playerObj.y - dropDist;
+            if (facing === 'down')  plantObj.y = playerObj.y + dropDist;
+            if (facing === 'left')  plantObj.x = playerObj.x - dropDist;
+            if (facing === 'right') plantObj.x = playerObj.x + dropDist;
+            plantObj.x = Math.round(plantObj.x / 10) * 10;
+            plantObj.y = Math.round(plantObj.y / 10) * 10;
+            if (plantObj.x < 0) plantObj.x = 0;
+            if (plantObj.y < 0) plantObj.y = 0;
+            if (plantObj.x > 460) plantObj.x = 460;
+            if (plantObj.y > 360) plantObj.y = 360;
+        }
+
+        function getDistance(o1, o2) {
+            return Math.hypot(o1.x - o2.x, o1.y - o2.y);
+        }
+
+        requestAnimationFrame(gameLoop);
+    </script>
 </body>
 </html>
