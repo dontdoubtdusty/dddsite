@@ -84,6 +84,18 @@
 <header>
   <img src="fhr/fhrbanner.jpg" alt="FHR Archives Banner" style="width: 100%; max-width: 450px; height: auto; display: block; margin: 0 auto;">
 </header>
+
+<!-- Quote of the Day -->
+<div id="quoteOfDayBox" class="parchment rounded-lg p-6 mb-6 shadow-lg border-2 border-gray-400">
+    <h2 class="text-xl font-bold text-black mb-3">
+        Quote of the Day
+    </h2>
+    <div id="quoteOfDayContent" class="flex flex-col gap-4 text-center"></div>
+    <div class="mt-4 pt-3 border-t border-gray-200">
+        <p class="text-sm text-gray-600" id="quoteOfDayInfo"></p>
+    </div>
+</div>
+    
 <body class="p-6">
     <div class="max-w-4xl mx-auto" style="max-width: 700px; padding: 60px 24px;">
         <h1 class="text-4xl font-bold mb-2 text-center tracking-wide drop-shadow-md relative block mx-auto pb-3" style="letter-spacing: 0.05em;">
@@ -175,6 +187,8 @@ function initApp() {
     topBtn.querySelector('span').textContent = `◉ ${startPhrase}`;
 
     topBtn.onclick = generateQuote;
+
+    displayQuoteOfTheDay();
 }
 
 // --- 4. THE MAIN LOGIC ---
@@ -375,6 +389,94 @@ async function generateQuote() {
 }
 
 loadFhrArchive();
+
+// --- QUOTE OF THE DAY ---
+async function displayQuoteOfTheDay() {
+    if (!window.quotes || window.quotes.length === 0) return;
+    
+    // Generate consistent seed based on current date
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const diff = now - start;
+    const oneDay = 86400000;
+    const day = Math.floor(diff / oneDay);
+    const seed = now.getFullYear() * 1000 + day;
+    
+    // Pick quote based on seed
+    const qodIndex = seed % window.quotes.length;
+    const chosenFile = window.quotes[qodIndex];
+    
+    try {
+        const response = await fetch(`fhr/${chosenFile.filename}`);
+        const htmlText = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        
+        // Extract metadata
+        const parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
+        
+        let displayDate = "";
+        const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
+        if (dateEl) {
+            displayDate = dateEl.textContent.replace('Original Date:', '').trim();
+        }
+        
+        // Find content
+        const allPs = Array.from(doc.querySelectorAll('p'));
+        const nodes = allPs.map(p => {
+            if (p.querySelector('img')) return { type: 'IMG', el: p };
+            const text = p.textContent.trim();
+            if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:') && !text.startsWith('Firsts:')) {
+                return { type: 'TEXT', el: p };
+            }
+            return { type: 'SKIP' };
+        });
+        
+        // Find first image-text combo
+        let validBlock = null;
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].type === 'IMG') {
+                let texts = [];
+                let j = i + 1;
+                while (j < nodes.length && nodes[j].type === 'TEXT') {
+                    texts.push(nodes[j].el);
+                    j++;
+                }
+                if (texts.length > 0) {
+                    validBlock = { start: nodes[i].el, texts: texts.slice(0, 1) }; // Just first paragraph
+                    break;
+                }
+            }
+        }
+        
+        // Render QOTD
+        const contentArea = document.getElementById('quoteOfDayContent');
+        const infoBox = document.getElementById('quoteOfDayInfo');
+        
+        if (validBlock) {
+            const img = validBlock.start.querySelector('img').cloneNode(true);
+            img.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+            contentArea.appendChild(img);
+            
+            const textDiv = document.createElement('div');
+            textDiv.className = "text-black px-2";
+            textDiv.style.fontFamily = "Georgia, 'Bitstream Charter', serif";
+            textDiv.style.fontSize = '16px';
+            textDiv.style.lineHeight = '1.5';
+            
+            const clone = validBlock.texts[0].cloneNode(true);
+            textDiv.appendChild(clone);
+            contentArea.appendChild(textDiv);
+        }
+        
+        const dateString = displayDate ? ` • ${displayDate}` : "";
+        infoBox.textContent = parsedTitle + dateString;
+        
+    } catch (e) {
+        console.error('QOTD failed:', e);
+        document.getElementById('quoteOfDayBox').style.display = 'none';
+    }
+}
 </script>
 </body>
 </html>
