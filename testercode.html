@@ -3,637 +3,470 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wake Up, San Francisco</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Dusty's Goober Stop</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #f6c7b7;
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            color: #000000;
+            color: #fff;
+            overflow-x: hidden;
         }
-        .parchment {
-            background: #ffffff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 1px solid #e5e5e5;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
         }
-        h1, h2, h3, .text-purple-900, .text-purple-700 {
-            color: #000000 !important;
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
         }
-        a { color: #0000EE !important; text-decoration: underline; }
-        a:hover { color: #551A8B !important; text-decoration: none; }
-        button {
-            background-image: none !important;
-            background-color: #333333 !important;
-            color: #ffffff !important;
-            border: 1px solid #000000;
-            text-transform: uppercase;
+
+        h1 {
+            font-size: 4rem;
             font-weight: bold;
-            letter-spacing: 1px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f7dc6f);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 4s ease infinite;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+            margin-bottom: 0.5rem;
         }
-        button:hover {
-            background-color: #000000 !important;
-            transform: none !important;
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        /* Custom style for the Read Review button */
-        .read-review-btn {
-            display: inline-block;
-            background-color: #ffffff;
-            color: #333333 !important;
-            text-decoration: none !important;
-            padding: 8px 20px;
-            border: 1px solid #cccccc;
-            font-weight: 600;
-            font-size: 0.85rem;
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #4ecdc4;
+            letter-spacing: 0.3rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s ease;
-            border-radius: 4px;
+            opacity: 0.8;
+        }
+
+        .advent-section {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(255, 107, 107, 0.2);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #f7dc6f;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+        }
+
+        .advent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .advent-card {
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        .advent-card:hover {
+            border-color: #ff6b6b;
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
+        }
+
+        .toolkit-section {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: rgba(78, 205, 196, 0.1);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(78, 205, 196, 0.2);
+        }
+
+        .toolkit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .toolkit-card {
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+
+        .toolkit-card:hover {
+            border-color: #4ecdc4;
+            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.4);
+        }
+
+      .shrek-section {
+          margin-bottom: 4rem;
+          padding: 2rem;
+          background: linear-gradient(135deg, rgba(139, 195, 74, 0.15), rgba(104, 159, 56, 0.15));
+          border: 3px solid #7CB342;
+          border-radius: 20px;
+          box-shadow: 0 0 40px rgba(124, 179, 66, 0.3);
+          position: relative;
+          overflow: visible;
+      }
+      
+      .shrek-section .section-title {
+          color: #AED581;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 195, 74, 0.6);
+          position: relative;
+          z-index: 1;
+      }
+      
+      .shrek-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 1.5rem;
+          position: relative;
+          z-index: 1;
+      }
+      
+      .shrek-card {
+          background: rgba(104, 159, 56, 0.2);
+          border-color: rgba(139, 195, 74, 0.4);
+      }
+      
+      .shrek-card:hover {
+          border-color: #8BC34A;
+          box-shadow: 0 10px 40px rgba(139, 195, 74, 0.5);
+          background: rgba(139, 195, 74, 0.15);
+      }
+      
+      .shrek-card .card-title {
+          color: #C5E1A5;
+      }
+      
+      .shrek-card:hover .card-title {
+          color: #DCEDC8;
+      }
+
+        .goober-stops-section {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: rgba(69, 183, 209, 0.1);
+            border: 2px solid rgba(69, 183, 209, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(69, 183, 209, 0.2);
         }
         
-        .read-review-btn:hover {
-            background-color: #f5f5f5;
-            border-color: #999999;
-            color: #000000 !important;
-            cursor: pointer;
-        }
-        /* specific styles for the Random Quote buttons */
-        #randomBtn, #bottomBtn {
-            /* 1. The Image with a Light Overlay (0.8 opacity white) */
-            background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('fhr/dark-full-house-fan-theories.jpg') !important;
-            
-            /* 2. Center and cover the button */
-            background-position: center !important;
-            background-size: cover !important;
-            background-repeat: no-repeat !important;
-
-            /* 3. Text Color (Black text looks best on a light overlay) */
-            color: #000000 !important;
-            
-            /* 4. Border to make it look sharp */
-            border: 2px solid #000000 !important;
+        .goober-stops-section .section-title {
+            margin-bottom: 2rem;
         }
 
-        /* Optional: Change the overlay slightly on hover for effect */
-        #randomBtn:hover, #bottomBtn:hover {
-            background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('fhr/dark-full-house-fan-theories.jpg') !important;
-            color: #000000 !important;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
-        #quoteOfDayBox {
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: #4ecdc4;
+            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.3);
+        }
+
+        .grid .card::before {
+            display: none;
+        }
+
+        .grid .card:hover {
+            transform: none;
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #f7dc6f;
+            margin-bottom: 0.8rem;
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .card:hover .card-title {
+            color: #4ecdc4;
+        }
+
+        .card-desc {
+            color: #ddd;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .link-wrapper {
+            text-decoration: none;
+            display: block;
+            height: 100%;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+                letter-spacing: 0.2rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .advent-grid, .toolkit-grid {
+                grid-template-columns: 1fr;
+            }
+
+          .shrek-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .archives-section {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: rgba(156, 39, 176, 0.1);
+            border: 2px solid rgba(156, 39, 176, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(156, 39, 176, 0.2);
+        }
+        
+        .archives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .archives-card {
+            border-color: rgba(156, 39, 176, 0.3);
+        }
+        
+        .archives-card:hover {
+            border-color: #9C27B0;
+            box-shadow: 0 10px 40px rgba(156, 39, 176, 0.4);
         }
     </style>
 </head>
-<header>
-  <img src="fhr/fhrbanner.jpg" alt="FHR Archives Banner" style="width: 100%; max-width: 450px; height: auto; display: block; margin: 0 auto;">
-</header>
+<body>
+    <div class="container">
+        <header class="floating">
+            <h1>Dusty's Goober Stop</h1>
+            <div class="subtitle">Web Experiments & Digital Oddities</div>
+        </header>
 
-<!-- This Week in FHR History -->
-<div id="quoteOfDayBox" class="parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
-    <h2 class="text-lg font-bold text-black mb-3">
-        This Week in FHR History
-    </h2>
-    <div id="quoteOfDayContent" class="flex flex-col gap-4 text-center"></div>
-    <div class="mt-4 pt-3 border-t border-gray-200 flex justify-between items-end">
-        <p class="text-sm text-gray-600" id="quoteOfDayInfo"></p>
-        <a id="quoteOfDayLink" href="#" class="read-review-btn">Read Review</a>
-    </div>
-</div>
-    
-<body class="p-6">
-    <div class="max-w-4xl mx-auto" style="max-width: 700px; padding: 60px 24px;">
-        <h1 class="text-4xl font-bold mb-2 text-center tracking-wide drop-shadow-md relative block mx-auto pb-3" style="letter-spacing: 0.05em;">
-            <span class="px-4 py-1" style="border-color: #000000;">THE FHR ARCHIVES</span>
-        </h1>
-        <div class="flex justify-center mt-2 mb-6">
-            <div class="h-1 w-24 bg-black rounded-full opacity-70"></div>
-        </div>
+        <section class="advent-section">
+            <h2 class="section-title">Advent Calendars</h2>
+            <div class="advent-grid">
+                <div class="card advent-card">
+                    <a href="horroradvent.html" class="link-wrapper">
+                        <div class="card-title">Horror Advent</div>
+                        <div class="card-desc">Open each door to discover a chilling blend of classic and contemporary horror and sci‑fi tales</div>
+                    </a>
+                </div>
+                
+                <div class="card advent-card">
+                    <a href="mtgadvent.html" class="link-wrapper">
+                        <div class="card-title">MTG Draft Mashup Advent</div>
+                        <div class="card-desc">MTG Draft Mashup Advent Calendar with daily card reveals</div>
+                    </a>
+                </div>
 
-        <p class="text-center mb-2 font-bold" id="quoteCount">Loading Archives...</p>
-        <p class="text-center mb-8 text-sm italic text-gray-600" id="subStatus">Fetching scrolls...</p>
+                <div class="card advent-card">
+                    <a href="otherworldlyadventcalendar.html" class="link-wrapper">
+                        <div class="card-title">Otherworldly Advent</div>
+                        <div class="card-desc">A new otherworldly horror every day to haunt your dreams</div>
+                    </a>
+                </div>
 
-        <div class="parchment rounded-lg p-6 mb-6 shadow-lg">
-            <button
-                id="randomBtn"
-                disabled
-                class="w-full flex items-center justify-center gap-2 py-4 rounded-lg transition-all transform hover:scale-105 shadow-md opacity-50 cursor-not-allowed"
-            >
-                <span>Loading...</span>
-            </button>
-        </div>
-
-        <div id="randomQuoteDisplay" class="hidden parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
-            <div id="randomContentArea" class="flex flex-col gap-6 text-center"></div>
-            
-            <div id="firstsContainer" class="hidden">
-                <hr class="border-t border-gray-100 my-4"> <p id="randomFirstsInfo" class="text-center text-sm text-gray-500 italic"></p>
+                <div class="card advent-card">
+                    <a href="silly_reasons_advent_calendar.html" class="link-wrapper">
+                        <div class="card-title">Silly Reasons Advent</div>
+                        <div class="card-desc">An advent calendar filled with absurd and delightful reasons to live</div>
+                    </a>
+                </div>
             </div>
-            
-            <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-end">
-                <p class="text-sm text-gray-600" id="randomQuoteInfo"></p>
-                <a id="randomLink" href="#" class="read-review-btn">Read Review</a>
+        </section>
+
+        <section class="toolkit-section">
+            <h2 class="section-title">Goober Toolkit</h2>
+            <div class="toolkit-grid">
+                <div class="card toolkit-card">
+                    <a href="8ball.html" class="link-wrapper">
+                        <div class="card-title">Magic 8-Ball</div>
+                        <div class="card-desc">Get cryptic answers to life's burning questions from the digital oracle</div>
+                    </a>
+                </div>
+
+                <div class="card toolkit-card">
+                    <a href="bookchart.html" class="link-wrapper">
+                        <div class="card-title">Dusty's Book Flow Tool</div>
+                        <div class="card-desc">Organize your reading journey with a simple, satisfying flow from bookshelf to finished</div>
+                    </a>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div id="bottom-button-container" style="display: none; margin-top: 20px;">
-            <button 
-                id="bottomBtn" 
-                onclick="generateQuote()"
-                class="w-full flex items-center justify-center gap-2 py-4 rounded-lg transition-all transform hover:scale-105 shadow-md"
-            >
-                <span>Get Another Quote</span>
-            </button>
-        </div>
+        <section class="archives-section">
+            <h2 class="section-title">The Archives</h2>
+            <div class="archives-grid">
+                <div class="card archives-card">
+                    <a href="thebookofcarp.html" class="link-wrapper">
+                        <div class="card-title">The Book of Carp</div>
+                        <div class="card-desc">Sacred wisdom and profound musings from the ancient texts</div>
+                    </a>
+                </div>
         
+                <div class="card archives-card">
+                    <a href="fhr_archive.html" class="link-wrapper">
+                        <div class="card-title">The FHR Archive</div>
+                        <div class="card-desc">A codex of 193 posts from Full House Reviewed celebrating Billy Superstar</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="shrek-section">
+                <h2 class="section-title">The Swamp Sanctuary</h2>
+                <div class="shrek-grid">
+                    <div class="card shrek-card">
+                        <a href="shoracle.html" class="link-wrapper">
+                            <div class="card-title">Swamp Tarot</div>
+                            <div class="card-desc">Divine your destiny with the ancient wisdom of the swamp oracle</div>
+                        </a>
+                    </div>
+            
+                    <div class="card shrek-card">
+                        <a href="booster.html" class="link-wrapper">
+                            <div class="card-title">Shrek Booster Pack</div>
+                            <div class="card-desc">Shrek Booster Pack Simulator with layers of collectible surprises</div>
+                        </a>
+                    </div>
+            
+                    <div class="card shrek-card">
+                        <a href="dice.html" class="link-wrapper">
+                            <div class="card-title">Shrek Dice</div>
+                            <div class="card-desc">And you thought it was ogre</div>
+                        </a>
+                    </div>
+            
+                    <div class="card shrek-card">
+                        <a href="notepad-recreation.html" class="link-wrapper">
+                            <div class="card-title">ShrekPad</div>
+                            <div class="card-desc">A fully functional Notepad variant for all your swampy note-taking needs</div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        <section class="goober-stops-section">
+            <h2 class="section-title">Goober Stops</h2>
+                <div class="grid">
+                    <div class="card">
+                        <a href="beards.html" class="link-wrapper">
+                            <div class="card-title">Beards PSA</div>
+                            <div class="card-desc">An anti AI-beard public service announcement - there's too many!</div>
+                        </a>
+                    </div>
+        
+                    <div class="card">
+                        <a href="freaksgiving.html" class="link-wrapper">
+                            <div class="card-title">Big Beautiful Bill's Freaksgiving</div>
+                            <div class="card-desc">A twisted holiday celebration you won't soon forget</div>
+                        </a>
+                    </div>
+        
+                    <div class="card">
+                        <a href="donotresist.html" class="link-wrapper">
+                            <div class="card-title">Do Not Resist</div>
+                            <div class="card-desc">An experimental interactive experience that tests your will</div>
+                        </a>
+                    </div>
+        
+                    <div class="card">
+                        <a href="horse.html" class="link-wrapper">
+                            <div class="card-title">Horse Rain</div>
+                            <div class="card-desc">The timeline of the horse rain horror - a catastrophic event</div>
+                        </a>
+                    </div>
+        
+                    <div class="card">
+                        <a href="like_mike.html" class="link-wrapper">
+                            <div class="card-title">Like Mike Awards</div>
+                            <div class="card-desc">Basketball-inspired awards celebrating legendary achievements</div>
+                        </a>
+                    </div>
+        
+                    <div class="card">
+                        <a href="space_transfer.html" class="link-wrapper">
+                            <div class="card-title">Space Transfer</div>
+                            <div class="card-desc">Intergalactic shoe shopping experience - transfer to a footwear boutique in another galaxy</div>
+                        </a>
+                    </div>
+
+                    <div class="card">
+                        <a href="usps_mockery.html" class="link-wrapper">
+                            <div class="card-title">USPS Mockery</div>
+                            <div class="card-desc">A quick side thought about the mockery of mail</div>
+                        </a>
+                    </div>
+                </div>
+        </section>
     </div>
-
-<script>
-// --- 1. GLOBAL VARIABLES ---
-const catchphrases = [
-    "Cut. It. Out!", "Have Mercy!", "How Rude!", "You Got It, Dude!",
-    "Oh, My Lanta!", "Hola, Tanneritos!", "Watch The Hair!", 
-    "Pin a Rose on Your Nose!", "Clean is Good, Dirt is Bad."
-];
-
-// --- 2. LOAD THE ARCHIVE ---
-async function loadFhrArchive() {
-    try {
-        const response = await fetch('fhr/filelist.txt');
-        if (!response.ok) throw new Error("Could not find fhr/filelist.txt");
-
-        const listText = await response.text();
-        const files = listText.split('\n')
-            .map(line => line.trim())
-            .filter(line => line.length > 0 && line.endsWith('.html'));
-
-        document.getElementById('subStatus').textContent = `A permanent tribute to Billy Superstar. No new reviews will be found; he has finally escaped.`;
-
-        window.quotes = files.map((f, i) => ({ id: i, filename: f }));
-        
-        initApp();
-    } 
-    catch (error) {
-        document.getElementById('quoteCount').textContent = "Error Loading Archive";
-        document.getElementById('subStatus').textContent = "Make sure filelist.txt exists in the fhr folder.";
-        console.error(error);
-    }
-}
-
-// --- 3. INITIALIZE BUTTONS ---
-function initApp() {
-    document.getElementById('quoteCount').textContent = `A complete codex of 193 reviews.`;
-    
-    const topBtn = document.getElementById('randomBtn');
-    topBtn.disabled = false;
-    topBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-
-    const startPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    topBtn.querySelector('span').textContent = `◉ ${startPhrase}`;
-
-    topBtn.onclick = generateQuote;
-
-    displayQuoteOfTheDay();
-}
-
-// --- 4. THE MAIN LOGIC ---
-async function generateQuote() {
-    const quotes = window.quotes;
-    const displayBox = document.getElementById('randomQuoteDisplay');
-    const contentArea = document.getElementById('randomContentArea');
-    const infoBox = document.getElementById('randomQuoteInfo');
-    const linkBox = document.getElementById('randomLink');
-    
-    // NEW ELEMENTS
-    const firstsContainer = document.getElementById('firstsContainer');
-    const firstsBox = document.getElementById('randomFirstsInfo');
-
-    const topBtn = document.getElementById('randomBtn');
-    const bottomBtn = document.getElementById('bottomBtn');
-
-    // 1. Reset UI
-    displayBox.classList.remove('hidden');
-    firstsContainer.classList.add('hidden'); // Hide firsts by default
-    contentArea.innerHTML = '<p class="italic text-gray-500 py-8">Scanning archives...</p>';
-    infoBox.textContent = "";
-    firstsBox.textContent = ""; 
-
-    // 2. Update Buttons
-    const newPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    // Just set the text span without the icon
-    topBtn.innerHTML = `<span>◉ ${newPhrase}</span>`;
-    if(bottomBtn) bottomBtn.innerHTML = `<span>◉ ${newPhrase}</span>`;
-
-    try {
-        let validBlock = null;
-        let chosenEpisode = null;
-        let parsedTitle = "Unknown Title";
-        let parsedSeason = "Specials";
-        let parsedDateUrl = ""; 
-        let displayDate = ""; // Store the date text here
-        let firstsText = ""; 
-
-        // Try up to 50 times to find a good image-text block
-        for (let attempt = 0; attempt < 50; attempt++) {
-            chosenEpisode = quotes[Math.floor(Math.random() * quotes.length)];
-            
-            const response = await fetch(`fhr/${chosenEpisode.filename}`);
-            const htmlText = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlText, 'text/html');
-            
-            // --- EXTRACT METADATA ---
-            
-            // 1. Get Title (Restored)
-            parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
-            
-            // 2. Get Season
-            const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
-            if(seasonMatch) parsedSeason = "Season " + seasonMatch[1];
-
-            // 3. Get Date (For URL and Display)
-            const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-            if (dateEl) {
-                // Remove "Original Date:" text to get just the date
-                displayDate = dateEl.textContent.replace('Original Date:', '').trim();
-                
-                // Parse numbers for the URL
-                const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
-                if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
-            }
-
-            // 4. Get "Firsts"
-            const firstsEl = Array.from(doc.querySelectorAll('p')).find(p => 
-                p.textContent.trim().startsWith('Firsts:')
-            );
-            if (firstsEl) {
-                // replace('Firsts:', '') removes the label
-                // trim() removes the space that was left behind
-                firstsText = firstsEl.textContent.replace('Firsts:', '').trim();
-            }
-
-            // --- FIND CONTENT SANDWICH ---
-            const allPs = Array.from(doc.querySelectorAll('p'));
-            const nodes = allPs.map(p => {
-                if (p.querySelector('img')) return { type: 'IMG', el: p };
-                const text = p.textContent.trim();
-                
-                if (text && !text.includes('Original Date') 
-                         && !text.toLowerCase().includes('source:')
-                         && !text.startsWith('Firsts:')) { 
-                    return { type: 'TEXT', el: p };
-                }
-                return { type: 'SKIP' };
-            });
-
-            const candidates = [];
-            for (let i = 0; i < nodes.length; i++) {
-                if (nodes[i].type === 'IMG') {
-                    let texts = [];
-                    let j = i + 1;
-                    while (j < nodes.length) {
-                        if (nodes[j].type === 'TEXT') {
-                            texts.push(nodes[j].el);
-                        } else if (nodes[j].type === 'IMG') {
-                            if (texts.length > 0) {
-                                let endImages = [nodes[j].el];
-                                let k = j + 1;
-                                
-                                // Look ahead for more consecutive images
-                                while (k < nodes.length && nodes[k].type === 'IMG') {
-                                    // FIX: Check if this "image" paragraph also has text.
-                                    // If it has text (length > 0), it's the start of a new story segment.
-                                    // So we BREAK the loop and don't add it to the current pile.
-                                    if (nodes[k].el.textContent.trim().length > 0) {
-                                        break;
-                                    }
-
-                                    endImages.push(nodes[k].el);
-                                    k++;
-                                }
-
-                                candidates.push({ start: nodes[i].el, texts: texts, endImages: endImages });
-                            }
-                            break; 
-                        }
-                        j++;
-                    }
-                }
-            }
-
-            if (candidates.length > 0) {
-                validBlock = candidates[Math.floor(Math.random() * candidates.length)];
-                break; 
-            }
-        }
-
-        // 3. Render Content
-        contentArea.innerHTML = '';
-        if (validBlock) {
-            const img1 = validBlock.start.querySelector('img').cloneNode(true);
-            img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-            contentArea.appendChild(img1);
-
-            const textDiv = document.createElement('div');
-            textDiv.className = "text-black px-2";
-            
-            // "Twenty Ten" uses Georgia for the main text
-            textDiv.style.fontFamily = "Georgia, 'Bitstream Charter', serif";
-            textDiv.style.fontSize = '16px';
-            textDiv.style.lineHeight = '1.5'; // Adds that nice spacing between lines
-            
-            validBlock.texts.forEach(p => {
-                const clone = p.cloneNode(true);
-                clone.className = "mb-4";
-                textDiv.appendChild(clone);
-            });
-            contentArea.appendChild(textDiv);
-
-            // Loop through all detected end images and append them
-            validBlock.endImages.forEach(pTag => {
-                const imgClone = pTag.querySelector('img').cloneNode(true);
-                imgClone.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-                contentArea.appendChild(imgClone);
-            });
-        } else {
-            const textDiv = document.createElement('div');
-            textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
-            contentArea.appendChild(textDiv);
-        }
-
-        // 4. Update Footer & Firsts
-        const slug = parsedTitle.toLowerCase()
-            .replace(/['"“”‘’]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-        
-        const realUrl = parsedDateUrl 
-            ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
-            : `https://therealfullhousereviewed.wordpress.com/`;
-
-        const dateString = displayDate ? `<br>Review Date: ${displayDate}` : "";
-        infoBox.innerHTML = `${parsedTitle}${dateString}`;
-        
-        linkBox.href = realUrl; 
-
-        // Show Firsts container ONLY if we found text
-        if (firstsText) {
-            firstsContainer.classList.remove('hidden');
-            // Re-adding the label "Firsts in this episode:" for display purposes
-            firstsBox.textContent = `Firsts in this episode: ${firstsText}`;
-        } else {
-            firstsContainer.classList.add('hidden');
-        }
-
-    } catch (e) {
-        console.error(e);
-        contentArea.innerHTML = '<p class="text-red-600">The archives are dusty. Please try again.</p>';
-    }
-
-    document.getElementById("bottom-button-container").style.display = "block";
-}
-
-loadFhrArchive();
-
-// --- THIS WEEK IN FHR HISTORY ---
-async function displayQuoteOfTheDay() {
-    if (!window.quotes || window.quotes.length === 0) return;
-    
-    const today = new Date();
-    const targetMonth = String(today.getMonth() + 1).padStart(2, '0');
-    const targetDay = String(today.getDate()).padStart(2, '0');
-    
-    // Function to parse date from review
-    function parseReviewDate(htmlText) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
-        const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-        if (dateEl) {
-            const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
-            if (match) {
-                return {
-                    year: match[1],
-                    month: match[2],
-                    day: match[3],
-                    full: `${match[1]}-${match[2]}-${match[3]}`
-                };
-            }
-        }
-        return null;
-    }
-    
-    // Try to find a match, going backwards from today's date
-    let chosenFile = null;
-    let daysBack = 0;
-    
-    while (daysBack < 7 && !chosenFile) {
-        const checkDate = new Date(today);
-        checkDate.setDate(today.getDate() - daysBack);
-        const checkMonth = String(checkDate.getMonth() + 1).padStart(2, '0');
-        const checkDay = String(checkDate.getDate()).padStart(2, '0');
-        
-        // Check all files for this date
-        for (const file of window.quotes) {
-            try {
-                const response = await fetch(`fhr/${file.filename}`);
-                const htmlText = await response.text();
-                const reviewDate = parseReviewDate(htmlText);
-                
-                if (reviewDate && reviewDate.month === checkMonth && reviewDate.day === checkDay) {
-                    chosenFile = { file, htmlText, reviewDate };
-                    break;
-                }
-            } catch (e) {
-                console.error(`Error checking ${file.filename}:`, e);
-            }
-        }
-        
-        daysBack++;
-    }
-    
-    // If no match found in past week, hide the box
-    if (!chosenFile) {
-        document.getElementById('quoteOfDayBox').style.display = 'none';
-        return;
-    }
-    
-    try {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(chosenFile.htmlText, 'text/html');
-        
-        // Extract metadata
-        const parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
-        
-        let displayDate = "";
-        let parsedDateUrl = "";
-        const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-        if (dateEl) {
-            displayDate = dateEl.textContent.replace('Original Date:', '').trim();
-            const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
-            if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
-        }
-        
-        // Find content
-        const allPs = Array.from(doc.querySelectorAll('p'));
-        const nodes = allPs.map(p => {
-            if (p.querySelector('img')) return { type: 'IMG', el: p };
-            const text = p.textContent.trim();
-            if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:') && !text.startsWith('Firsts:')) {
-                return { type: 'TEXT', el: p };
-            }
-            return { type: 'SKIP' };
-        });
-        
-        // Find first image-text-image combo
-        let validBlock = null;
-        for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].type === 'IMG') {
-                let texts = [];
-                let j = i + 1;
-                while (j < nodes.length) {
-                    if (nodes[j].type === 'TEXT') {
-                        texts.push(nodes[j].el);
-                    } else if (nodes[j].type === 'IMG') {
-                        if (texts.length > 0) {
-                            let endImages = [nodes[j].el];
-                            let k = j + 1;
-                            
-                            while (k < nodes.length && nodes[k].type === 'IMG') {
-                                if (nodes[k].el.textContent.trim().length > 0) {
-                                    break;
-                                }
-                                endImages.push(nodes[k].el);
-                                k++;
-                            }
-                            
-                            validBlock = { start: nodes[i].el, texts: texts.slice(0, 1), endImages: endImages };
-                            break;
-                        }
-                    }
-                    j++;
-                }
-                if (validBlock) break;
-            }
-        }
-        
-        // Render content
-        const contentArea = document.getElementById('quoteOfDayContent');
-        const infoBox = document.getElementById('quoteOfDayInfo');
-        
-        if (validBlock) {
-            const img = validBlock.start.querySelector('img').cloneNode(true);
-            img.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-            contentArea.appendChild(img);
-            
-            const textDiv = document.createElement('div');
-            textDiv.className = "text-black px-2";
-            textDiv.style.fontFamily = "Georgia, 'Bitstream Charter', serif";
-            textDiv.style.fontSize = '16px';
-            textDiv.style.lineHeight = '1.5';
-            
-            const clone = validBlock.texts[0].cloneNode(true);
-            textDiv.appendChild(clone);
-            contentArea.appendChild(textDiv);
-            
-            // Add ending images
-            validBlock.endImages.forEach(pTag => {
-                const imgClone = pTag.querySelector('img').cloneNode(true);
-                imgClone.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-                contentArea.appendChild(imgClone);
-            });
-        }
-        
-        const dateString = displayDate ? ` • ${displayDate}` : "";
-        infoBox.textContent = parsedTitle + dateString;
-        
-        // Create the review link
-        const slug = parsedTitle.toLowerCase()
-            .replace(/['"""'']/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-
-        const realUrl = parsedDateUrl 
-            ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
-            : `https://therealfullhousereviewed.wordpress.com/`;
-
-        document.getElementById('quoteOfDayLink').href = realUrl;
-
-        // Find other reviews from this week in history
-const seeAlsoContainer = document.createElement('div');
-seeAlsoContainer.className = "mt-4 pt-3 border-t border-gray-200";
-
-const otherReviews = [];
-for (const file of window.quotes) {
-    // Skip the one we already displayed
-    if (file.filename === chosenFile.file.filename) continue;
-    
-    try {
-        const response = await fetch(`fhr/${file.filename}`);
-        const htmlText = await response.text();
-        const reviewDate = parseReviewDate(htmlText);
-        
-        if (reviewDate && reviewDate.month === targetMonth && reviewDate.day === targetDay) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlText, 'text/html');
-            const title = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
-            
-            let dateDisplay = "";
-            const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-            if (dateEl) {
-                dateDisplay = dateEl.textContent.replace('Original Date:', '').trim();
-            }
-            
-            const slug = title.toLowerCase()
-                .replace(/['"""'']/g, '')
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-+|-+$/g, '');
-            
-            const url = `https://therealfullhousereviewed.wordpress.com/${reviewDate.year}/${reviewDate.month}/${reviewDate.day}/${slug}/`;
-            
-            otherReviews.push({ title, dateDisplay, url });
-        }
-    } catch (e) {
-        // Skip files that fail to load
-        continue;
-    }
-}
-
-// Only show "See Also" section if there are other reviews
-if (otherReviews.length > 0) {
-    const seeAlsoTitle = document.createElement('p');
-    seeAlsoTitle.className = "text-sm font-semibold text-gray-700 mb-2";
-    seeAlsoTitle.textContent = "See Also:";
-    seeAlsoContainer.appendChild(seeAlsoTitle);
-    
-    otherReviews.forEach(review => {
-        const reviewDiv = document.createElement('div');
-        reviewDiv.className = "flex justify-between items-center mb-2 pb-2 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0";
-        
-        const infoSpan = document.createElement('span');
-        infoSpan.className = "text-sm text-gray-600";
-        infoSpan.textContent = `${review.title} • ${review.dateDisplay}`;
-        
-        const linkBtn = document.createElement('a');
-        linkBtn.href = review.url;
-        linkBtn.className = "read-review-btn text-xs px-3 py-1";
-        linkBtn.textContent = "Read Review";
-        
-        reviewDiv.appendChild(infoSpan);
-        reviewDiv.appendChild(linkBtn);
-        seeAlsoContainer.appendChild(reviewDiv);
-    });
-    
-    // Insert the "See Also" section before the main "Read Review" footer
-    const mainFooter = document.getElementById('quoteOfDayBox').querySelector('.border-t');
-    mainFooter.parentNode.insertBefore(seeAlsoContainer, mainFooter);
-}
-        
-    } catch (e) {
-        console.error('This Week in FHR History failed:', e);
-        document.getElementById('quoteOfDayBox').style.display = 'none';
-    }
-}
-</script>
 </body>
 </html>
