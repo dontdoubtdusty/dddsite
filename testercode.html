@@ -144,7 +144,7 @@ const catchphrases = [
     "Pin a Rose on Your Nose!", "Clean is Good, Dirt is Bad."
 ];
 
-// --- SCREENSHOT FUNCTION (moved outside generateQuote) ---
+// --- SCREENSHOT FUNCTION ---
 async function captureScreenshot() {
     const element = document.getElementById('randomQuoteDisplay');
     
@@ -157,7 +157,7 @@ async function captureScreenshot() {
             scale: scale * 2,
             backgroundColor: '#ffffff',
             logging: false,
-            foreignObjectRendering: true,  // This helps capture external images
+            foreignObjectRendering: true,
             allowTaint: true
         });
         
@@ -332,48 +332,10 @@ async function generateQuote() {
         }
 
         // 3. Render Content
-    contentArea.innerHTML = '';
-    if (validBlock) {
-        const img1 = validBlock.start.querySelector('img').cloneNode(true);
-        img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-        contentArea.appendChild(img1);
-    
-        const textDiv = document.createElement('div');
-        textDiv.className = "text-black px-2";
-        textDiv.style.fontFamily = "Georgia, 'Bitstream Charter', serif";
-        textDiv.style.fontSize = '16px';
-        textDiv.style.lineHeight = '1.5';
-        
-        validBlock.texts.forEach(p => {
-            const clone = p.cloneNode(true);
-            clone.className = "mb-4";
-            textDiv.appendChild(clone);
-        });
-        contentArea.appendChild(textDiv);
-    
-        // Loop through all detected end images and append them
-        validBlock.endImages.forEach(pTag => {
-            const imgClone = pTag.querySelector('img').cloneNode(true);
-            imgClone.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-            contentArea.appendChild(imgClone);
-        });
-    } else {
-        const textDiv = document.createElement('div');
-        textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
-        contentArea.appendChild(textDiv);
-    }
-    
-    // 4. Update Footer & Firsts
-    const slug = parsedTitle.toLowerCase()
-        
-            // First image
+        contentArea.innerHTML = '';
+        if (validBlock) {
             const img1 = validBlock.start.querySelector('img').cloneNode(true);
             img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-            try {
-                img1.src = await imageToBase64(validBlock.start.querySelector('img'));
-            } catch(e) {
-                console.warn('Could not convert first image:', e);
-            }
             contentArea.appendChild(img1);
         
             const textDiv = document.createElement('div');
@@ -390,22 +352,18 @@ async function generateQuote() {
             contentArea.appendChild(textDiv);
         
             // Loop through all detected end images and append them
-            for (const pTag of validBlock.endImages) {
+            validBlock.endImages.forEach(pTag => {
                 const imgClone = pTag.querySelector('img').cloneNode(true);
                 imgClone.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-                try {
-                    imgClone.src = await imageToBase64(pTag.querySelector('img'));
-                } catch(e) {
-                    console.warn('Could not convert end image:', e);
-                }
                 contentArea.appendChild(imgClone);
-            }
+            });
         } else {
             const textDiv = document.createElement('div');
             textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
             contentArea.appendChild(textDiv);
         }
 
+        // 4. Update Footer & Firsts
         const slug = parsedTitle.toLowerCase()
             .replace(/['"""'']/g, '')
             .replace(/[^a-z0-9]+/g, '-')
