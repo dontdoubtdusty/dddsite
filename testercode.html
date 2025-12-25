@@ -90,10 +90,10 @@
   <img src="fhr/fhrbanner.jpg" alt="FHR Archives Banner" style="width: 100%; max-width: 450px; height: auto; display: block; margin: 0 auto;">
 </header>
 
-<!-- Quote of the Day -->
+<!-- This Week in FHR History -->
 <div id="quoteOfDayBox" class="parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
     <h2 class="text-lg font-bold text-black mb-3">
-        Quote of the Day
+        This Week in FHR History
     </h2>
     <div id="quoteOfDayContent" class="flex flex-col gap-4 text-center"></div>
     <div class="mt-4 pt-3 border-t border-gray-200 flex justify-between items-end">
@@ -397,26 +397,71 @@ async function generateQuote() {
 loadFhrArchive();
 
 // --- QUOTE OF THE DAY ---
+async function displayQuoteOfTheDay() // --- THIS WEEK IN FHR HISTORY ---
 async function displayQuoteOfTheDay() {
     if (!window.quotes || window.quotes.length === 0) return;
     
-    // Generate consistent seed based on current date
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 0);
-    const diff = now - start;
-    const oneDay = 86400000;
-    const day = Math.floor(diff / oneDay);
-    const seed = now.getFullYear() * 1000 + day;
+    const today = new Date();
+    const targetMonth = String(today.getMonth() + 1).padStart(2, '0');
+    const targetDay = String(today.getDate()).padStart(2, '0');
     
-    // Pick quote based on seed
-    const qodIndex = seed % window.quotes.length;
-    const chosenFile = window.quotes[qodIndex];
-    
-    try {
-        const response = await fetch(`fhr/${chosenFile.filename}`);
-        const htmlText = await response.text();
+    // Function to parse date from review
+    function parseReviewDate(htmlText) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlText, 'text/html');
+        const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
+        if (dateEl) {
+            const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
+            if (match) {
+                return {
+                    year: match[1],
+                    month: match[2],
+                    day: match[3],
+                    full: `${match[1]}-${match[2]}-${match[3]}`
+                };
+            }
+        }
+        return null;
+    }
+    
+    // Try to find a match, going backwards from today's date
+    let chosenFile = null;
+    let daysBack = 0;
+    
+    while (daysBack < 7 && !chosenFile) {
+        const checkDate = new Date(today);
+        checkDate.setDate(today.getDate() - daysBack);
+        const checkMonth = String(checkDate.getMonth() + 1).padStart(2, '0');
+        const checkDay = String(checkDate.getDate()).padStart(2, '0');
+        
+        // Check all files for this date
+        for (const file of window.quotes) {
+            try {
+                const response = await fetch(`fhr/${file.filename}`);
+                const htmlText = await response.text();
+                const reviewDate = parseReviewDate(htmlText);
+                
+                if (reviewDate && reviewDate.month === checkMonth && reviewDate.day === checkDay) {
+                    chosenFile = { file, htmlText, reviewDate };
+                    break;
+                }
+            } catch (e) {
+                console.error(`Error checking ${file.filename}:`, e);
+            }
+        }
+        
+        daysBack++;
+    }
+    
+    // If no match found in past week, hide the box
+    if (!chosenFile) {
+        document.getElementById('quoteOfDayBox').style.display = 'none';
+        return;
+    }
+    
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(chosenFile.htmlText, 'text/html');
         
         // Extract metadata
         const parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
@@ -473,7 +518,7 @@ async function displayQuoteOfTheDay() {
             }
         }
         
-        // Render QOTD
+        // Render content
         const contentArea = document.getElementById('quoteOfDayContent');
         const infoBox = document.getElementById('quoteOfDayInfo');
         
@@ -502,21 +547,21 @@ async function displayQuoteOfTheDay() {
         
         const dateString = displayDate ? ` • ${displayDate}` : "";
         infoBox.textContent = parsedTitle + dateString;
-
+        
         // Create the review link
         const slug = parsedTitle.toLowerCase()
             .replace(/['"""'']/g, '')
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-+|-+$/g, '');
-        
+
         const realUrl = parsedDateUrl 
             ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
             : `https://therealfullhousereviewed.wordpress.com/`;
-        
+
         document.getElementById('quoteOfDayLink').href = realUrl;
         
     } catch (e) {
-        console.error('QOTD failed:', e);
+        console.error('This Week in FHR History failed:', e);
         document.getElementById('quoteOfDayBox').style.display = 'none';
     }
 }
