@@ -346,22 +346,37 @@ async function generateQuote() {
         contentArea.innerHTML = '';
         if (validBlock) {
             // Function to convert image to base64
-            async function imageToBase64(imgElement) {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.crossOrigin = 'anonymous';
-                    img.onload = function() {
+            // Function to convert image to base64
+        async function imageToBase64(imgElement) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL('image/png'));
+                };
+                img.onerror = function() {
+                    // If direct load fails, try with CORS proxy
+                    const proxiedImg = new Image();
+                    proxiedImg.crossOrigin = 'anonymous';
+                    proxiedImg.onload = function() {
                         const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
+                        canvas.width = proxiedImg.width;
+                        canvas.height = proxiedImg.height;
                         const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
+                        ctx.drawImage(proxiedImg, 0, 0);
                         resolve(canvas.toDataURL('image/png'));
                     };
-                    img.onerror = reject;
-                    img.src = imgElement.src;
-                });
-            }
+                    proxiedImg.onerror = reject;
+                    proxiedImg.src = `https://corsproxy.io/?${encodeURIComponent(imgElement.src)}`;
+                };
+                img.src = imgElement.src;
+            });
+        }
         
             // First image
             const img1 = validBlock.start.querySelector('img').cloneNode(true);
