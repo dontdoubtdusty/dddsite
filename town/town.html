@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Cozy Village - Decorator</title>
+    <title>My Cozy Village - Smooth Loop</title>
     <style>
         body {
             background-color: #f0f8ff;
@@ -13,7 +13,7 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            user-select: none; /* Prevents highlighting text while moving */
+            user-select: none; 
         }
 
         #game-world {
@@ -33,7 +33,7 @@
             width: 40px;
             height: 40px;
             position: absolute;
-            transition: top 0.1s linear, left 0.1s linear;
+            /* REMOVED CSS TRANSITIONS for raw 60fps control */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -45,7 +45,7 @@
         #player {
             background-color: #ff6b6b;
             color: white;
-            z-index: 20; /* Player is always on top */
+            z-index: 20;
         }
 
         #neighbor {
@@ -55,7 +55,6 @@
             left: 230px;
         }
 
-        /* Furniture Style */
         .furniture {
             width: 40px;
             height: 40px;
@@ -67,16 +66,14 @@
             justify-content: center;
             align-items: center;
             font-size: 20px;
-            z-index: 5; /* Below player */
-            transition: top 0.1s linear, left 0.1s linear;
+            z-index: 5; 
         }
 
-        /* Visual cue for when item is held */
         .held {
-            border-color: #ff6b6b; /* Matches player color */
+            border-color: #ff6b6b;
             transform: scale(1.1);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            z-index: 30; /* Above everything when held */
+            z-index: 30;
         }
 
         #dialogue-box {
@@ -108,10 +105,9 @@
 <body>
 
     <div id="game-world">
-        <div id="instructions">Arrows: Move • SPACE: Talk / Pick Up / Drop</div>
+        <div id="instructions">Arrows/WASD: Move • SPACE: Action</div>
         
         <div id="plant" class="furniture" style="top: 200px; left: 100px;">🪴</div>
-
         <div id="neighbor" class="entity">🐻</div>
         <div id="player" class="entity" style="top: 300px; left: 230px;">🙂</div>
 
@@ -121,96 +117,121 @@
     </div>
 
     <script>
-        /* --- LOGIC --- */
-        
         const player = document.getElementById('player');
         const neighbor = document.getElementById('neighbor');
         const plant = document.getElementById('plant');
         const dialogueBox = document.getElementById('dialogue-box');
         const dialogueText = document.getElementById('dialogue-text');
         
-        // Player State
+        // Game State
         let pX = 230;
         let pY = 300;
-        const speed = 10;
+        const speed = 4; // Lower speed per frame (since frames happen often)
         
-        // Furniture State
-        // We track the plant's position in variables so we can do math with them
         let fX = 100;
         let fY = 200;
         let isHoldingItem = false;
 
+        // Input State (The "Controller")
+        const keys = {
+            ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false,
+            w: false, s: false, a: false, d: false,
+            " ": false // Spacebar
+        };
+
+        // 1. LISTEN FOR INPUT
         document.addEventListener('keydown', (e) => {
-            // MOVEMENT
-            if (e.key === 'ArrowUp' && pY > 0) pY -= speed;
-            if (e.key === 'ArrowDown' && pY < 360) pY += speed;
-            if (e.key === 'ArrowLeft' && pX > 0) pX -= speed;
-            if (e.key === 'ArrowRight' && pX < 460) pX += speed;
-            
-            // If we are holding the item, it must move WITH the player
-            if (isHoldingItem) {
-                // Offset the item slightly so it looks like it's in our hands (above head)
-                fX = pX;
-                fY = pY - 20; 
+            if (keys.hasOwnProperty(e.key) || keys.hasOwnProperty(e.key.toLowerCase())) {
+                keys[e.key] = true;
             }
-
-            // INTERACTION
-            if (e.key === ' ') {
+            // Handle single-press actions (Spacebar interaction)
+            if (e.key === ' ' && !e.repeat) {
                 handleInteraction();
-            } else {
-                dialogueBox.style.display = 'none'; // Close chat on move
             }
-
-            updateGraphics();
         });
 
-        function updateGraphics() {
-            player.style.top = pY + 'px';
-            player.style.left = pX + 'px';
-            
-            plant.style.top = fY + 'px';
-            plant.style.left = fX + 'px';
-        }
+        document.addEventListener('keyup', (e) => {
+            if (keys.hasOwnProperty(e.key) || keys.hasOwnProperty(e.key.toLowerCase())) {
+                keys[e.key] = false;
+            }
+        });
 
-        function handleInteraction() {
-            // 1. If holding something, DROP it
-            if (isHoldingItem) {
-                dropItem();
-                return;
+        // 2. THE GAME LOOP (Runs 60 times per second)
+        function gameLoop() {
+            let moved = false;
+
+            // Check Input State
+            if (keys.ArrowUp || keys.w) {
+                if (pY > 0) pY -= speed;
+                moved = true;
+            }
+            if (keys.ArrowDown || keys.s) {
+                if (pY < 360) pY += speed;
+                moved = true;
+            }
+            if (keys.ArrowLeft || keys.a) {
+                if (pX > 0) pX -= speed;
+                moved = true;
+            }
+            if (keys.ArrowRight || keys.d) {
+                if (pX < 460) pX += speed;
+                moved = true;
             }
 
-            // 2. If NOT holding something, check what is close
-            const distToNeighbor = getDistance(player, neighbor);
-            const distToPlant = getDistance(player, plant);
+            // Update Furniture Position if Held
+            if (isHoldingItem) {
+                fX = pX;
+                fY = pY - 20; 
+                plant.style.top = fY + 'px';
+                plant.style.left = fX + 'px';
+            }
 
-            // Priority: Pick up item if close, otherwise talk to neighbor
-            if (distToPlant < 50) {
-                pickUpItem();
-            } else if (distToNeighbor < 60) {
-                showDailyDialogue();
+            // Apply Player Position
+            player.style.top = pY + 'px';
+            player.style.left = pX + 'px';
+
+            // Hide dialogue if moving
+            if (moved) {
+                dialogueBox.style.display = 'none';
+            }
+
+            // Request next frame
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the loop!
+        requestAnimationFrame(gameLoop);
+
+
+        /* --- INTERACTION LOGIC --- */
+        
+        function handleInteraction() {
+            if (isHoldingItem) {
+                dropItem();
+            } else {
+                const distToNeighbor = getDistance(player, neighbor);
+                const distToPlant = getDistance(player, plant);
+
+                if (distToPlant < 50) {
+                    pickUpItem();
+                } else if (distToNeighbor < 60) {
+                    showDailyDialogue();
+                }
             }
         }
 
         function pickUpItem() {
             isHoldingItem = true;
-            plant.classList.add('held'); // Adds the red border/pop effect
-            
-            // Immediately snap to player
-            fX = pX;
-            fY = pY - 20;
-            updateGraphics();
+            plant.classList.add('held');
         }
 
         function dropItem() {
             isHoldingItem = false;
             plant.classList.remove('held');
-            
-            // Place it slightly in front or at feet (current coords are fine)
-            // But let's align it to a "grid" to make it look neat (optional polish)
             fX = Math.round(fX / 10) * 10;
             fY = Math.round(fY / 10) * 10;
-            
-            updateGraphics();
+            plant.style.top = fY + 'px';
+            plant.style.left = fX + 'px';
         }
 
         function getDistance(elem1, elem2) {
