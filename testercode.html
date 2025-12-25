@@ -342,12 +342,37 @@ async function generateQuote() {
             }
         }
 
+        // 3. Render Content
         contentArea.innerHTML = '';
         if (validBlock) {
+            // Function to convert image to base64
+            async function imageToBase64(imgElement) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL('image/png'));
+                    };
+                    img.onerror = reject;
+                    img.src = imgElement.src;
+                });
+            }
+        
+            // First image
             const img1 = validBlock.start.querySelector('img').cloneNode(true);
             img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+            try {
+                img1.src = await imageToBase64(validBlock.start.querySelector('img'));
+            } catch(e) {
+                console.warn('Could not convert first image:', e);
+            }
             contentArea.appendChild(img1);
-
+        
             const textDiv = document.createElement('div');
             textDiv.className = "text-black px-2";
             textDiv.style.fontFamily = "Georgia, 'Bitstream Charter', serif";
@@ -360,12 +385,18 @@ async function generateQuote() {
                 textDiv.appendChild(clone);
             });
             contentArea.appendChild(textDiv);
-
-            validBlock.endImages.forEach(pTag => {
+        
+            // Loop through all detected end images and append them
+            for (const pTag of validBlock.endImages) {
                 const imgClone = pTag.querySelector('img').cloneNode(true);
                 imgClone.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
+                try {
+                    imgClone.src = await imageToBase64(pTag.querySelector('img'));
+                } catch(e) {
+                    console.warn('Could not convert end image:', e);
+                }
                 contentArea.appendChild(imgClone);
-            });
+            }
         } else {
             const textDiv = document.createElement('div');
             textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
