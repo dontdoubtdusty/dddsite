@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Cozy Village - Physics</title>
+    <title>My Cozy Village - Directional Drop</title>
     <style>
         body {
             background-color: #f0f8ff;
@@ -23,6 +23,7 @@
             border: 10px solid #5C4033;
             position: relative;
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            /* Rug Pattern */
             background-image: radial-gradient(#9e7052 20%, transparent 20%),
                               radial-gradient(#9e7052 20%, transparent 20%);
             background-position: 0 0, 25px 25px;
@@ -37,13 +38,14 @@
             justify-content: center;
             align-items: center;
             font-size: 20px;
-            /* We removed z-index here because JS will handle it now! */
         }
 
         #player {
             background-color: #ff6b6b;
             color: white;
             border-radius: 50%;
+            /* Added a tiny arrow to show direction (optional) */
+            border-bottom: 3px solid rgba(0,0,0,0.2); 
         }
 
         #neighbor {
@@ -69,7 +71,8 @@
             border-color: #ff6b6b;
             transform: scale(1.1);
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            z-index: 9999 !important; /* Always on top when held */
+            z-index: 9999 !important;
+            opacity: 0.8; /* Slight see-through when holding */
         }
 
         #dialogue-box {
@@ -120,17 +123,17 @@
         
         // --- GAME VARIABLES ---
         
-        // Define objects with Position and Size
-        // We use objects now to make collision math cleaner
         let playerObj = { x: 230, y: 300, w: 40, h: 40, el: player };
         let neighborObj = { x: 230, y: 50, w: 40, h: 40, el: neighbor };
         let plantObj = { x: 100, y: 200, w: 40, h: 40, el: plant, isHeld: false };
 
-        // List of things that block the player
         let colliders = [neighborObj, plantObj];
 
         const speed = 4;
-        const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false, " ":false };
+        const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false };
+        
+        // NEW: Track where the player is looking
+        let facing = 'down'; 
 
         document.addEventListener('keydown', (e) => {
             if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
@@ -145,17 +148,16 @@
             let dx = 0;
             let dy = 0;
 
-            if (keys.ArrowUp) dy = -speed;
-            if (keys.ArrowDown) dy = speed;
-            if (keys.ArrowLeft) dx = -speed;
-            if (keys.ArrowRight) dx = speed;
+            if (keys.ArrowUp) { dy = -speed; facing = 'up'; }
+            if (keys.ArrowDown) { dy = speed; facing = 'down'; }
+            if (keys.ArrowLeft) { dx = -speed; facing = 'left'; }
+            if (keys.ArrowRight) { dx = speed; facing = 'right'; }
 
-            // PREDICT: Where will we be?
+            // PREDICT MOVEMENT
             let nextX = playerObj.x + dx;
             let nextY = playerObj.y + dy;
 
-            // 1. COLLISION CHECK (Can we move there?)
-            // We check X and Y separately to allow "sliding" against walls
+            // 1. COLLISION CHECK
             if (!checkCollision(nextX, playerObj.y)) {
                 playerObj.x = nextX;
             }
@@ -163,13 +165,13 @@
                 playerObj.y = nextY;
             }
 
-            // Boundary Checks (Walls)
+            // Boundary Checks
             if (playerObj.x < 0) playerObj.x = 0;
             if (playerObj.y < 0) playerObj.y = 0;
             if (playerObj.x > 460) playerObj.x = 460;
             if (playerObj.y > 360) playerObj.y = 360;
 
-            // 2. UPDATE POSITIONS & DEPTH SORTING
+            // 2. UPDATE POSITIONS
             updateEntity(playerObj);
             updateEntity(neighborObj);
             updateEntity(plantObj);
@@ -183,21 +185,19 @@
         // --- PHYSICS HELPERS ---
 
         function checkCollision(newX, newY) {
-            // Create a temporary rectangle for where the player WANTS to be
             let pRect = { x: newX, y: newY, w: playerObj.w, h: playerObj.h };
 
             for (let obj of colliders) {
-                // Ignore the plant if we are holding it!
+                // If we are holding the plant, we can walk through it (it's in the air)
                 if (obj === plantObj && plantObj.isHeld) continue;
 
                 if (isOverlapping(pRect, obj)) {
-                    return true; // Hit something!
+                    return true;
                 }
             }
-            return false; // Path is clear
+            return false;
         }
 
-        // Standard AABB Collision Formula (Axis-Aligned Bounding Box)
         function isOverlapping(rect1, rect2) {
             return (rect1.x < rect2.x + rect2.w &&
                     rect1.x + rect1.w > rect2.x &&
@@ -207,16 +207,21 @@
 
         function updateEntity(obj) {
             if (obj === plantObj && obj.isHeld) {
+                // Visual effect: Item floats above player's head
                 obj.x = playerObj.x;
-                obj.y = playerObj.y - 20; // Visual offset
+                obj.y = playerObj.y - 25; 
+                // Important: We DON'T update the element style immediately here
+                // We wait for the drop to finalize the grid snap position
             }
 
             obj.el.style.left = obj.x + 'px';
             obj.el.style.top = obj.y + 'px';
             
-            // DEPTH SORTING: The lower the Y, the higher the Z-index.
-            // We usually add a base value (100) to ensure it's above the floor
-            if (!obj.isHeld) {
+            // Depth Sorting
+            // If held, zIndex is high. If on floor, zIndex is based on Y position.
+            if (obj.isHeld) {
+                obj.el.style.zIndex = 1000;
+            } else {
                 obj.el.style.zIndex = Math.floor(obj.y);
             }
         }
@@ -225,14 +230,8 @@
 
         function handleInteraction() {
             if (plantObj.isHeld) {
-                // Drop
-                plantObj.isHeld = false;
-                plantObj.el.classList.remove('held');
-                // Snap to grid
-                plantObj.x = Math.round(plantObj.x / 10) * 10;
-                plantObj.y = Math.round(plantObj.y / 10) * 10;
+                dropItem();
             } else {
-                // Check Distances
                 let dPlant = getDistance(playerObj, plantObj);
                 let dNeigh = getDistance(playerObj, neighborObj);
 
@@ -243,6 +242,29 @@
                     showDailyDialogue();
                 }
             }
+        }
+
+        function dropItem() {
+            plantObj.isHeld = false;
+            plantObj.el.classList.remove('held');
+
+            // NEW: Drop Logic based on Facing Direction
+            let dropDist = 45; // Must be larger than player width (40)
+            
+            if (facing === 'up')    plantObj.y = playerObj.y - dropDist;
+            if (facing === 'down')  plantObj.y = playerObj.y + dropDist;
+            if (facing === 'left')  plantObj.x = playerObj.x - dropDist;
+            if (facing === 'right') plantObj.x = playerObj.x + dropDist;
+
+            // Snap to grid for neatness
+            plantObj.x = Math.round(plantObj.x / 10) * 10;
+            plantObj.y = Math.round(plantObj.y / 10) * 10;
+            
+            // Safety check: Keep item inside the room walls
+            if (plantObj.x < 0) plantObj.x = 0;
+            if (plantObj.y < 0) plantObj.y = 0;
+            if (plantObj.x > 460) plantObj.x = 460;
+            if (plantObj.y > 360) plantObj.y = 360;
         }
 
         function getDistance(o1, o2) {
@@ -256,7 +278,6 @@
             dialogueBox.style.display = 'block';
         }
 
-        // Start
         requestAnimationFrame(gameLoop);
     </script>
 </body>
