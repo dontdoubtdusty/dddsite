@@ -102,32 +102,19 @@
             left: 0;
             width: 100%;
             height: 100%;
+            pointer-events: none;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+        }
+        
+        .light-tile {
             background-color: rgba(0, 0, 0, 0.7);
-            pointer-events: none;
-            transition: background-color 0.5s;
+            transition: background-color 0.3s;
         }
         
-        #lighting-overlay.lit {
+        .light-tile.lit {
             background-color: rgba(0, 0, 0, 0);
-        }
-        
-        .light-circle {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 200, 100, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
-            pointer-events: none;
-            mix-blend-mode: lighten;
-        }
-        .light-cone {
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-left: 100px solid transparent;
-            border-right: 100px solid transparent;
-            border-bottom: 200px solid rgba(255, 200, 100, 0.8);
-            pointer-events: none;
-            filter: blur(30px);
-            opacity: 0.9;
         }
     </style>
 </head>
@@ -148,174 +135,213 @@
     </div>
 
     <script>
-        const player = document.getElementById('player');
-        const neighbor = document.getElementById('neighbor');
-        const plant = document.getElementById('plant');
-        const dialogueBox = document.getElementById('dialogue-box');
-        const dialogueText = document.getElementById('dialogue-text');
+    const player = document.getElementById('player');
+    const neighbor = document.getElementById('neighbor');
+    const plant = document.getElementById('plant');
+    const fireplace = document.getElementById('fireplace');
+    const dialogueBox = document.getElementById('dialogue-box');
+    const dialogueText = document.getElementById('dialogue-text');
+    
+    // --- GAME VARIABLES ---
+    let playerObj = { x: 230, y: 300, w: 40, h: 40, el: player };
+    let neighborObj = { x: 230, y: 50, w: 40, h: 40, el: neighbor };
+    let plantObj = { x: 100, y: 200, w: 40, h: 40, el: plant, isHeld: false };
+    let fireplaceObj = { x: 400, y: 100, w: 40, h: 40, el: fireplace, isLit: false };
+    let colliders = [neighborObj, plantObj, fireplaceObj];
+    const speed = 4;
+    const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false };
+    let facing = 'down'; 
+    
+    // --- LIGHTING SETUP ---
+    const lightingOverlay = document.getElementById('lighting-overlay');
+    const gridCols = 10;
+    const gridRows = 8;
+    const tiles = [];
+    
+    function initLightingGrid() {
+        for (let i = 0; i < gridRows * gridCols; i++) {
+            const tile = document.createElement('div');
+            tile.className = 'light-tile';
+            lightingOverlay.appendChild(tile);
+            tiles.push(tile);
+        }
+    }
+    
+    function updateLighting() {
+        const tileWidth = 500 / gridCols;
+        const tileHeight = 400 / gridRows;
         
-        // --- GAME VARIABLES ---
-        let playerObj = { x: 230, y: 300, w: 40, h: 40, el: player };
-        let neighborObj = { x: 230, y: 50, w: 40, h: 40, el: neighbor };
-        let plantObj = { x: 100, y: 200, w: 40, h: 40, el: plant, isHeld: false };
-        let fireplaceObj = { x: 400, y: 100, w: 40, h: 40, el: document.getElementById('fireplace'), isLit: false };
-        const lightingOverlay = document.getElementById('lighting-overlay');
-        let lightCone = null;
-        let colliders = [neighborObj, plantObj, fireplaceObj];
-        const speed = 4;
-        const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false };
-        let facing = 'down'; 
-        
-        // --- DIALOGUE SETUP (RUNS ONCE ON LOAD) ---
-        let todaysMessage = "";
-
-        function generateDailyMessage() {
-            const date = new Date();
-            const day = date.getDay(); // 0=Sun, 1=Mon, ..., 4=Thu
-
-            // Specific Logic for Thursday (Day 4)
-            if (day === 4) {
-                const puns = [
-                    "I'm feeling paws-itively relaxed today.",
-                    "Have a bear-y good Thursday!",
-                    "My schedule is completely bear today.",
-                    "Un-bear-lievable weather we're having!",
-                    "Just grinning and bearing it until Friday."
-                ];
-                // Pick a random number between 0 and 4
-                const randomIndex = Math.floor(Math.random() * puns.length);
-                todaysMessage = puns[randomIndex];
-            } else {
-                // Fallback for other days
-                const generic = ["Sunday Funday!", "Monday blues...", "Taco Tuesday!", "Hump Day!", "It's Thursday.", "Fri-yay!", "K.K. Saturday!"];
-                todaysMessage = generic[day];
-            }
-        }
-        
-        // Run this immediately so the message is ready
-        generateDailyMessage();
-
-
-        // --- INPUT LISTENERS ---
-        document.addEventListener('keydown', (e) => {
-            if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
-            if (e.key === ' ' && !e.repeat) handleInteraction();
-        });
-        document.addEventListener('keyup', (e) => {
-            if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
-        });
-
-        // --- GAME LOOP ---
-        function gameLoop() {
-            let dx = 0; let dy = 0;
-            if (keys.ArrowUp) { dy = -speed; facing = 'up'; }
-            if (keys.ArrowDown) { dy = speed; facing = 'down'; }
-            if (keys.ArrowLeft) { dx = -speed; facing = 'left'; }
-            if (keys.ArrowRight) { dx = speed; facing = 'right'; }
-
-            let nextX = playerObj.x + dx;
-            let nextY = playerObj.y + dy;
-
-            if (!checkCollision(nextX, playerObj.y)) playerObj.x = nextX;
-            if (!checkCollision(playerObj.x, nextY)) playerObj.y = nextY;
-
-            // Boundaries
-            if (playerObj.x < 0) playerObj.x = 0;
-            if (playerObj.y < 0) playerObj.y = 0;
-            if (playerObj.x > 460) playerObj.x = 460;
-            if (playerObj.y > 360) playerObj.y = 360;
-
-            updateEntity(playerObj);
-            updateEntity(neighborObj);
-            updateEntity(plantObj);
-            updateEntity(fireplaceObj);
-
-            if (dx !== 0 || dy !== 0) dialogueBox.style.display = 'none';
-            requestAnimationFrame(gameLoop);
-        }
-
-        // --- HELPERS ---
-        function checkCollision(newX, newY) {
-            let pRect = { x: newX, y: newY, w: playerObj.w, h: playerObj.h };
-            for (let obj of colliders) {
-                if (obj === plantObj && plantObj.isHeld) continue;
-                if (isOverlapping(pRect, obj)) return true;
-            }
-            return false;
-        }
-
-        function isOverlapping(rect1, rect2) {
-            return (rect1.x < rect2.x + rect2.w && rect1.x + rect1.w > rect2.x &&
-                    rect1.y < rect2.y + rect2.h && rect1.y + rect1.h > rect2.y);
-        }
-
-        function updateEntity(obj) {
-            if (obj === plantObj && obj.isHeld) {
-                obj.x = playerObj.x;
-                obj.y = playerObj.y - 25; 
-            }
-            obj.el.style.left = obj.x + 'px';
-            obj.el.style.top = obj.y + 'px';
-            if (obj.isHeld) obj.el.style.zIndex = 1000;
-            else obj.el.style.zIndex = Math.floor(obj.y);
-        }
-
-        function handleInteraction() {
-            if (plantObj.isHeld) {
-                dropItem();
-            } else {
-                let dPlant = getDistance(playerObj, plantObj);
-                let dNeigh = getDistance(playerObj, neighborObj);
-
-                if (dPlant < 50) {
-                    plantObj.isHeld = true;
-                    plantObj.el.classList.add('held');
-                } else if (dNeigh < 60) {
-                    // Just show the message we generated at the start
-                    dialogueText.innerText = todaysMessage;
-                    dialogueBox.style.display = 'block';
+        tiles.forEach((tile, i) => {
+            const col = i % gridCols;
+            const row = Math.floor(i / gridCols);
+            const tileCenterX = col * tileWidth + tileWidth / 2;
+            const tileCenterY = row * tileHeight + tileHeight / 2;
+            
+            if (fireplaceObj.isLit) {
+                const fireX = fireplaceObj.x + 20;
+                const fireY = fireplaceObj.y + 20;
+                
+                // Cone shape: check if tile is above fireplace and within cone angle
+                const dx = tileCenterX - fireX;
+                const dy = tileCenterY - fireY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                
+                // Upward cone: -90 degrees (straight up) with spread
+                const isAbove = dy < 0;
+                const isInCone = Math.abs(angle + 90) < 60; // 60 degree spread
+                const isClose = distance < 200;
+                
+                if (isAbove && isInCone && isClose) {
+                    tile.classList.add('lit');
+                } else {
+                    tile.classList.remove('lit');
                 }
-                else if (getDistance(playerObj, fireplaceObj) < 60) {
-                    fireplaceObj.isLit = !fireplaceObj.isLit;
-                    fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
-                    
-                    if (fireplaceObj.isLit) {
-                        if (!lightCone) {
-                            lightCone = document.createElement('div');
-                            lightCone.className = 'light-cone';
-                            lightingOverlay.appendChild(lightCone);
-                        }
-                        lightCone.style.left = (fireplaceObj.x + 20) + 'px';
-                        lightCone.style.top = (fireplaceObj.y - 180) + 'px';
-                        lightCone.style.display = 'block';
-                    } else {
-                        if (lightCone) lightCone.style.display = 'none';
-                    }
-                }
+            } else {
+                tile.classList.remove('lit');
             }
+        });
+    }
+    
+    // --- DIALOGUE SETUP (RUNS ONCE ON LOAD) ---
+    let todaysMessage = "";
+    
+    function generateDailyMessage() {
+        const date = new Date();
+        const day = date.getDay(); // 0=Sun, 1=Mon, ..., 4=Thu
+    
+        // Specific Logic for Thursday (Day 4)
+        if (day === 4) {
+            const puns = [
+                "I'm feeling paws-itively relaxed today.",
+                "Have a bear-y good Thursday!",
+                "My schedule is completely bear today.",
+                "Un-bear-lievable weather we're having!",
+                "Just grinning and bearing it until Friday."
+            ];
+            // Pick a random number between 0 and 4
+            const randomIndex = Math.floor(Math.random() * puns.length);
+            todaysMessage = puns[randomIndex];
+        } else {
+            // Fallback for other days
+            const generic = ["Sunday Funday!", "Monday blues...", "Taco Tuesday!", "Hump Day!", "It's Thursday.", "Fri-yay!", "K.K. Saturday!"];
+            todaysMessage = generic[day];
         }
-
-        function dropItem() {
-            plantObj.isHeld = false;
-            plantObj.el.classList.remove('held');
-            let dropDist = 45; 
-            if (facing === 'up')    plantObj.y = playerObj.y - dropDist;
-            if (facing === 'down')  plantObj.y = playerObj.y + dropDist;
-            if (facing === 'left')  plantObj.x = playerObj.x - dropDist;
-            if (facing === 'right') plantObj.x = playerObj.x + dropDist;
-            plantObj.x = Math.round(plantObj.x / 10) * 10;
-            plantObj.y = Math.round(plantObj.y / 10) * 10;
-            if (plantObj.x < 0) plantObj.x = 0;
-            if (plantObj.y < 0) plantObj.y = 0;
-            if (plantObj.x > 460) plantObj.x = 460;
-            if (plantObj.y > 360) plantObj.y = 360;
-        }
-
-        function getDistance(o1, o2) {
-            return Math.hypot(o1.x - o2.x, o1.y - o2.y);
-        }
-
+    }
+    
+    // Run this immediately so the message is ready
+    generateDailyMessage();
+    
+    
+    // --- INPUT LISTENERS ---
+    document.addEventListener('keydown', (e) => {
+        if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+        if (e.key === ' ' && !e.repeat) handleInteraction();
+    });
+    document.addEventListener('keyup', (e) => {
+        if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+    });
+    
+    // --- GAME LOOP ---
+    function gameLoop() {
+        let dx = 0; let dy = 0;
+        if (keys.ArrowUp) { dy = -speed; facing = 'up'; }
+        if (keys.ArrowDown) { dy = speed; facing = 'down'; }
+        if (keys.ArrowLeft) { dx = -speed; facing = 'left'; }
+        if (keys.ArrowRight) { dx = speed; facing = 'right'; }
+    
+        let nextX = playerObj.x + dx;
+        let nextY = playerObj.y + dy;
+    
+        if (!checkCollision(nextX, playerObj.y)) playerObj.x = nextX;
+        if (!checkCollision(playerObj.x, nextY)) playerObj.y = nextY;
+    
+        // Boundaries
+        if (playerObj.x < 0) playerObj.x = 0;
+        if (playerObj.y < 0) playerObj.y = 0;
+        if (playerObj.x > 460) playerObj.x = 460;
+        if (playerObj.y > 360) playerObj.y = 360;
+    
+        updateEntity(playerObj);
+        updateEntity(neighborObj);
+        updateEntity(plantObj);
+        updateEntity(fireplaceObj);
+    
+        if (dx !== 0 || dy !== 0) dialogueBox.style.display = 'none';
         requestAnimationFrame(gameLoop);
+    }
+    
+    // --- HELPERS ---
+    function checkCollision(newX, newY) {
+        let pRect = { x: newX, y: newY, w: playerObj.w, h: playerObj.h };
+        for (let obj of colliders) {
+            if (obj === plantObj && plantObj.isHeld) continue;
+            if (isOverlapping(pRect, obj)) return true;
+        }
+        return false;
+    }
+    
+    function isOverlapping(rect1, rect2) {
+        return (rect1.x < rect2.x + rect2.w && rect1.x + rect1.w > rect2.x &&
+                rect1.y < rect2.y + rect2.h && rect1.y + rect1.h > rect2.y);
+    }
+    
+    function updateEntity(obj) {
+        if (obj === plantObj && obj.isHeld) {
+            obj.x = playerObj.x;
+            obj.y = playerObj.y - 25; 
+        }
+        obj.el.style.left = obj.x + 'px';
+        obj.el.style.top = obj.y + 'px';
+        if (obj.isHeld) obj.el.style.zIndex = 1000;
+        else obj.el.style.zIndex = Math.floor(obj.y);
+    }
+    
+    function handleInteraction() {
+        if (plantObj.isHeld) {
+            dropItem();
+        } else {
+            let dPlant = getDistance(playerObj, plantObj);
+            let dNeigh = getDistance(playerObj, neighborObj);
+            let dFire = getDistance(playerObj, fireplaceObj);
+    
+            if (dPlant < 50) {
+                plantObj.isHeld = true;
+                plantObj.el.classList.add('held');
+            } else if (dNeigh < 60) {
+                // Just show the message we generated at the start
+                dialogueText.innerText = todaysMessage;
+                dialogueBox.style.display = 'block';
+            } else if (dFire < 60) {
+                fireplaceObj.isLit = !fireplaceObj.isLit;
+                fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
+                updateLighting();
+            }
+        }
+    }
+    
+    function dropItem() {
+        plantObj.isHeld = false;
+        plantObj.el.classList.remove('held');
+        let dropDist = 45; 
+        if (facing === 'up')    plantObj.y = playerObj.y - dropDist;
+        if (facing === 'down')  plantObj.y = playerObj.y + dropDist;
+        if (facing === 'left')  plantObj.x = playerObj.x - dropDist;
+        if (facing === 'right') plantObj.x = playerObj.x + dropDist;
+        plantObj.x = Math.round(plantObj.x / 10) * 10;
+        plantObj.y = Math.round(plantObj.y / 10) * 10;
+        if (plantObj.x < 0) plantObj.x = 0;
+        if (plantObj.y < 0) plantObj.y = 0;
+        if (plantObj.x > 460) plantObj.x = 460;
+        if (plantObj.y > 360) plantObj.y = 360;
+    }
+    
+    function getDistance(o1, o2) {
+        return Math.hypot(o1.x - o2.x, o1.y - o2.y);
+    }
+    
+    initLightingGrid();
+    requestAnimationFrame(gameLoop);
     </script>
 </body>
 </html>
