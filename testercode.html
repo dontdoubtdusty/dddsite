@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Cozy Village - Puns</title>
     <style>
         body {
@@ -118,6 +119,62 @@
             pointer-events: none;
             mix-blend-mode: lighten;
         }
+        #mobile-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 10px;
+        }
+        
+        #dpad {
+            display: grid;
+            grid-template-columns: 50px 50px 50px;
+            grid-template-rows: 50px 50px 50px;
+            gap: 5px;
+        }
+        
+        .dpad-btn {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid #5C4033;
+            border-radius: 10px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+            user-select: none;
+        }
+        
+        #action-btn {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 107, 107, 0.9);
+            border: 3px solid #5C4033;
+            border-radius: 50%;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            touch-action: none;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @media (max-width: 768px) {
+            #mobile-controls {
+                display: flex;
+                align-items: flex-end;
+            }
+            
+            #game-world {
+                transform: scale(0.9);
+            }
+        }
     </style>
 </head>
 <body>
@@ -134,6 +191,21 @@
         <div id="dialogue-box">
             <strong style="color:#4ecdc4">Bear:</strong> <span id="dialogue-text">...</span>
         </div>
+    </div>
+
+    <div id="mobile-controls">
+        <div id="dpad">
+            <div></div>
+            <div class="dpad-btn" data-key="ArrowUp">▲</div>
+            <div></div>
+            <div class="dpad-btn" data-key="ArrowLeft">◀</div>
+            <div></div>
+            <div class="dpad-btn" data-key="ArrowRight">▶</div>
+            <div></div>
+            <div class="dpad-btn" data-key="ArrowDown">▼</div>
+            <div></div>
+        </div>
+        <div id="action-btn">ACTION</div>
     </div>
 
     <script>
@@ -307,6 +379,37 @@
         function getDistance(o1, o2) {
             return Math.hypot(o1.x - o2.x, o1.y - o2.y);
         }
+
+        // Mobile controls
+        const dpadBtns = document.querySelectorAll('.dpad-btn');
+        const actionBtn = document.getElementById('action-btn');
+        
+        dpadBtns.forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const key = btn.getAttribute('data-key');
+                keys[key] = true;
+                btn.style.backgroundColor = 'rgba(200, 200, 200, 0.9)';
+            });
+            
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                const key = btn.getAttribute('data-key');
+                keys[key] = false;
+                btn.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            });
+        });
+        
+        actionBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleInteraction();
+            actionBtn.style.backgroundColor = 'rgba(200, 80, 80, 0.9)';
+        });
+        
+        actionBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            actionBtn.style.backgroundColor = 'rgba(255, 107, 107, 0.9)';
+        });
 
         requestAnimationFrame(gameLoop);
     </script>
