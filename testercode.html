@@ -558,6 +558,76 @@ async function displayQuoteOfTheDay() {
             : `https://therealfullhousereviewed.wordpress.com/`;
 
         document.getElementById('quoteOfDayLink').href = realUrl;
+
+        // Find other reviews from this week in history
+const seeAlsoContainer = document.createElement('div');
+seeAlsoContainer.className = "mt-4 pt-3 border-t border-gray-200";
+
+const otherReviews = [];
+for (const file of window.quotes) {
+    // Skip the one we already displayed
+    if (file.filename === chosenFile.file.filename) continue;
+    
+    try {
+        const response = await fetch(`fhr/${file.filename}`);
+        const htmlText = await response.text();
+        const reviewDate = parseReviewDate(htmlText);
+        
+        if (reviewDate && reviewDate.month === targetMonth && reviewDate.day === targetDay) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            const title = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
+            
+            let dateDisplay = "";
+            const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
+            if (dateEl) {
+                dateDisplay = dateEl.textContent.replace('Original Date:', '').trim();
+            }
+            
+            const slug = title.toLowerCase()
+                .replace(/['"""'']/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            
+            const url = `https://therealfullhousereviewed.wordpress.com/${reviewDate.year}/${reviewDate.month}/${reviewDate.day}/${slug}/`;
+            
+            otherReviews.push({ title, dateDisplay, url });
+        }
+    } catch (e) {
+        // Skip files that fail to load
+        continue;
+    }
+}
+
+// Only show "See Also" section if there are other reviews
+if (otherReviews.length > 0) {
+    const seeAlsoTitle = document.createElement('p');
+    seeAlsoTitle.className = "text-sm font-semibold text-gray-700 mb-2";
+    seeAlsoTitle.textContent = "See Also:";
+    seeAlsoContainer.appendChild(seeAlsoTitle);
+    
+    otherReviews.forEach(review => {
+        const reviewDiv = document.createElement('div');
+        reviewDiv.className = "flex justify-between items-center mb-2 pb-2 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0";
+        
+        const infoSpan = document.createElement('span');
+        infoSpan.className = "text-sm text-gray-600";
+        infoSpan.textContent = `${review.title} • ${review.dateDisplay}`;
+        
+        const linkBtn = document.createElement('a');
+        linkBtn.href = review.url;
+        linkBtn.className = "read-review-btn text-xs px-3 py-1";
+        linkBtn.textContent = "Read Review";
+        
+        reviewDiv.appendChild(infoSpan);
+        reviewDiv.appendChild(linkBtn);
+        seeAlsoContainer.appendChild(reviewDiv);
+    });
+    
+    // Insert the "See Also" section before the main "Read Review" footer
+    const mainFooter = document.getElementById('quoteOfDayBox').querySelector('.border-t');
+    mainFooter.parentNode.insertBefore(seeAlsoContainer, mainFooter);
+}
         
     } catch (e) {
         console.error('This Week in FHR History failed:', e);
