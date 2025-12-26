@@ -260,6 +260,7 @@
                 0 0 15px #ff00ff,
                 0 0 25px #00ffff,
                 0 0 35px #ffff00;
+            letter-spacing: 2px;
         }
         
         @keyframes fadeOut {
@@ -309,11 +310,34 @@
         warning.style.transform = 'translateX(-50%)';
         
         // Create audio element
-        const audio = new Audio('ide2.wav');
+        const audio = new Audio('hiya_5.wav');
         audio.loop = true;
         
         let audioStarted = false;
         let firstClick = true;
+        
+        // Eldritch rune characters
+        const runeChars = ['ᚠ', 'ᚡ', 'ᚢ', 'ᚣ', 'ᚤ', 'ᚥ', 'ᚦ', 'ᚧ', 'ᚨ', 'ᚩ', 'ᚪ', 'ᚫ', 'ᚬ', 'ᚭ', 'ᚮ', 'ᚯ', 
+                          'ᚰ', 'ᚱ', 'ᚲ', 'ᚳ', 'ᚴ', 'ᚵ', 'ᚶ', 'ᚷ', 'ᚸ', 'ᚹ', 'ᚺ', 'ᚻ', 'ᚼ', 'ᚽ', 'ᚾ', 'ᚿ',
+                          '⟒', '⟓', '⟔', '⟕', '⟖', '⟗', '⟘', '⟙', '⟚', '⟛', '⟜', '⟝', '⟞', '⟟',
+                          '᛫', '᛬', '᛭', 'ᛮ', 'ᛯ', 'ᛰ', '⊹', '⊼', '⊽', '⊾', '⊿', '⋀', '⋁', '⋂'];
+        
+        function transformToRunes(element, originalText) {
+            const chars = originalText.split('');
+            let currentIndex = 0;
+            
+            const transformInterval = setInterval(() => {
+                if (currentIndex < chars.length) {
+                    if (chars[currentIndex] !== ' ') {
+                        chars[currentIndex] = runeChars[Math.floor(Math.random() * runeChars.length)];
+                    }
+                    element.textContent = chars.join('');
+                    currentIndex++;
+                } else {
+                    clearInterval(transformInterval);
+                }
+            }, 200); // Transform one character every 0.2 seconds
+        }
         
         eyeball.addEventListener('click', () => {
             // Start audio on first click
@@ -329,13 +353,19 @@
                 
                 // Show "You clicked the eyeball" message after 3 seconds
                 setTimeout(() => {
+                    const originalText = 'You clicked the eyeball';
                     const clickedMsg = document.createElement('div');
                     clickedMsg.className = 'clicked-message';
-                    clickedMsg.textContent = 'You clicked the eyeball';
+                    clickedMsg.textContent = originalText;
                     clickedMsg.style.left = (window.innerWidth / 2) + 'px';
                     clickedMsg.style.top = (eyeY + 250) + 'px';
                     clickedMsg.style.transform = 'translateX(-50%)';
                     document.body.appendChild(clickedMsg);
+                    
+                    // Start transforming to runes after 2 seconds
+                    setTimeout(() => {
+                        transformToRunes(clickedMsg, originalText);
+                    }, 2000);
                     
                     // Remove message after 10 seconds
                     setTimeout(() => {
