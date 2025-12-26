@@ -46,6 +46,33 @@
             0%, 100% { opacity: 0.3; transform: scale(1); }
             50% { opacity: 0.7; transform: scale(1.1); }
         }
+
+        @keyframes blink {
+            0%, 90%, 100% { 
+                clip-path: inset(0 0 0 0);
+            }
+            95% { 
+                clip-path: inset(45% 0 45% 0);
+            }
+        }
+        
+        @keyframes blinkTop {
+            0%, 90%, 100% { 
+                transform: translateY(-100%);
+            }
+            95% { 
+                transform: translateY(0%);
+            }
+        }
+        
+        @keyframes blinkBottom {
+            0%, 90%, 100% { 
+                transform: translateY(100%);
+            }
+            95% { 
+                transform: translateY(0%);
+            }
+        }
         
         .eyeball {
             position: fixed;
@@ -73,7 +100,7 @@
             left: -5%;
             background: linear-gradient(180deg, #ff00ff, #00ffff);
             border-radius: 50% 50% 45% 45%;
-            animation: eyelidColorShift 3s ease infinite;
+            animation: eyelidColorShift 3s ease infinite, blinkTop 4s ease-in-out infinite;
             z-index: 10;
         }
         
