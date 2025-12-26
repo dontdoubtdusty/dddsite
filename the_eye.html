@@ -15,6 +15,10 @@
             width: 100vw;
             height: 100vh;
             cursor: none;
+            background: #000000;
+        }
+        
+        body.activated {
             background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
             background-size: 400% 400%;
             animation: gradientShift 3s ease infinite;
@@ -350,6 +354,9 @@
             if (firstClick) {
                 firstClick = false;
                 warning.style.display = 'none';
+                
+                // Activate the crazy background
+                document.body.classList.add('activated');
                 
                 // Show "You clicked the eyeball" message after 3 seconds
                 setTimeout(() => {
