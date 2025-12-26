@@ -228,6 +228,11 @@
         eyeball.style.left = eyeX + 'px';
         eyeball.style.top = eyeY + 'px';
         
+        // Create audio element and play immediately
+        const audio = new Audio('ide2.wav');
+        audio.loop = true;
+        audio.play();
+        
         eyeball.addEventListener('click', () => {
             // Create 2 squiggly waves
             for (let i = 0; i < 2; i++) {
