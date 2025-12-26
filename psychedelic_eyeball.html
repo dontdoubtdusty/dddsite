@@ -62,7 +62,6 @@
             background: radial-gradient(circle, #ffffff 0%, #f0f0f0 100%);
             border-radius: 50%;
             animation: colorShiftWhite 6s ease infinite;
-            clip-path: ellipse(50% 45% at 50% 52%);
         }
         
         .eyelid-top {
@@ -143,7 +142,6 @@
             );
             border-radius: 50%;
             animation: rotate 4.8s linear infinite;
-            transition: left 0.15s, top 0.15s;
         }
         
         @keyframes rotate {
@@ -200,31 +198,12 @@
 
     <script>
         const eyeball = document.getElementById('eyeball');
-        const iris = document.getElementById('iris');
         
         let eyeX = window.innerWidth / 2 - 100;
         let eyeY = window.innerHeight / 2 - 100;
         
         eyeball.style.left = eyeX + 'px';
         eyeball.style.top = eyeY + 'px';
-        
-        document.addEventListener('mousemove', (e) => {
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-            
-            const eyeCenterX = eyeX + 100;
-            const eyeCenterY = eyeY + 100;
-            
-            const angle = Math.atan2(mouseY - eyeCenterY, mouseX - eyeCenterX);
-            const maxDistance = 15;
-            const distance = Math.min(maxDistance, Math.hypot(mouseX - eyeCenterX, mouseY - eyeCenterY) / 15);
-            
-            const irisX = 20 + Math.cos(angle) * distance;
-            const irisY = 20 + Math.sin(angle) * distance;
-            
-            iris.style.left = irisX + '%';
-            iris.style.top = irisY + '%';
-        });
     </script>
 </body>
 </html>
