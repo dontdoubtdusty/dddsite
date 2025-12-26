@@ -1,421 +1,235 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Cozy Village - Puns</title>
-    <style>
-        body {
-            background-color: #f0f8ff;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            user-select: none; 
+<script>
+    const player = document.getElementById('player');
+    const neighbor = document.getElementById('neighbor');
+    const plant = document.getElementById('plant');
+    const dialogueBox = document.getElementById('dialogue-box');
+    const dialogueText = document.getElementById('dialogue-text');
+    
+    // --- GAME VARIABLES ---
+    let playerObj = { x: 230, y: 300, w: 40, h: 40, el: player };
+    let neighborObj = { x: 230, y: 50, w: 40, h: 40, el: neighbor };
+    let plantObj = { x: 100, y: 200, w: 40, h: 40, el: plant, isHeld: false };
+    let fireplaceObj = { x: 400, y: 100, w: 40, h: 40, el: document.getElementById('fireplace'), isLit: false };
+    const lightingOverlay = document.getElementById('lighting-overlay');
+    let lightCircle = null;
+    let colliders = [neighborObj, plantObj, fireplaceObj];
+    const speed = 4;
+    const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false, w:false, a:false, s:false, d:false };
+    let facing = 'down'; 
+    
+    // --- DIALOGUE SETUP (RUNS ONCE ON LOAD) ---
+    let todaysMessage = "";
+
+    function generateDailyMessage() {
+        const date = new Date();
+        const day = date.getDay(); // 0=Sun, 1=Mon, ..., 4=Thu
+
+        // Specific Logic for Thursday (Day 4)
+        if (day === 4) {
+            const puns = [
+                "I'm feeling paws-itively relaxed today.",
+                "Have a bear-y good Thursday!",
+                "My schedule is completely bear today.",
+                "Un-bear-lievable weather we're having!",
+                "Just grinning and bearing it until Friday."
+            ];
+            // Pick a random number between 0 and 4
+            const randomIndex = Math.floor(Math.random() * puns.length);
+            todaysMessage = puns[randomIndex];
+        } else {
+            // Fallback for other days
+            const generic = ["Sunday Funday!", "Monday blues...", "Taco Tuesday!", "Hump Day!", "It's Thursday.", "Fri-yay!", "K.K. Saturday!"];
+            todaysMessage = generic[day];
         }
-
-        #game-world {
-            width: 500px;
-            height: 400px;
-            background-color: #855E42;
-            border: 10px solid #5C4033;
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            background-image: radial-gradient(#9e7052 20%, transparent 20%),
-                              radial-gradient(#9e7052 20%, transparent 20%);
-            background-position: 0 0, 25px 25px;
-            background-size: 50px 50px;
-        }
-
-        .entity {
-            width: 40px;
-            height: 40px;
-            position: absolute;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-        }
-
-        #player {
-            background-color: #ff6b6b;
-            color: white;
-            border-radius: 50%;
-            border-bottom: 3px solid rgba(0,0,0,0.2); 
-        }
-
-        #neighbor {
-            background-color: #4ecdc4;
-            color: white;
-            border-radius: 50%;
-        }
-
-        .furniture {
-            width: 40px;
-            height: 40px;
-            background-color: #ffe66d;
-            position: absolute;
-            border-radius: 5px;
-            border: 2px solid #d4c04d;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-        }
-
-        .held {
-            border-color: #ff6b6b;
-            transform: scale(1.1);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            z-index: 9999 !important;
-            opacity: 0.8;
-        }
-
-        #dialogue-box {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            background: white;
-            border: 4px solid #4ecdc4;
-            border-radius: 15px;
-            padding: 15px;
-            display: none;
-            font-size: 14px;
-            z-index: 10000;
-        }
-        
-        #instructions {
-            position: absolute;
-            top: -40px;
-            width: 100%;
-            text-align: center;
-            color: #555;
-            font-size: 12px;
-        }
-        #lighting-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            pointer-events: none;
-            transition: background-color 0.5s;
-        }
-        
-        #lighting-overlay.lit {
-            background-color: rgba(0, 0, 0, 0);
-        }
-        
-        .light-circle {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 200, 100, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
-            pointer-events: none;
-            mix-blend-mode: lighten;
-        }
-        #character-creator {
-          text-align: center;
-          background: white;
-          padding: 40px;
-          border-radius: 20px;
-        }
-        
-        #preview-character {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 40px;
-          margin: 20px auto;
-        }
-        #preview-circle {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 20px auto;
-          background-color: #ff6b6b;
-        }
-        
-        #preview-emoji {
-          font-size: 40px;
-        }
-        
-        #game-world {
-          display: none;
-        }
-    </style>
-</head>
-<body>
-
-    <div id="character-creator">
-      <h2>Create Your Character</h2>
-      <div id="preview-container">
-      <div id="preview-circle">
-        <div id="preview-emoji">🙂</div>
-      </div>
-    </div>
-      <label>Circle Color: <input type="color" id="circle-color" value="#ff6b6b"></label>
-      <label>Emoji Tint: <input type="color" id="emoji-color" value="#ffffff"></label>
-      <button id="start-game">Enter Village</button>
-    </div>
-
-    <div id="game-world">
-        <div id="lighting-overlay"></div>
-        <div id="instructions">WASD/Arrows: Move • SPACE: Action</div>
-        
-        <div id="plant" class="furniture">🪴</div>
-        <div id="fireplace" class="furniture">🪵</div>
-        <div id="neighbor" class="entity">🐻</div>
-        <div id="player" class="entity">🙂</div>
-
-        <div id="dialogue-box">
-            <strong style="color:#4ecdc4">Bear:</strong> <span id="dialogue-text">...</span>
-        </div>
-    </div>
-
-    <script>
-        document.getElementById('start-game').addEventListener('click', async () => {
-            const circleColor = document.getElementById('circle-color').value;
-            const emojiColor = document.getElementById('emoji-color').value;
-            
-            // Save to storage
-            await window.storage.set('character-circle-color', circleColor);
-            await window.storage.set('character-emoji-color', emojiColor);
-            
-            player.style.backgroundColor = circleColor;
-            player.style.filter = hexToFilter(emojiColor);
-            
-            document.getElementById('character-creator').style.display = 'none';
-            document.getElementById('game-world').style.display = 'block';
-        });
-        
-        // Live preview
-        document.getElementById('circle-color').addEventListener('input', (e) => {
-            document.getElementById('preview-circle').style.backgroundColor = e.target.value;
-        });
-        
-        document.getElementById('emoji-color').addEventListener('input', (e) => {
-            const color = e.target.value;
-            const filter = hexToFilter(color);
-            document.getElementById('preview-emoji').style.filter = filter;
-        });
-
-        // Load saved character on page load
-        async function loadCharacter() {
-            try {
-                const circleResult = await window.storage.get('character-circle-color');
-                const emojiResult = await window.storage.get('character-emoji-color');
-                
-                if (circleResult) {
-                    const circleColor = circleResult.value;
-                    document.getElementById('circle-color').value = circleColor;
-                    document.getElementById('preview-circle').style.backgroundColor = circleColor;
-                }
-                
-                if (emojiResult) {
-                    const emojiColor = emojiResult.value;
-                    document.getElementById('emoji-color').value = emojiColor;
-                    document.getElementById('preview-emoji').style.filter = hexToFilter(emojiColor);
-                }
-            } catch (error) {
-                console.log('No saved character found');
-            }
-        }
-        
-        // Call on page load
-        loadCharacter();
-
-        function hexToFilter(hex) {
-            // Convert hex to RGB
-            const r = parseInt(hex.slice(1,3), 16) / 255;
-            const g = parseInt(hex.slice(3,5), 16) / 255;
-            const b = parseInt(hex.slice(5,7), 16) / 255;
-            
-            // Create a filter that tints toward that color
-            return `brightness(${(r+g+b)/3}) saturate(2) hue-rotate(${Math.atan2(g-r, b-r) * 180/Math.PI}deg)`;
-        }
-        const player = document.getElementById('player');
-        const neighbor = document.getElementById('neighbor');
-        const plant = document.getElementById('plant');
-        const dialogueBox = document.getElementById('dialogue-box');
-        const dialogueText = document.getElementById('dialogue-text');
-        
-        // --- GAME VARIABLES ---
-        let playerObj = { x: 230, y: 300, w: 40, h: 40, el: player };
-        let neighborObj = { x: 230, y: 50, w: 40, h: 40, el: neighbor };
-        let plantObj = { x: 100, y: 200, w: 40, h: 40, el: plant, isHeld: false };
-        let fireplaceObj = { x: 400, y: 100, w: 40, h: 40, el: document.getElementById('fireplace'), isLit: false };
-        const lightingOverlay = document.getElementById('lighting-overlay');
-        let lightCircle = null;
-        let colliders = [neighborObj, plantObj, fireplaceObj];
-        const speed = 4;
-        const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false, w:false, a:false, s:false, d:false };
-        let facing = 'down'; 
-        
-        // --- DIALOGUE SETUP (RUNS ONCE ON LOAD) ---
-        let todaysMessage = "";
-
-        function generateDailyMessage() {
-            const date = new Date();
-            const day = date.getDay(); // 0=Sun, 1=Mon, ..., 4=Thu
-
-            // Specific Logic for Thursday (Day 4)
-            if (day === 4) {
-                const puns = [
-                    "I'm feeling paws-itively relaxed today.",
-                    "Have a bear-y good Thursday!",
-                    "My schedule is completely bear today.",
-                    "Un-bear-lievable weather we're having!",
-                    "Just grinning and bearing it until Friday."
-                ];
-                // Pick a random number between 0 and 4
-                const randomIndex = Math.floor(Math.random() * puns.length);
-                todaysMessage = puns[randomIndex];
-            } else {
-                // Fallback for other days
-                const generic = ["Sunday Funday!", "Monday blues...", "Taco Tuesday!", "Hump Day!", "It's Thursday.", "Fri-yay!", "K.K. Saturday!"];
-                todaysMessage = generic[day];
-            }
-        }
-        
-        // Run this immediately so the message is ready
-        generateDailyMessage();
+    }
+    
+    // Run this immediately so the message is ready
+    generateDailyMessage();
 
 
-        // --- INPUT LISTENERS ---
-        document.addEventListener('keydown', (e) => {
-            if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
-            if (e.key === ' ' && !e.repeat) handleInteraction();
-        });
-        document.addEventListener('keyup', (e) => {
-            if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
-        });
+    // --- INPUT LISTENERS ---
+    document.addEventListener('keydown', (e) => {
+        if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+        if (e.key === ' ' && !e.repeat) handleInteraction();
+    });
+    document.addEventListener('keyup', (e) => {
+        if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+    });
 
-        // --- GAME LOOP ---
-        function gameLoop() {
-            let dx = 0; let dy = 0;
-            if (keys.ArrowUp || keys.w) { dy = -speed; facing = 'up'; }
-            if (keys.ArrowDown || keys.s) { dy = speed; facing = 'down'; }
-            if (keys.ArrowLeft || keys.a) { dx = -speed; facing = 'left'; }
-            if (keys.ArrowRight || keys.d) { dx = speed; facing = 'right'; }
+    // --- GAME LOOP ---
+    function gameLoop() {
+        let dx = 0; let dy = 0;
+        if (keys.ArrowUp || keys.w) { dy = -speed; facing = 'up'; }
+        if (keys.ArrowDown || keys.s) { dy = speed; facing = 'down'; }
+        if (keys.ArrowLeft || keys.a) { dx = -speed; facing = 'left'; }
+        if (keys.ArrowRight || keys.d) { dx = speed; facing = 'right'; }
 
-            let nextX = playerObj.x + dx;
-            let nextY = playerObj.y + dy;
+        let nextX = playerObj.x + dx;
+        let nextY = playerObj.y + dy;
 
-            if (!checkCollision(nextX, playerObj.y)) playerObj.x = nextX;
-            if (!checkCollision(playerObj.x, nextY)) playerObj.y = nextY;
+        if (!checkCollision(nextX, playerObj.y)) playerObj.x = nextX;
+        if (!checkCollision(playerObj.x, nextY)) playerObj.y = nextY;
 
-            // Boundaries
-            if (playerObj.x < 0) playerObj.x = 0;
-            if (playerObj.y < 0) playerObj.y = 0;
-            if (playerObj.x > 460) playerObj.x = 460;
-            if (playerObj.y > 360) playerObj.y = 360;
+        // Boundaries
+        if (playerObj.x < 0) playerObj.x = 0;
+        if (playerObj.y < 0) playerObj.y = 0;
+        if (playerObj.x > 460) playerObj.x = 460;
+        if (playerObj.y > 360) playerObj.y = 360;
 
-            updateEntity(playerObj);
-            updateEntity(neighborObj);
-            updateEntity(plantObj);
-            updateEntity(fireplaceObj);
+        updateEntity(playerObj);
+        updateEntity(neighborObj);
+        updateEntity(plantObj);
+        updateEntity(fireplaceObj);
 
-            if (dx !== 0 || dy !== 0) dialogueBox.style.display = 'none';
-            requestAnimationFrame(gameLoop);
-        }
-
-        // --- HELPERS ---
-        function checkCollision(newX, newY) {
-            let pRect = { x: newX, y: newY, w: playerObj.w, h: playerObj.h };
-            for (let obj of colliders) {
-                if (obj === plantObj && plantObj.isHeld) continue;
-                if (isOverlapping(pRect, obj)) return true;
-            }
-            return false;
-        }
-
-        function isOverlapping(rect1, rect2) {
-            return (rect1.x < rect2.x + rect2.w && rect1.x + rect1.w > rect2.x &&
-                    rect1.y < rect2.y + rect2.h && rect1.y + rect1.h > rect2.y);
-        }
-
-        function updateEntity(obj) {
-            if (obj === plantObj && obj.isHeld) {
-                obj.x = playerObj.x;
-                obj.y = playerObj.y - 25; 
-            }
-            obj.el.style.left = obj.x + 'px';
-            obj.el.style.top = obj.y + 'px';
-            if (obj.isHeld) obj.el.style.zIndex = 1000;
-            else obj.el.style.zIndex = Math.floor(obj.y);
-        }
-
-        function handleInteraction() {
-            if (plantObj.isHeld) {
-                dropItem();
-            } else {
-                let dPlant = getDistance(playerObj, plantObj);
-                let dNeigh = getDistance(playerObj, neighborObj);
-
-                if (dPlant < 50) {
-                    plantObj.isHeld = true;
-                    plantObj.el.classList.add('held');
-                } else if (dNeigh < 60) {
-                    // Just show the message we generated at the start
-                    dialogueText.innerText = todaysMessage;
-                    dialogueBox.style.display = 'block';
-                }
-                else if (getDistance(playerObj, fireplaceObj) < 60) {
-                    fireplaceObj.isLit = !fireplaceObj.isLit;
-                    fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
-                    
-                    if (fireplaceObj.isLit) {
-                        lightingOverlay.classList.add('lit');
-                        if (!lightCircle) {
-                            lightCircle = document.createElement('div');
-                            lightCircle.className = 'light-circle';
-                            lightingOverlay.appendChild(lightCircle);
-                        }
-                        lightCircle.style.width = '200px';
-                        lightCircle.style.height = '200px';
-                        lightCircle.style.left = (fireplaceObj.x - 80) + 'px';
-                        lightCircle.style.top = (fireplaceObj.y - 80) + 'px';
-                        lightCircle.style.display = 'block';
-                    } else {
-                        lightingOverlay.classList.remove('lit');
-                        if (lightCircle) lightCircle.style.display = 'none';
-                    }
-                }
-            }
-        }
-
-        function dropItem() {
-            plantObj.isHeld = false;
-            plantObj.el.classList.remove('held');
-            let dropDist = 45; 
-            if (facing === 'up')    plantObj.y = playerObj.y - dropDist;
-            if (facing === 'down')  plantObj.y = playerObj.y + dropDist;
-            if (facing === 'left')  plantObj.x = playerObj.x - dropDist;
-            if (facing === 'right') plantObj.x = playerObj.x + dropDist;
-            plantObj.x = Math.round(plantObj.x / 10) * 10;
-            plantObj.y = Math.round(plantObj.y / 10) * 10;
-            if (plantObj.x < 0) plantObj.x = 0;
-            if (plantObj.y < 0) plantObj.y = 0;
-            if (plantObj.x > 460) plantObj.x = 460;
-            if (plantObj.y > 360) plantObj.y = 360;
-        }
-
-        function getDistance(o1, o2) {
-            return Math.hypot(o1.x - o2.x, o1.y - o2.y);
-        }
-
+        if (dx !== 0 || dy !== 0) dialogueBox.style.display = 'none';
         requestAnimationFrame(gameLoop);
-    </script>
-</body>
-</html>
+    }
+
+    // --- HELPERS ---
+    function checkCollision(newX, newY) {
+        let pRect = { x: newX, y: newY, w: playerObj.w, h: playerObj.h };
+        for (let obj of colliders) {
+            if (obj === plantObj && plantObj.isHeld) continue;
+            if (isOverlapping(pRect, obj)) return true;
+        }
+        return false;
+    }
+
+    function isOverlapping(rect1, rect2) {
+        return (rect1.x < rect2.x + rect2.w && rect1.x + rect1.w > rect2.x &&
+                rect1.y < rect2.y + rect2.h && rect1.y + rect1.h > rect2.y);
+    }
+
+    function updateEntity(obj) {
+        if (obj === plantObj && obj.isHeld) {
+            obj.x = playerObj.x;
+            obj.y = playerObj.y - 25; 
+        }
+        obj.el.style.left = obj.x + 'px';
+        obj.el.style.top = obj.y + 'px';
+        if (obj.isHeld) obj.el.style.zIndex = 1000;
+        else obj.el.style.zIndex = Math.floor(obj.y);
+    }
+
+    function handleInteraction() {
+        if (plantObj.isHeld) {
+            dropItem();
+        } else {
+            let dPlant = getDistance(playerObj, plantObj);
+            let dNeigh = getDistance(playerObj, neighborObj);
+
+            if (dPlant < 50) {
+                plantObj.isHeld = true;
+                plantObj.el.classList.add('held');
+            } else if (dNeigh < 60) {
+                // Just show the message we generated at the start
+                dialogueText.innerText = todaysMessage;
+                dialogueBox.style.display = 'block';
+            }
+            else if (getDistance(playerObj, fireplaceObj) < 60) {
+                fireplaceObj.isLit = !fireplaceObj.isLit;
+                fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
+                
+                if (fireplaceObj.isLit) {
+                    lightingOverlay.classList.add('lit');
+                    if (!lightCircle) {
+                        lightCircle = document.createElement('div');
+                        lightCircle.className = 'light-circle';
+                        lightingOverlay.appendChild(lightCircle);
+                    }
+                    lightCircle.style.width = '200px';
+                    lightCircle.style.height = '200px';
+                    lightCircle.style.left = (fireplaceObj.x - 80) + 'px';
+                    lightCircle.style.top = (fireplaceObj.y - 80) + 'px';
+                    lightCircle.style.display = 'block';
+                } else {
+                    lightingOverlay.classList.remove('lit');
+                    if (lightCircle) lightCircle.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    function dropItem() {
+        plantObj.isHeld = false;
+        plantObj.el.classList.remove('held');
+        let dropDist = 45; 
+        if (facing === 'up')    plantObj.y = playerObj.y - dropDist;
+        if (facing === 'down')  plantObj.y = playerObj.y + dropDist;
+        if (facing === 'left')  plantObj.x = playerObj.x - dropDist;
+        if (facing === 'right') plantObj.x = playerObj.x + dropDist;
+        plantObj.x = Math.round(plantObj.x / 10) * 10;
+        plantObj.y = Math.round(plantObj.y / 10) * 10;
+        if (plantObj.x < 0) plantObj.x = 0;
+        if (plantObj.y < 0) plantObj.y = 0;
+        if (plantObj.x > 460) plantObj.x = 460;
+        if (plantObj.y > 360) plantObj.y = 360;
+    }
+
+    function getDistance(o1, o2) {
+        return Math.hypot(o1.x - o2.x, o1.y - o2.y);
+    }
+
+    requestAnimationFrame(gameLoop);
+
+    // --- CHARACTER CREATOR CODE ---
+    function hexToFilter(hex) {
+        // Convert hex to RGB
+        const r = parseInt(hex.slice(1,3), 16) / 255;
+        const g = parseInt(hex.slice(3,5), 16) / 255;
+        const b = parseInt(hex.slice(5,7), 16) / 255;
+        
+        // Create a filter that tints toward that color
+        return `brightness(${(r+g+b)/3}) saturate(2) hue-rotate(${Math.atan2(g-r, b-r) * 180/Math.PI}deg)`;
+    }
+
+    // Load saved character on page load
+    async function loadCharacter() {
+        try {
+            const circleResult = await window.storage.get('character-circle-color');
+            const emojiResult = await window.storage.get('character-emoji-color');
+            
+            if (circleResult) {
+                const circleColor = circleResult.value;
+                document.getElementById('circle-color').value = circleColor;
+                document.getElementById('preview-circle').style.backgroundColor = circleColor;
+            }
+            
+            if (emojiResult) {
+                const emojiColor = emojiResult.value;
+                document.getElementById('emoji-color').value = emojiColor;
+                document.getElementById('preview-emoji').style.filter = hexToFilter(emojiColor);
+            }
+        } catch (error) {
+            console.log('No saved character found');
+        }
+    }
+
+    // Call on page load
+    loadCharacter();
+
+    document.getElementById('circle-color').addEventListener('input', (e) => {
+        document.getElementById('preview-circle').style.backgroundColor = e.target.value;
+    });
+
+    document.getElementById('emoji-color').addEventListener('input', (e) => {
+        const color = e.target.value;
+        const filter = hexToFilter(color);
+        document.getElementById('preview-emoji').style.filter = filter;
+    });
+
+    document.getElementById('start-game').addEventListener('click', async () => {
+        const circleColor = document.getElementById('circle-color').value;
+        const emojiColor = document.getElementById('emoji-color').value;
+        
+        // Save to storage
+        await window.storage.set('character-circle-color', circleColor);
+        await window.storage.set('character-emoji-color', emojiColor);
+        
+        player.style.backgroundColor = circleColor;
+        player.style.filter = hexToFilter(emojiColor);
+        
+        document.getElementById('character-creator').style.display = 'none';
+        document.getElementById('game-world').style.display = 'block';
+    });
+</script>
