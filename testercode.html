@@ -322,19 +322,27 @@
         function handleInteraction() {
             if (plantObj.isHeld) {
                 dropItem();
-            } else {
+            } else if (isOutside && playerObj.y > 140) {
+                // Go inside
+                isOutside = false;
+                outdoorZone.classList.add('zone-hidden');
+                gameWorld.classList.remove('zone-hidden');
+                playerObj.x = 230;
+                playerObj.y = 320;
+            } else if (!isOutside) {
+                // Inside interactions
                 let dPlant = getDistance(playerObj, plantObj);
                 let dNeigh = getDistance(playerObj, neighborObj);
-
+                let dDoor = getDistance(playerObj, doorObj);
+                let dFire = getDistance(playerObj, fireplaceObj);
+        
                 if (dPlant < 50) {
                     plantObj.isHeld = true;
                     plantObj.el.classList.add('held');
                 } else if (dNeigh < 60) {
-                    // Just show the message we generated at the start
                     dialogueText.innerText = todaysMessage;
                     dialogueBox.style.display = 'block';
-                }
-                else if (getDistance(playerObj, fireplaceObj) < 60) {
+                } else if (dFire < 60) {
                     fireplaceObj.isLit = !fireplaceObj.isLit;
                     fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
                     
@@ -354,26 +362,17 @@
                         lightingOverlay.classList.remove('lit');
                         if (lightCircle) lightCircle.style.display = 'none';
                     }
-                    else if (getDistance(playerObj, doorObj) < 60 && !isOutside) {
-                        // Go outside
-                        isOutside = true;
-                        gameWorld.classList.add('zone-hidden');
-                        outdoorZone.classList.remove('zone-hidden');
-                        playerObj.x = outdoorPlayerObj.x;
-                        playerObj.y = outdoorPlayerObj.y;
-                        dialogueBox.style.display = 'none';
-                    }
+                } else if (dDoor < 60) {
+                    // Go outside
+                    isOutside = true;
+                    gameWorld.classList.add('zone-hidden');
+                    outdoorZone.classList.remove('zone-hidden');
+                    playerObj.x = outdoorPlayerObj.x;
+                    playerObj.y = outdoorPlayerObj.y;
+                    dialogueBox.style.display = 'none';
                 }
-            // Check if outside and near bottom (door area)
-            if (isOutside && playerObj.y > 140) {
-                // Go inside
-                isOutside = false;
-                outdoorZone.classList.add('zone-hidden');
-                gameWorld.classList.remove('zone-hidden');
-                playerObj.x = 230;
-                playerObj.y = 320;
             }
-            }
+        }
         }
 
         function dropItem() {
