@@ -353,12 +353,19 @@
             }, 200);
         }
         
-        function showMessage(text, delayAfter, callback, cutToBlack = false) {
+        function showMessage(text, delayAfter, callback, cutToBlack = false, position = 'below') {
             const msg = document.createElement('div');
             msg.className = 'clicked-message';
             msg.textContent = text;
             msg.style.left = (window.innerWidth / 2) + 'px';
-            msg.style.top = (eyeY + 250) + 'px';
+            
+            // Position based on parameter
+            if (position === 'above') {
+                msg.style.top = (eyeY - 50) + 'px';
+            } else {
+                msg.style.top = (eyeY + 250) + 'px';
+            }
+            
             msg.style.transform = 'translateX(-50%)';
             document.body.appendChild(msg);
             
@@ -454,16 +461,13 @@
                                     
                                     // Wait 5 seconds, show "GOOD. NOW EVERYONE WILL KNOW."
                                     setTimeout(() => {
-                                        showMessage('GOOD. NOW EVERYONE WILL KNOW.', 10000, () => {
-                                            // Wait 5 seconds, show final message
-                                            setTimeout(() => {
-                                                showMessage(`${userName.toUpperCase()} CLICKED THE EYEBALL. IT WAS ${userName.toUpperCase()}.`, 10000, () => {
-                                                    // Wait 10 seconds, show "NAUGHTY NAUGHTY" with cut to black
-                                                    setTimeout(() => {
-                                                        showMessage('NAUGHTY NAUGHTY', 10000, null, true);
-                                                    }, 10000);
-                                                });
-                                            }, 5000);
+                                            showMessage(`${userName.toUpperCase()} CLICKED THE EYEBALL. IT WAS ${userName.toUpperCase()}.`, 10000, () => {
+                                                // Wait 10 seconds, show "NAUGHTY NAUGHTY" with cut to black
+                                                setTimeout(() => {
+                                                    showMessage('NAUGHTY NAUGHTY', 10000, null, true);
+                                                }, 10000);
+                                            }, false, 'above');
+                                        }, 5000);
                                         });
                                     }, 5000);
                                 }
