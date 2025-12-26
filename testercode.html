@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Cozy Village - Puns</title>
     <style>
         body {
@@ -66,17 +65,6 @@
             font-size: 20px;
         }
 
-        .furniture::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 0 0 5px 5px;
-        }
-
         .held {
             border-color: #ff6b6b;
             transform: scale(1.1);
@@ -108,16 +96,6 @@
             color: #555;
             font-size: 12px;
         }
-        
-        #instructions-outdoor {
-            position: absolute;
-            top: 10px;
-            width: 100%;
-            text-align: center;
-            color: #555;
-            font-size: 12px;
-        }
-        
         #lighting-overlay {
             position: absolute;
             top: 0;
@@ -140,153 +118,22 @@
             pointer-events: none;
             mix-blend-mode: lighten;
         }
-        
-        #yard {
-            background-color: #e3f2fd;
-            padding: 60px;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-        }
-        
-        #door {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 50px;
-            height: 60px;
-            background-color: #8B4513;
-            border: 3px solid #5C4033;
-            border-bottom: none;
-            border-radius: 8px 8px 0 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            z-index: 100;
-        }
-        
-        #outdoor-zone {
-            width: 500px;
-            height: 200px;
-            background-color: #8BC34A;
-            background-image: 
-                repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 11px),
-                repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 11px);
-            position: relative;
-            border: 10px solid #7CB342;
-            border-top: none;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        
-        .zone-hidden {
-            display: none;
-        }
-
-        #mobile-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: none;
-            gap: 10px;
-        }
-
-        #dpad {
-            display: grid;
-            grid-template-columns: 50px 50px 50px;
-            grid-template-rows: 50px 50px 50px;
-            gap: 5px;
-        }
-
-        .dpad-btn {
-            width: 50px;
-            height: 50px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 2px solid #5C4033;
-            border-radius: 10px;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: none;
-            user-select: none;
-        }
-
-        #action-btn {
-            width: 60px;
-            height: 60px;
-            background-color: rgba(255, 107, 107, 0.9);
-            border: 3px solid #5C4033;
-            border-radius: 50%;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            touch-action: none;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                align-items: flex-start;
-                padding-top: 20px;
-            }
-            
-            #mobile-controls {
-                display: flex;
-                align-items: flex-end;
-            }
-            
-            #game-world {
-                margin-bottom: 120px;
-            }
-            
-            #instructions {
-                top: 10px;
-                position: relative;
-            }
-        }
     </style>
 </head>
 <body>
 
-    <div id="yard">
-        <div id="game-world">
-            <div id="lighting-overlay"></div>
-            <div id="instructions">Arrows: Move • SPACE: Action</div>
-            
-            <div id="plant" class="furniture">🪴</div>
-            <div id="fireplace" class="furniture">🪵</div>
-            <div id="neighbor" class="entity">🐻</div>
-            <div id="player" class="entity">🙂</div>
-            <div id="door">🚪</div>
-    
-            <div id="dialogue-box">
-                <strong style="color:#4ecdc4">Bear:</strong> <span id="dialogue-text">...</span>
-            </div>
-        </div>
+    <div id="game-world">
+        <div id="lighting-overlay"></div>
+        <div id="instructions">Arrows: Move • SPACE: Action</div>
         
-        <div id="outdoor-zone" class="zone-hidden">
-            <div id="instructions-outdoor">Arrows: Move • SPACE: Enter House</div>
-        </div>
-    </div>
+        <div id="plant" class="furniture">🪴</div>
+        <div id="fireplace" class="furniture">🪵</div>
+        <div id="neighbor" class="entity">🐻</div>
+        <div id="player" class="entity">🙂</div>
 
-    <div id="mobile-controls">
-        <div id="dpad">
-            <div></div>
-            <div class="dpad-btn" data-key="ArrowUp">▲</div>
-            <div></div>
-            <div class="dpad-btn" data-key="ArrowLeft">◀</div>
-            <div></div>
-            <div class="dpad-btn" data-key="ArrowRight">▶</div>
-            <div></div>
-            <div class="dpad-btn" data-key="ArrowDown">▼</div>
-            <div></div>
+        <div id="dialogue-box">
+            <strong style="color:#4ecdc4">Bear:</strong> <span id="dialogue-text">...</span>
         </div>
-        <div id="action-btn">ACTION</div>
     </div>
 
     <script>
@@ -295,25 +142,18 @@
         const plant = document.getElementById('plant');
         const dialogueBox = document.getElementById('dialogue-box');
         const dialogueText = document.getElementById('dialogue-text');
-        const door = document.getElementById('door');
-        const gameWorld = document.getElementById('game-world');
-        const outdoorZone = document.getElementById('outdoor-zone');
         
         // --- GAME VARIABLES ---
         let playerObj = { x: 230, y: 300, w: 40, h: 40, el: player };
         let neighborObj = { x: 230, y: 50, w: 40, h: 40, el: neighbor };
         let plantObj = { x: 100, y: 200, w: 40, h: 40, el: plant, isHeld: false };
         let fireplaceObj = { x: 400, y: 100, w: 40, h: 40, el: document.getElementById('fireplace'), isLit: false };
-        let doorObj = { x: 225, y: 360, w: 50, h: 40, el: door };
-        
         const lightingOverlay = document.getElementById('lighting-overlay');
         let lightCircle = null;
         let colliders = [neighborObj, plantObj, fireplaceObj];
         const speed = 4;
         const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false };
         let facing = 'down'; 
-        let isOutside = false;
-        let outdoorPlayerObj = { x: 230, y: 20, w: 40, h: 40 };
         
         // --- DIALOGUE SETUP (RUNS ONCE ON LOAD) ---
         let todaysMessage = "";
@@ -344,6 +184,7 @@
         // Run this immediately so the message is ready
         generateDailyMessage();
 
+
         // --- INPUT LISTENERS ---
         document.addEventListener('keydown', (e) => {
             if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
@@ -371,11 +212,7 @@
             if (playerObj.x < 0) playerObj.x = 0;
             if (playerObj.y < 0) playerObj.y = 0;
             if (playerObj.x > 460) playerObj.x = 460;
-            if (isOutside) {
-                if (playerObj.y > 160) playerObj.y = 160;
-            } else {
-                if (playerObj.y > 360) playerObj.y = 360;
-            }
+            if (playerObj.y > 360) playerObj.y = 360;
 
             updateEntity(playerObj);
             updateEntity(neighborObj);
@@ -386,16 +223,12 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // --- COLLISION & ENTITY HELPERS ---
+        // --- HELPERS ---
         function checkCollision(newX, newY) {
             let pRect = { x: newX, y: newY, w: playerObj.w, h: playerObj.h };
-            
-            // Only check indoor colliders when inside
-            if (!isOutside) {
-                for (let obj of colliders) {
-                    if (obj === plantObj && plantObj.isHeld) continue;
-                    if (isOverlapping(pRect, obj)) return true;
-                }
+            for (let obj of colliders) {
+                if (obj === plantObj && plantObj.isHeld) continue;
+                if (isOverlapping(pRect, obj)) return true;
             }
             return false;
         }
@@ -416,116 +249,43 @@
             else obj.el.style.zIndex = Math.floor(obj.y);
         }
 
-        function getDistance(o1, o2) {
-            return Math.hypot(o1.x - o2.x, o1.y - o2.y);
-        }
-
-        // --- INTERACTION SYSTEM ---
         function handleInteraction() {
-            // Handle zone transitions first (highest priority)
-            if (isOutside) {
-                handleOutdoorInteraction();
-                return;
-            }
-            
-            // Handle held items second
             if (plantObj.isHeld) {
                 dropItem();
-                return;
-            }
-            
-            // Handle indoor interactions
-            handleIndoorInteractions();
-        }
-
-        function handleOutdoorInteraction() {
-            // Check if near door to go back inside
-            if (playerObj.y > 140) {
-                transitionToIndoor();
-            }
-        }
-
-        function handleIndoorInteractions() {
-            // Get all distances at once
-            const interactions = [
-                { type: 'plant', obj: plantObj, distance: getDistance(playerObj, plantObj), range: 50 },
-                { type: 'neighbor', obj: neighborObj, distance: getDistance(playerObj, neighborObj), range: 60 },
-                { type: 'fireplace', obj: fireplaceObj, distance: getDistance(playerObj, fireplaceObj), range: 60 },
-                { type: 'door', obj: doorObj, distance: getDistance(playerObj, doorObj), range: 60 }
-            ];
-            
-            // Find closest interactable
-            const nearest = interactions
-                .filter(i => i.distance < i.range)
-                .sort((a, b) => a.distance - b.distance)[0];
-            
-            if (!nearest) return;
-            
-            // Execute interaction based on type
-            switch(nearest.type) {
-                case 'plant':
-                    pickupPlant();
-                    break;
-                case 'neighbor':
-                    talkToNeighbor();
-                    break;
-                case 'fireplace':
-                    toggleFireplace();
-                    break;
-                case 'door':
-                    transitionToOutdoor();
-                    break;
-            }
-        }
-
-        // --- INDIVIDUAL INTERACTION HANDLERS ---
-        function pickupPlant() {
-            plantObj.isHeld = true;
-            plantObj.el.classList.add('held');
-        }
-
-        function talkToNeighbor() {
-            dialogueText.innerText = todaysMessage;
-            dialogueBox.style.display = 'block';
-        }
-
-        function toggleFireplace() {
-            fireplaceObj.isLit = !fireplaceObj.isLit;
-            fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
-            
-            if (fireplaceObj.isLit) {
-                lightingOverlay.classList.add('lit');
-                if (!lightCircle) {
-                    lightCircle = document.createElement('div');
-                    lightCircle.className = 'light-circle';
-                    lightingOverlay.appendChild(lightCircle);
-                }
-                lightCircle.style.width = '200px';
-                lightCircle.style.height = '200px';
-                lightCircle.style.left = (fireplaceObj.x - 80) + 'px';
-                lightCircle.style.top = (fireplaceObj.y - 80) + 'px';
-                lightCircle.style.display = 'block';
             } else {
-                lightingOverlay.classList.remove('lit');
-                if (lightCircle) lightCircle.style.display = 'none';
+                let dPlant = getDistance(playerObj, plantObj);
+                let dNeigh = getDistance(playerObj, neighborObj);
+
+                if (dPlant < 50) {
+                    plantObj.isHeld = true;
+                    plantObj.el.classList.add('held');
+                } else if (dNeigh < 60) {
+                    // Just show the message we generated at the start
+                    dialogueText.innerText = todaysMessage;
+                    dialogueBox.style.display = 'block';
+                }
+                else if (getDistance(playerObj, fireplaceObj) < 60) {
+                    fireplaceObj.isLit = !fireplaceObj.isLit;
+                    fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
+                    
+                    if (fireplaceObj.isLit) {
+                        lightingOverlay.classList.add('lit');
+                        if (!lightCircle) {
+                            lightCircle = document.createElement('div');
+                            lightCircle.className = 'light-circle';
+                            lightingOverlay.appendChild(lightCircle);
+                        }
+                        lightCircle.style.width = '200px';
+                        lightCircle.style.height = '200px';
+                        lightCircle.style.left = (fireplaceObj.x - 80) + 'px';
+                        lightCircle.style.top = (fireplaceObj.y - 80) + 'px';
+                        lightCircle.style.display = 'block';
+                    } else {
+                        lightingOverlay.classList.remove('lit');
+                        if (lightCircle) lightCircle.style.display = 'none';
+                    }
+                }
             }
-        }
-
-        function transitionToOutdoor() {
-            isOutside = true;
-            gameWorld.classList.add('zone-hidden');
-            outdoorZone.classList.remove('zone-hidden');
-            playerObj.x = outdoorPlayerObj.x;
-            playerObj.y = outdoorPlayerObj.y;
-            dialogueBox.style.display = 'none';
-        }
-
-        function transitionToIndoor() {
-            isOutside = false;
-            outdoorZone.classList.add('zone-hidden');
-            gameWorld.classList.remove('zone-hidden');
-            playerObj.x = 230;
-            playerObj.y = 320;
         }
 
         function dropItem() {
@@ -544,38 +304,10 @@
             if (plantObj.y > 360) plantObj.y = 360;
         }
 
-        // --- MOBILE CONTROLS ---
-        const dpadBtns = document.querySelectorAll('.dpad-btn');
-        const actionBtn = document.getElementById('action-btn');
+        function getDistance(o1, o2) {
+            return Math.hypot(o1.x - o2.x, o1.y - o2.y);
+        }
 
-        dpadBtns.forEach(btn => {
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                const key = btn.getAttribute('data-key');
-                keys[key] = true;
-                btn.style.backgroundColor = 'rgba(200, 200, 200, 0.9)';
-            });
-            
-            btn.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                const key = btn.getAttribute('data-key');
-                keys[key] = false;
-                btn.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-            });
-        });
-
-        actionBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleInteraction();
-            actionBtn.style.backgroundColor = 'rgba(200, 80, 80, 0.9)';
-        });
-
-        actionBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            actionBtn.style.backgroundColor = 'rgba(255, 107, 107, 0.9)';
-        });
-
-        // --- START GAME ---
         requestAnimationFrame(gameLoop);
     </script>
 </body>
