@@ -1,235 +1,402 @@
-<script>
-    const player = document.getElementById('player');
-    const neighbor = document.getElementById('neighbor');
-    const plant = document.getElementById('plant');
-    const dialogueBox = document.getElementById('dialogue-box');
-    const dialogueText = document.getElementById('dialogue-text');
-    
-    // --- GAME VARIABLES ---
-    let playerObj = { x: 230, y: 300, w: 40, h: 40, el: player };
-    let neighborObj = { x: 230, y: 50, w: 40, h: 40, el: neighbor };
-    let plantObj = { x: 100, y: 200, w: 40, h: 40, el: plant, isHeld: false };
-    let fireplaceObj = { x: 400, y: 100, w: 40, h: 40, el: document.getElementById('fireplace'), isLit: false };
-    const lightingOverlay = document.getElementById('lighting-overlay');
-    let lightCircle = null;
-    let colliders = [neighborObj, plantObj, fireplaceObj];
-    const speed = 4;
-    const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false, w:false, a:false, s:false, d:false };
-    let facing = 'down'; 
-    
-    // --- DIALOGUE SETUP (RUNS ONCE ON LOAD) ---
-    let todaysMessage = "";
-
-    function generateDailyMessage() {
-        const date = new Date();
-        const day = date.getDay(); // 0=Sun, 1=Mon, ..., 4=Thu
-
-        // Specific Logic for Thursday (Day 4)
-        if (day === 4) {
-            const puns = [
-                "I'm feeling paws-itively relaxed today.",
-                "Have a bear-y good Thursday!",
-                "My schedule is completely bear today.",
-                "Un-bear-lievable weather we're having!",
-                "Just grinning and bearing it until Friday."
-            ];
-            // Pick a random number between 0 and 4
-            const randomIndex = Math.floor(Math.random() * puns.length);
-            todaysMessage = puns[randomIndex];
-        } else {
-            // Fallback for other days
-            const generic = ["Sunday Funday!", "Monday blues...", "Taco Tuesday!", "Hump Day!", "It's Thursday.", "Fri-yay!", "K.K. Saturday!"];
-            todaysMessage = generic[day];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Eye</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
-    }
-    
-    // Run this immediately so the message is ready
-    generateDailyMessage();
-
-
-    // --- INPUT LISTENERS ---
-    document.addEventListener('keydown', (e) => {
-        if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
-        if (e.key === ' ' && !e.repeat) handleInteraction();
-    });
-    document.addEventListener('keyup', (e) => {
-        if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
-    });
-
-    // --- GAME LOOP ---
-    function gameLoop() {
-        let dx = 0; let dy = 0;
-        if (keys.ArrowUp || keys.w) { dy = -speed; facing = 'up'; }
-        if (keys.ArrowDown || keys.s) { dy = speed; facing = 'down'; }
-        if (keys.ArrowLeft || keys.a) { dx = -speed; facing = 'left'; }
-        if (keys.ArrowRight || keys.d) { dx = speed; facing = 'right'; }
-
-        let nextX = playerObj.x + dx;
-        let nextY = playerObj.y + dy;
-
-        if (!checkCollision(nextX, playerObj.y)) playerObj.x = nextX;
-        if (!checkCollision(playerObj.x, nextY)) playerObj.y = nextY;
-
-        // Boundaries
-        if (playerObj.x < 0) playerObj.x = 0;
-        if (playerObj.y < 0) playerObj.y = 0;
-        if (playerObj.x > 460) playerObj.x = 460;
-        if (playerObj.y > 360) playerObj.y = 360;
-
-        updateEntity(playerObj);
-        updateEntity(neighborObj);
-        updateEntity(plantObj);
-        updateEntity(fireplaceObj);
-
-        if (dx !== 0 || dy !== 0) dialogueBox.style.display = 'none';
-        requestAnimationFrame(gameLoop);
-    }
-
-    // --- HELPERS ---
-    function checkCollision(newX, newY) {
-        let pRect = { x: newX, y: newY, w: playerObj.w, h: playerObj.h };
-        for (let obj of colliders) {
-            if (obj === plantObj && plantObj.isHeld) continue;
-            if (isOverlapping(pRect, obj)) return true;
+        
+        body {
+            width: 100vw;
+            height: 100vh;
+            cursor: none;
+            background: #000000;
         }
-        return false;
-    }
-
-    function isOverlapping(rect1, rect2) {
-        return (rect1.x < rect2.x + rect2.w && rect1.x + rect1.w > rect2.x &&
-                rect1.y < rect2.y + rect2.h && rect1.y + rect1.h > rect2.y);
-    }
-
-    function updateEntity(obj) {
-        if (obj === plantObj && obj.isHeld) {
-            obj.x = playerObj.x;
-            obj.y = playerObj.y - 25; 
+        
+        body.activated {
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+            background-size: 400% 400%;
+            animation: gradientShift 3s ease infinite;
         }
-        obj.el.style.left = obj.x + 'px';
-        obj.el.style.top = obj.y + 'px';
-        if (obj.isHeld) obj.el.style.zIndex = 1000;
-        else obj.el.style.zIndex = Math.floor(obj.y);
-    }
-
-    function handleInteraction() {
-        if (plantObj.isHeld) {
-            dropItem();
-        } else {
-            let dPlant = getDistance(playerObj, plantObj);
-            let dNeigh = getDistance(playerObj, neighborObj);
-
-            if (dPlant < 50) {
-                plantObj.isHeld = true;
-                plantObj.el.classList.add('held');
-            } else if (dNeigh < 60) {
-                // Just show the message we generated at the start
-                dialogueText.innerText = todaysMessage;
-                dialogueBox.style.display = 'block';
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .pulse-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, 
+                transparent 0%, 
+                rgba(255, 0, 255, 0.2) 25%,
+                rgba(0, 255, 255, 0.2) 50%,
+                rgba(255, 255, 0, 0.2) 75%,
+                transparent 100%);
+            animation: pulse 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        .eyeball {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            transition: left 0.1s, top 0.1s;
+            filter: drop-shadow(0 0 30px rgba(255, 0, 255, 0.8));
+            cursor: pointer;
+        }
+        
+        .eye-white {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #ffffff 0%, #f0f0f0 100%);
+            border-radius: 50%;
+            animation: colorShiftWhite 6s ease infinite;
+        }
+        
+        @keyframes colorShiftWhite {
+            0%, 100% { background: radial-gradient(circle, #ffffff 0%, #ffccff 100%); }
+            25% { background: radial-gradient(circle, #ffffff 0%, #ccffff 100%); }
+            50% { background: radial-gradient(circle, #ffffff 0%, #ffffcc 100%); }
+            75% { background: radial-gradient(circle, #ffffff 0%, #ffcccc 100%); }
+        }
+        
+        .iris {
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            background: conic-gradient(
+                from 0deg,
+                #ff00ff 0deg,
+                #00ffff 60deg,
+                #ffff00 120deg,
+                #ff0000 180deg,
+                #00ff00 240deg,
+                #0000ff 300deg,
+                #ff00ff 360deg
+            );
+            border-radius: 50%;
+            animation: rotate 4.8s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .pupil {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            top: 25%;
+            left: 25%;
+            background: radial-gradient(circle, #000000 40%, #1a1a1a 100%);
+            border-radius: 50%;
+            animation: pupilPulse 2.4s ease-in-out infinite;
+        }
+        
+        @keyframes pupilPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.85); }
+        }
+        
+        .reflection {
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            top: 15%;
+            left: 15%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.9), transparent);
+            border-radius: 50%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .wave {
+            position: fixed;
+            border-radius: 50%;
+            border: 4px solid;
+            pointer-events: none;
+            z-index: 5;
+            will-change: transform, opacity;
+        }
+        
+        .wave:nth-child(odd) {
+            animation: waveExpand1 2.4s ease-out forwards;
+        }
+        
+        .wave:nth-child(even) {
+            animation: waveExpand2 2.4s ease-out forwards;
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes waveExpand1 {
+            0% {
+                width: 200px;
+                height: 200px;
+                opacity: 1;
+                border-color: #ff00ff;
+                border-radius: 50% 45% 55% 50% / 55% 50% 45% 50%;
             }
-            else if (getDistance(playerObj, fireplaceObj) < 60) {
-                fireplaceObj.isLit = !fireplaceObj.isLit;
-                fireplaceObj.el.innerText = fireplaceObj.isLit ? '🔥' : '🪵';
-                
-                if (fireplaceObj.isLit) {
-                    lightingOverlay.classList.add('lit');
-                    if (!lightCircle) {
-                        lightCircle = document.createElement('div');
-                        lightCircle.className = 'light-circle';
-                        lightingOverlay.appendChild(lightCircle);
+            25% {
+                border-color: #00ffff;
+                border-radius: 45% 55% 50% 45% / 50% 55% 50% 45%;
+            }
+            50% {
+                border-color: #ffff00;
+                border-radius: 55% 50% 45% 55% / 45% 50% 55% 50%;
+            }
+            75% {
+                border-color: #ff0000;
+                border-radius: 50% 45% 55% 50% / 50% 45% 50% 55%;
+                opacity: 0.5;
+            }
+            100% {
+                width: 1500px;
+                height: 1500px;
+                opacity: 0;
+                border-color: #ff00ff;
+                border-radius: 45% 55% 45% 55% / 55% 45% 55% 45%;
+            }
+        }
+        
+        @keyframes waveExpand2 {
+            0% {
+                width: 200px;
+                height: 200px;
+                opacity: 1;
+                border-color: #00ffff;
+                border-radius: 55% 50% 45% 50% / 50% 55% 50% 45%;
+            }
+            25% {
+                border-color: #ffff00;
+                border-radius: 50% 45% 50% 55% / 45% 50% 55% 50%;
+            }
+            50% {
+                border-color: #ff0000;
+                border-radius: 45% 55% 55% 50% / 55% 45% 50% 55%;
+            }
+            75% {
+                border-color: #00ff00;
+                border-radius: 55% 45% 50% 45% / 50% 55% 45% 50%;
+                opacity: 0.5;
+            }
+            100% {
+                width: 1500px;
+                height: 1500px;
+                opacity: 0;
+                border-color: #0000ff;
+                border-radius: 50% 55% 45% 50% / 45% 50% 55% 45%;
+            }
+        }
+        .warning-message {
+            position: fixed;
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            color: #ff00ff;
+            text-align: center;
+            pointer-events: none;
+            animation: trippy 2.4s ease-in-out infinite;
+            opacity: 0.7;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #ffff00,
+                0 0 30px #ff00ff;
+        }
+        
+        @keyframes trippy {
+            0%, 100% {
+                color: #ff00ff;
+                transform: translateY(0px) scale(1);
+                text-shadow: 
+                    0 0 10px #00ffff,
+                    0 0 20px #ffff00,
+                    0 0 30px #ff00ff;
+            }
+            33% {
+                color: #00ffff;
+                transform: translateY(-3px) scale(1.05);
+                text-shadow: 
+                    0 0 10px #ffff00,
+                    0 0 20px #ff00ff,
+                    0 0 30px #00ffff;
+            }
+            66% {
+                color: #ffff00;
+                transform: translateY(3px) scale(0.95);
+                text-shadow: 
+                    0 0 10px #ff00ff,
+                    0 0 20px #00ffff,
+                    0 0 30px #ffff00;
+            }
+        }
+        
+        .clicked-message {
+            position: fixed;
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            color: #ffff00;
+            text-align: center;
+            pointer-events: none;
+            animation: fadeOut 10s ease-out forwards;
+            text-shadow: 
+                0 0 15px #ff00ff,
+                0 0 25px #00ffff,
+                0 0 35px #ffff00;
+            letter-spacing: 2px;
+        }
+        
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pulse-overlay"></div>
+
+    <div class="warning-message" id="warning">Do not click the eyeball</div>
+    
+    <div class="eyeball" id="eyeball">
+        <div class="eyelid-top"></div>
+        <div class="eye-white"></div>
+        <div class="iris" id="iris">
+            <div class="pupil">
+                <div class="reflection"></div>
+            </div>
+        </div>
+        <div class="eyelid-bottom"></div>
+    </div>
+
+    <script>
+        const eyeball = document.getElementById('eyeball');
+        const warning = document.getElementById('warning');
+        
+        let eyeX = window.innerWidth / 2 - 100;
+        let eyeY = window.innerHeight / 2 - 100;
+        
+        eyeball.style.left = eyeX + 'px';
+        eyeball.style.top = eyeY + 'px';
+        
+        // Position warning message above eyeball
+        warning.style.left = (window.innerWidth / 2) + 'px';
+        warning.style.top = (eyeY - 50) + 'px';
+        warning.style.transform = 'translateX(-50%)';
+        
+        // Create audio element
+        const audio = new Audio('ide2.wav');
+        audio.loop = true;
+        
+        let audioStarted = false;
+        let firstClick = true;
+        
+        // Eldritch rune characters
+        const runeChars = ['ᚠ', 'ᚡ', 'ᚢ', 'ᚣ', 'ᚤ', 'ᚥ', 'ᚦ', 'ᚧ', 'ᚨ', 'ᚩ', 'ᚪ', 'ᚫ', 'ᚬ', 'ᚭ', 'ᚮ', 'ᚯ', 
+                          'ᚰ', 'ᚱ', 'ᚲ', 'ᚳ', 'ᚴ', 'ᚵ', 'ᚶ', 'ᚷ', 'ᚸ', 'ᚹ', 'ᚺ', 'ᚻ', 'ᚼ', 'ᚽ', 'ᚾ', 'ᚿ',
+                          '⟒', '⟓', '⟔', '⟕', '⟖', '⟗', '⟘', '⟙', '⟚', '⟛', '⟜', '⟝', '⟞', '⟟',
+                          '᛫', '᛬', '᛭', 'ᛮ', 'ᛯ', 'ᛰ', '⊹', '⊼', '⊽', '⊾', '⊿', '⋀', '⋁', '⋂'];
+        
+        function transformToRunes(element, originalText) {
+            const chars = originalText.split('');
+            let currentIndex = 0;
+            
+            const transformInterval = setInterval(() => {
+                if (currentIndex < chars.length) {
+                    if (chars[currentIndex] !== ' ') {
+                        chars[currentIndex] = runeChars[Math.floor(Math.random() * runeChars.length)];
                     }
-                    lightCircle.style.width = '200px';
-                    lightCircle.style.height = '200px';
-                    lightCircle.style.left = (fireplaceObj.x - 80) + 'px';
-                    lightCircle.style.top = (fireplaceObj.y - 80) + 'px';
-                    lightCircle.style.display = 'block';
+                    element.textContent = chars.join('');
+                    currentIndex++;
                 } else {
-                    lightingOverlay.classList.remove('lit');
-                    if (lightCircle) lightCircle.style.display = 'none';
+                    clearInterval(transformInterval);
                 }
-            }
+            }, 200); // Transform one character every 0.2 seconds
         }
-    }
-
-    function dropItem() {
-        plantObj.isHeld = false;
-        plantObj.el.classList.remove('held');
-        let dropDist = 45; 
-        if (facing === 'up')    plantObj.y = playerObj.y - dropDist;
-        if (facing === 'down')  plantObj.y = playerObj.y + dropDist;
-        if (facing === 'left')  plantObj.x = playerObj.x - dropDist;
-        if (facing === 'right') plantObj.x = playerObj.x + dropDist;
-        plantObj.x = Math.round(plantObj.x / 10) * 10;
-        plantObj.y = Math.round(plantObj.y / 10) * 10;
-        if (plantObj.x < 0) plantObj.x = 0;
-        if (plantObj.y < 0) plantObj.y = 0;
-        if (plantObj.x > 460) plantObj.x = 460;
-        if (plantObj.y > 360) plantObj.y = 360;
-    }
-
-    function getDistance(o1, o2) {
-        return Math.hypot(o1.x - o2.x, o1.y - o2.y);
-    }
-
-    requestAnimationFrame(gameLoop);
-
-    // --- CHARACTER CREATOR CODE ---
-    function hexToFilter(hex) {
-        // Convert hex to RGB
-        const r = parseInt(hex.slice(1,3), 16) / 255;
-        const g = parseInt(hex.slice(3,5), 16) / 255;
-        const b = parseInt(hex.slice(5,7), 16) / 255;
         
-        // Create a filter that tints toward that color
-        return `brightness(${(r+g+b)/3}) saturate(2) hue-rotate(${Math.atan2(g-r, b-r) * 180/Math.PI}deg)`;
-    }
-
-    // Load saved character on page load
-    async function loadCharacter() {
-        try {
-            const circleResult = await window.storage.get('character-circle-color');
-            const emojiResult = await window.storage.get('character-emoji-color');
-            
-            if (circleResult) {
-                const circleColor = circleResult.value;
-                document.getElementById('circle-color').value = circleColor;
-                document.getElementById('preview-circle').style.backgroundColor = circleColor;
+        eyeball.addEventListener('click', () => {
+            // Start audio on first click
+            if (!audioStarted) {
+                audio.play();
+                audioStarted = true;
             }
             
-            if (emojiResult) {
-                const emojiColor = emojiResult.value;
-                document.getElementById('emoji-color').value = emojiColor;
-                document.getElementById('preview-emoji').style.filter = hexToFilter(emojiColor);
+            // Handle first click
+            if (firstClick) {
+                firstClick = false;
+                warning.style.display = 'none';
+                
+                // Activate the crazy background
+                document.body.classList.add('activated');
+                
+                // Show "You clicked the eyeball" message after 3 seconds
+                setTimeout(() => {
+                    const originalText = 'You clicked the eyeball';
+                    const clickedMsg = document.createElement('div');
+                    clickedMsg.className = 'clicked-message';
+                    clickedMsg.textContent = originalText;
+                    clickedMsg.style.left = (window.innerWidth / 2) + 'px';
+                    clickedMsg.style.top = (eyeY + 250) + 'px';
+                    clickedMsg.style.transform = 'translateX(-50%)';
+                    document.body.appendChild(clickedMsg);
+                    
+                    // Start transforming to runes after 2 seconds
+                    setTimeout(() => {
+                        transformToRunes(clickedMsg, originalText);
+                    }, 2000);
+                    
+                    // Remove message after 10 seconds
+                    setTimeout(() => {
+                        clickedMsg.remove();
+                    }, 10000);
+                }, 3000);
             }
-        } catch (error) {
-            console.log('No saved character found');
-        }
-    }
-
-    // Call on page load
-    loadCharacter();
-
-    document.getElementById('circle-color').addEventListener('input', (e) => {
-        document.getElementById('preview-circle').style.backgroundColor = e.target.value;
-    });
-
-    document.getElementById('emoji-color').addEventListener('input', (e) => {
-        const color = e.target.value;
-        const filter = hexToFilter(color);
-        document.getElementById('preview-emoji').style.filter = filter;
-    });
-
-    document.getElementById('start-game').addEventListener('click', async () => {
-        const circleColor = document.getElementById('circle-color').value;
-        const emojiColor = document.getElementById('emoji-color').value;
-        
-        // Save to storage
-        await window.storage.set('character-circle-color', circleColor);
-        await window.storage.set('character-emoji-color', emojiColor);
-        
-        player.style.backgroundColor = circleColor;
-        player.style.filter = hexToFilter(emojiColor);
-        
-        document.getElementById('character-creator').style.display = 'none';
-        document.getElementById('game-world').style.display = 'block';
-    });
-</script>
+            
+            // Create 2 squiggly waves
+            for (let i = 0; i < 2; i++) {
+                const wave = document.createElement('div');
+                wave.className = 'wave';
+                wave.style.left = (eyeX + 100) + 'px';
+                wave.style.top = (eyeY + 100) + 'px';
+                wave.style.transform = 'translate(-50%, -50%)';
+                
+                document.body.appendChild(wave);
+                
+                // Remove wave after animation completes
+                setTimeout(() => {
+                    wave.remove();
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
