@@ -71,11 +71,12 @@
             top: 0;
             left: 0;
             background: linear-gradient(180deg, #ff00ff, #00ffff);
-            border-radius: 50% 50% 100% 100% / 100% 100% 0% 0%;
+            border-radius: 0 0 50% 50%;
             animation: eyelidColorShift 4.8s ease infinite, blinkTop 2.4s ease-in-out infinite;
-            transform-origin: bottom;
-            transform: scaleY(0);
+            transform-origin: top;
+            transform: translateY(-100%);
             z-index: 10;
+            overflow: hidden;
         }
         
         .eyelid-bottom {
@@ -85,21 +86,30 @@
             bottom: 0;
             left: 0;
             background: linear-gradient(0deg, #ffff00, #ff00ff);
-            border-radius: 100% 100% 50% 50% / 0% 0% 100% 100%;
+            border-radius: 50% 50% 0 0;
             animation: eyelidColorShift 4.8s ease infinite reverse, blinkBottom 2.4s ease-in-out infinite;
-            transform-origin: top;
-            transform: scaleY(0);
+            transform-origin: bottom;
+            transform: translateY(100%);
             z-index: 10;
+            overflow: hidden;
         }
         
         @keyframes blinkTop {
-            0%, 83%, 100% { transform: scaleY(0); }
-            92% { transform: scaleY(1); }
+            0%, 83%, 100% { 
+                transform: translateY(-100%);
+            }
+            92% { 
+                transform: translateY(0%);
+            }
         }
         
         @keyframes blinkBottom {
-            0%, 83%, 100% { transform: scaleY(0); }
-            92% { transform: scaleY(1); }
+            0%, 83%, 100% { 
+                transform: translateY(100%);
+            }
+            92% { 
+                transform: translateY(0%);
+            }
         }
         
         @keyframes eyelidColorShift {
