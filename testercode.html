@@ -340,44 +340,125 @@
                 } else {
                     clearInterval(transformInterval);
                 }
-            }, 200); // Transform one character every 0.2 seconds
+            }, 200);
+        }
+        
+        function showMessage(text, delayAfter, callback) {
+            const msg = document.createElement('div');
+            msg.className = 'clicked-message';
+            msg.textContent = text;
+            msg.style.left = (window.innerWidth / 2) + 'px';
+            msg.style.top = (eyeY + 250) + 'px';
+            msg.style.transform = 'translateX(-50%)';
+            document.body.appendChild(msg);
+            
+            setTimeout(() => {
+                transformToRunes(msg, text);
+            }, 2000);
+            
+            setTimeout(() => {
+                msg.remove();
+                if (callback) callback();
+            }, delayAfter);
         }
         
         eyeball.addEventListener('click', () => {
-            // Start audio on first click
             if (!audioStarted) {
                 audio.play();
                 audioStarted = true;
             }
             
-            // Handle first click
             if (firstClick) {
                 firstClick = false;
                 warning.style.display = 'none';
-                
-                // Activate the crazy background
                 document.body.classList.add('activated');
                 
-                // Show "You clicked the eyeball" message after 3 seconds
+                // "You clicked the eyeball" message
                 setTimeout(() => {
-                    const originalText = 'You clicked the eyeball';
-                    const clickedMsg = document.createElement('div');
-                    clickedMsg.className = 'clicked-message';
-                    clickedMsg.textContent = originalText;
-                    clickedMsg.style.left = (window.innerWidth / 2) + 'px';
-                    clickedMsg.style.top = (eyeY + 250) + 'px';
-                    clickedMsg.style.transform = 'translateX(-50%)';
-                    document.body.appendChild(clickedMsg);
-                    
-                    // Start transforming to runes after 2 seconds
-                    setTimeout(() => {
-                        transformToRunes(clickedMsg, originalText);
-                    }, 2000);
-                    
-                    // Remove message after 10 seconds
-                    setTimeout(() => {
-                        clickedMsg.remove();
-                    }, 10000);
+                    showMessage('You clicked the eyeball', 10000, () => {
+                        // Wait 5 seconds, then show name prompt
+                        setTimeout(() => {
+                            const promptContainer = document.createElement('div');
+                            promptContainer.style.cssText = `
+                                position: fixed;
+                                left: 50%;
+                                top: ${eyeY + 250}px;
+                                transform: translateX(-50%);
+                                text-align: center;
+                            `;
+                            
+                            const promptLabel = document.createElement('div');
+                            promptLabel.textContent = 'ENTER YOUR NAME';
+                            promptLabel.style.cssText = `
+                                font-family: 'Courier New', monospace;
+                                font-size: 24px;
+                                color: #ff00ff;
+                                margin-bottom: 15px;
+                                text-shadow: 0 0 10px #00ffff, 0 0 20px #ffff00;
+                                animation: trippy 2.4s ease-in-out infinite;
+                            `;
+                            
+                            const input = document.createElement('input');
+                            input.type = 'text';
+                            input.style.cssText = `
+                                background: rgba(0, 0, 0, 0.7);
+                                border: 2px solid #ff00ff;
+                                color: #00ffff;
+                                font-family: 'Courier New', monospace;
+                                font-size: 20px;
+                                padding: 10px 20px;
+                                text-align: center;
+                                outline: none;
+                                box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+                            `;
+                            
+                            const submit = document.createElement('button');
+                            submit.textContent = 'SUBMIT';
+                            submit.style.cssText = `
+                                background: rgba(255, 0, 255, 0.3);
+                                border: 2px solid #00ffff;
+                                color: #ffff00;
+                                font-family: 'Courier New', monospace;
+                                font-size: 18px;
+                                padding: 10px 30px;
+                                margin-top: 15px;
+                                cursor: pointer;
+                                text-shadow: 0 0 10px #ff00ff;
+                                box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+                            `;
+                            
+                            promptContainer.appendChild(promptLabel);
+                            promptContainer.appendChild(input);
+                            promptContainer.appendChild(document.createElement('br'));
+                            promptContainer.appendChild(submit);
+                            document.body.appendChild(promptContainer);
+                            
+                            input.focus();
+                            
+                            const handleSubmit = () => {
+                                const userName = input.value.trim();
+                                if (userName) {
+                                    promptContainer.remove();
+                                    
+                                    // Wait 5 seconds, show "GOOD. NOW EVERYONE WILL KNOW."
+                                    setTimeout(() => {
+                                        showMessage('GOOD. NOW EVERYONE WILL KNOW.', 10000, () => {
+                                            // Wait 5 seconds, show final message
+                                            setTimeout(() => {
+                                                showMessage(`${userName.toUpperCase()} CLICKED THE EYEBALL. IT WAS ${userName.toUpperCase()}.`, 10000);
+                                            }, 5000);
+                                        });
+                                    }, 5000);
+                                }
+                            };
+                            
+                            submit.addEventListener('click', handleSubmit);
+                            input.addEventListener('keypress', (e) => {
+                                if (e.key === 'Enter') handleSubmit();
+                            });
+                            
+                        }, 5000);
+                    });
                 }, 3000);
             }
             
@@ -391,7 +472,6 @@
                 
                 document.body.appendChild(wave);
                 
-                // Remove wave after animation completes
                 setTimeout(() => {
                     wave.remove();
                 }, 3000);
