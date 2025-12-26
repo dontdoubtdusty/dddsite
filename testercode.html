@@ -184,15 +184,19 @@
     </div>
 
     <script>
-        document.getElementById('start-game').addEventListener('click', () => {
-          const circleColor = document.getElementById('circle-color').value;
-          const emojiColor = document.getElementById('emoji-color').value;
-          
-          player.style.backgroundColor = circleColor;
-          player.style.filter = hexToFilter(emojiColor);
-          
-          document.getElementById('character-creator').style.display = 'none';
-          document.getElementById('game-world').style.display = 'block';
+        document.getElementById('start-game').addEventListener('click', async () => {
+            const circleColor = document.getElementById('circle-color').value;
+            const emojiColor = document.getElementById('emoji-color').value;
+            
+            // Save to storage
+            await window.storage.set('character-circle-color', circleColor);
+            await window.storage.set('character-emoji-color', emojiColor);
+            
+            player.style.backgroundColor = circleColor;
+            player.style.filter = hexToFilter(emojiColor);
+            
+            document.getElementById('character-creator').style.display = 'none';
+            document.getElementById('game-world').style.display = 'block';
         });
         
         // Live preview
@@ -205,6 +209,31 @@
             const filter = hexToFilter(color);
             document.getElementById('preview-emoji').style.filter = filter;
         });
+
+        // Load saved character on page load
+        async function loadCharacter() {
+            try {
+                const circleResult = await window.storage.get('character-circle-color');
+                const emojiResult = await window.storage.get('character-emoji-color');
+                
+                if (circleResult) {
+                    const circleColor = circleResult.value;
+                    document.getElementById('circle-color').value = circleColor;
+                    document.getElementById('preview-circle').style.backgroundColor = circleColor;
+                }
+                
+                if (emojiResult) {
+                    const emojiColor = emojiResult.value;
+                    document.getElementById('emoji-color').value = emojiColor;
+                    document.getElementById('preview-emoji').style.filter = hexToFilter(emojiColor);
+                }
+            } catch (error) {
+                console.log('No saved character found');
+            }
+        }
+        
+        // Call on page load
+        loadCharacter();
 
         function hexToFilter(hex) {
             // Convert hex to RGB
