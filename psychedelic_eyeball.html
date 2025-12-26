@@ -206,10 +206,81 @@
                 border-radius: 50% 55% 45% 50% / 45% 50% 55% 45%;
             }
         }
+        .warning-message {
+            position: fixed;
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            color: #ff00ff;
+            text-align: center;
+            pointer-events: none;
+            animation: trippy 2.4s ease-in-out infinite;
+            opacity: 0.7;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #ffff00,
+                0 0 30px #ff00ff;
+        }
+        
+        @keyframes trippy {
+            0%, 100% {
+                color: #ff00ff;
+                transform: translateY(0px) scale(1);
+                text-shadow: 
+                    0 0 10px #00ffff,
+                    0 0 20px #ffff00,
+                    0 0 30px #ff00ff;
+            }
+            33% {
+                color: #00ffff;
+                transform: translateY(-3px) scale(1.05);
+                text-shadow: 
+                    0 0 10px #ffff00,
+                    0 0 20px #ff00ff,
+                    0 0 30px #00ffff;
+            }
+            66% {
+                color: #ffff00;
+                transform: translateY(3px) scale(0.95);
+                text-shadow: 
+                    0 0 10px #ff00ff,
+                    0 0 20px #00ffff,
+                    0 0 30px #ffff00;
+            }
+        }
+        
+        .clicked-message {
+            position: fixed;
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            color: #ffff00;
+            text-align: center;
+            pointer-events: none;
+            animation: fadeOut 10s ease-out forwards;
+            text-shadow: 
+                0 0 15px #ff00ff,
+                0 0 25px #00ffff,
+                0 0 35px #ffff00;
+        }
+        
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.2);
+            }
+        }
     </style>
 </head>
 <body>
     <div class="pulse-overlay"></div>
+
+    <div class="warning-message" id="warning">Do not click the eyeball</div>
     
     <div class="eyeball" id="eyeball">
         <div class="eyelid-top"></div>
@@ -224,6 +295,7 @@
 
     <script>
         const eyeball = document.getElementById('eyeball');
+        const warning = document.getElementById('warning');
         
         let eyeX = window.innerWidth / 2 - 100;
         let eyeY = window.innerHeight / 2 - 100;
@@ -231,17 +303,45 @@
         eyeball.style.left = eyeX + 'px';
         eyeball.style.top = eyeY + 'px';
         
+        // Position warning message above eyeball
+        warning.style.left = (window.innerWidth / 2) + 'px';
+        warning.style.top = (eyeY - 50) + 'px';
+        warning.style.transform = 'translateX(-50%)';
+        
         // Create audio element
-        const audio = new Audio('hiya_5.wav');
+        const audio = new Audio('ide2.wav');
         audio.loop = true;
         
         let audioStarted = false;
+        let firstClick = true;
         
         eyeball.addEventListener('click', () => {
             // Start audio on first click
             if (!audioStarted) {
                 audio.play();
                 audioStarted = true;
+            }
+            
+            // Handle first click
+            if (firstClick) {
+                firstClick = false;
+                warning.style.display = 'none';
+                
+                // Show "You clicked the eyeball" message after 3 seconds
+                setTimeout(() => {
+                    const clickedMsg = document.createElement('div');
+                    clickedMsg.className = 'clicked-message';
+                    clickedMsg.textContent = 'You clicked the eyeball';
+                    clickedMsg.style.left = (window.innerWidth / 2) + 'px';
+                    clickedMsg.style.top = (eyeY + 250) + 'px';
+                    clickedMsg.style.transform = 'translateX(-50%)';
+                    document.body.appendChild(clickedMsg);
+                    
+                    // Remove message after 10 seconds
+                    setTimeout(() => {
+                        clickedMsg.remove();
+                    }, 10000);
+                }, 3000);
             }
             
             // Create 2 squiggly waves
