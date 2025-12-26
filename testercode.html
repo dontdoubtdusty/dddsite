@@ -314,7 +314,7 @@
         warning.style.transform = 'translateX(-50%)';
         
         // Create audio element
-        const audio = new Audio('hiya_5.wav');
+        const audio = new Audio('ide2.wav');
         audio.loop = true;
         
         let audioStarted = false;
@@ -461,13 +461,16 @@
                                     
                                     // Wait 5 seconds, show "GOOD. NOW EVERYONE WILL KNOW."
                                     setTimeout(() => {
-                                            showMessage(`${userName.toUpperCase()} CLICKED THE EYEBALL. IT WAS ${userName.toUpperCase()}.`, 10000, () => {
-                                                // Wait 10 seconds, show "NAUGHTY NAUGHTY" with cut to black
-                                                setTimeout(() => {
-                                                    showMessage('NAUGHTY NAUGHTY', 10000, null, true);
-                                                }, 10000);
-                                            }, false, 'above');
-                                        }, 5000);
+                                        showMessage('GOOD. NOW EVERYONE WILL KNOW.', 10000, () => {
+                                            // Wait 5 seconds, show final message
+                                            setTimeout(() => {
+                                                showMessage(`${userName.toUpperCase()} CLICKED THE EYEBALL. IT WAS ${userName.toUpperCase()}.`, 10000, () => {
+                                                    // Wait 10 seconds, show "NAUGHTY NAUGHTY" with cut to black
+                                                    setTimeout(() => {
+                                                        showMessage('NAUGHTY NAUGHTY', 10000, null, true);
+                                                    }, 10000);
+                                                }, false, 'above');
+                                            }, 5000);
                                         });
                                     }, 5000);
                                 }
