@@ -96,6 +96,14 @@
             color: #555;
             font-size: 12px;
         }
+        #instructions-outdoor {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: #555;
+            font-size: 12px;
+        }
         #lighting-overlay {
             position: absolute;
             top: 0;
@@ -118,14 +126,46 @@
             pointer-events: none;
             mix-blend-mode: lighten;
         }
+        
         #yard {
-            background-color: #8BC34A;
+            background-color: #e3f2fd;
             padding: 60px;
             border-radius: 20px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        #door {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 60px;
+            background-color: #8B4513;
+            border: 3px solid #5C4033;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 100;
+        }
+        
+        #outdoor-zone {
+            width: 500px;
+            height: 200px;
+            background-color: #8BC34A;
             background-image: 
                 repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 11px),
                 repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 11px);
+            position: relative;
+            border: 10px solid #7CB342;
+            border-top: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .zone-hidden {
+            display: none;
         }
     </style>
 </head>
@@ -140,10 +180,15 @@
             <div id="fireplace" class="furniture">🪵</div>
             <div id="neighbor" class="entity">🐻</div>
             <div id="player" class="entity">🙂</div>
+            <div id="door">🚪</div>
     
             <div id="dialogue-box">
                 <strong style="color:#4ecdc4">Bear:</strong> <span id="dialogue-text">...</span>
             </div>
+        </div>
+        
+        <div id="outdoor-zone" class="zone-hidden">
+            <div id="instructions-outdoor">Arrows: Move • SPACE: Enter House</div>
         </div>
     </div>
 
@@ -153,6 +198,12 @@
         const plant = document.getElementById('plant');
         const dialogueBox = document.getElementById('dialogue-box');
         const dialogueText = document.getElementById('dialogue-text');
+        const door = document.getElementById('door');
+        const gameWorld = document.getElementById('game-world');
+        const outdoorZone = document.getElementById('outdoor-zone');
+        let doorObj = { x: 225, y: 360, w: 50, h: 40, el: door };
+        let isOutside = false;
+        let outdoorPlayerObj = { x: 230, y: 20, w: 40, h: 40 };
         
         // --- GAME VARIABLES ---
         let playerObj = { x: 230, y: 300, w: 40, h: 40, el: player };
@@ -223,7 +274,11 @@
             if (playerObj.x < 0) playerObj.x = 0;
             if (playerObj.y < 0) playerObj.y = 0;
             if (playerObj.x > 460) playerObj.x = 460;
-            if (playerObj.y > 360) playerObj.y = 360;
+            if (isOutside) {
+                if (playerObj.y > 160) playerObj.y = 160;
+            } else {
+                if (playerObj.y > 360) playerObj.y = 360;
+            }
 
             updateEntity(playerObj);
             updateEntity(neighborObj);
@@ -237,9 +292,13 @@
         // --- HELPERS ---
         function checkCollision(newX, newY) {
             let pRect = { x: newX, y: newY, w: playerObj.w, h: playerObj.h };
-            for (let obj of colliders) {
-                if (obj === plantObj && plantObj.isHeld) continue;
-                if (isOverlapping(pRect, obj)) return true;
+            
+            // Only check indoor colliders when inside
+            if (!isOutside) {
+                for (let obj of colliders) {
+                    if (obj === plantObj && plantObj.isHeld) continue;
+                    if (isOverlapping(pRect, obj)) return true;
+                }
             }
             return false;
         }
@@ -295,7 +354,25 @@
                         lightingOverlay.classList.remove('lit');
                         if (lightCircle) lightCircle.style.display = 'none';
                     }
+                    else if (getDistance(playerObj, doorObj) < 60 && !isOutside) {
+                        // Go outside
+                        isOutside = true;
+                        gameWorld.classList.add('zone-hidden');
+                        outdoorZone.classList.remove('zone-hidden');
+                        playerObj.x = outdoorPlayerObj.x;
+                        playerObj.y = outdoorPlayerObj.y;
+                        dialogueBox.style.display = 'none';
+                    }
                 }
+            // Check if outside and near bottom (door area)
+            if (isOutside && playerObj.y > 140) {
+                // Go inside
+                isOutside = false;
+                outdoorZone.classList.add('zone-hidden');
+                gameWorld.classList.remove('zone-hidden');
+                playerObj.x = 230;
+                playerObj.y = 320;
+            }
             }
         }
 
