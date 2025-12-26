@@ -38,40 +38,13 @@
                 rgba(0, 255, 255, 0.2) 50%,
                 rgba(255, 255, 0, 0.2) 75%,
                 transparent 100%);
-            animation: pulse 2s ease-in-out infinite;
+            animation: pulse 6s ease-in-out infinite;
             pointer-events: none;
         }
         
         @keyframes pulse {
             0%, 100% { opacity: 0.3; transform: scale(1); }
             50% { opacity: 0.7; transform: scale(1.1); }
-        }
-
-        @keyframes blink {
-            0%, 90%, 100% { 
-                clip-path: inset(0 0 0 0);
-            }
-            95% { 
-                clip-path: inset(45% 0 45% 0);
-            }
-        }
-        
-        @keyframes blinkTop {
-            0%, 90%, 100% { 
-                transform: scaleY(0);
-            }
-            95% { 
-                transform: scaleY(1);
-            }
-        }
-        
-        @keyframes blinkBottom {
-            0%, 90%, 100% { 
-                transform: scaleY(0);
-            }
-            95% { 
-                transform: scaleY(1);
-            }
         }
         
         .eyeball {
@@ -88,7 +61,7 @@
             height: 100%;
             background: radial-gradient(circle, #ffffff 0%, #f0f0f0 100%);
             border-radius: 50%;
-            animation: colorShiftWhite 4s ease infinite;
+            animation: colorShiftWhite 6s ease infinite;
             clip-path: ellipse(50% 45% at 50% 52%);
         }
         
@@ -100,7 +73,7 @@
             left: 0;
             background: linear-gradient(180deg, #ff00ff, #00ffff);
             border-radius: 50% 50% 100% 100% / 100% 100% 0% 0%;
-            animation: eyelidColorShift 3s ease infinite, blinkTop 4s ease-in-out infinite;
+            animation: eyelidColorShift 4.8s ease infinite, blinkTop 2.4s ease-in-out infinite;
             transform-origin: bottom;
             transform: scaleY(0);
             z-index: 10;
@@ -114,10 +87,20 @@
             left: 0;
             background: linear-gradient(0deg, #ffff00, #ff00ff);
             border-radius: 100% 100% 50% 50% / 0% 0% 100% 100%;
-            animation: eyelidColorShift 3s ease infinite reverse, blinkBottom 4s ease-in-out infinite;
+            animation: eyelidColorShift 4.8s ease infinite reverse, blinkBottom 2.4s ease-in-out infinite;
             transform-origin: top;
             transform: scaleY(0);
             z-index: 10;
+        }
+        
+        @keyframes blinkTop {
+            0%, 83%, 100% { transform: scaleY(0); }
+            92% { transform: scaleY(1); }
+        }
+        
+        @keyframes blinkBottom {
+            0%, 83%, 100% { transform: scaleY(0); }
+            92% { transform: scaleY(1); }
         }
         
         @keyframes eyelidColorShift {
@@ -159,7 +142,7 @@
                 #ff00ff 360deg
             );
             border-radius: 50%;
-            animation: rotate 3s linear infinite;
+            animation: rotate 4.8s linear infinite;
             transition: left 0.15s, top 0.15s;
         }
         
@@ -176,7 +159,7 @@
             left: 25%;
             background: radial-gradient(circle, #000000 40%, #1a1a1a 100%);
             border-radius: 50%;
-            animation: pupilPulse 1.5s ease-in-out infinite;
+            animation: pupilPulse 2.4s ease-in-out infinite;
         }
         
         @keyframes pupilPulse {
@@ -192,7 +175,7 @@
             left: 15%;
             background: radial-gradient(circle, rgba(255, 255, 255, 0.9), transparent);
             border-radius: 50%;
-            animation: shimmer 2s ease-in-out infinite;
+            animation: shimmer 3s ease-in-out infinite;
         }
         
         @keyframes shimmer {
