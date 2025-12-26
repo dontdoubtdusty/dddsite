@@ -135,6 +135,20 @@
           font-size: 40px;
           margin: 20px auto;
         }
+        #preview-circle {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 20px auto;
+          background-color: #ff6b6b;
+        }
+        
+        #preview-emoji {
+          font-size: 40px;
+        }
         
         #game-world {
           display: none;
@@ -145,7 +159,11 @@
 
     <div id="character-creator">
       <h2>Create Your Character</h2>
-      <div id="preview-character">🙂</div>
+      <div id="preview-container">
+      <div id="preview-circle">
+        <div id="preview-emoji">🙂</div>
+      </div>
+    </div>
       <label>Circle Color: <input type="color" id="circle-color" value="#ff6b6b"></label>
       <label>Emoji Tint: <input type="color" id="emoji-color" value="#ffffff"></label>
       <button id="start-game">Enter Village</button>
@@ -179,13 +197,13 @@
         
         // Live preview
         document.getElementById('circle-color').addEventListener('input', (e) => {
-          document.getElementById('preview-character').style.backgroundColor = e.target.value;
+            document.getElementById('preview-circle').style.backgroundColor = e.target.value;
         });
+        
         document.getElementById('emoji-color').addEventListener('input', (e) => {
             const color = e.target.value;
             const filter = hexToFilter(color);
-            const preview = document.getElementById('preview-character');
-            preview.style.filter = filter;
+            document.getElementById('preview-emoji').style.filter = filter;
         });
 
         function hexToFilter(hex) {
