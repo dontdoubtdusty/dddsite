@@ -353,6 +353,28 @@
             }, 200);
         }
         
+        function transformLabelToRunes(element, originalText, newText, callback) {
+            const chars = originalText.split('');
+            let currentIndex = 0;
+            
+            const transformInterval = setInterval(() => {
+                if (currentIndex < chars.length) {
+                    if (chars[currentIndex] !== ' ') {
+                        chars[currentIndex] = runeChars[Math.floor(Math.random() * runeChars.length)];
+                    }
+                    element.textContent = chars.join('');
+                    currentIndex++;
+                } else {
+                    clearInterval(transformInterval);
+                    // After rune animation, replace with new text
+                    setTimeout(() => {
+                        element.textContent = newText;
+                        if (callback) callback();
+                    }, 500);
+                }
+            }, 200);
+        }
+        
         function showMessage(text, delayAfter, callback, cutToBlack = false, position = 'below') {
             const msg = document.createElement('div');
             msg.className = 'clicked-message';
@@ -454,9 +476,19 @@
                             
                             input.focus();
                             
+                            // After 7 seconds, transform to "ENTER YOUR NAME...PLEASE"
+                            let hasTransformed = false;
+                            setTimeout(() => {
+                                if (!hasTransformed) {
+                                    transformLabelToRunes(promptLabel, 'ENTER YOUR NAME', 'ENTER YOUR NAME...PLEASE');
+                                    hasTransformed = true;
+                                }
+                            }, 7000);
+                            
                             const handleSubmit = () => {
                                 const userName = input.value.trim();
                                 if (userName) {
+                                    hasTransformed = true; // Prevent the transform if user already submitted
                                     promptContainer.remove();
                                     
                                     // Wait 5 seconds, show "GOOD. NOW EVERYONE WILL KNOW."
@@ -468,7 +500,7 @@
                                                     // Wait 10 seconds, show "NAUGHTY NAUGHTY" with cut to black
                                                     setTimeout(() => {
                                                         showMessage('NAUGHTY NAUGHTY', 10000, null, true);
-                                                    }, 7000);
+                                                    }, 10000);
                                                 }, false, 'above');
                                             }, 5000);
                                         });
@@ -481,7 +513,7 @@
                                 if (e.key === 'Enter') handleSubmit();
                             });
                             
-                        }, 5000);
+                        }, 4000);
                     });
                 }, 3000);
             }
