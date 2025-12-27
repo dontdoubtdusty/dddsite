@@ -280,6 +280,13 @@
                 transform: scale(1.2);
             }
         }
+        @keyframes jostle {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-2px, 1px); }
+            50% { transform: translate(1px, -1px); }
+            75% { transform: translate(-1px, -2px); }
+            100% { transform: translate(0, 0); }
+        }
     </style>
 </head>
 <body>
@@ -361,7 +368,13 @@
                 if (currentIndex < chars.length) {
                     if (chars[currentIndex] !== ' ') {
                         chars[currentIndex] = runeChars[Math.floor(Math.random() * runeChars.length)];
+                        // Trigger jostle animation
+                        element.style.animation = 'none';
+                        setTimeout(() => {
+                            element.style.animation = 'jostle 0.15s ease-out';
+                        }, 10);
                     }
+                    element.textContent = chars.join('');
                     element.textContent = chars.join('');
                     currentIndex++;
                 } else {
@@ -500,7 +513,7 @@
                                                     // Wait 10 seconds, show "NAUGHTY NAUGHTY" with cut to black
                                                     setTimeout(() => {
                                                         showMessage('NAUGHTY NAUGHTY', 10000, null, true);
-                                                    }, 10000);
+                                                    }, 7000);
                                                 }, false, 'above');
                                             }, 5000);
                                         });
