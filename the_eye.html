@@ -280,6 +280,14 @@
                 transform: scale(1.2);
             }
         }
+        @keyframes eyeballGrow {
+            from { transform: scale(1); }
+            to { transform: scale(1.6); }
+        }
+        @keyframes saturate {
+            from { filter: saturate(0.85); }
+            to { filter: saturate(1); }
+        }
     </style>
 </head>
 <body>
@@ -427,6 +435,7 @@
                 firstClick = false;
                 warning.style.display = 'none';
                 document.body.classList.add('activated');
+                eyeball.style.animation = 'eyeballGrow 45s linear forwards, saturate 45s linear forwards';
                 
                 // "You clicked the eyeball" message
                 setTimeout(() => {
