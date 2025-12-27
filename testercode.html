@@ -341,6 +341,11 @@
                 if (currentIndex < chars.length) {
                     if (chars[currentIndex] !== ' ') {
                         chars[currentIndex] = runeChars[Math.floor(Math.random() * runeChars.length)];
+                        // Trigger jostle animation
+                        element.style.animation = 'none';
+                        setTimeout(() => {
+                            element.style.animation = 'jostle 0.15s ease-out';
+                        }, 10);
                     }
                     element.textContent = chars.join('');
                     currentIndex++;
@@ -374,7 +379,6 @@
                             element.style.animation = 'jostle 0.15s ease-out';
                         }, 10);
                     }
-                    element.textContent = chars.join('');
                     element.textContent = chars.join('');
                     currentIndex++;
                 } else {
