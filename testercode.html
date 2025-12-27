@@ -288,6 +288,10 @@
             from { filter: saturate(0.85); }
             to { filter: saturate(1); }
         }
+        @keyframes textGrow {
+            from { font-size: 1em; }
+            to { font-size: 1.15em; }
+        }
     </style>
 </head>
 <body>
@@ -403,14 +407,20 @@
             msg.textContent = text;
             msg.style.left = (window.innerWidth / 2) + 'px';
             
-            // Position based on parameter
+            // Calculate current eyeball scale (grows from 1 to 1.15 over 45 seconds)
+            const timeSinceClick = Date.now() - clickTime;
+            const scale = Math.min(1 + (0.15 * timeSinceClick / 45000), 1.15);
+            const eyeballRadius = 100 * scale;
+            
+            // Position based on parameter with extra padding
             if (position === 'above') {
-                msg.style.top = (eyeY - 50) + 'px';
+                msg.style.top = (eyeY - eyeballRadius - 50) + 'px';
             } else {
-                msg.style.top = (eyeY + 250) + 'px';
+                msg.style.top = (eyeY + eyeballRadius + 150) + 'px';
             }
             
             msg.style.transform = 'translateX(-50%)';
+            msg.style.animation = 'textGrow 45s linear forwards';
             document.body.appendChild(msg);
             
             setTimeout(() => {
@@ -424,6 +434,8 @@
                 }, delayAfter);
             }
         }
+
+        let clickTime;
         
         eyeball.addEventListener('click', () => {
             if (!audioStarted) {
@@ -432,6 +444,7 @@
             }
             
             if (firstClick) {
+                clickTime = Date.now();
                 firstClick = false;
                 warning.style.display = 'none';
                 document.body.classList.add('activated');
