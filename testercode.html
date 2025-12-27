@@ -3,585 +3,901 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Eye</title>
+    <title>Task Rotation Schedule</title>
+    <p class="subtitle">Plan your workday with a balanced task rotation</p>
     <style>
         * {
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            box-sizing: border-box;
         }
         
         body {
-            width: 100vw;
-            height: 100vh;
-            cursor: none;
-            background: #000000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+
+        body.dark-mode {
+            background: #121212;
+            color: #e8e8e8;
         }
         
-        body.activated {
-            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
-            background-size: 400% 400%;
-            animation: gradientShift 3s ease infinite;
+        body.dark-mode .container {
+            background: #1e1e1e;
         }
         
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        body.dark-mode .controls {
+            background: #2a2a2a;
         }
         
-        .pulse-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, 
-                transparent 0%, 
-                rgba(255, 0, 255, 0.2) 25%,
-                rgba(0, 255, 255, 0.2) 50%,
-                rgba(255, 255, 0, 0.2) 75%,
-                transparent 100%);
-            animation: pulse 6s ease-in-out infinite;
-            pointer-events: none;
+        body.dark-mode .controls label {
+            color: #e8e8e8;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.1); }
+        body.dark-mode .controls select {
+            background: #2a2a2a;
+            color: #e8e8e8;
+            border-color: #404040;
         }
         
-        .eyeball {
-            position: fixed;
-            width: 200px;
-            height: 200px;
-            transition: left 0.1s, top 0.1s;
-            filter: drop-shadow(0 0 30px rgba(255, 0, 255, 0.8));
+        body.dark-mode .section-header {
+            background: #2d2d2d;
+            color: #ffffff;
+        }
+        
+        body.dark-mode .task-row {
+            border-bottom-color: #333;
+        }
+        
+        body.dark-mode .time {
+            color: #a0a0a0;
+        }
+        
+        body.dark-mode .task {
+            color: #d0d0d0;
+        }
+        
+        body.dark-mode h1 {
+            color: #ffffff;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 16px;
+            margin-top: -20px;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+        
+        body.dark-mode .subtitle {
+            color: #95a5a6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-radius: 16px;
+        }
+        
+        body.dark-mode .container {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px 30px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .controls label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .controls select {
+            font-size: 15px;
+            padding: 10px 14px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            background: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .controls select:hover {
+            border-color: #2c3e50;
+        }
+        
+        .controls select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .controls input[type="checkbox"] {
+            margin-right: 6px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+        
+        #includeBreak + label,
+        .control-group label:has(input[type="checkbox"]) {
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
             cursor: pointer;
         }
         
-        .eye-white {
-            position: absolute;
+        body.dark-mode .controls select:hover {
+            border-color: #f39c12;
+        }
+        
+        body.dark-mode .controls select:focus {
+            border-color: #f39c12;
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .time-inputs select {
+            padding: 8px 12px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        body.dark-mode .section {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 16px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 0;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        
+        body.dark-mode .section-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+        
+        .task-row {
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 18px 24px;
+            align-items: center;
+            background: white;
+        }
+        
+        .task-row:last-child {
+            border-bottom: none;
+        }
+        
+        body.dark-mode .task-row {
+            background: #1e1e1e;
+            border-bottom-color: #2a2a2a;
+        }
+        
+        .task-row:last-child {
+            border-bottom: none;
+        }
+        
+        .time {
+            font-weight: 600;
+            font-size: 15px;
+            color: #5a6c7d;
+            min-width: 200px;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.3px;
+        }
+        
+        body.dark-mode .time {
+            color: #8a9ba8;
+        }
+        
+        .task {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+            margin-left: 15px;  /* Add this */
+        }
+        
+        .label {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        
+        .daily {
+            background: #3498db;
+            color: white;
+        }
+        
+        .heavy {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .light {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .moderate {
+            background: #f39c12;
+            color: white;
+        }
+
+        .moderate-light {
+            background: linear-gradient(90deg, #f39c12 0%, #2ecc71 100%);
+            color: white;
+        }
+        
+        .break {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .micro-break-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #9b59b6 50%, transparent 100%);
+            margin: 12px 24px;
+            opacity: 0.6;
+        }
+
+        #themeToggle {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 20px;
+            background: #2c3e50;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        #themeToggle:hover {
+            background: #34495e;
+        }
+        
+        body.dark-mode #themeToggle {
+            background: #f39c12;
+        }
+
+        .controls input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        
+        body.dark-mode .controls input[type="checkbox"] {
+            accent-color: #f39c12;
+        }
+
+        #colorToggle {
+            position: fixed;
+            top: 15px;
+            right: 120px;  /* Increased from 90px */
+            padding: 8px 14px;
+            border: none;
+            border-radius: 20px;
+            background: #8e44ad;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        #colorToggle:hover {
+            background: #9b59b6;
+        }
+        
+        body.dark-mode #colorToggle {
+            background: #9b59b6;
+        }
+        
+        /* Colorful mode styles */
+        body.colorful-mode .task-row {
+            transition: background 0.3s;
+        }
+        
+        body.colorful-mode .task-row:has(.daily) {
+            background: linear-gradient(90deg, rgba(52, 152, 219, 0.15) 0%, rgba(52, 152, 219, 0.05) 100%);
+        }
+        
+        body.colorful-mode .task-row:has(.heavy) {
+            background: linear-gradient(90deg, rgba(231, 76, 60, 0.15) 0%, rgba(231, 76, 60, 0.05) 100%);
+        }
+        
+        body.colorful-mode .task-row:has(.light) {
+            background: linear-gradient(90deg, rgba(46, 204, 113, 0.15) 0%, rgba(46, 204, 113, 0.05) 100%);
+        }
+        
+        body.colorful-mode .task-row:has(.moderate) {
+            background: linear-gradient(90deg, rgba(243, 156, 18, 0.15) 0%, rgba(243, 156, 18, 0.05) 100%);
+        }
+        
+        body.colorful-mode .task-row:has(.break) {
+            background: linear-gradient(90deg, rgba(149, 165, 166, 0.15) 0%, rgba(149, 165, 166, 0.05) 100%);
+        }
+        
+        /* Dark mode + colorful mode */
+        body.dark-mode.colorful-mode .task-row:has(.daily) {
+            background: linear-gradient(90deg, rgba(52, 152, 219, 0.25) 0%, rgba(52, 152, 219, 0.1) 100%);
+        }
+        
+        body.dark-mode.colorful-mode .task-row:has(.heavy) {
+            background: linear-gradient(90deg, rgba(231, 76, 60, 0.25) 0%, rgba(231, 76, 60, 0.1) 100%);
+        }
+        
+        body.dark-mode.colorful-mode .task-row:has(.light) {
+            background: linear-gradient(90deg, rgba(46, 204, 113, 0.25) 0%, rgba(46, 204, 113, 0.1) 100%);
+        }
+        
+        body.dark-mode.colorful-mode .task-row:has(.moderate) {
+            background: linear-gradient(90deg, rgba(243, 156, 18, 0.25) 0%, rgba(243, 156, 18, 0.1) 100%);
+        }
+        
+        body.dark-mode.colorful-mode .task-row:has(.break) {
+            background: linear-gradient(90deg, rgba(149, 165, 166, 0.25) 0%, rgba(149, 165, 166, 0.1) 100%);
+        }
+        body.colorful-mode .task-row:has(.moderate-light) {
+            background: linear-gradient(90deg, rgba(243, 156, 18, 0.1) 0%, rgba(46, 204, 113, 0.1) 100%);
+        }
+        
+        body.dark-mode.colorful-mode .task-row:has(.moderate-light) {
+            background: linear-gradient(90deg, rgba(243, 156, 18, 0.2) 0%, rgba(46, 204, 113, 0.2) 100%);
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                width: 100%;
+                align-items: flex-start;
+            }
+            
+            .time-inputs {
+                width: 100%;
+            }
+            
+            .controls select {
+                width: 100%;
+                font-size: 14px;
+            }
+            
+            .time-inputs select {
+                flex: 1;
+            }
+            
+            .section-header {
+                font-size: 16px;
+                padding: 10px 15px;
+            }
+            
+            .task-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 15px;
+            }
+            
+            .time {
+                font-size: 14px;
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .task {
+                font-size: 14px;
+                width: 100%;
+            }
+            
+            .label {
+                align-self: flex-end;
+            }
+            #themeToggle {
+                top: 10px;
+                right: 10px;
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            
+            #colorToggle {
+                top: 10px;
+                right: 100px;  /* Increased from 75px */
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            
+            .controls {
+                display: none;
+            }
+        }
+        .task-row.break-row {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .task-row.break-row:hover {
+            opacity: 0.8;
+        }
+        
+        body.dark-mode .task-row.break-row:hover {
+            background: #2a2a2a;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, #ffffff 0%, #f0f0f0 100%);
-            border-radius: 50%;
-            animation: colorShiftWhite 6s ease infinite;
+            background-color: rgba(0,0,0,0.5);
         }
         
-        @keyframes colorShiftWhite {
-            0%, 100% { background: radial-gradient(circle, #ffffff 0%, #ffccff 100%); }
-            25% { background: radial-gradient(circle, #ffffff 0%, #ccffff 100%); }
-            50% { background: radial-gradient(circle, #ffffff 0%, #ffffcc 100%); }
-            75% { background: radial-gradient(circle, #ffffff 0%, #ffcccc 100%); }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
         
-        .iris {
-            position: absolute;
-            width: 60%;
-            height: 60%;
-            top: 20%;
-            left: 20%;
-            background: conic-gradient(
-                from 0deg,
-                #ff00ff 0deg,
-                #00ffff 60deg,
-                #ffff00 120deg,
-                #ff0000 180deg,
-                #00ff00 240deg,
-                #0000ff 300deg,
-                #ff00ff 360deg
-            );
-            border-radius: 50%;
-            animation: rotate 4.8s linear infinite;
+        body.dark-mode .modal-content {
+            background-color: #2a2a2a;
+            color: #e8e8e8;
         }
         
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .modal h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
         }
         
-        .pupil {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            top: 25%;
-            left: 25%;
-            background: radial-gradient(circle, #000000 40%, #1a1a1a 100%);
-            border-radius: 50%;
-            animation: pupilPulse 2.4s ease-in-out infinite;
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
         }
         
-        @keyframes pupilPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(0.85); }
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
         }
         
-        .reflection {
-            position: absolute;
-            width: 30%;
-            height: 30%;
-            top: 15%;
-            left: 15%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.9), transparent);
-            border-radius: 50%;
-            animation: shimmer 3s ease-in-out infinite;
+        .modal-buttons .confirm {
+            background: #3498db;
+            color: white;
         }
         
-        @keyframes shimmer {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+        .modal-buttons .cancel {
+            background: #95a5a6;
+            color: white;
         }
         
-        .wave {
-            position: fixed;
-            border-radius: 50%;
-            border: 4px solid;
-            pointer-events: none;
-            z-index: 5;
-            will-change: transform, opacity;
-        }
-        
-        .wave:nth-child(odd) {
-            animation: waveExpand1 2.4s ease-out forwards;
-        }
-        
-        .wave:nth-child(even) {
-            animation: waveExpand2 2.4s ease-out forwards;
-            animation-delay: 0.6s;
-        }
-        
-        @keyframes waveExpand1 {
-            0% {
-                width: 200px;
-                height: 200px;
-                opacity: 1;
-                border-color: #ff00ff;
-                border-radius: 50% 45% 55% 50% / 55% 50% 45% 50%;
-            }
-            25% {
-                border-color: #00ffff;
-                border-radius: 45% 55% 50% 45% / 50% 55% 50% 45%;
-            }
-            50% {
-                border-color: #ffff00;
-                border-radius: 55% 50% 45% 55% / 45% 50% 55% 50%;
-            }
-            75% {
-                border-color: #ff0000;
-                border-radius: 50% 45% 55% 50% / 50% 45% 50% 55%;
-                opacity: 0.5;
-            }
-            100% {
-                width: 1500px;
-                height: 1500px;
-                opacity: 0;
-                border-color: #ff00ff;
-                border-radius: 45% 55% 45% 55% / 55% 45% 55% 45%;
-            }
-        }
-        
-        @keyframes waveExpand2 {
-            0% {
-                width: 200px;
-                height: 200px;
-                opacity: 1;
-                border-color: #00ffff;
-                border-radius: 55% 50% 45% 50% / 50% 55% 50% 45%;
-            }
-            25% {
-                border-color: #ffff00;
-                border-radius: 50% 45% 50% 55% / 45% 50% 55% 50%;
-            }
-            50% {
-                border-color: #ff0000;
-                border-radius: 45% 55% 55% 50% / 55% 45% 50% 55%;
-            }
-            75% {
-                border-color: #00ff00;
-                border-radius: 55% 45% 50% 45% / 50% 55% 45% 50%;
-                opacity: 0.5;
-            }
-            100% {
-                width: 1500px;
-                height: 1500px;
-                opacity: 0;
-                border-color: #0000ff;
-                border-radius: 50% 55% 45% 50% / 45% 50% 55% 45%;
-            }
-        }
-        .warning-message {
-            position: fixed;
-            font-family: 'Courier New', monospace;
-            font-size: 24px;
-            color: #ff00ff;
-            text-align: center;
-            pointer-events: none;
-            animation: trippy 2.4s ease-in-out infinite;
-            opacity: 0.7;
-            text-shadow: 
-                0 0 10px #00ffff,
-                0 0 20px #ffff00,
-                0 0 30px #ff00ff;
-        }
-        
-        @keyframes trippy {
-            0%, 100% {
-                color: #ff00ff;
-                transform: translateY(0px) scale(1);
-                text-shadow: 
-                    0 0 10px #00ffff,
-                    0 0 20px #ffff00,
-                    0 0 30px #ff00ff;
-            }
-            33% {
-                color: #00ffff;
-                transform: translateY(-3px) scale(1.05);
-                text-shadow: 
-                    0 0 10px #ffff00,
-                    0 0 20px #ff00ff,
-                    0 0 30px #00ffff;
-            }
-            66% {
-                color: #ffff00;
-                transform: translateY(3px) scale(0.95);
-                text-shadow: 
-                    0 0 10px #ff00ff,
-                    0 0 20px #00ffff,
-                    0 0 30px #ffff00;
-            }
-        }
-        
-        .clicked-message {
-            position: fixed;
-            font-family: 'Courier New', monospace;
-            font-size: 28px;
-            color: #ffff00;
-            text-align: center;
-            pointer-events: none;
-            animation: fadeOut 10s ease-out forwards;
-            text-shadow: 
-                0 0 15px #ff00ff,
-                0 0 25px #00ffff,
-                0 0 35px #ffff00;
-            letter-spacing: 2px;
-        }
-        
-        @keyframes fadeOut {
-            0% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            70% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(1.2);
-            }
-        }
-        @keyframes eyeballGrow {
-            from { transform: scale(1); }
-            to { transform: scale(1.6); }
-        }
-        @keyframes saturate {
-            from { filter: saturate(0.85); }
-            to { filter: saturate(1); }
+        .modal-buttons button:hover {
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
-    <div class="pulse-overlay"></div>
-
-    <div class="warning-message" id="warning">Do not click the eyeball</div>
-    
-    <div class="eyeball" id="eyeball">
-        <div class="eyelid-top"></div>
-        <div class="eye-white"></div>
-        <div class="iris" id="iris">
-            <div class="pupil">
-                <div class="reflection"></div>
+    <button id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+    <button id="colorToggle" onclick="toggleColorful()">🎨 Colorful</button>
+    <div class="container">
+        <h1>Task Rotation Schedule</h1>
+        
+        <div class="controls">
+            <label for="hours"># of Hours:</label>
+            <select id="hours" onchange="generateSchedule()">
+                <option value="5">5 Hours</option>
+                <option value="6">6 Hours</option>
+                <option value="7">7 Hours</option>
+                <option value="8" selected>8 Hours</option>
+                <option value="9">9 Hours</option>
+            </select>
+            <div class="control-group">
+            <label>Start Time:</label>
+            <div class="time-inputs">
+                <select id="startHour" onchange="generateSchedule()">
+                    <option value="6">6 AM</option>
+                    <option value="7">7 AM</option>
+                    <option value="8" selected>8 AM</option>
+                    <option value="9">9 AM</option>
+                    <option value="10">10 AM</option>
+                    <option value="11">11 AM</option>
+                    <option value="12">12 PM</option>
+                </select>
+                <select id="startMinute" onchange="generateSchedule()">
+                    <option value="0" selected>:00</option>
+                    <option value="30">:30</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="includeBreak" checked onchange="generateSchedule()">
+                    Break?
+                </label>
+            </div>
+                <div class="control-group">
+                <label>Daily Task:</label>
+                <select id="dailyDuration" onchange="generateSchedule()">
+                    <option value="30">30 min</option>
+                    <option value="45">45 min</option>
+                    <option value="60">1 hour</option>
+                    <option value="90" selected>1.5 hours</option>
+                    <option value="120">2 hours</option>
+                </select>
             </div>
         </div>
-        <div class="eyelid-bottom"></div>
+        </div>
+        
+        <div id="schedule"></div>
+
+        <div id="breakModal" class="modal">
+            <div class="modal-content">
+                <h2>Set Custom Break Time</h2>
+                <div class="control-group">
+                    <label>Break Start Time:</label>
+                    <div class="time-inputs">
+                        <select id="customBreakHour">
+                            <!-- Will be populated by JS -->
+                        </select>
+                        <select id="customBreakMinute">
+                            <option value="0">:00</option>
+                            <option value="15">:15</option>
+                            <option value="30">:30</option>
+                            <option value="45">:45</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="confirm" onclick="applyCustomBreak()">Apply</button>
+                    <button class="cancel" onclick="closeBreakModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        const eyeball = document.getElementById('eyeball');
-        const warning = document.getElementById('warning');
+        let customBreakMinutes = null;
+
+        function generateSchedule() {
+            const totalHours = parseInt(document.getElementById('hours').value);
+            const includeBreak = document.getElementById('includeBreak').checked;
+            const workHours = includeBreak ? totalHours - 1 : totalHours;
+            const needsMicroBreaks = totalHours >= 6;
         
-        let eyeX = window.innerWidth / 2 - 100;
-        let eyeY = window.innerHeight / 2 - 100;
-        
-        eyeball.style.left = eyeX + 'px';
-        eyeball.style.top = eyeY + 'px';
-        
-        // Position warning message above eyeball
-        warning.style.left = (window.innerWidth / 2) + 'px';
-        warning.style.top = (eyeY - 50) + 'px';
-        warning.style.transform = 'translateX(-50%)';
-        
-        // Create audio element
-        const audio = new Audio('hiya_5.wav');
-        audio.loop = true;
-        
-        let audioStarted = false;
-        let firstClick = true;
-        
-        const runeChars = [
-            // Original runes
-            'ᚠ', 'ᚡ', 'ᚢ', 'ᚣ', 'ᚤ', 'ᚥ', 'ᚦ', 'ᚧ', 'ᚨ', 'ᚩ', 'ᚪ', 'ᚫ', 'ᚬ', 'ᚭ', 'ᚮ', 'ᚯ', 
-            'ᚰ', 'ᚱ', 'ᚲ', 'ᚳ', 'ᚴ', 'ᚵ', 'ᚶ', 'ᚷ', 'ᚸ', 'ᚹ', 'ᚺ', 'ᚻ', 'ᚼ', 'ᚽ', 'ᚾ', 'ᚿ',
-            '⟒', '⟓', '⟔', '⟕', '⟖', '⟗', '⟘', '⟙', '⟚', '⟛', '⟜', '⟝', '⟞', '⟟',
-            '᛫', '᛬', '᛭', 'ᛮ', 'ᛯ', 'ᛰ', '⊹', '⊼', '⊽', '⊾', '⊿', '⋀', '⋁', '⋂',
-            // Add special characters
-            '※', '§', '¶', '†', '‡', '°', '¤', '¢', '£', '¥', '₹', '€', '฿',
-            // Add math symbols
-            '∞', '∑', '∏', '√', '∫', '≈', '≠', '≤', '≥', '±', '∓', '×', '÷',
-            // Add Greek letters
-            'Ω', 'Δ', 'Φ', 'Ψ', 'Σ', 'Π', 'Λ', 'Θ', 'Ξ', 'α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ',
-            // Add Cyrillic
-            'Я', 'Ж', 'Ф', 'Д', 'Л', 'Ц', 'Щ', 'Ы', 'Э', 'Ю', 'я', 'ж', 'ф', 'д', 'л',
-            // Add more mystical symbols
-            '☠', '☢', '☣', '⚠', '⚡', '☽', '☾', '★', '☆', '♠', '♣', '♥', '♦',
-            // Add box drawing
-            '╔', '╗', '╚', '╝', '║', '═', '╬', '╣', '╠', '╦', '╩'
-        ];
-        
-        function transformToRunes(element, originalText, cutToBlack = false) {
-            const chars = originalText.split('');
-            let currentIndex = 0;
+            const dailyDuration = parseInt(document.getElementById('dailyDuration').value);
             
-            const transformInterval = setInterval(() => {
-                if (currentIndex < chars.length) {
-                    if (chars[currentIndex] !== ' ') {
-                        chars[currentIndex] = runeChars[Math.floor(Math.random() * runeChars.length)];
-                    }
-                    element.textContent = chars.join('');
-                    currentIndex++;
-                    
-                    // Cut to black in the middle of the rune animation
-                    if (cutToBlack && currentIndex === Math.floor(chars.length / 2)) {
-                        clearInterval(transformInterval);
-                        document.body.style.background = '#000000';
-                        document.body.classList.remove('activated');
-                        document.body.innerHTML = '';
-                        audio.pause();
-                        audio.currentTime = 0;
-                    }
-                } else {
-                    clearInterval(transformInterval);
-                }
-            }, 140);
-        }
-        
-        function transformLabelToRunes(element, originalText, newText, callback) {
-            const chars = originalText.split('');
-            let currentIndex = 0;
+            let schedule = [];
+            const startHour = parseInt(document.getElementById('startHour').value);
+            const startMinute = parseInt(document.getElementById('startMinute').value);
             
-            const transformInterval = setInterval(() => {
-                if (currentIndex < chars.length) {
-                    if (chars[currentIndex] !== ' ') {
-                        chars[currentIndex] = runeChars[Math.floor(Math.random() * runeChars.length)];
-                    }
-                    element.textContent = chars.join('');
-                    currentIndex++;
-                } else {
-                    clearInterval(transformInterval);
-                    // After rune animation, replace with new text
-                    setTimeout(() => {
-                        element.textContent = newText;
-                        if (callback) callback();
-                    }, 500);
-                }
-            }, 200);
-        }
-        
-        function showMessage(text, delayAfter, callback, cutToBlack = false, position = 'below') {
-            const msg = document.createElement('div');
-            msg.className = 'clicked-message';
-            msg.textContent = text;
-            msg.style.left = (window.innerWidth / 2) + 'px';
+            let currentMinutes = startHour * 60 + startMinute;
+            const startMinutes = currentMinutes;
+            const endMinutes = startMinutes + (totalHours * 60);
+            const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
+            const lunchTime = customBreakMinutes !== null ? customBreakMinutes : midpointMinutes + 30;
             
-            // Position based on parameter
-            if (position === 'above') {
-                msg.style.top = (eyeY - 50) + 'px';
-            } else {
-                msg.style.top = (eyeY + 250) + 'px';
-            }
-            
-            msg.style.transform = 'translateX(-50%)';
-            document.body.appendChild(msg);
-            
-            setTimeout(() => {
-                transformToRunes(msg, text, cutToBlack);
-            }, 2000);
-            
-            if (!cutToBlack) {
-                setTimeout(() => {
-                    msg.remove();
-                    if (callback) callback();
-                }, delayAfter);
-            }
-        }
-        
-        eyeball.addEventListener('click', () => {
-            if (!audioStarted) {
-                audio.play();
-                audioStarted = true;
-            }
-            
-            if (firstClick) {
-                firstClick = false;
-                warning.style.display = 'none';
-                document.body.classList.add('activated');
-                eyeball.style.animation = 'eyeballGrow 45s linear forwards, saturate 45s linear forwards';
+            function minutesToTime(mins) {
+                let h = Math.floor(mins / 60);
+                const m = mins % 60;
+                const ampm = h >= 12 ? 'PM' : 'AM';
                 
-                // "You clicked the eyeball" message
-                setTimeout(() => {
-                    showMessage('You clicked the eyeball', 10000, () => {
-                        // Wait 5 seconds, then show name prompt
-                        setTimeout(() => {
-                            const promptContainer = document.createElement('div');
-                            promptContainer.style.cssText = `
-                                position: fixed;
-                                left: 50%;
-                                top: ${eyeY + 250}px;
-                                transform: translateX(-50%);
-                                text-align: center;
-                            `;
-                            
-                            const promptLabel = document.createElement('div');
-                            promptLabel.textContent = 'ENTER YOUR NAME';
-                            promptLabel.style.cssText = `
-                                font-family: 'Courier New', monospace;
-                                font-size: 24px;
-                                color: #ff00ff;
-                                margin-bottom: 15px;
-                                text-shadow: 0 0 10px #00ffff, 0 0 20px #ffff00;
-                                animation: trippy 2.4s ease-in-out infinite;
-                            `;
-                            
-                            const input = document.createElement('input');
-                            input.type = 'text';
-                            input.style.cssText = `
-                                background: rgba(0, 0, 0, 0.7);
-                                border: 2px solid #ff00ff;
-                                color: #00ffff;
-                                font-family: 'Courier New', monospace;
-                                font-size: 20px;
-                                padding: 10px 20px;
-                                text-align: center;
-                                outline: none;
-                                box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
-                            `;
-                            
-                            const submit = document.createElement('button');
-                            submit.textContent = 'SUBMIT';
-                            submit.style.cssText = `
-                                background: rgba(255, 0, 255, 0.3);
-                                border: 2px solid #00ffff;
-                                color: #ffff00;
-                                font-family: 'Courier New', monospace;
-                                font-size: 18px;
-                                padding: 10px 30px;
-                                margin-top: 15px;
-                                cursor: pointer;
-                                text-shadow: 0 0 10px #ff00ff;
-                                box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-                            `;
-                            
-                            promptContainer.appendChild(promptLabel);
-                            promptContainer.appendChild(input);
-                            promptContainer.appendChild(document.createElement('br'));
-                            promptContainer.appendChild(submit);
-                            document.body.appendChild(promptContainer);
-                            
-                            input.focus();
-                            
-                            // After 7 seconds, transform to "ENTER YOUR NAME...PLEASE"
-                            let hasTransformed = false;
-                            setTimeout(() => {
-                                if (!hasTransformed) {
-                                    transformLabelToRunes(promptLabel, 'ENTER YOUR NAME', 'ENTER YOUR NAME...PLEASE');
-                                    hasTransformed = true;
-                                }
-                            }, 7000);
-                            
-                            const handleSubmit = () => {
-                                const userName = input.value.trim();
-                                if (userName) {
-                                    hasTransformed = true; // Prevent the transform if user already submitted
-                                    promptContainer.remove();
-                                    
-                                    // Wait 5 seconds, show "GOOD. NOW EVERYONE WILL KNOW."
-                                    setTimeout(() => {
-                                        showMessage('GOOD. NOW EVERYONE WILL KNOW.', 10000, () => {
-                                            // Wait 5 seconds, show final message
-                                            setTimeout(() => {
-                                                showMessage(`${userName.toUpperCase()} CLICKED THE EYEBALL. IT WAS ${userName.toUpperCase()}.`, 10000, () => {
-                                                    // Wait 10 seconds, show "HE SEES YOU NOW" then "NAUGHTY NAUGHTY" with cut to black
-                                                    setTimeout(() => {
-                                                        // Show "HE SEES YOU NOW" without animation
-                                                        const seeMsg = document.createElement('div');
-                                                        seeMsg.style.cssText = `
-                                                            position: fixed;
-                                                            left: 50%;
-                                                            top: ${eyeY + 250}px;
-                                                            transform: translateX(-50%);
-                                                            font-family: 'Courier New', monospace;
-                                                            font-size: 32px;
-                                                            font-weight: bold;
-                                                            color: #ff0000;
-                                                            text-align: center;
-                                                            pointer-events: none;
-                                                            text-shadow: 
-                                                                0 0 15px #ff00ff,
-                                                                0 0 25px #00ffff,
-                                                                0 0 35px #ff0000;
-                                                            letter-spacing: 3px;
-                                                        `;
-                                                        seeMsg.textContent = 'HE SEES YOU NOW';
-                                                        document.body.appendChild(seeMsg);
-                                                        
-                                                        // Remove after 10 seconds, then show "NAUGHTY NAUGHTY"
-                                                        setTimeout(() => {
-                                                            seeMsg.remove();
-                                                            showMessage('NAUGHTY NAUGHTY', 10000, null, true);
-                                                        }, 7000);
-                                                    }, 4000);
-                                                }, false, 'above');
-                                            }, 4000);
-                                        });
-                                    }, 4000);
-                                }
-                            };
-                            
-                            submit.addEventListener('click', handleSubmit);
-                            input.addEventListener('keypress', (e) => {
-                                if (e.key === 'Enter') handleSubmit();
-                            });
-                            
-                        }, 4000);
+                if (h > 12) h = h - 12;
+                if (h === 0) h = 12;
+                
+                return `${h}:${String(m).padStart(2, '0')} ${ampm}`;
+            }
+            
+            schedule.push({
+                start: minutesToTime(currentMinutes),
+                end: minutesToTime(currentMinutes + dailyDuration),
+                task: 'Daily task',
+                type: 'daily',
+                startMinutes: currentMinutes
+            });
+            currentMinutes += dailyDuration;
+            
+            let remainingMinutes = (workHours * 60) - dailyDuration;
+            let lunchTaken = false;
+            
+            let isHeavy = true;
+            let microBreakCounter = 0;
+            let tasksSinceMicroBreak = 0;
+            
+            while (remainingMinutes > 0) {
+                if (includeBreak && !lunchTaken && currentMinutes >= lunchTime) {
+                    schedule.push({
+                        start: minutesToTime(currentMinutes),
+                        end: minutesToTime(currentMinutes + 60),
+                        task: 'Break',
+                        type: 'break',
+                        startMinutes: currentMinutes,
+                        clickable: true
                     });
-                }, 3000);
+                    currentMinutes = currentMinutes + 60;
+                    lunchTaken = true;
+                    tasksSinceMicroBreak = 0;
+                    continue;
+                }
+                
+                if (needsMicroBreaks && tasksSinceMicroBreak >= 2 && microBreakCounter < 5 && remainingMinutes > 45) {
+                    schedule.push({
+                        type: 'micro-break-divider'
+                    });
+                    microBreakCounter++;
+                    tasksSinceMicroBreak = 0;
+                }
+                
+                let duration = Math.min(45, remainingMinutes);
+                let taskType, taskLabel;
+                
+                if (currentMinutes < lunchTime) {
+                    taskType = isHeavy ? 'heavy' : 'light';
+                    taskLabel = isHeavy ? 'Heavy task' : 'Light task';
+                } else {
+                    if (remainingMinutes <= 15) {
+                        taskType = 'light';
+                        taskLabel = 'Very light / finishing tasks';
+                    } else if (remainingMinutes <= 45) {
+                        taskType = 'moderate-light';
+                        taskLabel = 'Moderate/light task';
+                    } else if (isHeavy) {
+                        taskType = 'moderate';
+                        taskLabel = 'Moderate task';
+                    } else {
+                        taskType = 'light';
+                        taskLabel = 'Light task';
+                    }
+                }
+                
+                schedule.push({
+                    start: minutesToTime(currentMinutes),
+                    end: minutesToTime(currentMinutes + duration),
+                    task: taskLabel,
+                    type: taskType,
+                    startMinutes: currentMinutes
+                });
+                
+                currentMinutes += duration;
+                remainingMinutes -= duration;
+                isHeavy = !isHeavy;
+                tasksSinceMicroBreak++;
             }
             
-            // Create 2 squiggly waves
-            for (let i = 0; i < 2; i++) {
-                const wave = document.createElement('div');
-                wave.className = 'wave';
-                wave.style.left = (eyeX + 100) + 'px';
-                wave.style.top = (eyeY + 100) + 'px';
-                wave.style.transform = 'translate(-50%, -50%)';
+            renderSchedule(schedule);
+        }
+        
+        function renderSchedule(schedule) {
+            const scheduleDiv = document.getElementById('schedule');
+            let html = '';
+            let currentSection = '';
+            
+            schedule.forEach(item => {
+                if (item.type === 'micro-break-divider') {
+                    html += '<div class="micro-break-divider"></div>';
+                    return;
+                }
                 
-                document.body.appendChild(wave);
+                const h = Math.floor(item.startMinutes / 60);
                 
-                setTimeout(() => {
-                    wave.remove();
-                }, 3000);
+                let section = '';
+                
+                if (h < 12) {
+                    section = 'morning';
+                } else if (item.type === 'break') {
+                    section = 'break';
+                } else {
+                    section = 'afternoon';
+                }
+                
+                if (section !== currentSection) {
+                    if (currentSection !== '') {
+                        html += '</div>';
+                    }
+                    
+                    let headerText = '';
+                    if (section === 'morning') {
+                        headerText = 'MORNING SESSION';
+                    } else if (section === 'break') {
+                        headerText = 'LUNCH BREAK';
+                    } else {
+                        headerText = 'AFTERNOON SESSION';
+                    }
+                    
+                    html += `<div class="section"><div class="section-header">${headerText}</div>`;
+                    currentSection = section;
+                }
+                
+                const clickableClass = item.clickable ? 'break-row' : '';
+                const clickHandler = item.clickable ? 'onclick="openBreakModal()"' : '';
+                
+                html += `
+                    <div class="task-row ${clickableClass}" ${clickHandler}>
+                        <div class="time">${item.start} – ${item.end}</div>
+                        <div class="task">${item.task}${item.clickable ? ' (click to change)' : ''}</div>
+                        <span class="label ${item.type}">${item.type === 'moderate-light' ? 'Moderate/Light' : item.type.charAt(0).toUpperCase() + item.type.slice(1).replace('-', ' ')}</span>
+                    </div>
+                `;
+            });
+            
+            if (currentSection !== '') {
+                html += '</div>';
             }
-        });
+            
+            scheduleDiv.innerHTML = html;
+        }
+        
+        function openBreakModal() {
+            const modal = document.getElementById('breakModal');
+            const hourSelect = document.getElementById('customBreakHour');
+            
+            // Populate hour options based on work hours
+            const startHour = parseInt(document.getElementById('startHour').value);
+            const totalHours = parseInt(document.getElementById('hours').value);
+            
+            hourSelect.innerHTML = '';
+            for (let i = startHour; i < startHour + totalHours; i++) {
+                const displayHour = i > 12 ? i - 12 : (i === 0 ? 12 : i);
+                const ampm = i >= 12 ? 'PM' : 'AM';
+                hourSelect.innerHTML += `<option value="${i}">${displayHour} ${ampm}</option>`;
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeBreakModal() {
+            document.getElementById('breakModal').style.display = 'none';
+        }
+        
+        function applyCustomBreak() {
+            const hour = parseInt(document.getElementById('customBreakHour').value);
+            const minute = parseInt(document.getElementById('customBreakMinute').value);
+            
+            customBreakMinutes = hour * 60 + minute;
+            
+            closeBreakModal();
+            generateSchedule();
+        }
+        
+        function toggleTheme() {
+            const body = document.body;
+            const button = document.getElementById('themeToggle');
+            
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                button.textContent = '☀️ Light Mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                button.textContent = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        
+        function toggleColorful() {
+            const body = document.body;
+            const button = document.getElementById('colorToggle');
+            
+            body.classList.toggle('colorful-mode');
+            
+            if (body.classList.contains('colorful-mode')) {
+                button.textContent = '🎨 Simple';
+                localStorage.setItem('colorful', 'true');
+            } else {
+                button.textContent = '🎨 Colorful';
+                localStorage.setItem('colorful', 'false');
+            }
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('breakModal');
+            if (event.target === modal) {
+                closeBreakModal();
+            }
+        }
+        
+        window.onload = function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggle').textContent = '☀️ Light Mode';
+            }
+            if (localStorage.getItem('colorful') === 'true') {
+                document.body.classList.add('colorful-mode');
+                document.getElementById('colorToggle').textContent = '🎨 Simple';
+            }
+            generateSchedule();
+        }
+        
+        generateSchedule();
     </script>
 </body>
 </html>
