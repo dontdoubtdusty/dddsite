@@ -288,10 +288,6 @@
             from { filter: saturate(0.85); }
             to { filter: saturate(1); }
         }
-        @keyframes textGrow {
-            from { font-size: 1em; }
-            to { font-size: 2em; }
-        }
     </style>
 </head>
 <body>
@@ -407,24 +403,14 @@
             msg.textContent = text;
             msg.style.left = (window.innerWidth / 2) + 'px';
             
-            // Calculate current eyeball scale (grows from 1 to 1.15 over 45 seconds)
-            const timeSinceClick = Date.now() - clickTime;
-            const scale = Math.min(1 + (0.15 * timeSinceClick / 45000), 1.15);
-            const eyeballRadius = 100 * scale;
-            
-            // Original positions, but adjusted for eyeball growth
+            // Position based on parameter
             if (position === 'above') {
-                const baseOffset = 50;
-                const additionalOffset = (eyeballRadius - 100); // How much bigger the eyeball has gotten
-                msg.style.top = (eyeY - baseOffset - additionalOffset) + 'px';
+                msg.style.top = (eyeY - 50) + 'px';
             } else {
-                const baseOffset = 250;
-                const additionalOffset = (eyeballRadius - 100);
-                msg.style.top = (eyeY + baseOffset + additionalOffset) + 'px';
+                msg.style.top = (eyeY + 250) + 'px';
             }
             
             msg.style.transform = 'translateX(-50%)';
-            msg.style.animation = 'textGrow 45s linear forwards';
             document.body.appendChild(msg);
             
             setTimeout(() => {
@@ -438,8 +424,6 @@
                 }, delayAfter);
             }
         }
-
-        let clickTime;
         
         eyeball.addEventListener('click', () => {
             if (!audioStarted) {
@@ -448,7 +432,6 @@
             }
             
             if (firstClick) {
-                clickTime = Date.now();
                 firstClick = false;
                 warning.style.display = 'none';
                 document.body.classList.add('activated');
@@ -538,8 +521,35 @@
                                             setTimeout(() => {
                                                 showMessage(`${userName.toUpperCase()} CLICKED THE EYEBALL. IT WAS ${userName.toUpperCase()}.`, 10000, () => {
                                                     // Wait 10 seconds, show "NAUGHTY NAUGHTY" with cut to black
+                                                    // Wait 10 seconds, show "HE SEES YOU NOW" then "NAUGHTY NAUGHTY" with cut to black
                                                     setTimeout(() => {
-                                                        showMessage('NAUGHTY NAUGHTY', 10000, null, true);
+                                                        // Show "HE SEES YOU NOW" without animation
+                                                        const seeMsg = document.createElement('div');
+                                                        seeMsg.style.cssText = `
+                                                            position: fixed;
+                                                            left: 50%;
+                                                            top: ${eyeY + 250}px;
+                                                            transform: translateX(-50%);
+                                                            font-family: 'Courier New', monospace;
+                                                            font-size: 32px;
+                                                            font-weight: bold;
+                                                            color: #ff0000;
+                                                            text-align: center;
+                                                            pointer-events: none;
+                                                            text-shadow: 
+                                                                0 0 15px #ff00ff,
+                                                                0 0 25px #00ffff,
+                                                                0 0 35px #ff0000;
+                                                            letter-spacing: 3px;
+                                                        `;
+                                                        seeMsg.textContent = 'HE SEES YOU NOW';
+                                                        document.body.appendChild(seeMsg);
+                                                        
+                                                        // Remove after 10 seconds, then show "NAUGHTY NAUGHTY"
+                                                        setTimeout(() => {
+                                                            seeMsg.remove();
+                                                            showMessage('NAUGHTY NAUGHTY', 10000, null, true);
+                                                        }, 10000);
                                                     }, 7000);
                                                 }, false, 'above');
                                             }, 5000);
