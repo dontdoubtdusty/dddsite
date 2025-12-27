@@ -290,7 +290,7 @@
         }
         @keyframes textGrow {
             from { font-size: 1em; }
-            to { font-size: 1.15em; }
+            to { font-size: 2em; }
         }
     </style>
 </head>
@@ -412,11 +412,15 @@
             const scale = Math.min(1 + (0.15 * timeSinceClick / 45000), 1.15);
             const eyeballRadius = 100 * scale;
             
-            // Position based on parameter with extra padding
+            // Original positions, but adjusted for eyeball growth
             if (position === 'above') {
-                msg.style.top = (eyeY - eyeballRadius - 50) + 'px';
+                const baseOffset = 50;
+                const additionalOffset = (eyeballRadius - 100); // How much bigger the eyeball has gotten
+                msg.style.top = (eyeY - baseOffset - additionalOffset) + 'px';
             } else {
-                msg.style.top = (eyeY + eyeballRadius + 150) + 'px';
+                const baseOffset = 250;
+                const additionalOffset = (eyeballRadius - 100);
+                msg.style.top = (eyeY + baseOffset + additionalOffset) + 'px';
             }
             
             msg.style.transform = 'translateX(-50%)';
