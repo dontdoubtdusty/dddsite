@@ -280,12 +280,9 @@
                 transform: scale(1.2);
             }
         }
-        @keyframes jostle {
-            0% { transform: translate(0, 0); }
-            25% { transform: translate(-0.7px, 0.3px); }
-            50% { transform: translate(0.3px, -0.3px); }
-            75% { transform: translate(-0.3px, -0.7px); }
-            100% { transform: translate(0, 0); }
+        @keyframes eyeballGrow {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
         }
     </style>
 </head>
@@ -327,11 +324,25 @@
         let audioStarted = false;
         let firstClick = true;
         
-        // Eldritch rune characters
-        const runeChars = ['ᚠ', 'ᚡ', 'ᚢ', 'ᚣ', 'ᚤ', 'ᚥ', 'ᚦ', 'ᚧ', 'ᚨ', 'ᚩ', 'ᚪ', 'ᚫ', 'ᚬ', 'ᚭ', 'ᚮ', 'ᚯ', 
-                          'ᚰ', 'ᚱ', 'ᚲ', 'ᚳ', 'ᚴ', 'ᚵ', 'ᚶ', 'ᚷ', 'ᚸ', 'ᚹ', 'ᚺ', 'ᚻ', 'ᚼ', 'ᚽ', 'ᚾ', 'ᚿ',
-                          '⟒', '⟓', '⟔', '⟕', '⟖', '⟗', '⟘', '⟙', '⟚', '⟛', '⟜', '⟝', '⟞', '⟟',
-                          '᛫', '᛬', '᛭', 'ᛮ', 'ᛯ', 'ᛰ', '⊹', '⊼', '⊽', '⊾', '⊿', '⋀', '⋁', '⋂'];
+        const runeChars = [
+            // Original runes
+            'ᚠ', 'ᚡ', 'ᚢ', 'ᚣ', 'ᚤ', 'ᚥ', 'ᚦ', 'ᚧ', 'ᚨ', 'ᚩ', 'ᚪ', 'ᚫ', 'ᚬ', 'ᚭ', 'ᚮ', 'ᚯ', 
+            'ᚰ', 'ᚱ', 'ᚲ', 'ᚳ', 'ᚴ', 'ᚵ', 'ᚶ', 'ᚷ', 'ᚸ', 'ᚹ', 'ᚺ', 'ᚻ', 'ᚼ', 'ᚽ', 'ᚾ', 'ᚿ',
+            '⟒', '⟓', '⟔', '⟕', '⟖', '⟗', '⟘', '⟙', '⟚', '⟛', '⟜', '⟝', '⟞', '⟟',
+            '᛫', '᛬', '᛭', 'ᛮ', 'ᛯ', 'ᛰ', '⊹', '⊼', '⊽', '⊾', '⊿', '⋀', '⋁', '⋂',
+            // Add special characters
+            '※', '§', '¶', '†', '‡', '°', '¤', '¢', '£', '¥', '₹', '€', '฿',
+            // Add math symbols
+            '∞', '∑', '∏', '√', '∫', '≈', '≠', '≤', '≥', '±', '∓', '×', '÷',
+            // Add Greek letters
+            'Ω', 'Δ', 'Φ', 'Ψ', 'Σ', 'Π', 'Λ', 'Θ', 'Ξ', 'α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ',
+            // Add Cyrillic
+            'Я', 'Ж', 'Ф', 'Д', 'Л', 'Ц', 'Щ', 'Ы', 'Э', 'Ю', 'я', 'ж', 'ф', 'д', 'л',
+            // Add more mystical symbols
+            '☠', '☢', '☣', '⚠', '⚡', '☽', '☾', '★', '☆', '♠', '♣', '♥', '♦',
+            // Add box drawing
+            '╔', '╗', '╚', '╝', '║', '═', '╬', '╣', '╠', '╦', '╩'
+        ];
         
         function transformToRunes(element, originalText, cutToBlack = false) {
             const chars = originalText.split('');
@@ -341,11 +352,6 @@
                 if (currentIndex < chars.length) {
                     if (chars[currentIndex] !== ' ') {
                         chars[currentIndex] = runeChars[Math.floor(Math.random() * runeChars.length)];
-                        // Trigger jostle animation
-                        element.style.animation = 'none';
-                        setTimeout(() => {
-                            element.style.animation = 'jostle 0.15s ease-out';
-                        }, 10);
                     }
                     element.textContent = chars.join('');
                     currentIndex++;
@@ -362,7 +368,7 @@
                 } else {
                     clearInterval(transformInterval);
                 }
-            }, 200);
+            }, 140);
         }
         
         function transformLabelToRunes(element, originalText, newText, callback) {
@@ -373,11 +379,6 @@
                 if (currentIndex < chars.length) {
                     if (chars[currentIndex] !== ' ') {
                         chars[currentIndex] = runeChars[Math.floor(Math.random() * runeChars.length)];
-                        // Trigger jostle animation
-                        element.style.animation = 'none';
-                        setTimeout(() => {
-                            element.style.animation = 'jostle 0.15s ease-out';
-                        }, 10);
                     }
                     element.textContent = chars.join('');
                     currentIndex++;
@@ -430,6 +431,7 @@
                 firstClick = false;
                 warning.style.display = 'none';
                 document.body.classList.add('activated');
+                eyeball.style.animation = 'eyeballGrow 45s linear forwards';
                 
                 // "You clicked the eyeball" message
                 setTimeout(() => {
