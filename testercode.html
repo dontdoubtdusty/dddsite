@@ -802,7 +802,7 @@
                 html += `
                     <div class="task-row ${clickableClass}" ${clickHandler}>
                         <div class="time">${item.start} – ${item.end}</div>
-                        <div class="task">${item.task}${item.clickable ? ' (click to change)' : ''}</div>
+                        <div class="task">${item.task}</div>
                         <span class="label ${item.type}">${item.type === 'moderate-light' ? 'Moderate/Light' : item.type.charAt(0).toUpperCase() + item.type.slice(1).replace('-', ' ')}</span>
                     </div>
                 `;
@@ -828,6 +828,14 @@
                 const displayHour = i > 12 ? i - 12 : (i === 0 ? 12 : i);
                 const ampm = i >= 12 ? 'PM' : 'AM';
                 hourSelect.innerHTML += `<option value="${i}">${displayHour} ${ampm}</option>`;
+            }
+            
+            // Set default to current break time if custom break exists
+            if (customBreakMinutes !== null) {
+                const currentHour = Math.floor(customBreakMinutes / 60);
+                const currentMinute = customBreakMinutes % 60;
+                hourSelect.value = currentHour;
+                document.getElementById('customBreakMinute').value = currentMinute;
             }
             
             modal.style.display = 'block';
