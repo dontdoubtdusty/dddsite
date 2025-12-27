@@ -693,16 +693,17 @@
             let tasksSinceMicroBreak = 0;
             
             while (remainingMinutes > 0) {
-                if (includeBreak && !lunchTaken && currentMinutes >= lunchTime) {
+                // Check if we need to insert break before the next task
+                if (includeBreak && !lunchTaken && (currentMinutes >= lunchTime || currentMinutes + 45 > lunchTime)) {
                     schedule.push({
-                        start: minutesToTime(currentMinutes),
-                        end: minutesToTime(currentMinutes + 60),
+                        start: minutesToTime(lunchTime),
+                        end: minutesToTime(lunchTime + 60),
                         task: 'Break',
                         type: 'break',
-                        startMinutes: currentMinutes,
+                        startMinutes: lunchTime,
                         clickable: true
                     });
-                    currentMinutes = currentMinutes + 60;
+                    currentMinutes = lunchTime + 60;
                     lunchTaken = true;
                     tasksSinceMicroBreak = 0;
                     continue;
