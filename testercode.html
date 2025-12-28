@@ -832,13 +832,22 @@
                 hourSelect.innerHTML += `<option value="${i}">${displayHour} ${ampm}</option>`;
             }
             
-            // Set default to current break time if custom break exists
+            // Calculate current break time (either custom or default)
+            let currentBreakMinutes;
             if (customBreakMinutes !== null) {
-                const currentHour = Math.floor(customBreakMinutes / 60);
-                const currentMinute = customBreakMinutes % 60;
-                hourSelect.value = currentHour;
-                document.getElementById('customBreakMinute').value = currentMinute;
+                currentBreakMinutes = customBreakMinutes;
+            } else {
+                const startMinute = parseInt(document.getElementById('startMinute').value);
+                const startMinutes = startHour * 60 + startMinute;
+                const endMinutes = startMinutes + (totalHours * 60);
+                const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
+                currentBreakMinutes = midpointMinutes + 30;
             }
+            
+            const currentHour = Math.floor(currentBreakMinutes / 60);
+            const currentMinute = currentBreakMinutes % 60;
+            hourSelect.value = currentHour;
+            document.getElementById('customBreakMinute').value = currentMinute;
             
             modal.style.display = 'block';
         }
