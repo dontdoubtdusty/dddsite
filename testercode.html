@@ -3,920 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Rotation Schedule</title>
-    <p class="subtitle">Plan your workday with a balanced task rotation</p>
+    <title>Magic 8-Ball</title>
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
-            padding: 40px 20px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: 'Arial', sans-serif;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px 0;
         }
 
-        body.dark-mode {
-            background: #121212;
-            color: #e8e8e8;
-        }
-        
-        body.dark-mode .container {
-            background: #1e1e1e;
-        }
-        
-        body.dark-mode .controls {
-            background: #2a2a2a;
-        }
-        
-        body.dark-mode .controls label {
-            color: #e8e8e8;
-        }
-        
-        body.dark-mode .controls select {
-            background: #2a2a2a;
-            color: #e8e8e8;
-            border-color: #404040;
-        }
-        
-        body.dark-mode .section-header {
-            background: #2d2d2d;
-            color: #ffffff;
-        }
-        
-        body.dark-mode .task-row {
-            border-bottom-color: #333;
-        }
-        
-        body.dark-mode .time {
-            color: #a0a0a0;
-        }
-        
-        body.dark-mode .task {
-            color: #d0d0d0;
-        }
-        
-        body.dark-mode h1 {
-            color: #ffffff;
-        }
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 16px;
-            margin-top: -20px;
-            margin-bottom: 30px;
-            font-weight: 400;
-        }
-        
-        body.dark-mode .subtitle {
-            color: #95a5a6;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 40px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border-radius: 16px;
-        }
-        
-        body.dark-mode .container {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
-        
         h1 {
-            text-align: center;
-            color: #1a1a1a;
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .controls {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 25px 30px;
-            background: #ecf0f1;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 25px;
-            flex-wrap: wrap;
-        }
-        
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .controls label {
-            font-size: 15px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        .controls select {
-            font-size: 15px;
-            padding: 10px 14px;
-            border: 1px solid #bdc3c7;
-            border-radius: 6px;
-            background: white;
-            font-weight: 500;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
-        
-        .controls select:hover {
-            border-color: #2c3e50;
-        }
-        
-        .controls select:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-        
-        .controls input[type="checkbox"] {
-            margin-right: 6px;
-            cursor: pointer;
-            width: 16px;
-            height: 16px;
-        }
-        
-        #includeBreak + label,
-        .control-group label:has(input[type="checkbox"]) {
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        body.dark-mode .controls select:hover {
-            border-color: #f39c12;
-        }
-        
-        body.dark-mode .controls select:focus {
-            border-color: #f39c12;
-        }
-        
-        .time-inputs {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .time-inputs select {
-            padding: 8px 12px;
-        }
-        
-        .section {
-            margin-bottom: 25px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        
-        body.dark-mode .section {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        
-        .section-header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
-            padding: 16px 24px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 0;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-        
-        body.dark-mode .section-header {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-        }
-        
-        .task-row {
-            display: flex;
-            border-bottom: 1px solid #f0f0f0;
-            padding: 18px 24px;
-            align-items: center;
-            background: white;
-        }
-        
-        .task-row:last-child {
-            border-bottom: none;
-        }
-        
-        body.dark-mode .task-row {
-            background: #1e1e1e;
-            border-bottom-color: #2a2a2a;
-        }
-        
-        .task-row:last-child {
-            border-bottom: none;
-        }
-        
-        .time {
-            font-weight: 600;
-            font-size: 15px;
-            color: #5a6c7d;
-            min-width: 200px;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 0.3px;
-        }
-        
-        body.dark-mode .time {
-            color: #8a9ba8;
-        }
-        
-        .task {
-            flex: 1;
-            font-size: 16px;
-            color: #333;
-            margin-left: 15px;  /* Add this */
-        }
-        
-        .label {
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-        
-        .daily {
-            background: #3498db;
-            color: white;
-        }
-        
-        .heavy {
-            background: #e74c3c;
-            color: white;
-        }
-        
-        .light {
-            background: #2ecc71;
-            color: white;
-        }
-        
-        .moderate {
-            background: #f39c12;
-            color: white;
-        }
-
-        .moderate-light {
-            background: linear-gradient(90deg, #f39c12 0%, #2ecc71 100%);
-            color: white;
-        }
-        
-        .break {
-            background: #95a5a6;
-            color: white;
-        }
-
-        .micro-break-divider {
-            height: 2px;
-            background: linear-gradient(90deg, transparent 0%, #9b59b6 50%, transparent 100%);
-            margin: 12px 24px;
-            opacity: 0.6;
-        }
-
-        #themeToggle {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            padding: 8px 14px;
-            border: none;
-            border-radius: 20px;
-            background: #2c3e50;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-        
-        #themeToggle:hover {
-            background: #34495e;
-        }
-        
-        body.dark-mode #themeToggle {
-            background: #f39c12;
-        }
-
-        .controls input[type="checkbox"] {
-            margin-right: 8px;
-            cursor: pointer;
-        }
-        
-        body.dark-mode .controls input[type="checkbox"] {
-            accent-color: #f39c12;
-        }
-
-        #colorToggle {
-            position: fixed;
-            top: 15px;
-            right: 120px;  /* Increased from 90px */
-            padding: 8px 14px;
-            border: none;
-            border-radius: 20px;
-            background: #8e44ad;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-        
-        #colorToggle:hover {
-            background: #9b59b6;
-        }
-        
-        body.dark-mode #colorToggle {
-            background: #9b59b6;
-        }
-        
-        /* Colorful mode styles */
-        body.colorful-mode .task-row {
-            transition: background 0.3s;
-        }
-        
-        body.colorful-mode .task-row:has(.daily) {
-            background: linear-gradient(90deg, rgba(52, 152, 219, 0.15) 0%, rgba(52, 152, 219, 0.05) 100%);
-        }
-        
-        body.colorful-mode .task-row:has(.heavy) {
-            background: linear-gradient(90deg, rgba(231, 76, 60, 0.15) 0%, rgba(231, 76, 60, 0.05) 100%);
-        }
-        
-        body.colorful-mode .task-row:has(.light) {
-            background: linear-gradient(90deg, rgba(46, 204, 113, 0.15) 0%, rgba(46, 204, 113, 0.05) 100%);
-        }
-        
-        body.colorful-mode .task-row:has(.moderate) {
-            background: linear-gradient(90deg, rgba(243, 156, 18, 0.15) 0%, rgba(243, 156, 18, 0.05) 100%);
-        }
-        
-        body.colorful-mode .task-row:has(.break) {
-            background: linear-gradient(90deg, rgba(149, 165, 166, 0.15) 0%, rgba(149, 165, 166, 0.05) 100%);
-        }
-        
-        /* Dark mode + colorful mode */
-        body.dark-mode.colorful-mode .task-row:has(.daily) {
-            background: linear-gradient(90deg, rgba(52, 152, 219, 0.25) 0%, rgba(52, 152, 219, 0.1) 100%);
-        }
-        
-        body.dark-mode.colorful-mode .task-row:has(.heavy) {
-            background: linear-gradient(90deg, rgba(231, 76, 60, 0.25) 0%, rgba(231, 76, 60, 0.1) 100%);
-        }
-        
-        body.dark-mode.colorful-mode .task-row:has(.light) {
-            background: linear-gradient(90deg, rgba(46, 204, 113, 0.25) 0%, rgba(46, 204, 113, 0.1) 100%);
-        }
-        
-        body.dark-mode.colorful-mode .task-row:has(.moderate) {
-            background: linear-gradient(90deg, rgba(243, 156, 18, 0.25) 0%, rgba(243, 156, 18, 0.1) 100%);
-        }
-        
-        body.dark-mode.colorful-mode .task-row:has(.break) {
-            background: linear-gradient(90deg, rgba(149, 165, 166, 0.25) 0%, rgba(149, 165, 166, 0.1) 100%);
-        }
-        body.colorful-mode .task-row:has(.moderate-light) {
-            background: linear-gradient(90deg, rgba(243, 156, 18, 0.1) 0%, rgba(46, 204, 113, 0.1) 100%);
-        }
-        
-        body.dark-mode.colorful-mode .task-row:has(.moderate-light) {
-            background: linear-gradient(90deg, rgba(243, 156, 18, 0.2) 0%, rgba(46, 204, 113, 0.2) 100%);
-        }
-        
-        @media (max-width: 768px) {
-            body {
-                padding: 20px 10px;
-            }
-            
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 24px;
-                margin-bottom: 20px;
-            }
-            
-            .controls {
-                flex-direction: column;
-                gap: 15px;
-                padding: 15px;
-            }
-            
-            .control-group {
-                flex-direction: column;
-                width: 100%;
-                align-items: flex-start;
-            }
-            
-            .time-inputs {
-                width: 100%;
-            }
-            
-            .controls select {
-                width: 100%;
-                font-size: 14px;
-            }
-            
-            .time-inputs select {
-                flex: 1;
-            }
-            
-            .section-header {
-                font-size: 16px;
-                padding: 10px 15px;
-            }
-            
-            .task-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-                padding: 12px 15px;
-            }
-            
-            .time {
-                font-size: 14px;
-                min-width: auto;
-                width: 100%;
-            }
-            
-            .task {
-                font-size: 14px;
-                width: 100%;
-            }
-            
-            .label {
-                align-self: flex-end;
-            }
-            #themeToggle {
-                top: 10px;
-                right: 10px;
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-            
-            #colorToggle {
-                top: 10px;
-                right: 100px;  /* Increased from 75px */
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-        }
-        
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-            
-            .container {
-                box-shadow: none;
-                padding: 20px;
-            }
-            
-            .controls {
-                display: none;
-            }
-        }
-        .task-row.break-row {
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .task-row.break-row:hover {
-            opacity: 0.8;
-        }
-        
-        body.dark-mode .task-row.break-row:hover {
-            background: #2a2a2a;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-        
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 30px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        
-        body.dark-mode .modal-content {
-            background-color: #2a2a2a;
-            color: #e8e8e8;
-        }
-        
-        .modal h2 {
+            font-size: 2.5em;
             margin-bottom: 20px;
-            font-size: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
+
+        .instruction {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            text-align: center;
         }
-        
-        .modal-buttons button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
+
+        .ball-container {
+            perspective: 1000px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
         }
-        
-        .modal-buttons .confirm {
-            background: #3498db;
+
+        .ball {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 100px 100px, #2d2d2d, #000000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                inset -20px -20px 50px rgba(0,0,0,0.8),
+                inset 20px 20px 50px rgba(255,255,255,0.1),
+                0 20px 50px rgba(0,0,0,0.5);
+            transition: transform 0.1s ease;
+            position: relative;
+        }
+
+        .ball.shaking {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg) translateX(0); }
+            10% { transform: rotate(-10deg) translateX(-10px); }
+            20% { transform: rotate(10deg) translateX(10px); }
+            30% { transform: rotate(-10deg) translateX(-10px); }
+            40% { transform: rotate(10deg) translateX(10px); }
+            50% { transform: rotate(-10deg) translateX(-10px); }
+            60% { transform: rotate(10deg) translateX(10px); }
+            70% { transform: rotate(-10deg) translateX(-10px); }
+            80% { transform: rotate(10deg) translateX(10px); }
+            90% { transform: rotate(-5deg) translateX(-5px); }
+        }
+
+        .window {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                inset 0 0 20px rgba(0,0,0,0.5),
+                0 0 20px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer {
             color: white;
+            font-size: 0.9em;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        
-        .modal-buttons .cancel {
-            background: #95a5a6;
+
+        .answer.visible {
+            opacity: 1;
+        }
+
+        .quote-panel {
+            margin-top: 40px;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: fit-content;
+            max-width: 90%;
+            display: none;
+            border: 2px solid #c4b5fd;
+        }
+
+        .quote-panel.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quote-text {
+            font-size: 1.1em;
+            font-style: italic;
+            color: #4c1d95;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .quote-label {
+            font-size: 0.9em;
+            color: #6d28d9;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .number-8 {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 4em;
+            font-weight: bold;
             color: white;
-        }
-        
-        .modal-buttons button:hover {
-            opacity: 0.9;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.5),
+                0 0 10px rgba(255,255,255,0.3);
         }
     </style>
 </head>
 <body>
-    <button id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
-    <button id="colorToggle" onclick="toggleColorful()">🎨 Colorful</button>
-    <div class="container">
-        <h1>Task Rotation Schedule</h1>
-        
-        <div class="controls">
-            <label for="hours"># of Hours:</label>
-            <select id="hours" onchange="generateSchedule()">
-                <option value="5">5 Hours</option>
-                <option value="6">6 Hours</option>
-                <option value="7">7 Hours</option>
-                <option value="8" selected>8 Hours</option>
-                <option value="9">9 Hours</option>
-                <option value="10">10 Hours</option>
-            </select>
-            <div class="control-group">
-            <label>Start Time:</label>
-            <div class="time-inputs">
-                <select id="startHour" onchange="generateSchedule()">
-                    <option value="6">6 AM</option>
-                    <option value="7">7 AM</option>
-                    <option value="8" selected>8 AM</option>
-                    <option value="9">9 AM</option>
-                    <option value="10">10 AM</option>
-                    <option value="11">11 AM</option>
-                    <option value="12">12 PM</option>
-                </select>
-                <select id="startMinute" onchange="generateSchedule()">
-                    <option value="0" selected>:00</option>
-                    <option value="30">:30</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label style="display: flex; align-items: center; cursor: pointer;">
-                    <input type="checkbox" id="includeBreak" checked onchange="generateSchedule()">
-                    Break?
-                </label>
-            </div>
-                <div class="control-group">
-                <label>Daily Task:</label>
-                <select id="dailyDuration" onchange="generateSchedule()">
-                    <option value="30">30 min</option>
-                    <option value="45">45 min</option>
-                    <option value="60">1 hour</option>
-                    <option value="90" selected>1.5 hours</option>
-                    <option value="120">2 hours</option>
-                </select>
-            </div>
-        </div>
-        </div>
-        
-        <div id="schedule"></div>
-
-        <div id="breakModal" class="modal">
-            <div class="modal-content">
-                <h2>Set Custom Break Time</h2>
-                <div class="control-group">
-                    <label>Break Start Time:</label>
-                    <div class="time-inputs">
-                        <select id="customBreakHour">
-                            <!-- Will be populated by JS -->
-                        </select>
-                        <select id="customBreakMinute">
-                            <option value="0">:00</option>
-                            <option value="15">:15</option>
-                            <option value="30">:30</option>
-                            <option value="45">:45</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-buttons">
-                    <button class="confirm" onclick="applyCustomBreak()">Apply</button>
-                    <button class="cancel" onclick="closeBreakModal()">Cancel</button>
-                </div>
+    <h1>🔮 Magic 8-Ball 🔮</h1>
+    <p class="instruction">Ask a yes/no question!</p>
+    
+    <div style="margin-bottom: 30px; text-align: center;">
+        <input type="text" id="question" placeholder="Enter your question..." style="
+            width: 400px;
+            max-width: 90vw;
+            padding: 15px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 15px;
+        ">
+        <br>
+        <button onclick="askQuestion()" style="
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            Ask the 8-Ball
+        </button>
+    </div>
+    
+    <div id="displayQuestion" style="
+        color: white;
+        font-size: 1.3em;
+        font-style: italic;
+        margin-bottom: 30px;
+        text-align: center;
+        min-height: 30px;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    "></div>
+    
+    <div class="ball-container" onclick="shakeBall()">
+        <div class="ball" id="ball">
+            <div class="number-8">8</div>
+            <div class="window">
+                <div class="answer" id="answer"></div>
             </div>
         </div>
     </div>
 
-    <script>
-        let customBreakMinutes = null;
+    <div class="quote-panel" id="quotePanel">
+        <div class="quote-label">From The Book of Carp:</div>
+        <div class="quote-text" id="quoteText"></div>
+    </div>
 
-        function generateSchedule() {
-            const totalHours = parseInt(document.getElementById('hours').value);
-            const includeBreak = document.getElementById('includeBreak').checked;
-            const workHours = includeBreak ? totalHours - 1 : totalHours;
-            const needsMicroBreaks = totalHours >= 6;
-        
-            const dailyDuration = parseInt(document.getElementById('dailyDuration').value);
-            
-            let schedule = [];
-            const startHour = parseInt(document.getElementById('startHour').value);
-            const startMinute = parseInt(document.getElementById('startMinute').value);
-            
-            let currentMinutes = startHour * 60 + startMinute;
-            const startMinutes = currentMinutes;
-            const endMinutes = startMinutes + (totalHours * 60);
-            const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
-            const lunchTime = customBreakMinutes !== null ? customBreakMinutes : midpointMinutes + 30;
-            
-            function minutesToTime(mins) {
-                let h = Math.floor(mins / 60);
-                const m = mins % 60;
-                const ampm = h >= 12 ? 'PM' : 'AM';
-                
-                if (h > 12) h = h - 12;
-                if (h === 0) h = 12;
-                
-                return `${h}:${String(m).padStart(2, '0')} ${ampm}`;
+    <script>
+        let carpQuotes = [];
+
+        // Fetch quotes from thebookofcarp.txt
+        async function loadQuotes() {
+            try {
+                const response = await fetch('thebookofcarp.txt');
+                const text = await response.text();
+                carpQuotes = text.split('\n').filter(line => line.trim() !== '');
+            } catch (error) {
+                console.error('Error loading quotes:', error);
+                carpQuotes = ['The Book of Carp could not be loaded.'];
             }
-            
-            schedule.push({
-                start: minutesToTime(currentMinutes),
-                end: minutesToTime(currentMinutes + dailyDuration),
-                task: 'Daily task',
-                type: 'daily',
-                startMinutes: currentMinutes
-            });
-            currentMinutes += dailyDuration;
-            
-            let remainingMinutes = (workHours * 60) - dailyDuration;
-            let lunchTaken = false;
-            
-            let isHeavy = true;
-            let microBreakCounter = 0;
-            let tasksSinceMicroBreak = 0;
-            
-            while (remainingMinutes > 0) {
-                // Check if we need to insert break before the next task
-                if (includeBreak && !lunchTaken && (currentMinutes >= lunchTime || currentMinutes + 45 > lunchTime)) {
-                    schedule.push({
-                        start: minutesToTime(lunchTime),
-                        end: minutesToTime(lunchTime + 60),
-                        task: 'Break',
-                        type: 'break',
-                        startMinutes: lunchTime,
-                        clickable: true
-                    });
-                    currentMinutes = lunchTime + 60;
-                    lunchTaken = true;
-                    tasksSinceMicroBreak = 0;
-                    continue;
-                }
-                
-                if (needsMicroBreaks && tasksSinceMicroBreak >= 2 && microBreakCounter < 5 && remainingMinutes > 45) {
-                    schedule.push({
-                        type: 'micro-break-divider'
-                    });
-                    microBreakCounter++;
-                    tasksSinceMicroBreak = 0;
-                }
-                
-                let duration = Math.min(45, remainingMinutes);
-                let taskType, taskLabel;
-                
-                if (currentMinutes < lunchTime) {
-                    taskType = isHeavy ? 'heavy' : 'light';
-                    taskLabel = isHeavy ? 'Heavy task' : 'Light task';
-                } else {
-                    if (remainingMinutes <= 15) {
-                        taskType = 'light';
-                        taskLabel = 'Very light / finishing tasks';
-                    } else if (remainingMinutes <= 45) {
-                        taskType = 'moderate-light';
-                        taskLabel = 'Moderate/light task';
-                    } else if (isHeavy) {
-                        taskType = 'moderate';
-                        taskLabel = 'Moderate task';
-                    } else {
-                        taskType = 'light';
-                        taskLabel = 'Light task';
-                    }
-                }
-                
-                schedule.push({
-                    start: minutesToTime(currentMinutes),
-                    end: minutesToTime(currentMinutes + duration),
-                    task: taskLabel,
-                    type: taskType,
-                    startMinutes: currentMinutes
-                });
-                
-                currentMinutes += duration;
-                remainingMinutes -= duration;
-                isHeavy = !isHeavy;
-                tasksSinceMicroBreak++;
-            }
-            
-            renderSchedule(schedule);
         }
-        
-        function renderSchedule(schedule) {
-            const scheduleDiv = document.getElementById('schedule');
-            let html = '';
-            let currentSection = '';
+
+        // Load quotes when page loads
+        loadQuotes();
+
+        const answers = [
+    "It is certain",
+    "It is decidedly so",
+    "Oh, that's definitely a yes",
+    "Definitely, but only if you say please",
+    "Yes. Yes indeed. Quite.",
+    "Yeah I guess",
+    "FUCK YEAH",
+    "Of course",
+    "Yuuuup",
+    "Totally",
+    "I suppose",
+    "Heh, yeah",
+    "Abso-fuckin-lutely",
+    "Yupperino",
+    "It's obviously yes",
+    "That's gonna be a big thumbs up from me bud",
+    "Sure why not",
+    "Yaaaaaasssss queen",
+    "SeemsGood",
+    "Haha, oh yeah",
+    "Without a doubt",
+    "Yes definitely",
+    "You may rely on it",
+    "Fo sho, yo",
+    "10-4",
+    "Oooooh yeah",
+    "As I see it, yes",
+    "Positively and absolutely",
+    "Most likely",
+    "Outlook good",
+    "I wasn't really listening, but yes",
+    "Yes",
+    "Signs point to yes",
+    "Reply hazy try again",
+    "The real answer is the friends we made along the way",
+    "$readrandline(C:\\Users\\Public\\Desktop\\twitchgames\\trollbox.txt)",
+    "Ask again later",
+    "Wouldn't you like to know",
+    "What is that supposed to mean",
+    "Sandstorm by Darude",
+    "S",
+    "Ban Juicy",
+    "Ask Ellie",
+    "Depends on who's asking",
+    "TBD",
+    "Better not tell you now",
+    "Eh",
+    "CORN",
+    "That's a good question",
+    "OpieOP",
+    "Cannot predict now",
+    "Lmao",
+    "8==D",
+    "No...I mean yes...Well...Ask again later.",
+    "Ask again when the moon is full",
+    "Does a bear shit in the woods?",
+    "Concentrate and ask again",
+    "Don't count on it",
+    "My reply is no",
+    "No, $username, mayonnaise is not an instrument",
+    "My sources say no",
+    "No frickin way",
+    "NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+    "Outlook not so good",
+    "Very doubtful",
+    "Not a snowball's chance in hell",
+    "Not gonna happen buddy",
+    "Negative",
+    "Absolutely not, why would you even consider that",
+    "VoteNay",
+    "What? BabyRage No.",
+    "Case is not compelling",
+    "wtf no lol",
+    "Of course not, are you insane?",
+    "Hahaha. No.",
+    "Mayhaps",
+    "That's a thumbs down",
+    "Well since you asked so nicely, no",
+    "Fat chance",
+    "Your guess is as good as mine",
+    "NAYETH",
+    "Never in a million, billion, trillion years",
+    "Nah",
+    "Naaaah man",
+    "Signs point to no",
+    "The odds are not in your favor",
+    "No, and don't ask me again"
+];
+
+        function shakeBall() {
+            const ball = document.getElementById('ball');
+            const answerEl = document.getElementById('answer');
+            const quotePanel = document.getElementById('quotePanel');
+            const quoteText = document.getElementById('quoteText');
+            const displayQuestion = document.getElementById('displayQuestion');
             
-            schedule.forEach(item => {
-                if (item.type === 'micro-break-divider') {
-                    html += '<div class="micro-break-divider"></div>';
-                    return;
-                }
+            // Only proceed if there's a question displayed
+            if (!displayQuestion.textContent.trim()) {
+                return; // Don't shake if no question was asked
+            }
+            
+            // Hide current answer and quote
+            answerEl.classList.remove('visible');
+            quotePanel.classList.remove('visible');
+            
+            // Add shaking animation
+            ball.classList.add('shaking');
+            
+            // Remove animation class after it completes
+            setTimeout(() => {
+                ball.classList.remove('shaking');
                 
-                const h = Math.floor(item.startMinutes / 60);
-                
-                let section = '';
-                
-                if (h < 12) {
-                    section = 'morning';
-                } else if (item.type === 'break') {
-                    section = 'break';
-                } else {
-                    section = 'afternoon';
-                }
-                
-                if (section !== currentSection) {
-                    if (currentSection !== '') {
-                        html += '</div>';
+                // Show random answer
+                const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
+                answerEl.textContent = randomAnswer;
+                answerEl.classList.add('visible');
+
+                // Show random quote from Book of Carp
+                if (carpQuotes.length > 0) {
+                    let randomQuote = carpQuotes[Math.floor(Math.random() * carpQuotes.length)];
+                    
+                    // Extract text between first and last quotation marks
+                    const firstQuote = randomQuote.indexOf('"');
+                    const lastQuote = randomQuote.lastIndexOf('"');
+                    
+                    if (firstQuote !== -1 && lastQuote !== -1 && firstQuote !== lastQuote) {
+                        randomQuote = randomQuote.substring(firstQuote + 1, lastQuote);
                     }
                     
-                    let headerText = '';
-                    if (section === 'morning') {
-                        headerText = 'MORNING SESSION';
-                    } else if (section === 'break') {
-                        headerText = 'LUNCH BREAK';
-                    } else {
-                        headerText = 'AFTERNOON SESSION';
-                    }
-                    
-                    html += `<div class="section"><div class="section-header">${headerText}</div>`;
-                    currentSection = section;
+                    quoteText.textContent = randomQuote;
+                    quotePanel.classList.add('visible');
                 }
+            }, 500);
+        }
+
+        function askQuestion() {
+            const questionInput = document.getElementById('question');
+            const displayQuestion = document.getElementById('displayQuestion');
+            
+            // Only shake if there's a question
+            if (questionInput.value.trim()) {
+                // Display the question
+                displayQuestion.textContent = '"' + questionInput.value + '"';
                 
-                const clickableClass = item.clickable ? 'break-row' : '';
-                const clickHandler = item.clickable ? 'onclick="openBreakModal()"' : '';
-                
-                html += `
-                    <div class="task-row ${clickableClass}" ${clickHandler}>
-                        <div class="time">${item.start} – ${item.end}</div>
-                        <div class="task">${item.task}</div>
-                        <span class="label ${item.type}">${item.type === 'moderate-light' ? 'Moderate/Light' : item.type.charAt(0).toUpperCase() + item.type.slice(1).replace('-', ' ')}</span>
-                    </div>
-                `;
-            });
-            
-            if (currentSection !== '') {
-                html += '</div>';
-            }
-            
-            scheduleDiv.innerHTML = html;
-        }
-        
-        function openBreakModal() {
-            const modal = document.getElementById('breakModal');
-            const hourSelect = document.getElementById('customBreakHour');
-            
-            // Populate hour options based on work hours
-            const startHour = parseInt(document.getElementById('startHour').value);
-            const totalHours = parseInt(document.getElementById('hours').value);
-            
-            hourSelect.innerHTML = '';
-            for (let i = startHour; i < startHour + totalHours; i++) {
-                const displayHour = i > 12 ? i - 12 : (i === 0 ? 12 : i);
-                const ampm = i >= 12 ? 'PM' : 'AM';
-                hourSelect.innerHTML += `<option value="${i}">${displayHour} ${ampm}</option>`;
-            }
-            
-            // Calculate current break time (either custom or default)
-            let currentBreakMinutes;
-            if (customBreakMinutes !== null) {
-                currentBreakMinutes = customBreakMinutes;
-            } else {
-                const startMinute = parseInt(document.getElementById('startMinute').value);
-                const startMinutes = startHour * 60 + startMinute;
-                const endMinutes = startMinutes + (totalHours * 60);
-                const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
-                currentBreakMinutes = midpointMinutes + 30;
-            }
-            
-            const currentHour = Math.floor(currentBreakMinutes / 60);
-            const currentMinute = currentBreakMinutes % 60;
-            hourSelect.value = currentHour;
-            document.getElementById('customBreakMinute').value = currentMinute;
-            
-            modal.style.display = 'block';
-        }
-        
-        function closeBreakModal() {
-            document.getElementById('breakModal').style.display = 'none';
-        }
-        
-        function applyCustomBreak() {
-            const hour = parseInt(document.getElementById('customBreakHour').value);
-            const minute = parseInt(document.getElementById('customBreakMinute').value);
-            
-            customBreakMinutes = hour * 60 + minute;
-            
-            closeBreakModal();
-            generateSchedule();
-        }
-        
-        function toggleTheme() {
-            const body = document.body;
-            const button = document.getElementById('themeToggle');
-            
-            body.classList.toggle('dark-mode');
-            
-            if (body.classList.contains('dark-mode')) {
-                button.textContent = '☀️ Light Mode';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                button.textContent = '🌙 Dark Mode';
-                localStorage.setItem('theme', 'light');
+                shakeBall();
+                questionInput.value = ''; // Clear the question box
             }
         }
-        
-        function toggleColorful() {
-            const body = document.body;
-            const button = document.getElementById('colorToggle');
-            
-            body.classList.toggle('colorful-mode');
-            
-            if (body.classList.contains('colorful-mode')) {
-                button.textContent = '🎨 Simple';
-                localStorage.setItem('colorful', 'true');
-            } else {
-                button.textContent = '🎨 Colorful';
-                localStorage.setItem('colorful', 'false');
+
+        // Allow pressing Enter to ask question
+        document.getElementById('question').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askQuestion();
             }
-        }
-        
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            const modal = document.getElementById('breakModal');
-            if (event.target === modal) {
-                closeBreakModal();
-            }
-        }
-        
-        window.onload = function() {
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-mode');
-                document.getElementById('themeToggle').textContent = '☀️ Light Mode';
-            }
-            if (localStorage.getItem('colorful') === 'true') {
-                document.body.classList.add('colorful-mode');
-                document.getElementById('colorToggle').textContent = '🎨 Simple';
-            }
-            generateSchedule();
-        }
-        
-        generateSchedule();
+        });
     </script>
 </body>
 </html>
