@@ -154,6 +154,27 @@
                 2px 2px 4px rgba(0,0,0,0.5),
                 0 0 10px rgba(255,255,255,0.3);
         }
+        .screenshot-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 500px;
+        }
+        
+        .screenshot-card h2 {
+            color: white;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+        
+        .screenshot-card .question-display {
+            color: white;
+            font-size: 1.2em;
+            font-style: italic;
+            margin-bottom: 30px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -185,6 +206,22 @@
             transition: transform 0.1s ease;
         " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
             Ask the 8-Ball
+        </button>
+        <button id="screenshotBtn" onclick="takeScreenshot()" style="
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease;
+            margin-left: 10px;
+            display: none;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            📸 Take Screenshot
         </button>
     </div>
     
@@ -231,94 +268,94 @@
         loadQuotes();
 
         const answers = [
-    "It is certain",
-    "It is decidedly so",
-    "Oh, that's definitely a yes",
-    "Definitely, but only if you say please",
-    "Yes. Yes indeed. Quite.",
-    "Yeah I guess",
-    "FUCK YEAH",
-    "Of course",
-    "Yuuuup",
-    "Totally",
-    "I suppose",
-    "Heh, yeah",
-    "Abso-fuckin-lutely",
-    "Yupperino",
-    "It's obviously yes",
-    "That's gonna be a big thumbs up from me bud",
-    "Sure why not",
-    "Yaaaaaasssss queen",
-    "SeemsGood",
-    "Haha, oh yeah",
-    "Without a doubt",
-    "Yes definitely",
-    "You may rely on it",
-    "Fo sho, yo",
-    "10-4",
-    "Oooooh yeah",
-    "As I see it, yes",
-    "Positively and absolutely",
-    "Most likely",
-    "Outlook good",
-    "I wasn't really listening, but yes",
-    "Yes",
-    "Signs point to yes",
-    "Reply hazy try again",
-    "The real answer is the friends we made along the way",
-    "$readrandline(C:\\Users\\Public\\Desktop\\twitchgames\\trollbox.txt)",
-    "Ask again later",
-    "Wouldn't you like to know",
-    "What is that supposed to mean",
-    "Sandstorm by Darude",
-    "S",
-    "Ban Juicy",
-    "Ask Ellie",
-    "Depends on who's asking",
-    "TBD",
-    "Better not tell you now",
-    "Eh",
-    "CORN",
-    "That's a good question",
-    "OpieOP",
-    "Cannot predict now",
-    "Lmao",
-    "8==D",
-    "No...I mean yes...Well...Ask again later.",
-    "Ask again when the moon is full",
-    "Does a bear shit in the woods?",
-    "Concentrate and ask again",
-    "Don't count on it",
-    "My reply is no",
-    "No, $username, mayonnaise is not an instrument",
-    "My sources say no",
-    "No frickin way",
-    "NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
-    "Outlook not so good",
-    "Very doubtful",
-    "Not a snowball's chance in hell",
-    "Not gonna happen buddy",
-    "Negative",
-    "Absolutely not, why would you even consider that",
-    "VoteNay",
-    "What? BabyRage No.",
-    "Case is not compelling",
-    "wtf no lol",
-    "Of course not, are you insane?",
-    "Hahaha. No.",
-    "Mayhaps",
-    "That's a thumbs down",
-    "Well since you asked so nicely, no",
-    "Fat chance",
-    "Your guess is as good as mine",
-    "NAYETH",
-    "Never in a million, billion, trillion years",
-    "Nah",
-    "Naaaah man",
-    "Signs point to no",
-    "The odds are not in your favor",
-    "No, and don't ask me again"
-];
+            "It is certain",
+            "It is decidedly so",
+            "Oh, that's definitely a yes",
+            "Definitely, but only if you say please",
+            "Yes. Yes indeed. Quite.",
+            "Yeah I guess",
+            "FUCK YEAH",
+            "Of course",
+            "Yuuuup",
+            "Totally",
+            "I suppose",
+            "Heh, yeah",
+            "Abso-fuckin-lutely",
+            "Yupperino",
+            "It's obviously yes",
+            "That's gonna be a big thumbs up from me bud",
+            "Sure why not",
+            "Yaaaaaasssss queen",
+            "SeemsGood",
+            "Haha, oh yeah",
+            "Without a doubt",
+            "Yes definitely",
+            "You may rely on it",
+            "Fo sho, yo",
+            "10-4",
+            "Oooooh yeah",
+            "As I see it, yes",
+            "Positively and absolutely",
+            "Most likely",
+            "Outlook good",
+            "I wasn't really listening, but yes",
+            "Yes",
+            "Signs point to yes",
+            "Reply hazy try again",
+            "The real answer is the friends we made along the way",
+            "$readrandline(C:\\Users\\Public\\Desktop\\twitchgames\\trollbox.txt)",
+            "Ask again later",
+            "Wouldn't you like to know",
+            "What is that supposed to mean",
+            "Sandstorm by Darude",
+            "S",
+            "Ban Juicy",
+            "Ask Ellie",
+            "Depends on who's asking",
+            "TBD",
+            "Better not tell you now",
+            "Eh",
+            "CORN",
+            "That's a good question",
+            "OpieOP",
+            "Cannot predict now",
+            "Lmao",
+            "8==D",
+            "No...I mean yes...Well...Ask again later.",
+            "Ask again when the moon is full",
+            "Does a bear shit in the woods?",
+            "Concentrate and ask again",
+            "Don't count on it",
+            "My reply is no",
+            "No, $username, mayonnaise is not an instrument",
+            "My sources say no",
+            "No frickin way",
+            "NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+            "Outlook not so good",
+            "Very doubtful",
+            "Not a snowball's chance in hell",
+            "Not gonna happen buddy",
+            "Negative",
+            "Absolutely not, why would you even consider that",
+            "VoteNay",
+            "What? BabyRage No.",
+            "Case is not compelling",
+            "wtf no lol",
+            "Of course not, are you insane?",
+            "Hahaha. No.",
+            "Mayhaps",
+            "That's a thumbs down",
+            "Well since you asked so nicely, no",
+            "Fat chance",
+            "Your guess is as good as mine",
+            "NAYETH",
+            "Never in a million, billion, trillion years",
+            "Nah",
+            "Naaaah man",
+            "Signs point to no",
+            "The odds are not in your favor",
+            "No, and don't ask me again"
+        ];
 
         function shakeBall() {
             const ball = document.getElementById('ball');
@@ -362,6 +399,7 @@
                     
                     quoteText.textContent = randomQuote;
                     quotePanel.classList.add('visible');
+                    document.getElementById('screenshotBtn').style.display = 'inline-block';
                 }
             }, 500);
         }
@@ -378,6 +416,64 @@
                 shakeBall();
                 questionInput.value = ''; // Clear the question box
             }
+        }
+
+        async function takeScreenshot() {
+            const displayQuestion = document.getElementById('displayQuestion');
+            const answerEl = document.getElementById('answer');
+            const quoteText = document.getElementById('quoteText');
+            
+            if (!displayQuestion.textContent.trim()) {
+                alert('Please ask a question first!');
+                return;
+            }
+            
+            // Create a temporary container for the screenshot
+            const card = document.createElement('div');
+            card.className = 'screenshot-card';
+            card.style.position = 'fixed';
+            card.style.left = '-9999px';
+            card.innerHTML = `
+                <h2>🔮 Magic 8-Ball 🔮</h2>
+                <div class="question-display">${displayQuestion.textContent}</div>
+                <div style="display: flex; justify-content: center; margin-bottom: 30px;">
+                    <div class="ball" style="width: 200px; height: 200px;">
+                        <div class="number-8" style="font-size: 2.5em; top: 20px;">8</div>
+                        <div class="window" style="width: 80px; height: 80px;">
+                            <div class="answer visible" style="font-size: 0.7em; padding: 10px;">${answerEl.textContent}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="quote-panel visible" style="margin: 0;">
+                    <div class="quote-label">From The Book of Carp:</div>
+                    <div class="quote-text">${quoteText.textContent}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(card);
+            
+            // Use html2canvas library
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = async () => {
+                const canvas = await html2canvas(card, {
+                    backgroundColor: null,
+                    scale: 2
+                });
+                
+                // Convert to blob and download
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'magic-8-ball-prediction.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+                
+                document.body.removeChild(card);
+            };
+            document.head.appendChild(script);
         }
 
         // Allow pressing Enter to ask question
