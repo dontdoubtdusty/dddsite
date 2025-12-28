@@ -222,6 +222,7 @@
         .preview-buttons button:hover {
             transform: scale(1.05);
         }
+        
     </style>
 </head>
 <body>
@@ -504,7 +505,7 @@
                         width: 200px;
                         height: 200px;
                         border-radius: 50%;
-                        background: radial-gradient(circle at 33% 33%, #2d2d2d, #000000);
+                        background: radial-gradient(circle at 66px 66px, #2d2d2d, #000000);
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -595,6 +596,29 @@
                 document.body.removeChild(card);
             };
             document.head.appendChild(script);
+        }
+        
+        function downloadScreenshot() {
+            if (currentCanvas) {
+                currentCanvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'magic-8-ball-prediction.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+                closePreview();
+            }
+        }
+        
+        function closePreview(event) {
+            if (event) {
+                // Only close if clicking the modal backdrop, not the content
+                if (event.target.id !== 'previewModal') return;
+            }
+            document.getElementById('previewModal').classList.remove('visible');
+            currentCanvas = null;
         }
         
         function downloadScreenshot() {
