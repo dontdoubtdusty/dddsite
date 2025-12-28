@@ -434,8 +434,8 @@
             card.style.position = 'fixed';
             card.style.left = '-9999px';
             card.innerHTML = `
-                <h2>🔮 Magic 8-Ball 🔮</h2>
-                <div class="question-display">${displayQuestion.textContent}</div>
+                <h2 style="color: white; margin: 0 0 20px 0; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">🔮 Magic 8-Ball 🔮</h2>
+                <div style="color: white; font-size: 1.2em; font-style: italic; margin-bottom: 30px; text-align: center;">${displayQuestion.textContent}</div>
                 <div style="display: flex; justify-content: center; margin-bottom: 30px;">
                     <div style="
                         width: 200px;
@@ -487,9 +487,28 @@
                         </div>
                     </div>
                 </div>
-                <div class="quote-panel visible" style="margin: 0;">
-                    <div class="quote-label">From The Book of Carp:</div>
-                    <div class="quote-text">${quoteText.textContent}</div>
+                <div style="
+                    background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%);
+                    padding: 25px;
+                    border-radius: 15px;
+                    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+                    border: 2px solid #c4b5fd;
+                    margin: 0;
+                ">
+                    <div style="
+                        font-size: 0.9em;
+                        color: #6d28d9;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                        text-align: center;
+                    ">From The Book of Carp:</div>
+                    <div style="
+                        font-size: 1.1em;
+                        font-style: italic;
+                        color: #4c1d95;
+                        line-height: 1.6;
+                        text-align: center;
+                    ">${quoteText.textContent}</div>
                 </div>
             `;
             
