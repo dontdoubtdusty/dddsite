@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Rotation Schedule</title>
-    <p class="subtitle">Plan your workday with a balanced task rotation</p>
     <style>
         * {
             margin: 0;
@@ -491,6 +490,79 @@
                 display: none;
             }
         }
+        .task-row.break-row {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .task-row.break-row:hover {
+            opacity: 0.8;
+        }
+        
+        body.dark-mode .task-row.break-row:hover {
+            background: #2a2a2a;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        body.dark-mode .modal-content {
+            background-color: #2a2a2a;
+            color: #e8e8e8;
+        }
+        
+        .modal h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .modal-buttons .confirm {
+            background: #3498db;
+            color: white;
+        }
+        
+        .modal-buttons .cancel {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .modal-buttons button:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -507,6 +579,7 @@
                 <option value="7">7 Hours</option>
                 <option value="8" selected>8 Hours</option>
                 <option value="9">9 Hours</option>
+                <option value="10">10 Hours</option>
             </select>
             <div class="control-group">
             <label>Start Time:</label>
@@ -545,77 +618,97 @@
         </div>
         
         <div id="schedule"></div>
+
+        <div id="breakModal" class="modal">
+            <div class="modal-content">
+                <h2>Set Custom Break Time</h2>
+                <div class="control-group">
+                    <label>Break Start Time:</label>
+                    <div class="time-inputs">
+                        <select id="customBreakHour">
+                            <!-- Will be populated by JS -->
+                        </select>
+                        <select id="customBreakMinute">
+                            <option value="0">:00</option>
+                            <option value="15">:15</option>
+                            <option value="30">:30</option>
+                            <option value="45">:45</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="confirm" onclick="applyCustomBreak()">Apply</button>
+                    <button class="cancel" onclick="closeBreakModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
+        let customBreakMinutes = null;
+
         function generateSchedule() {
             const totalHours = parseInt(document.getElementById('hours').value);
             const includeBreak = document.getElementById('includeBreak').checked;
             const workHours = includeBreak ? totalHours - 1 : totalHours;
             const needsMicroBreaks = totalHours >= 6;
-
-            const dailyDuration = parseInt(document.getElementById('dailyDuration').value); //Daily task duration
+        
+            const dailyDuration = parseInt(document.getElementById('dailyDuration').value);
             
             let schedule = [];
             const startHour = parseInt(document.getElementById('startHour').value);
             const startMinute = parseInt(document.getElementById('startMinute').value);
             
-            // Work in minutes from midnight (24-hour format)
             let currentMinutes = startHour * 60 + startMinute;
             const startMinutes = currentMinutes;
             const endMinutes = startMinutes + (totalHours * 60);
             const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
-            const lunchTime = midpointMinutes + 30;
+            const lunchTime = customBreakMinutes !== null ? customBreakMinutes : midpointMinutes + 30;
             
-            // Helper function to convert minutes to 12-hour time string
             function minutesToTime(mins) {
                 let h = Math.floor(mins / 60);
                 const m = mins % 60;
                 const ampm = h >= 12 ? 'PM' : 'AM';
                 
-                // Convert to 12-hour format
                 if (h > 12) h = h - 12;
                 if (h === 0) h = 12;
                 
                 return `${h}:${String(m).padStart(2, '0')} ${ampm}`;
             }
             
-            // Morning: Daily task (variable length)
             schedule.push({
                 start: minutesToTime(currentMinutes),
-                end: minutesToTime(currentMinutes + dailyDuration),  // Changed from + 90
+                end: minutesToTime(currentMinutes + dailyDuration),
                 task: 'Daily task',
                 type: 'daily',
                 startMinutes: currentMinutes
             });
-            currentMinutes += dailyDuration;  // Changed from += 90
+            currentMinutes += dailyDuration;
             
-            // Calculate remaining work time
             let remainingMinutes = (workHours * 60) - dailyDuration;
             let lunchTaken = false;
             
-            // Variables for task tracking
             let isHeavy = true;
             let microBreakCounter = 0;
             let tasksSinceMicroBreak = 0;
             
             while (remainingMinutes > 0) {
-                // Check if we've reached lunch time
-                if (includeBreak && !lunchTaken && currentMinutes >= lunchTime) {
+                // Check if we need to insert break before the next task
+                if (includeBreak && !lunchTaken && (currentMinutes >= lunchTime || currentMinutes + 45 > lunchTime)) {
                     schedule.push({
-                        start: minutesToTime(currentMinutes),
-                        end: minutesToTime(currentMinutes + 60),
+                        start: minutesToTime(lunchTime),
+                        end: minutesToTime(lunchTime + 60),
                         task: 'Break',
                         type: 'break',
-                        startMinutes: currentMinutes
+                        startMinutes: lunchTime,
+                        clickable: true
                     });
-                    currentMinutes = currentMinutes + 60;
+                    currentMinutes = lunchTime + 60;
                     lunchTaken = true;
                     tasksSinceMicroBreak = 0;
                     continue;
                 }
                 
-                // Add micro-break divider if needed
                 if (needsMicroBreaks && tasksSinceMicroBreak >= 2 && microBreakCounter < 5 && remainingMinutes > 45) {
                     schedule.push({
                         type: 'micro-break-divider'
@@ -627,13 +720,10 @@
                 let duration = Math.min(45, remainingMinutes);
                 let taskType, taskLabel;
                 
-                // Determine task type based on position
                 if (currentMinutes < lunchTime) {
-                    // Morning: alternate heavy/light
                     taskType = isHeavy ? 'heavy' : 'light';
                     taskLabel = isHeavy ? 'Heavy task' : 'Light task';
                 } else {
-                    // Afternoon: moderate and light
                     if (remainingMinutes <= 15) {
                         taskType = 'light';
                         taskLabel = 'Very light / finishing tasks';
@@ -654,7 +744,7 @@
                     end: minutesToTime(currentMinutes + duration),
                     task: taskLabel,
                     type: taskType,
-                    startMinutes: currentMinutes  // Add this
+                    startMinutes: currentMinutes
                 });
                 
                 currentMinutes += duration;
@@ -672,13 +762,11 @@
             let currentSection = '';
             
             schedule.forEach(item => {
-                // Handle micro-break dividers
                 if (item.type === 'micro-break-divider') {
                     html += '<div class="micro-break-divider"></div>';
                     return;
                 }
                 
-                // Extract hour from stored minutes value
                 const h = Math.floor(item.startMinutes / 60);
                 
                 let section = '';
@@ -709,8 +797,11 @@
                     currentSection = section;
                 }
                 
+                const clickableClass = item.clickable ? 'break-row' : '';
+                const clickHandler = item.clickable ? 'onclick="openBreakModal()"' : '';
+                
                 html += `
-                    <div class="task-row">
+                    <div class="task-row ${clickableClass}" ${clickHandler}>
                         <div class="time">${item.start} – ${item.end}</div>
                         <div class="task">${item.task}</div>
                         <span class="label ${item.type}">${item.type === 'moderate-light' ? 'Moderate/Light' : item.type.charAt(0).toUpperCase() + item.type.slice(1).replace('-', ' ')}</span>
@@ -724,7 +815,56 @@
             
             scheduleDiv.innerHTML = html;
         }
-
+        
+        function openBreakModal() {
+            const modal = document.getElementById('breakModal');
+            const hourSelect = document.getElementById('customBreakHour');
+            
+            // Populate hour options based on work hours
+            const startHour = parseInt(document.getElementById('startHour').value);
+            const totalHours = parseInt(document.getElementById('hours').value);
+            
+            hourSelect.innerHTML = '';
+            for (let i = startHour; i < startHour + totalHours; i++) {
+                const displayHour = i > 12 ? i - 12 : (i === 0 ? 12 : i);
+                const ampm = i >= 12 ? 'PM' : 'AM';
+                hourSelect.innerHTML += `<option value="${i}">${displayHour} ${ampm}</option>`;
+            }
+            
+            // Calculate current break time (either custom or default)
+            let currentBreakMinutes;
+            if (customBreakMinutes !== null) {
+                currentBreakMinutes = customBreakMinutes;
+            } else {
+                const startMinute = parseInt(document.getElementById('startMinute').value);
+                const startMinutes = startHour * 60 + startMinute;
+                const endMinutes = startMinutes + (totalHours * 60);
+                const midpointMinutes = Math.floor((startMinutes + endMinutes) / 2);
+                currentBreakMinutes = midpointMinutes + 30;
+            }
+            
+            const currentHour = Math.floor(currentBreakMinutes / 60);
+            const currentMinute = currentBreakMinutes % 60;
+            hourSelect.value = currentHour;
+            document.getElementById('customBreakMinute').value = currentMinute;
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeBreakModal() {
+            document.getElementById('breakModal').style.display = 'none';
+        }
+        
+        function applyCustomBreak() {
+            const hour = parseInt(document.getElementById('customBreakHour').value);
+            const minute = parseInt(document.getElementById('customBreakMinute').value);
+            
+            customBreakMinutes = hour * 60 + minute;
+            
+            closeBreakModal();
+            generateSchedule();
+        }
+        
         function toggleTheme() {
             const body = document.body;
             const button = document.getElementById('themeToggle');
@@ -739,7 +879,7 @@
                 localStorage.setItem('theme', 'light');
             }
         }
-
+        
         function toggleColorful() {
             const body = document.body;
             const button = document.getElementById('colorToggle');
@@ -755,7 +895,14 @@
             }
         }
         
-        // Update the window.onload function to restore colorful mode:
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('breakModal');
+            if (event.target === modal) {
+                closeBreakModal();
+            }
+        }
+        
         window.onload = function() {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
@@ -768,7 +915,6 @@
             generateSchedule();
         }
         
-        // Generate initial schedule
         generateSchedule();
     </script>
 </body>
