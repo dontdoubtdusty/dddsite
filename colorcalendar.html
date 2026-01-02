@@ -13,10 +13,6 @@
 
         body {
             font-family: 'Georgia', serif;
-            background: 
-                linear-gradient(180deg, rgba(10,10,30,0.8) 0%, rgba(30,10,50,0.8) 50%, rgba(10,10,30,0.8) 100%),
-                radial-gradient(circle at 20% 50%, rgba(255,215,0,0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(255,20,147,0.1) 0%, transparent 50%);
             background-color: #0a0a1e;
             min-height: 100vh;
             display: flex;
@@ -26,21 +22,6 @@
             color: #fff;
             position: relative;
             overflow-x: hidden;
-        }
-
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            top: -10px;
-            z-index: 1;
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-            }
         }
 
         h1 {
@@ -53,7 +34,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: gradient-shift 3s ease infinite;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
             z-index: 2;
             position: relative;
         }
@@ -68,7 +48,6 @@
             margin-bottom: 20px;
             text-align: center;
             color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
             font-style: italic;
             z-index: 2;
             position: relative;
@@ -80,8 +59,6 @@
             margin-bottom: 20px;
             z-index: 2;
             position: relative;
-            flex-wrap: wrap;
-            justify-content: center;
         }
 
         .button {
@@ -93,16 +70,12 @@
             border-radius: 8px;
             cursor: pointer;
             font-family: 'Georgia', serif;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
             transition: all 0.3s ease;
         }
         
         .button:hover {
             background: rgba(42, 42, 62, 0.9);
-            border-color: #ffd700;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
 
         .calendar-grid {
@@ -135,7 +108,6 @@
             right: 8px;
             font-size: 1.1em;
             z-index: 10;
-            filter: drop-shadow(0 0 3px rgba(0,0,0,0.8));
         }
 
         .box-inner {
@@ -173,22 +145,21 @@
             font-size: 2.5em;
             font-weight: bold;
             color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 2px 2px 4px rgba(0,0,0,0.7);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
             margin-bottom: 5px;
         }
 
         .box-date {
             font-size: 0.75em;
             color: #ff69b4;
-            text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
         }
 
         .box-back {
             transform: rotateY(180deg);
-            overflow: visible;
             text-align: center;
             position: relative;
             padding: 20px;
+            border-radius: 12px;
         }
 
         .box-back-content {
@@ -196,7 +167,7 @@
             z-index: 2;
         }
 
-        /* SVG Border Container */
+        /* Tron Border Animation */
         .tron-border {
             position: absolute;
             top: 0;
@@ -204,7 +175,8 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1;
+            z-index: 10;
+            border-radius: 12px;
         }
 
         .tron-border svg {
@@ -215,24 +187,28 @@
             height: 100%;
         }
 
-        .tron-border rect {
+        .tron-path {
             fill: none;
-            stroke-width: 6;
+            stroke-width: 4;
             stroke-linecap: round;
             stroke-linejoin: round;
-            filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 20px currentColor);
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
         }
 
-        /* Animation for the traced line */
-        .calendar-box.revealing .tron-border rect {
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: draw-border 1.8s ease-out forwards;
+        /* This is the key animation */
+        .calendar-box.revealing .tron-path {
+            animation: draw-tron 2s ease-out forwards;
         }
 
-        @keyframes draw-border {
-            to {
+        @keyframes draw-tron {
+            0% {
+                stroke-dashoffset: 800;
+                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
+            }
+            100% {
                 stroke-dashoffset: 0;
+                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
             }
         }
 
@@ -260,42 +236,13 @@
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-
-            .subtitle {
-                font-size: 1em;
-            }
-            
             .calendar-grid {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 10px;
-            }
-
-            .box-number {
-                font-size: 2em;
-            }
-
-            .color-name {
-                font-size: 1.1em;
-            }
-
-            .color-hex {
-                font-size: 0.85em;
-            }
-
-            .color-sentence {
-                font-size: 0.75em;
             }
         }
     </style>
 </head>
 <body>
-    <audio id="popSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFgYJ8eXVxbmlmZGNhYF9eXVxbW1pZWVhXV1ZVVFRTUlJRUFBPTk1NTEtKSkpJSEhHRkZFRERDQkJBQUBAQD8/Pj4+PT09PDw8Ozs7Ojo6OTk5ODg4Nzc3NjY2NTU1NDQ0MzMzMjIyMTExMDAwLy8vLi4uLS0tLCwsKysrKioqKSkpKCgoJycnJiYmJSUlJCQkIyMjIiIiISEhICAgHx8fHh4eHR0dHBwcGxsbGhoaGRkZGBgYFxcXFhYWFRUVFBQUExMTEhISEREREBAQDw8PDg4ODQ0NDAwMCwsLCgoKCQkJCAgIBwcHBgYGBQUFBAQEAwMDAgICAQEBAAAA" type="audio/wav">
-    </audio>
-
     <h1>🎊 365 Days of Colors 🎊</h1>
     <p class="subtitle">A vibrant year of hues for 2026</p>
     
@@ -321,22 +268,6 @@
         ];
 
         const calendar = document.getElementById('calendar');
-        
-        function createConfetti() {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            const confettiColors = ['#FFD700', '#FF69B4', '#00FFFF', '#FF6EC7', '#98FB98'];
-            confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.animationDuration = (Math.random() * 3 + 3) + 's';
-            confetti.style.opacity = Math.random() * 0.7 + 0.3;
-            document.body.appendChild(confetti);
-            
-            setTimeout(() => confetti.remove(), 6000);
-        }
-        
-        setInterval(createConfetti, 150);
-
         const now = new Date();
         const startOfYear = new Date(2026, 0, 1);
         const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
@@ -375,9 +306,6 @@
             const todayBox = document.getElementById('day-' + dayOfYear);
             if (todayBox) {
                 todayBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                setTimeout(() => {
-                    todayBox.style.animation = 'pulse 0.5s ease 3';
-                }, 500);
             }
         });
 
@@ -406,8 +334,8 @@
                         </div>
                         <div class="box-back" style="background-color: ${color.hex};">
                             <div class="tron-border">
-                                <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-                                    <rect x="2" y="2" width="96" height="96" rx="6" 
+                                <svg width="100%" height="100%" viewBox="0 0 200 200" preserveAspectRatio="none">
+                                    <rect class="tron-path" x="5" y="5" width="190" height="190" rx="12" 
                                           style="stroke: ${color.hex}; color: ${color.hex};" />
                                 </svg>
                             </div>
@@ -422,19 +350,23 @@
                 
                 if (unlocked) {
                     box.addEventListener('click', function(e) {
+                        console.log('Box clicked!', day);
                         const wasAlreadyFlipped = this.classList.contains('flipped');
+                        console.log('Was already flipped?', wasAlreadyFlipped);
+                        
                         this.classList.toggle('flipped');
                         const isFlipped = this.classList.contains('flipped');
+                        console.log('Is now flipped?', isFlipped);
+                        
                         saveFlippedState(day, isFlipped);
                         
                         if (isFlipped && !wasAlreadyFlipped) {
+                            console.log('Adding revealing class!');
                             this.classList.add('revealing');
-                            setTimeout(() => this.classList.remove('revealing'), 1800);
-                            
-                            const pop = document.getElementById('popSound');
-                            pop.currentTime = 0;
-                            pop.volume = 0.2;
-                            pop.play().catch(() => {});
+                            setTimeout(() => {
+                                console.log('Removing revealing class');
+                                this.classList.remove('revealing');
+                            }, 2000);
                         }
                     });
                 }
@@ -442,15 +374,6 @@
                 calendar.appendChild(box);
             });
         }
-
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes pulse {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
-            }
-        `;
-        document.head.appendChild(style);
 
         initializeCalendar();
     </script>
