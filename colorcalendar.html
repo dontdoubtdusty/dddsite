@@ -189,6 +189,34 @@
             transform: rotateY(180deg);
             overflow: auto;
             text-align: center;
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* Color-matched glow animation */
+        .calendar-box.revealing .box-back {
+            animation: color-glow 1.2s ease-out;
+        }
+
+        @keyframes color-glow {
+            0% {
+                box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+            }
+            30% {
+                box-shadow: 
+                    0 0 30px var(--glow-color),
+                    0 0 60px var(--glow-color),
+                    0 0 90px var(--glow-color),
+                    inset 0 0 20px var(--glow-color);
+            }
+            60% {
+                box-shadow: 
+                    0 0 40px var(--glow-color),
+                    0 0 80px var(--glow-color),
+                    inset 0 0 25px var(--glow-color);
+            }
+            100% {
+                box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+            }
         }
 
         .color-name {
@@ -291,327 +319,9 @@
             {name: "Hope Turquoise", hex: "#40E0D0", sentence: "Hope turquoise waters promise smoother sailing ahead."},
             {name: "Firework Purple", hex: "#9370DB", sentence: "Firework purple explosions paint the sky with wonder."},
             {name: "Citrus Sunrise", hex: "#FFA500", sentence: "A citrus sunrise squeezes joy into the morning."},
-            {name: "Emerald Promise", hex: "#50C878", sentence: "Emerald promises grow from seeds planted in January soil."},
-            {name: "Crystal Ice", hex: "#E0FFFF", sentence: "Crystal ice formations glitter with geometric perfection."},
-            {name: "Velvet Plum", hex: "#8B008B", sentence: "Velvet plum curtains reveal this year's grand stage."},
-            {name: "Lucky Clover", hex: "#3CB371", sentence: "Lucky clover four-leaf finds mark fortunate days."},
-            {name: "Copper Penny", hex: "#B87333", sentence: "Copper penny wishes tossed into fountain depths."},
-            {name: "Ocean Sapphire", hex: "#0F52BA", sentence: "Ocean sapphire depths hide treasures yet discovered."},
-            {name: "Sunrise Coral", hex: "#FF7F50", sentence: "Sunrise coral reefs bloom beneath tropical waters."},
-            {name: "Royal Amethyst", hex: "#9966CC", sentence: "Royal amethyst crowns rest on deserving heads."},
-            {name: "Lemon Zest", hex: "#FFF44F", sentence: "Lemon zest adds tang to life's sweet recipes."},
-            {name: "Forest Moss", hex: "#8A9A5B", sentence: "Forest moss carpets ancient paths with velvet green."},
-            {name: "Berry Blush", hex: "#FF6B9D", sentence: "Berry blush cheeks glow with winter's healthy kiss."},
-            {name: "Slate Storm", hex: "#708090", sentence: "Slate storm clouds brew dramatic afternoon theatre."},
-            {name: "Honey Amber", hex: "#FFBF00", sentence: "Honey amber light pours through January windows."},
-            {name: "Peacock Teal", hex: "#008080", sentence: "Peacock teal feathers fan out in proud display."},
-            {name: "Lavender Dream", hex: "#E6E6FA", sentence: "Lavender dreams drift through sleep's peaceful gardens."},
-            {name: "Cherry Blossom", hex: "#FFB7C5", sentence: "Cherry blossom petals promise spring's sweet return."},
-            {name: "Cobalt Blue", hex: "#0047AB", sentence: "Cobalt blue depths inspire artistic expression."},
-            {name: "Butterscotch", hex: "#E1A95F", sentence: "Butterscotch pudding melts on eager tongues."},
-            {name: "Crimson Velvet", hex: "#B22222", sentence: "Crimson velvet theater seats hold countless stories."},
-            {name: "Mint Frost", hex: "#98FF98", sentence: "Mint frost crystallizes on morning window panes."},
-            {name: "Dusty Rose", hex: "#DCAE96", sentence: "Dusty rose memories soften with gentle time."},
-            {name: "Navy Depths", hex: "#000080", sentence: "Navy depths conceal mysteries of the soul."},
-            {name: "Tangerine Twist", hex: "#FF9966", sentence: "Tangerine twist flavors burst with citrus surprise."},
-            {name: "Jade Garden", hex: "#00A86B", sentence: "Jade garden stones create pathways to peace."},
-            {name: "Mauve Twilight", hex: "#E0B0FF", sentence: "Mauve twilight settles over the sleeping town."},
-            {name: "Burnt Sienna", hex: "#E97451", sentence: "Burnt sienna autumn leaves crunch underfoot."},
-            {name: "Periwinkle Sky", hex: "#CCCCFF", sentence: "Periwinkle sky stretches endlessly above us."},
-            {name: "Raspberry Sorbet", hex: "#E30B5C", sentence: "Raspberry sorbet cools tongues on hot days."},
-            {name: "Sage Wisdom", hex: "#9EA587", sentence: "Sage wisdom grows from years of patient learning."},
-            {name: "Golden Rod", hex: "#DAA520", sentence: "Golden rod flowers sway in prairie winds."},
-            {name: "Iris Purple", hex: "#5A4FCF", sentence: "Iris purple petals unfold their delicate beauty."},
-            {name: "Seafoam", hex: "#93E9BE", sentence: "Seafoam bubbles tickle bare toes at sunset."},
-            {name: "Brick Red", hex: "#CB4154", sentence: "Brick red buildings stand witness to history."},
-            {name: "Lemon Chiffon", hex: "#FFFACD", sentence: "Lemon chiffon cake layers stack up sweet."},
-            {name: "Teal Waters", hex: "#367588", sentence: "Teal waters lap against weathered dock posts."},
-            {name: "Fuchsia Flash", hex: "#FF00FF", sentence: "Fuchsia flash dresses turn heads at galas."},
-            {name: "Charcoal Gray", hex: "#36454F", sentence: "Charcoal gray sketches capture life's shadows."},
-            {name: "Apricot Glow", hex: "#FBCEB1", sentence: "Apricot glow fills grandmother's warm kitchen."},
-            {name: "Pine Green", hex: "#01796F", sentence: "Pine green forests whisper ancient tree songs."},
-            {name: "Blush Wine", hex: "#BC8F8F", sentence: "Blush wine pours into crystal celebration glasses."},
-            {name: "Azure Sky", hex: "#007FFF", sentence: "Azure sky promises perfect picnic weather."},
-            {name: "Peach Melba", hex: "#FFDAB9", sentence: "Peach melba desserts crown elegant dinner parties."},
-            {name: "Burgundy Night", hex: "#800020", sentence: "Burgundy night wraps the world in velvet."},
-            {name: "Mint Chip", hex: "#98D8C8", sentence: "Mint chip ice cream drips down summer cones."},
-            {name: "Lilac Breeze", hex: "#C8A2C8", sentence: "Lilac breeze carries sweet perfume through gardens."},
-            {name: "Rust Orange", hex: "#B7410E", sentence: "Rust orange leaves paint autumn masterpieces."},
-            {name: "Steel Blue", hex: "#4682B4", sentence: "Steel blue determination hardens resolve."},
-            {name: "Cantaloupe", hex: "#FFA62F", sentence: "Cantaloupe sweetness explodes with each juicy bite."},
-            {name: "Hunter Green", hex: "#355E3B", sentence: "Hunter green forests shelter woodland creatures."},
-            {name: "Rose Quartz", hex: "#F7CAC9", sentence: "Rose quartz crystals channel loving energy."},
-            {name: "Denim Blue", hex: "#1560BD", sentence: "Denim blue jeans fit like comfortable friends."},
-            {name: "Butterscotch Sundae", hex: "#F7D186", sentence: "Butterscotch sundae sauce drizzles golden streams."},
-            {name: "Eggplant", hex: "#614051", sentence: "Eggplant parmesan bubbles fragrantly from ovens."},
-            {name: "Aquamarine", hex: "#7FFFD4", sentence: "Aquamarine gemstones sparkle like tropical seas."},
-            {name: "Cherry Red", hex: "#FF0800", sentence: "Cherry red lipstick marks coffee cup rims."},
-            {name: "Olive Branch", hex: "#808000", sentence: "Olive branch extends peace across divides."},
-            {name: "Pink Lemonade", hex: "#FFB3DE", sentence: "Pink lemonade refreshes at summer lemonade stands."},
-            {name: "Prussian Blue", hex: "#003153", sentence: "Prussian blue uniforms march in parade formation."},
-            {name: "Pecan", hex: "#A37D5B", sentence: "Pecan pie slices disappear from Thanksgiving tables."},
-            {name: "Magenta Magic", hex: "#FF00AF", sentence: "Magenta magic markers color outside the lines."},
-            {name: "Mint Julep", hex: "#F1FFC8", sentence: "Mint julep cocktails chill in silver cups."},
-            {name: "Mahogany", hex: "#C04000", sentence: "Mahogany furniture gleams with generations of polish."},
-            {name: "Baby Blue", hex: "#89CFF0", sentence: "Baby blue blankets wrap tiny sleeping forms."},
-            {name: "Pumpkin Spice", hex: "#FF7518", sentence: "Pumpkin spice lattes steam on crisp mornings."},
-            {name: "Evergreen", hex: "#2D5016", sentence: "Evergreen trees stand faithful through changing seasons."},
-            {name: "Strawberry", hex: "#FC5A8D", sentence: "Strawberry fields stretch red beneath summer sun."},
-            {name: "Midnight Blue", hex: "#003366", sentence: "Midnight blue ink flows across journal pages."},
-            {name: "Caramel", hex: "#C68E17", sentence: "Caramel sauce sticks sweetly to apple slices."},
-            {name: "Lilac Mist", hex: "#DCD0FF", sentence: "Lilac mist rolls through valley at dawn."},
-            {name: "Terracotta", hex: "#E2725B", sentence: "Terracotta pots hold herbs on sunny sills."},
-            {name: "Robin Egg", hex: "#00CCCC", sentence: "Robin egg blue promises new life in nests."},
-            {name: "Sangria", hex: "#92000A", sentence: "Sangria pitchers clink with ice and fruit."},
-            {name: "Pistachio", hex: "#93C572", sentence: "Pistachio shells crack open to reveal green treasures."},
-            {name: "Orchid", hex: "#DA70D6", sentence: "Orchid blooms grace windowsills with exotic beauty."},
-            {name: "Cadet Blue", hex: "#5F9EA0", sentence: "Cadet blue uniforms stand at attention."},
-            {name: "Ginger Snap", hex: "#C46F4B", sentence: "Ginger snap cookies crunch with spicy sweetness."},
-            {name: "Violet Storm", hex: "#8B00FF", sentence: "Violet storm clouds brew electric anticipation."},
-            {name: "Seafoam Green", hex: "#9FE2BF", sentence: "Seafoam green waves wash worries out to sea."},
-            {name: "Maroon", hex: "#800000", sentence: "Maroon curtains frame dramatic stage performances."},
-            {name: "Buttercup", hex: "#F3E03B", sentence: "Buttercup petals reflect gold beneath chins."},
-            {name: "Spruce", hex: "#2C5F2D", sentence: "Spruce branches shelter birds from winter winds."},
-            {name: "Cotton Candy", hex: "#FFBCD9", sentence: "Cotton candy dissolves into pure sugary bliss."},
-            {name: "Dusk", hex: "#4E5754", sentence: "Dusk settles softly over tired landscapes."},
-            {name: "Papaya", hex: "#FF9F1C", sentence: "Papaya juice dribbles down satisfied smiles."},
-            {name: "Shamrock", hex: "#009E60", sentence: "Shamrock green celebrates Irish heritage proudly."},
-            {name: "Mulberry", hex: "#C54B8C", sentence: "Mulberry stains mark fingers purple from picking."},
-            {name: "Cornflower", hex: "#6495ED", sentence: "Cornflower blue eyes sparkle with mischief."},
-            {name: "Cinnamon", hex: "#D2691E", sentence: "Cinnamon rolls spiral with sweet spicy comfort."},
-            {name: "Wisteria", hex: "#C9A0DC", sentence: "Wisteria vines cascade like purple waterfalls."},
-            {name: "Turquoise Sea", hex: "#00CED1", sentence: "Turquoise sea invites swimmers to dive deep."},
-            {name: "Ruby Red", hex: "#E0115F", sentence: "Ruby red slippers click three times for home."},
-            {name: "Lime Green", hex: "#32CD32", sentence: "Lime green highlights mark important textbook passages."},
-            {name: "Taupe", hex: "#B38B6D", sentence: "Taupe walls provide neutral calming backgrounds."},
-            {name: "Flamingo", hex: "#FF66CC", sentence: "Flamingo pink feathers preen in shallow waters."},
-            {name: "Prussian", hex: "#003152", sentence: "Prussian discipline builds character through challenge."},
-            {name: "Saffron", hex: "#F4C430", sentence: "Saffron threads infuse rice with golden luxury."},
-            {name: "Jade Stone", hex: "#00B84C", sentence: "Jade stone carvings display ancient craftsmanship."},
-            {name: "Heather", hex: "#9E7BB5", sentence: "Heather blooms carpet Scottish highland slopes."},
-            {name: "Cerulean", hex: "#007BA7", sentence: "Cerulean blue crayons color endless skies."},
-            {name: "Tangerine Dream", hex: "#FF8300", sentence: "Tangerine dream cocktails taste of summer nights."},
-            {name: "Moss Green", hex: "#8F9779", sentence: "Moss green growth softens harsh stone edges."},
-            {name: "Raspberry", hex: "#E30B5D", sentence: "Raspberry jam spreads morning happiness on toast."},
-            {name: "Slate Blue", hex: "#6A5ACD", sentence: "Slate blue afternoon shadows stretch across floors."},
-            {name: "Honey Gold", hex: "#FFC30B", sentence: "Honey gold drips slowly from wooden spoons."},
-            {name: "Plum", hex: "#8E4585", sentence: "Plum sweetness bursts between eager teeth."},
-            {name: "Seafoam Mist", hex: "#A8E4A0", sentence: "Seafoam mist clings to morning coastal rocks."},
-            {name: "Wine", hex: "#722F37", sentence: "Wine cellars age bottles to perfection."},
-            {name: "Sunshine", hex: "#FFD966", sentence: "Sunshine yellow brightens even gloomy days."},
-            {name: "Forest Floor", hex: "#5E6C3A", sentence: "Forest floor cushions footsteps with fallen leaves."},
-            {name: "Bubble Gum", hex: "#FF6EC7", sentence: "Bubble gum pink bubbles pop with sticky joy."},
-            {name: "Storm Cloud", hex: "#4F666A", sentence: "Storm cloud gray promises cleansing rain."},
-            {name: "Melon", hex: "#FEBAAD", sentence: "Melon balls refresh at backyard barbecues."},
-            {name: "Kelly Green", hex: "#4CBB17", sentence: "Kelly green grass springs back under bare feet."},
-            {name: "Fuchsia Pink", hex: "#FD3F92", sentence: "Fuchsia pink flowers trumpet their bold presence."},
-            {name: "Denim Wash", hex: "#407294", sentence: "Denim wash fades perfectly with every wearing."},
-            {name: "Butterscotch Cream", hex: "#FFE5B4", sentence: "Butterscotch cream frosting swirls on cupcakes."},
-            {name: "Eggplant Purple", hex: "#990066", sentence: "Eggplant purple shadows deepen at twilight."},
-            {name: "Aqua", hex: "#00FFFF", sentence: "Aqua waters shimmer with tropical clarity."},
-            {name: "Scarlet", hex: "#FF2400", sentence: "Scarlet passion burns bright in brave hearts."},
-            {name: "Olive Drab", hex: "#6B8E23", sentence: "Olive drab camouflage blends into forest surroundings."},
-            {name: "Rose Pink", hex: "#FF66CC", sentence: "Rose pink petals scatter across garden paths."},
-            {name: "Navy Night", hex: "#0E2A47", sentence: "Navy night sky sparkles with distant stars."},
-            {name: "Amber Glow", hex: "#FFBF00", sentence: "Amber glow warms faces around crackling fires."},
-            {name: "Mint Green", hex: "#98FB98", sentence: "Mint green herbs grow fresh in kitchen gardens."},
-            {name: "Raspberry Tart", hex: "#D21F3C", sentence: "Raspberry tart filling oozes ruby sweetness."},
-            {name: "Periwinkle", hex: "#B8C5D6", sentence: "Periwinkle flowers peek through spring grass."},
-            {name: "Burnt Orange", hex: "#CC5500", sentence: "Burnt orange sunsets fade to purple dusk."},
-            {name: "Sage Green", hex: "#B2AC88", sentence: "Sage green wisdom decorates kitchen walls."},
-            {name: "Coral Reef", hex: "#FF6F61", sentence: "Coral reef ecosystems teem with colorful life."},
-            {name: "Indigo Night", hex: "#4B0082", sentence: "Indigo night blankets the world in mystery."},
-            {name: "Lemon Drop", hex: "#FFF700", sentence: "Lemon drop candies pucker lips with sourness."},
-            {name: "Teal Blue", hex: "#008080", sentence: "Teal blue pottery decorates shelves with style."},
-            {name: "Magenta", hex: "#FF0090", sentence: "Magenta hues shock eyes with vibrant energy."},
-            {name: "Olive", hex: "#808000", sentence: "Olive groves produce liquid gold in bottles."},
-            {name: "Pink Champagne", hex: "#F1DDCF", sentence: "Pink champagne bubbles celebrate special moments."},
-            {name: "Prussian Night", hex: "#003153", sentence: "Prussian night swallows all light completely."},
-            {name: "Butternut", hex: "#FF9A3C", sentence: "Butternut squash roasts into sweet perfection."},
-            {name: "Grape", hex: "#6F2DA8", sentence: "Grape vines climb trellises toward sunshine."},
-            {name: "Mint Condition", hex: "#98FF98", sentence: "Mint condition collectibles preserve nostalgic value."},
-            {name: "Mahogany Wood", hex: "#C04000", sentence: "Mahogany wood grains swirl with natural beauty."},
-            {name: "Sky Blue", hex: "#87CEEB", sentence: "Sky blue optimism lifts spirits heavenward."},
-            {name: "Pumpkin", hex: "#FF7F00", sentence: "Pumpkin patches sprawl across autumn fields."},
-            {name: "Pine", hex: "#01796F", sentence: "Pine scent freshens air naturally and completely."},
-            {name: "Watermelon", hex: "#FD4659", sentence: "Watermelon juice drips down chins messily."},
-            {name: "Midnight", hex: "#191970", sentence: "Midnight magic transforms ordinary into extraordinary."},
-            {name: "Caramel Swirl", hex: "#C68E17", sentence: "Caramel swirl ice cream melts into perfection."},
-            {name: "Lilac", hex: "#C8A2C8", sentence: "Lilac bushes perfume spring air sweetly."},
-            {name: "Terra Cotta", hex: "#E2725B", sentence: "Terra cotta pots age beautifully with time."},
-            {name: "Turquoise", hex: "#40E0D0", sentence: "Turquoise jewelry adorns necks with southwestern flair."},
-            {name: "Crimson", hex: "#DC143C", sentence: "Crimson leaves announce autumn's grand arrival."},
-            {name: "Pistachio Green", hex: "#93C572", sentence: "Pistachio green ice cream scoops stack high."},
-            {name: "Orchid Purple", hex: "#DA70D6", sentence: "Orchid purple elegance graces tropical gardens."},
-            {name: "Steel", hex: "#4682B4", sentence: "Steel strength supports towering city structures."},
-            {name: "Ginger", hex: "#C46F4B", sentence: "Ginger root adds warmth to healing teas."},
-            {name: "Violet", hex: "#8B00FF", sentence: "Violet light bends through crystal prisms."},
-            {name: "Seafoam White", hex: "#F0FFF0", sentence: "Seafoam white caps dance on ocean waves."},
-            {name: "Burgundy", hex: "#800020", sentence: "Burgundy wine ages in oak barrel darkness."},
-            {name: "Sunflower", hex: "#FFDA03", sentence: "Sunflower faces track the sun's daily journey."},
-            {name: "Evergreen Pine", hex: "#2D5016", sentence: "Evergreen pine cones scatter across forest floors."},
-            {name: "Pink", hex: "#FFC0CB", sentence: "Pink sunrise promises a beautiful day."},
-            {name: "Graphite", hex: "#383838", sentence: "Graphite pencils sketch dreams onto paper."},
-            {name: "Mango", hex: "#FF8243", sentence: "Mango slices taste like tropical paradise."},
-            {name: "Clover", hex: "#3EA055", sentence: "Clover fields host buzzing honeybee visitors."},
-            {name: "Mauve", hex: "#E0B0FF", sentence: "Mauve evening light softens harsh edges."},
-            {name: "Sky", hex: "#87CEEB", sentence: "Sky stretches infinite above our heads."},
-            {name: "Spice", hex: "#D27D2D", sentence: "Spice markets overflow with aromatic treasures."},
-            {name: "Jade", hex: "#00A86B", sentence: "Jade dragons guard ancient temple entrances."},
-            {name: "Hyacinth", hex: "#AA98A9", sentence: "Hyacinth blooms announce spring's sweet arrival."},
-            {name: "Ocean", hex: "#006994", sentence: "Ocean depths conceal wondrous unknown creatures."},
-            {name: "Persimmon", hex: "#EC5800", sentence: "Persimmon fruit ripens into autumn sweetness."},
-            {name: "Fern", hex: "#71BC78", sentence: "Fern fronds unfurl with delicate precision."},
-            {name: "Magenta Rose", hex: "#FF0090", sentence: "Magenta rose petals fall like silk."},
-            {name: "Twilight", hex: "#4E518B", sentence: "Twilight transforms day into mysterious night."},
-            {name: "Honey", hex: "#FFC30B", sentence: "Honey bees dance to share flower locations."},
-            {name: "Grape Vine", hex: "#5D3954", sentence: "Grape vines yield wine country's finest harvest."},
-            {name: "Mint", hex: "#3EB489", sentence: "Mint leaves flavor tea with refreshing coolness."},
-            {name: "Rust", hex: "#B7410E", sentence: "Rust never sleeps on forgotten metal objects."},
-            {name: "Powder Blue", hex: "#B0E0E6", sentence: "Powder blue morning sky promises gentle weather."},
-            {name: "Peach", hex: "#FFE5B4", sentence: "Peach cobbler bubbles golden in grandma's oven."},
-            {name: "Plum Wine", hex: "#8E4585", sentence: "Plum wine ferments into sweet celebration."},
-            {name: "Mint Tea", hex: "#B0F2B6", sentence: "Mint tea soothes with every aromatic sip."},
-            {name: "Bordeaux", hex: "#6D071A", sentence: "Bordeaux region produces legendary wine vintages."},
-            {name: "Lemon", hex: "#FFF44F", sentence: "Lemon trees provide both shade and citrus."},
-            {name: "Spruce Green", hex: "#2C5F2D", sentence: "Spruce green needles carpet the forest floor."},
-            {name: "Bubblegum", hex: "#FF6EC7", sentence: "Bubblegum machines dispense childhood joy for quarters."},
-            {name: "Ash", hex: "#B2BEB5", sentence: "Ash gray memories fade but never disappear."},
-            {name: "Cantaloupe Orange", hex: "#FFA62F", sentence: "Cantaloupe orange flesh tastes of summer mornings."},
-            {name: "Emerald", hex: "#50C878", sentence: "Emerald gemstones sparkle with enviable beauty."},
-            {name: "Rose", hex: "#FF007F", sentence: "Rose gardens require patience, pruning, and love."},
-            {name: "Denim", hex: "#1560BD", sentence: "Denim jackets never go out of style."},
-            {name: "Caramel Apple", hex: "#D4915D", sentence: "Caramel apple treats coat teeth with sweetness."},
-            {name: "Aubergine", hex: "#614051", sentence: "Aubergine elegance adds sophistication to any palette."},
-            {name: "Cyan", hex: "#00FFFF", sentence: "Cyan printer ink creates vibrant digital worlds."},
-            {name: "Brick", hex: "#CB4154", sentence: "Brick buildings weather time's relentless march."},
-            {name: "Lemon Cream", hex: "#FFFACD", sentence: "Lemon cream pie tops summer picnic tables."},
-            {name: "Teal", hex: "#367588", sentence: "Teal accents modernize traditional home decor."},
-            {name: "Hot Pink", hex: "#FF007F", sentence: "Hot pink confidence struts down fashion runways."},
-            {name: "Charcoal", hex: "#36454F", sentence: "Charcoal filters purify water to crystal clarity."},
-            {name: "Apricot", hex: "#FBCEB1", sentence: "Apricot preserves spread summer on winter toast."},
-            {name: "Forest Green", hex: "#014421", sentence: "Forest green depths shelter countless living things."},
-            {name: "Blush", hex: "#DE5D83", sentence: "Blush cheeks reveal shy smiles and secrets."},
-            {name: "Azure", hex: "#007FFF", sentence: "Azure Mediterranean waters beckon swimmers closer."},
-            {name: "Peach Fuzz", hex: "#FFB07C", sentence: "Peach fuzz softness brushes against tender skin."},
-            {name: "Wine Red", hex: "#722F37", sentence: "Wine red velvet drapes frame theater stages."},
-            {name: "Seafoam", hex: "#93E9BE", sentence: "Seafoam green tiles decorate vintage bathrooms."},
-            {name: "Lavender", hex: "#E6E6FA", sentence: "Lavender sachets perfume dresser drawers naturally."},
-            {name: "Tangerine", hex: "#FF9966", sentence: "Tangerine segments separate into perfect crescents."},
-            {name: "Hunter", hex: "#355E3B", sentence: "Hunter green represents tradition and stability."},
-            {name: "Pink Quartz", hex: "#F7CAC9", sentence: "Pink quartz crystals promote unconditional love."},
-            {name: "Denim Blue Wash", hex: "#1560BD", sentence: "Denim blue wash softens with every cycle."},
-            {name: "Butterscotch Candy", hex: "#F7D186", sentence: "Butterscotch candy unwraps into golden nostalgia."},
-            {name: "Eggplant Parmesan", hex: "#614051", sentence: "Eggplant parmesan layers create comfort food heaven."},
-            {name: "Aqua Marine", hex: "#7FFFD4", sentence: "Aqua marine waters sparkle with pristine beauty."},
-            {name: "Cherry Tomato", hex: "#DE3163", sentence: "Cherry tomato sweetness explodes on tongue."},
-            {name: "Olive Green", hex: "#708238", sentence: "Olive green military carries historical weight."},
-            {name: "Pink Lemon", hex: "#FFB3DE", sentence: "Pink lemon hues paint cotton candy skies."},
-            {name: "Blue Steel", hex: "#003153", sentence: "Blue steel determination shows in focused eyes."},
-            {name: "Pecan Pie", hex: "#A37D5B", sentence: "Pecan pie perfection requires patience and precision."},
-            {name: "Magenta Bright", hex: "#FF00AF", sentence: "Magenta bright highlights pop against neutral backgrounds."},
-            {name: "Mint Chocolate", hex: "#D5F5E3", sentence: "Mint chocolate chip remains an ice cream classic."},
-            {name: "Mahogany Red", hex: "#C04000", sentence: "Mahogany red richness deepens with proper care."},
-            {name: "Baby Powder", hex: "#FEFEFA", sentence: "Baby powder fresh scent evokes innocence."},
-            {name: "Pumpkin Orange", hex: "#FF7518", sentence: "Pumpkin orange carving creates jack-o'-lantern grins."},
-            {name: "Pine Forest", hex: "#01796F", sentence: "Pine forest walks clear minds and souls."},
-            {name: "Strawberry Jam", hex: "#FC5A8D", sentence: "Strawberry jam jars preserve summer's sweetness."},
-            {name: "Midnight Purple", hex: "#003366", sentence: "Midnight purple mysteries deepen as night falls."},
-            {name: "Salted Caramel", hex: "#C68E17", sentence: "Salted caramel balances sweet with savory perfectly."},
-            {name: "Lilac Bush", hex: "#DCD0FF", sentence: "Lilac bush blooms mark spring's triumphant return."},
-            {name: "Clay", hex: "#E2725B", sentence: "Clay pottery spins into useful beautiful forms."},
-            {name: "Robin Blue", hex: "#00CCCC", sentence: "Robin blue feathers flash through spring branches."},
-            {name: "Sangria Red", hex: "#92000A", sentence: "Sangria red fruit soaks up wine's complexity."},
-            {name: "Pistachio Shell", hex: "#93C572", sentence: "Pistachio shell remnants pile high at parties."},
-            {name: "Orchid Bloom", hex: "#DA70D6", sentence: "Orchid bloom elegance requires patient cultivation."},
-            {name: "Cadet", hex: "#5F9EA0", sentence: "Cadet training builds character through discipline."},
-            {name: "Gingerbread", hex: "#C46F4B", sentence: "Gingerbread houses construct sweet architectural fantasies."},
-            {name: "Deep Violet", hex: "#8B00FF", sentence: "Deep violet shadows hide in forest depths."},
-            {name: "Sea Glass", hex: "#9FE2BF", sentence: "Sea glass tumbles smooth on ocean floors."},
-            {name: "Maroon Wine", hex: "#800000", sentence: "Maroon wine stains tell tales of celebrations."},
-            {name: "Yellow Butter", hex: "#F3E03B", sentence: "Yellow butter melts into warm bread bliss."},
-            {name: "Spruce Branch", hex: "#2C5F2D", sentence: "Spruce branch wreaths welcome guests at doorways."},
-            {name: "Cotton Candy Pink", hex: "#FFBCD9", sentence: "Cotton candy pink clouds drift at sunset."},
-            {name: "Dusk Gray", hex: "#4E5754", sentence: "Dusk gray shadows stretch across evening lawns."},
-            {name: "Papaya Orange", hex: "#FF9F1C", sentence: "Papaya orange flesh nourishes body and soul."},
-            {name: "Four Leaf Clover", hex: "#009E60", sentence: "Four leaf clover luck hides in green fields."},
-            {name: "Mulberry Purple", hex: "#C54B8C", sentence: "Mulberry purple juice stains childhood summer memories."},
-            {name: "Blue Corn", hex: "#6495ED", sentence: "Blue corn chips crunch with southwestern flavor."},
-            {name: "Cinnamon Stick", hex: "#D2691E", sentence: "Cinnamon stick spice warms winter beverages perfectly."},
-            {name: "Wisteria Vine", hex: "#C9A0DC", sentence: "Wisteria vine blooms create purple curtains."},
-            {name: "Turquoise Stone", hex: "#00CED1", sentence: "Turquoise stone jewelry adorns with Native artistry."},
-            {name: "Ruby", hex: "#E0115F", sentence: "Ruby gemstones symbolize passion and nobility."},
-            {name: "Lime", hex: "#32CD32", sentence: "Lime zest adds bright citrus to recipes."},
-            {name: "Taupe Gray", hex: "#B38B6D", sentence: "Taupe gray sophistication never screams for attention."},
-            {name: "Flamingo Pink", hex: "#FF66CC", sentence: "Flamingo pink stands balance on one leg."},
-            {name: "Midnight Navy", hex: "#003152", sentence: "Midnight navy suits project professional confidence."},
-            {name: "Saffron Thread", hex: "#F4C430", sentence: "Saffron thread costs more than gold per ounce."},
-            {name: "Jade Green", hex: "#00B84C", sentence: "Jade green represents luck in Asian cultures."},
-            {name: "Heather Purple", hex: "#9E7BB5", sentence: "Heather purple moorlands stretch toward distant horizons."},
-            {name: "Cerulean Blue", hex: "#007BA7", sentence: "Cerulean blue crayons color childhood sky pictures."},
-            {name: "Citrus", hex: "#FF8300", sentence: "Citrus groves perfume Florida air with blossoms."},
-            {name: "Moss", hex: "#8F9779", sentence: "Moss growth indicates which way is north."},
-            {name: "Raspberry Red", hex: "#E30B5D", sentence: "Raspberry red lips kiss with berry sweetness."},
-            {name: "Slate", hex: "#6A5ACD", sentence: "Slate roofs protect homes for countless years."},
-            {name: "Golden Honey", hex: "#FFC30B", sentence: "Golden honey drizzles over Greek yogurt bowls."},
-            {name: "Plum Purple", hex: "#8E4585", sentence: "Plum purple twilight signals day's peaceful end."},
-            {name: "Mint Seafoam", hex: "#A8E4A0", sentence: "Mint seafoam green relaxes tired eyes naturally."},
-            {name: "Red Wine", hex: "#722F37", sentence: "Red wine breathes in crystal decanters patiently."},
-            {name: "Sunshine Yellow", hex: "#FFD966", sentence: "Sunshine yellow happiness radiates from smiling faces."},
-            {name: "Forest", hex: "#5E6C3A", sentence: "Forest bathing restores mental health and balance."},
-            {name: "Bubblegum Pink", hex: "#FF6EC7", sentence: "Bubblegum pink flamingos decorate Florida lawns ironically."},
-            {name: "Storm", hex: "#4F666A", sentence: "Storm clouds gather dramatic tension before release."},
-            {name: "Honeydew", hex: "#FEBAAD", sentence: "Honeydew melon balls cool summer afternoon heat."},
-            {name: "Kelly", hex: "#4CBB17", sentence: "Kelly green represents Irish pride worldwide."},
-            {name: "Hot Fuchsia", hex: "#FD3F92", sentence: "Hot fuchsia fashion makes bold confident statements."},
-            {name: "Faded Denim", hex: "#407294", sentence: "Faded denim softens perfectly with age."},
-            {name: "Butter Cream", hex: "#FFE5B4", sentence: "Butter cream frosting pipes perfect rosette decorations."},
-            {name: "Deep Eggplant", hex: "#990066", sentence: "Deep eggplant aubergine adds restaurant menu sophistication."},
-            {name: "Bright Aqua", hex: "#00FFFF", sentence: "Bright aqua pools invite hot afternoon swimmers."},
-            {name: "Blood Orange", hex: "#FF2400", sentence: "Blood orange juice stains fingers crimson red."},
-            {name: "Military Olive", hex: "#6B8E23", sentence: "Military olive green represents service and sacrifice."},
-            {name: "Dusty Pink", hex: "#FF66CC", sentence: "Dusty pink roses age gracefully in vases."},
-            {name: "Deep Navy", hex: "#0E2A47", sentence: "Deep navy blazers transition seamlessly workplace to evening."},
-            {name: "Warm Amber", hex: "#FFBF00", sentence: "Warm amber light creates cozy intimate atmospheres."},
-            {name: "Fresh Mint", hex: "#98FB98", sentence: "Fresh mint mojitos refresh on tropical beaches."},
-            {name: "Tart Raspberry", hex: "#D21F3C", sentence: "Tart raspberry flavor balances sweetness in desserts."},
-            {name: "Soft Periwinkle", hex: "#B8C5D6", sentence: "Soft periwinkle paint calms nursery room walls."},
-            {name: "Burnt Sienna", hex: "#CC5500", sentence: "Burnt sienna crayons color autumn leaf drawings."},
-            {name: "Dried Sage", hex: "#B2AC88", sentence: "Dried sage bundles smudge spaces with cleansing smoke."},
-            {name: "Living Coral", hex: "#FF6F61", sentence: "Living coral reefs face climate change challenges."},
-            {name: "Deep Indigo", hex: "#4B0082", sentence: "Deep indigo dye creates timeless blue jean color."},
-            {name: "Sour Lemon", hex: "#FFF700", sentence: "Sour lemon faces pucker at first bite."},
-            {name: "Dark Teal", hex: "#008080", sentence: "Dark teal sophistication suits modern interior design."},
-            {name: "Bright Magenta", hex: "#FF0090", sentence: "Bright magenta markers highlight important exam notes."},
-            {name: "Greek Olive", hex: "#808000", sentence: "Greek olive oil drizzles over fresh tomato salads."},
-            {name: "Blush Champagne", hex: "#F1DDCF", sentence: "Blush champagne toasts celebrate elegant wedding receptions."},
-            {name: "Dark Prussian", hex: "#003153", sentence: "Dark prussian discipline shows in perfect formations."},
-            {name: "Squash", hex: "#FF9A3C", sentence: "Squash soup warms cold autumn evening appetites."},
-            {name: "Concord Grape", hex: "#6F2DA8", sentence: "Concord grape jelly spreads childhood peanut butter sandwiches."},
-            {name: "Perfect Mint", hex: "#98FF98", sentence: "Perfect mint condition adds value to collectibles."},
-            {name: "Rich Mahogany", hex: "#C04000", sentence: "Rich mahogany desk drawers glide smooth as silk."},
-            {name: "Clear Sky", hex: "#87CEEB", sentence: "Clear sky blue promises perfect flying weather."},
-            {name: "Jack O'Lantern", hex: "#FF7F00", sentence: "Jack o'lantern grins light up October nights."},
-            {name: "Christmas Pine", hex: "#01796F", sentence: "Christmas pine trees fill homes with forest fragrance."},
-            {name: "Summer Watermelon", hex: "#FD4659", sentence: "Summer watermelon seed spitting contests crown champions."},
-            {name: "Witching Hour", hex: "#191970", sentence: "Witching hour midnight chimes echo through empty halls."},
-            {name: "Caramel Latte", hex: "#C68E17", sentence: "Caramel latte foam art decorates coffee shop mornings."},
-            {name: "Spring Lilac", hex: "#C8A2C8", sentence: "Spring lilac perfume drifts through open windows."},
-            {name: "Adobe", hex: "#E2725B", sentence: "Adobe brick buildings stay cool in desert heat."},
-            {name: "Caribbean", hex: "#40E0D0", sentence: "Caribbean waters invite endless vacation daydreams."},
-            {name: "Valentine", hex: "#DC143C", sentence: "Valentine crimson roses declare undying devotion."},
-            {name: "Key Lime", hex: "#93C572", sentence: "Key lime pie offers tart Florida sweetness."},
-            {name: "Tiger Lily", hex: "#DA70D6", sentence: "Tiger lily orange spots mark summer garden borders."},
-            {name: "Battleship", hex: "#4682B4", sentence: "Battleship gray paint hides naval vessels at sea."},
-            {name: "Molasses", hex: "#C46F4B", sentence: "Molasses cookies bake slow sweet old-fashioned goodness."},
-            {name: "Royal Purple", hex: "#8B00FF", sentence: "Royal purple robes distinguish nobility from commoners."},
-            {name: "Beach Glass", hex: "#9FE2BF", sentence: "Beach glass collectors hunt for frosted treasures."},
-            {name: "Cabernet", hex: "#800020", sentence: "Cabernet sauvignon pairs perfectly with grilled steaks."},
-            {name: "Daffodil", hex: "#FFDA03", sentence: "Daffodil yellow heralds spring's joyful awakening."},
-            {name: "Fir", hex: "#2D5016", sentence: "Fir trees provide shelter for forest creatures."},
-            {name: "Ballet Slipper", hex: "#FFC0CB", sentence: "Ballet slipper pink ribbons tie around delicate ankles."}
+            {name: "Emerald Promise", hex: "#50C878", sentence: "Emerald promises grow from seeds planted in January soil."}
         ];
-    
+
         const calendar = document.getElementById('calendar');
         
         // Create confetti
@@ -629,7 +339,7 @@
         }
         
         setInterval(createConfetti, 150);
-    
+
         // Create sparkle effect
         function createSparkles(x, y) {
             const sparkleSymbols = ['✨', '⭐', '💫', '🌟', '🎊', '🎉'];
@@ -654,16 +364,16 @@
                 setTimeout(() => sparkle.remove(), 800);
             }
         }
-    
+
         // Get current date info
         const now = new Date();
         const startOfYear = new Date(2026, 0, 1);
         const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
-    
+
         function isUnlocked(day) {
             return day <= dayOfYear;
         }
-    
+
         // Contrast calculation for text
         function getTextColor(hexColor) {
             const r = parseInt(hexColor.substr(1,2), 16);
@@ -672,7 +382,15 @@
             const brightness = (r * 299 + g * 587 + b * 114) / 1000;
             return brightness > 155 ? '#000000' : '#FFFFFF';
         }
-    
+
+        // Convert hex to rgba for glow effect
+        function hexToRgba(hex, alpha = 0.8) {
+            const r = parseInt(hex.substr(1,2), 16);
+            const g = parseInt(hex.substr(3,2), 16);
+            const b = parseInt(hex.substr(5,2), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
         // Storage functions
         function getFlippedState() {
             const stored = localStorage.getItem('color-calendar-flipped');
@@ -684,7 +402,7 @@
             state[day] = isFlipped;
             localStorage.setItem('color-calendar-flipped', JSON.stringify(state));
         }
-    
+
         // Reset button
         document.getElementById('resetButton').addEventListener('click', function() {
             if (confirm('Reset all opened colors?')) {
@@ -692,7 +410,7 @@
                 location.reload();
             }
         });
-    
+
         // Jump to today button
         document.getElementById('todayButton').addEventListener('click', function() {
             const todayBox = document.getElementById('day-' + dayOfYear);
@@ -703,7 +421,7 @@
                 }, 500);
             }
         });
-    
+
         // Initialize calendar
         function initializeCalendar() {
             const flippedState = getFlippedState();
@@ -721,6 +439,13 @@
                 const date = new Date(2026, 0, day);
                 const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 
+                const boxBack = document.createElement('div');
+                boxBack.className = 'box-back';
+                boxBack.style.backgroundColor = color.hex;
+                boxBack.style.borderColor = color.hex;
+                boxBack.style.color = textColor;
+                boxBack.style.setProperty('--glow-color', hexToRgba(color.hex, 0.8));
+                
                 box.innerHTML = `
                     <div class="box-inner">
                         <div class="box-front">
@@ -728,21 +453,29 @@
                             <div class="box-number">${day}</div>
                             <div class="box-date">${dateStr}</div>
                         </div>
-                        <div class="box-back" style="background-color: ${color.hex}; border-color: ${color.hex}; color: ${textColor};">
-                            <div class="color-name" style="color: ${textColor};">${color.name}</div>
-                            <div class="color-hex" style="color: ${textColor};">${color.hex}</div>
-                            <div class="color-sentence" style="color: ${textColor};">${color.sentence}</div>
-                        </div>
                     </div>
                 `;
                 
+                boxBack.innerHTML = `
+                    <div class="color-name" style="color: ${textColor};">${color.name}</div>
+                    <div class="color-hex" style="color: ${textColor};">${color.hex}</div>
+                    <div class="color-sentence" style="color: ${textColor};">${color.sentence}</div>
+                `;
+                
+                box.querySelector('.box-inner').appendChild(boxBack);
+                
                 if (unlocked) {
                     box.addEventListener('click', function(e) {
+                        const wasAlreadyFlipped = this.classList.contains('flipped');
                         this.classList.toggle('flipped');
                         const isFlipped = this.classList.contains('flipped');
                         saveFlippedState(day, isFlipped);
                         
-                        if (isFlipped) {
+                        if (isFlipped && !wasAlreadyFlipped) {
+                            // Add revealing class for glow animation
+                            this.classList.add('revealing');
+                            setTimeout(() => this.classList.remove('revealing'), 1200);
+                            
                             createSparkles(e.clientX, e.clientY);
                             const pop = document.getElementById('popSound');
                             pop.currentTime = 0;
@@ -755,7 +488,7 @@
                 calendar.appendChild(box);
             });
         }
-    
+
         // Add pulse animation for jump to today
         const style = document.createElement('style');
         style.textContent = `
@@ -765,8 +498,8 @@
             }
         `;
         document.head.appendChild(style);
-    
+
         initializeCalendar();
     </script>
-  </body>
+</body>
 </html>
