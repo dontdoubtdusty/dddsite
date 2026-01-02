@@ -301,6 +301,9 @@
         <div class="preview-content" onclick="event.stopPropagation()">
             <div id="previewImage"></div>
             <div class="preview-buttons">
+                <button onclick="copyToClipboard()" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
+                    📋 Copy to Clipboard
+                </button>
                 <button onclick="downloadScreenshot()" style="background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white;">
                     💾 Download PNG
                 </button>
@@ -612,6 +615,34 @@
                     URL.revokeObjectURL(url);
                 });
                 closePreview();
+            }
+        }
+
+        async function copyToClipboard() {
+            if (currentCanvas) {
+                try {
+                    currentCanvas.toBlob(async (blob) => {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({
+                                'image/png': blob
+                            })
+                        ]);
+                        
+                        // Show feedback
+                        const btn = event.target;
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = '✅ Copied!';
+                        btn.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+                        
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                            btn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+                        }, 2000);
+                    });
+                } catch (err) {
+                    alert('Failed to copy to clipboard. Please try downloading instead.');
+                    console.error('Copy failed:', err);
+                }
             }
         }
         
