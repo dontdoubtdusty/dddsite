@@ -184,60 +184,59 @@
         text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
     }
 
-    /* Color-matched glow animation - UPDATED */
+    /* Tron-style moving border line */
     .box-back {
         border: 3px solid;
         transform: rotateY(180deg);
-        overflow: auto;
+        overflow: hidden;
         text-align: center;
         position: relative;
     }
 
-    .box-back::before {
+    .box-back::after {
         content: '';
         position: absolute;
-        top: -6px;
-        left: -6px;
-        right: -6px;
-        bottom: -6px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         border-radius: 12px;
-        padding: 6px;
-        background: linear-gradient(90deg, var(--glow-color), transparent);
-        -webkit-mask: 
-            linear-gradient(#fff 0 0) content-box, 
-            linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
         opacity: 0;
         pointer-events: none;
+        box-shadow: 
+            inset 0 0 0 5px var(--glow-color),
+            inset 0 0 20px var(--glow-color),
+            0 0 20px var(--glow-color);
     }
 
-    .calendar-box.revealing .box-back::before {
-        animation: border-trace 1.2s ease-out;
+    .calendar-box.revealing .box-back::after {
+        animation: tron-glow 1.5s ease-out;
     }
 
-    @keyframes border-trace {
+    @keyframes tron-glow {
         0% {
+            opacity: 0;
+            clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+        }
+        12.5% {
             opacity: 1;
-            background: linear-gradient(90deg, var(--glow-color), var(--glow-color) 20%, transparent 20%);
-            filter: drop-shadow(0 0 12px var(--glow-color)) drop-shadow(0 0 20px var(--glow-color));
+            clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
         }
-        25% {
-            background: linear-gradient(180deg, var(--glow-color), var(--glow-color) 20%, transparent 20%);
-            filter: drop-shadow(0 0 12px var(--glow-color)) drop-shadow(0 0 20px var(--glow-color));
+        37.5% {
+            opacity: 1;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 0);
         }
-        50% {
-            background: linear-gradient(270deg, var(--glow-color), var(--glow-color) 20%, transparent 20%);
-            filter: drop-shadow(0 0 12px var(--glow-color)) drop-shadow(0 0 20px var(--glow-color));
+        62.5% {
+            opacity: 1;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
         }
-        75% {
-            background: linear-gradient(0deg, var(--glow-color), var(--glow-color) 20%, transparent 20%);
-            filter: drop-shadow(0 0 12px var(--glow-color)) drop-shadow(0 0 20px var(--glow-color));
+        87.5% {
+            opacity: 1;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
         }
         100% {
             opacity: 0;
-            background: linear-gradient(90deg, var(--glow-color), var(--glow-color) 20%, transparent 20%);
-            filter: drop-shadow(0 0 0px var(--glow-color));
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
         }
     }
 
@@ -247,6 +246,8 @@
         margin-bottom: 8px;
         line-height: 1.2;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        position: relative;
+        z-index: 1;
     }
 
     .color-hex {
@@ -255,6 +256,8 @@
         margin-bottom: 12px;
         opacity: 0.9;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        position: relative;
+        z-index: 1;
     }
 
     .color-sentence {
@@ -262,25 +265,8 @@
         line-height: 1.4;
         font-style: italic;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-    }
-
-    .sparkle {
-        position: absolute;
-        pointer-events: none;
-        font-size: 1.5em;
-        animation: sparkle-animation 0.8s ease-out forwards;
-        z-index: 100;
-    }
-    
-    @keyframes sparkle-animation {
-        0% {
-            transform: translate(0, 0) scale(0) rotate(0deg);
-            opacity: 1;
-        }
-        100% {
-            transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(360deg);
-            opacity: 0;
-        }
+        position: relative;
+        z-index: 1;
     }
 
     @media (max-width: 768px) {
@@ -496,9 +482,8 @@
                         if (isFlipped && !wasAlreadyFlipped) {
                             // Add revealing class for glow animation
                             this.classList.add('revealing');
-                            setTimeout(() => this.classList.remove('revealing'), 1200);
+                            setTimeout(() => this.classList.remove('revealing'), 1500);
                             
-                            createSparkles(e.clientX, e.clientY);
                             const pop = document.getElementById('popSound');
                             pop.currentTime = 0;
                             pop.volume = 0.2;
