@@ -5,293 +5,315 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>365 Days of New Year's Colors</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Georgia', serif;
-            background: 
-                linear-gradient(180deg, rgba(10,10,30,0.8) 0%, rgba(30,10,50,0.8) 50%, rgba(10,10,30,0.8) 100%),
-                radial-gradient(circle at 20% 50%, rgba(255,215,0,0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(255,20,147,0.1) 0%, transparent 50%);
-            background-color: #0a0a1e;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            color: #fff;
-            position: relative;
-            overflow-x: hidden;
-        }
+    body {
+        font-family: 'Georgia', serif;
+        background: 
+            linear-gradient(180deg, rgba(10,10,30,0.8) 0%, rgba(30,10,50,0.8) 50%, rgba(10,10,30,0.8) 100%),
+            radial-gradient(circle at 20% 50%, rgba(255,215,0,0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 50%, rgba(255,20,147,0.1) 0%, transparent 50%);
+        background-color: #0a0a1e;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        color: #fff;
+        position: relative;
+        overflow-x: hidden;
+    }
 
-        /* Animated confetti effect */
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            top: -10px;
-            z-index: 1;
-            animation: fall linear infinite;
-        }
+    /* Animated confetti effect */
+    .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        top: -10px;
+        z-index: 1;
+        animation: fall linear infinite;
+    }
 
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-            }
+    @keyframes fall {
+        to {
+            transform: translateY(100vh) rotate(360deg);
         }
+    }
 
+    h1 {
+        font-size: 2.8em;
+        margin: 20px 0 10px;
+        text-align: center;
+        background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradient-shift 3s ease infinite;
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        z-index: 2;
+        position: relative;
+    }
+
+    @keyframes gradient-shift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+
+    .subtitle {
+        font-size: 1.3em;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #ffd700;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        font-style: italic;
+        z-index: 2;
+        position: relative;
+    }
+
+    .controls {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        z-index: 2;
+        position: relative;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .button {
+        background: rgba(42, 42, 62, 0.7);
+        color: #ffd700;
+        border: 2px solid rgba(255, 215, 0, 0.5);
+        padding: 10px 20px;
+        font-size: 0.95em;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Georgia', serif;
+        text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+        transition: all 0.3s ease;
+    }
+    
+    .button:hover {
+        background: rgba(42, 42, 62, 0.9);
+        border-color: #ffd700;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 15px;
+        max-width: 1400px;
+        width: 100%;
+        padding: 20px;
+        z-index: 2;
+        position: relative;
+    }
+
+    .calendar-box {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        perspective: 1000px;
+        cursor: pointer;
+    }
+
+    .calendar-box.locked {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .lock-icon {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 1.1em;
+        z-index: 10;
+        filter: drop-shadow(0 0 3px rgba(0,0,0,0.8));
+    }
+
+    .box-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+    }
+
+    .calendar-box.flipped .box-inner {
+        transform: rotateY(180deg);
+    }
+
+    .box-front, .box-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+    }
+
+    .box-front {
+        background: linear-gradient(135deg, rgba(30,30,50,0.9) 0%, rgba(50,30,70,0.9) 100%);
+        border: 3px solid rgba(255, 215, 0, 0.4);
+    }
+
+    .box-number {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #ffd700;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 2px 2px 4px rgba(0,0,0,0.7);
+        margin-bottom: 5px;
+    }
+
+    .box-date {
+        font-size: 0.75em;
+        color: #ff69b4;
+        text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+    }
+
+    /* Color-matched glow animation - UPDATED */
+    .box-back {
+        border: 3px solid;
+        transform: rotateY(180deg);
+        overflow: auto;
+        text-align: center;
+        position: relative;
+    }
+
+    .box-back::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: -6px;
+        right: -6px;
+        bottom: -6px;
+        border-radius: 12px;
+        padding: 6px;
+        background: linear-gradient(90deg, var(--glow-color), transparent);
+        -webkit-mask: 
+            linear-gradient(#fff 0 0) content-box, 
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .calendar-box.revealing .box-back::before {
+        animation: border-trace 1.2s ease-out;
+    }
+
+    @keyframes border-trace {
+        0% {
+            opacity: 1;
+            background: linear-gradient(90deg, var(--glow-color), var(--glow-color) 20%, transparent 20%);
+            filter: drop-shadow(0 0 12px var(--glow-color)) drop-shadow(0 0 20px var(--glow-color));
+        }
+        25% {
+            background: linear-gradient(180deg, var(--glow-color), var(--glow-color) 20%, transparent 20%);
+            filter: drop-shadow(0 0 12px var(--glow-color)) drop-shadow(0 0 20px var(--glow-color));
+        }
+        50% {
+            background: linear-gradient(270deg, var(--glow-color), var(--glow-color) 20%, transparent 20%);
+            filter: drop-shadow(0 0 12px var(--glow-color)) drop-shadow(0 0 20px var(--glow-color));
+        }
+        75% {
+            background: linear-gradient(0deg, var(--glow-color), var(--glow-color) 20%, transparent 20%);
+            filter: drop-shadow(0 0 12px var(--glow-color)) drop-shadow(0 0 20px var(--glow-color));
+        }
+        100% {
+            opacity: 0;
+            background: linear-gradient(90deg, var(--glow-color), var(--glow-color) 20%, transparent 20%);
+            filter: drop-shadow(0 0 0px var(--glow-color));
+        }
+    }
+
+    .color-name {
+        font-size: 1.3em;
+        font-weight: bold;
+        margin-bottom: 8px;
+        line-height: 1.2;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .color-hex {
+        font-size: 1em;
+        font-family: 'Courier New', monospace;
+        margin-bottom: 12px;
+        opacity: 0.9;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    }
+
+    .color-sentence {
+        font-size: 0.85em;
+        line-height: 1.4;
+        font-style: italic;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    }
+
+    .sparkle {
+        position: absolute;
+        pointer-events: none;
+        font-size: 1.5em;
+        animation: sparkle-animation 0.8s ease-out forwards;
+        z-index: 100;
+    }
+    
+    @keyframes sparkle-animation {
+        0% {
+            transform: translate(0, 0) scale(0) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
         h1 {
-            font-size: 2.8em;
-            margin: 20px 0 10px;
-            text-align: center;
-            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-shift 3s ease infinite;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-            z-index: 2;
-            position: relative;
-        }
-
-        @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            font-size: 2em;
         }
 
         .subtitle {
-            font-size: 1.3em;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            font-style: italic;
-            z-index: 2;
-            position: relative;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            z-index: 2;
-            position: relative;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .button {
-            background: rgba(42, 42, 62, 0.7);
-            color: #ffd700;
-            border: 2px solid rgba(255, 215, 0, 0.5);
-            padding: 10px 20px;
-            font-size: 0.95em;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Georgia', serif;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-            transition: all 0.3s ease;
+            font-size: 1em;
         }
         
-        .button:hover {
-            background: rgba(42, 42, 62, 0.9);
-            border-color: #ffd700;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-        }
-
         .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 15px;
-            max-width: 1400px;
-            width: 100%;
-            padding: 20px;
-            z-index: 2;
-            position: relative;
-        }
-
-        .calendar-box {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1;
-            perspective: 1000px;
-            cursor: pointer;
-        }
-
-        .calendar-box.locked {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .lock-icon {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            font-size: 1.1em;
-            z-index: 10;
-            filter: drop-shadow(0 0 3px rgba(0,0,0,0.8));
-        }
-
-        .box-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-
-        .calendar-box.flipped .box-inner {
-            transform: rotateY(180deg);
-        }
-
-        .box-front, .box-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.6);
-        }
-
-        .box-front {
-            background: linear-gradient(135deg, rgba(30,30,50,0.9) 0%, rgba(50,30,70,0.9) 100%);
-            border: 3px solid rgba(255, 215, 0, 0.4);
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
         }
 
         .box-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 2px 2px 4px rgba(0,0,0,0.7);
-            margin-bottom: 5px;
-        }
-
-        .box-date {
-            font-size: 0.75em;
-            color: #ff69b4;
-            text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
-        }
-
-        .box-back {
-            border: 3px solid;
-            transform: rotateY(180deg);
-            overflow: auto;
-            text-align: center;
-            transition: box-shadow 0.3s ease;
-        }
-
-        /* Color-matched glow animation */
-        .calendar-box.revealing .box-back {
-            animation: color-glow 1.2s ease-out;
-        }
-
-        @keyframes color-glow {
-            0% {
-                box-shadow: 0 6px 12px rgba(0,0,0,0.6);
-            }
-            30% {
-                box-shadow: 
-                    0 0 30px var(--glow-color),
-                    0 0 60px var(--glow-color),
-                    0 0 90px var(--glow-color),
-                    inset 0 0 20px var(--glow-color);
-            }
-            60% {
-                box-shadow: 
-                    0 0 40px var(--glow-color),
-                    0 0 80px var(--glow-color),
-                    inset 0 0 25px var(--glow-color);
-            }
-            100% {
-                box-shadow: 0 6px 12px rgba(0,0,0,0.6);
-            }
+            font-size: 2em;
         }
 
         .color-name {
-            font-size: 1.3em;
-            font-weight: bold;
-            margin-bottom: 8px;
-            line-height: 1.2;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            font-size: 1.1em;
         }
 
         .color-hex {
-            font-size: 1em;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 12px;
-            opacity: 0.9;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            font-size: 0.85em;
         }
 
         .color-sentence {
-            font-size: 0.85em;
-            line-height: 1.4;
-            font-style: italic;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            font-size: 0.75em;
         }
-
-        .sparkle {
-            position: absolute;
-            pointer-events: none;
-            font-size: 1.5em;
-            animation: sparkle-animation 0.8s ease-out forwards;
-            z-index: 100;
-        }
-        
-        @keyframes sparkle-animation {
-            0% {
-                transform: translate(0, 0) scale(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-
-            .subtitle {
-                font-size: 1em;
-            }
-            
-            .calendar-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 10px;
-            }
-
-            .box-number {
-                font-size: 2em;
-            }
-
-            .color-name {
-                font-size: 1.1em;
-            }
-
-            .color-hex {
-                font-size: 0.85em;
-            }
-
-            .color-sentence {
-                font-size: 0.75em;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <audio id="popSound" preload="auto">
