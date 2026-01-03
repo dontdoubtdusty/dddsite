@@ -13,7 +13,8 @@
 
         body {
             font-family: 'Georgia', serif;
-            background-color: #0a0a1e;
+            background-color: #1a1a2e;
+            transition: background-color 1.5s ease;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -360,13 +361,18 @@
                         
                         saveFlippedState(day, isFlipped);
                         
-                        if (isFlipped && !wasAlreadyFlipped) {
+                        // Change background color when flipping to show the color
+                        if (isFlipped) {
+                            document.body.style.backgroundColor = color.hex;
                             console.log('Adding revealing class!');
                             this.classList.add('revealing');
                             setTimeout(() => {
                                 console.log('Removing revealing class');
                                 this.classList.remove('revealing');
                             }, 2000);
+                        } else {
+                            // When flipping back, return to default neutral color
+                            document.body.style.backgroundColor = '#1a1a2e';
                         }
                     });
                 }
