@@ -313,13 +313,18 @@
         function initializeCalendar() {
             const flippedState = getFlippedState();
             
-            // Find the highest flipped day and set background to that color
+            // Find the highest flipped day and set background to that color immediately
             const flippedDays = Object.keys(flippedState).filter(day => flippedState[day]).map(Number);
             if (flippedDays.length > 0) {
                 const latestFlippedDay = Math.max(...flippedDays);
                 const latestColor = colors[latestFlippedDay - 1];
                 if (latestColor) {
                     document.body.style.backgroundColor = latestColor.hex;
+                    document.body.style.transition = 'none';
+                    // Re-enable transition after a brief moment for future changes
+                    setTimeout(() => {
+                        document.body.style.transition = 'background-color 1.5s ease';
+                    }, 50);
                 }
             }
             
