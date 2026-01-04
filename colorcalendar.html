@@ -313,6 +313,16 @@
         function initializeCalendar() {
             const flippedState = getFlippedState();
             
+            // Find the highest flipped day and set background to that color
+            const flippedDays = Object.keys(flippedState).filter(day => flippedState[day]).map(Number);
+            if (flippedDays.length > 0) {
+                const latestFlippedDay = Math.max(...flippedDays);
+                const latestColor = colors[latestFlippedDay - 1];
+                if (latestColor) {
+                    document.body.style.backgroundColor = latestColor.hex;
+                }
+            }
+            
             colors.forEach((color, index) => {
                 const day = index + 1;
                 const unlocked = isUnlocked(day);
