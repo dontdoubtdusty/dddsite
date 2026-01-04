@@ -3,822 +3,449 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magic 8-Ball</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>365 Days of New Year's Colors</title>
     <style>
-        :root {
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
-            --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.25);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            font-family: 'Georgia', serif;
+            background-color: #1a1a2e;
+            transition: background-color 1.5s ease;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            overflow-y: auto;
+            padding: 20px;
+            color: #fff;
+            position: relative;
             overflow-x: hidden;
-            padding: 40px 20px;
         }
 
         h1 {
-            color: white;
-            font-size: 2.5em;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .instruction {
-            color: rgba(255,255,255,0.9);
-            font-size: 1.1em;
-            font-weight: 400;
-            margin-bottom: 50px;
+            font-size: 2.8em;
+            margin: 20px 0 10px;
             text-align: center;
+            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease infinite;
+            z-index: 2;
+            position: relative;
         }
 
-        .input-container {
-            margin-bottom: 40px;
-            text-align: center;
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
-        #question {
-            width: 400px;
-            max-width: 90vw;
-            padding: 16px 20px;
-            font-size: 1.05em;
-            font-family: 'Inter', sans-serif;
-            border: none;
-            border-radius: 12px;
-            box-shadow: var(--shadow-md);
+        .subtitle {
+            font-size: 1.3em;
             margin-bottom: 20px;
-            transition: box-shadow 0.2s ease;
-        }
-
-        #question:focus {
-            outline: none;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .button-group {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 14px 32px;
-            font-size: 1.05em;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: var(--shadow-md);
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-            color: white;
-        }
-
-        #displayQuestion {
-            color: white;
-            font-size: 1.4em;
-            font-weight: 500;
-            font-style: italic;
-            margin-bottom: 50px;
             text-align: center;
-            min-height: 40px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            color: #ffd700;
+            font-style: italic;
+            z-index: 2;
+            position: relative;
         }
 
-        #displayQuestion.visible {
-            opacity: 1;
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            z-index: 2;
+            position: relative;
         }
 
-        .ball-container {
+        .button {
+            background: rgba(42, 42, 62, 0.7);
+            color: #ffd700;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            padding: 10px 20px;
+            font-size: 0.95em;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            transition: all 0.3s ease;
+        }
+        
+        .button:hover {
+            background: rgba(42, 42, 62, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .calendar-container {
+            max-width: 1400px;
+            width: 100%;
+            padding: 20px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .week-section {
+            margin-bottom: 40px;
+        }
+
+        .week-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .week-theme {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+        }
+
+        .week-description {
+            font-size: 1.1em;
+            color: #ff69b4;
+            font-style: italic;
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .calendar-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
             perspective: 1000px;
             cursor: pointer;
-            margin-bottom: 50px;
         }
 
-        .ball {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 100px 100px, #2d2d2d, #000000);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                inset -20px -20px 50px rgba(0,0,0,0.8),
-                inset 20px 20px 50px rgba(255,255,255,0.1),
-                var(--shadow-xl);
-            transition: transform 0.1s ease;
-            position: relative;
+        .calendar-box.locked {
+            cursor: not-allowed;
+            opacity: 0.5;
         }
 
-        .ball::before {
-            content: '';
+        .lock-icon {
             position: absolute;
-            top: 30px;
-            left: 40px;
-            width: 80px;
-            height: 60px;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.2), transparent);
-            border-radius: 50%;
-            filter: blur(10px);
+            top: 8px;
+            right: 8px;
+            font-size: 1.1em;
+            z-index: 10;
         }
 
-        .ball.shaking {
-            animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg) translateX(0); }
-            10% { transform: rotate(-10deg) translateX(-10px); }
-            20% { transform: rotate(10deg) translateX(10px); }
-            30% { transform: rotate(-10deg) translateX(-10px); }
-            40% { transform: rotate(10deg) translateX(10px); }
-            50% { transform: rotate(-10deg) translateX(-10px); }
-            60% { transform: rotate(10deg) translateX(10px); }
-            70% { transform: rotate(-10deg) translateX(-10px); }
-            80% { transform: rotate(10deg) translateX(10px); }
-            90% { transform: rotate(-5deg) translateX(-5px); }
-        }
-
-        .window {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                inset 0 0 20px rgba(0,0,0,0.5),
-                0 0 20px rgba(59, 130, 246, 0.3);
+        .box-inner {
             position: relative;
-            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
         }
 
-        .answer {
-            color: white;
-            font-size: 0.9em;
-            font-weight: 600;
-            text-align: center;
+        .calendar-box.flipped .box-inner {
+            transform: rotateY(180deg);
+        }
+
+        .box-front, .box-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             padding: 15px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
 
-        .answer.visible {
-            opacity: 1;
+        .box-front {
+            background: linear-gradient(135deg, rgba(30,30,50,0.9) 0%, rgba(50,30,70,0.9) 100%);
+            border: 3px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.6);
         }
 
-        .quote-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: var(--shadow-lg);
-            max-width: 600px;
-            width: 90%;
-            display: none;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        .box-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            margin-bottom: 5px;
         }
 
-        .quote-panel.visible {
-            display: block;
-            animation: fadeIn 0.5s ease;
+        .box-date {
+            font-size: 0.75em;
+            color: #ff69b4;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .quote-text {
-            font-size: 1.15em;
-            font-style: italic;
-            color: #4c1d95;
-            line-height: 1.7;
+        .box-back {
+            transform: rotateY(180deg);
             text-align: center;
+            position: relative;
+            padding: 20px;
+            border-radius: 12px;
         }
 
-        .quote-label {
-            font-size: 0.95em;
-            color: #6d28d9;
-            font-weight: 600;
-            margin-bottom: 12px;
-            text-align: center;
+        .box-back-content {
+            position: relative;
+            z-index: 2;
         }
 
-        .number-8 {
+        .tron-border {
             position: absolute;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 4em;
-            font-weight: 700;
-            color: white;
-            text-shadow: 
-                2px 2px 4px rgba(0,0,0,0.5),
-                0 0 10px rgba(255,255,255,0.3);
-        }
-
-        .screenshot-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: var(--shadow-xl);
-            max-width: 500px;
-        }
-        
-        .screenshot-card h2 {
-            color: white;
-            margin: 0 0 20px 0;
-            text-align: center;
-        }
-        
-        .screenshot-card .question-display {
-            color: white;
-            font-size: 1.2em;
-            font-style: italic;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .preview-modal {
-            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(4px);
-        }
-        
-        .preview-modal.visible {
-            display: flex;
-        }
-        
-        .preview-content {
-            background: white;
-            padding: 24px;
-            border-radius: 16px;
-            max-width: 90%;
-            max-height: 90%;
-            overflow: auto;
-            position: relative;
-            box-shadow: var(--shadow-xl);
-        }
-        
-        .preview-buttons {
-            margin-top: 20px;
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .preview-buttons button {
-            padding: 12px 28px;
-            font-size: 1.05em;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            border: none;
+            pointer-events: none;
+            z-index: 10;
             border-radius: 12px;
-            cursor: pointer;
-            box-shadow: var(--shadow-md);
-            transition: all 0.2s ease;
-        }
-        
-        .preview-buttons button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
         }
 
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2em;
+        .tron-border svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tron-path {
+            fill: none;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
+        }
+
+        .calendar-box.revealing .tron-path {
+            animation: draw-tron 2s ease-out forwards;
+        }
+
+        @keyframes draw-tron {
+            0% {
+                stroke-dashoffset: 800;
+                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
             }
-            
-            .ball {
-                width: 250px;
-                height: 250px;
+            100% {
+                stroke-dashoffset: 0;
+                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
             }
-            
-            .window {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .number-8 {
-                font-size: 3em;
+        }
+
+        .color-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .color-hex {
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 12px;
+            opacity: 0.9;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .color-sentence {
+            font-size: 0.85em;
+            line-height: 1.4;
+            font-style: italic;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+        }
+
+        @media (max-width: 768px) {
+            .week-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             }
         }
     </style>
 </head>
 <body>
-    <h1>🔮 Magic 8-Ball 🔮</h1>
-    <p class="instruction">Ask a yes/no question!</p>
+    <h1><img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"> 365 Days of Colors <img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"></h1>
+    <p class="subtitle">A vibrant year of hues for 2026</p>
     
-    <div class="input-container">
-        <input type="text" id="question" placeholder="Enter your question...">
-        <div class="button-group">
-            <button class="btn btn-primary" onclick="askQuestion()">
-                Ask the 8-Ball
-            </button>
-            <button id="screenshotBtn" class="btn btn-secondary" onclick="takeScreenshot()" style="display: none;">
-                📸 Take Screenshot
-            </button>
-        </div>
-    </div>
-    
-    <div id="displayQuestion"></div>
-    
-    <div class="ball-container" onclick="shakeBall()">
-        <div class="ball" id="ball">
-            <div class="number-8">8</div>
-            <div class="window">
-                <div class="answer" id="answer"></div>
-            </div>
-        </div>
+    <div class="controls">
+        <button class="button" id="resetButton">Reset All</button>
+        <button class="button" id="todayButton">Jump to Today</button>
     </div>
 
-    <div class="quote-panel" id="quotePanel">
-        <div class="quote-label">From The Book of Carp:</div>
-        <div class="quote-text" id="quoteText"></div>
-    </div>
-
-    <div id="previewModal" class="preview-modal" onclick="closePreview(event)">
-        <div class="preview-content" onclick="event.stopPropagation()">
-            <div id="previewImage"></div>
-            <div class="preview-buttons">
-                <button onclick="copyToClipboard()" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
-                    📋 Copy to Clipboard
-                </button>
-                <button onclick="downloadScreenshot()" style="background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white;">
-                    💾 Download PNG
-                </button>
-                <button onclick="closePreview()" style="background: linear-gradient(135deg, #f87171 0%, #dc2626 100%); color: white;">
-                    ✖ Close
-                </button>
-            </div>
-        </div>
-    </div>
+    <div class="calendar-container" id="calendar"></div>
 
     <script>
-        let carpQuotes = [];
-
-        // Fetch quotes from thebookofcarp.txt
-        async function loadQuotes() {
-            try {
-                const response = await fetch('thebookofcarp.txt');
-                const text = await response.text();
-                carpQuotes = text.split('\n').filter(line => line.trim() !== '');
-            } catch (error) {
-                console.error('Error loading quotes:', error);
-                carpQuotes = ['The Book of Carp could not be loaded.'];
+        const weeks = [
+            {
+                theme: "Celebration",
+                description: "Ring in the new year with sparkle and joy",
+                colors: [
+                    {name: "Champagne Sparkle", hex: "#F7E7CE", sentence: "The champagne sparkle of midnight toasts fills the air with golden promise."},
+                    {name: "Midnight Indigo", hex: "#191970", sentence: "A midnight indigo sky cradles the year's first stars."},
+                    {name: "Celebration Gold", hex: "#FFD700", sentence: "Celebration gold confetti rains down like precious dreams."},
+                    {name: "Party Pink", hex: "#FF69B4", sentence: "Party pink balloons drift toward endless possibilities."},
+                    {name: "Resolution Red", hex: "#DC143C", sentence: "Resolution red burns bright with determined energy."},
+                    {name: "Fresh Start White", hex: "#FFFAFA", sentence: "Fresh start white pages await our new stories."},
+                    {name: "Firework Silver", hex: "#C0C0C0", sentence: "Firework silver sparks illuminate the path ahead."}
+                ]
             }
-        }
-
-        // Load quotes when page loads
-        loadQuotes();
-
-        const answers = [
-            "It is certain",
-            "It is decidedly so",
-            "Oh, that's definitely a yes",
-            "Definitely, but only if you say please",
-            "Yes. Yes indeed. Quite.",
-            "Yeah I guess",
-            "FUCK YEAH",
-            "Of course",
-            "Yuuuup",
-            "Totally",
-            "I suppose",
-            "Heh, yeah",
-            "Abso-fuckin-lutely",
-            "Yupperino",
-            "It's obviously yes",
-            "That's gonna be a big thumbs up from me bud",
-            "Sure why not",
-            "Yaaaaaasssss queen",
-            "SeemsGood",
-            "Haha, oh yeah",
-            "Without a doubt",
-            "Yes definitely",
-            "You may rely on it",
-            "Fo sho, yo",
-            "10-4",
-            "Oooooh yeah",
-            "As I see it, yes",
-            "Positively and absolutely",
-            "Most likely",
-            "Outlook good",
-            "I wasn't really listening, but yes",
-            "Yes",
-            "Signs point to yes",
-            "Affirmative, captain",
-            "You know it",
-            "Hell yeah brother",
-            "Damn straight",
-            "It's a vibe and that vibe is yes",
-            "Big yes",
-            "Absolutely, no cap",
-            "You son of a bitch, I'm in",
-            "Roger that",
-            "My gut says yes and my gut is never wrong",
-            "Scientific fact: yes",
-            "Is the pope Catholic?",
-            "That's a certified banger of a yes",
-            "This one sparks joy (yes)",
-            "I'm gonna go with a hard yes on this one chief",
-            "The prophecy foretold it (yes)",
-            "Reply hazy try again",
-            "The real answer is the friends we made along the way",
-            "Ask again later",
-            "Wouldn't you like to know",
-            "What is that supposed to mean",
-            "Sandstorm by Darude",
-            "S",
-            "Ban Juicy",
-            "Ask Ellie",
-            "Depends on who's asking",
-            "TBD",
-            "Better not tell you now",
-            "Eh",
-            "CORN",
-            "That's a good question",
-            "OpieOP",
-            "Cannot predict now",
-            "Lmao",
-            "8==D",
-            "No...I mean yes...Well...Ask again later.",
-            "Ask again when the moon is full",
-            "Does a bear shit in the woods?",
-            "Concentrate and ask again",
-            "Unclear, please reboot universe",
-            "The spirits are busy, call back later",
-            "Magic 8-ball is currently updating",
-            "I plead the fifth",
-            "Choose your own adventure",
-            "¯\\_(ツ)_/¯",
-            "Insufficient data for meaningful answer",
-            "That's above my pay grade",
-            "The jury's still out",
-            "Schrodinger says both yes and no",
-            "Vibes are unclear",
-            "Hold on let me ask my lawyer",
-            "Processing... Please hold",
-            "I mean... maybe?",
-            "That's a Wednesday problem",
-            "Probably? Possibly? Perhaps?",
-            "I'm not qualified to answer that",
-            "The answer lies within yourself",
-            "Flip a coin honestly",
-            "That's classified information",
-            "Big if true",
-            "Gonna need more context here",
-            "The prophecy is unclear",
-            "Try asking in iambic pentameter",
-            "I have no strong feelings one way or the other",
-            "Define \"answer\"",
-            "Sources are conflicting",
-            "My crystal ball is in the shop",
-            "The algorithm says: ????",
-            "Check back after Mercury retrograde",
-            "Don't count on it",
-            "My reply is no",
-            "No, $username, mayonnaise is not an instrument",
-            "My sources say no",
-            "No frickin way",
-            "NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
-            "Outlook not so good",
-            "Very doubtful",
-            "Not a snowball's chance in hell",
-            "Not gonna happen buddy",
-            "Negative",
-            "Absolutely not, why would you even consider that",
-            "VoteNay",
-            "What? BabyRage No.",
-            "Case is not compelling",
-            "wtf no lol",
-            "Of course not, are you insane?",
-            "Hahaha. No.",
-            "Mayhaps",
-            "That's a thumbs down",
-            "Well since you asked so nicely, no",
-            "Fat chance",
-            "Your guess is as good as mine",
-            "NAYETH",
-            "Never in a million, billion, trillion years",
-            "Nah",
-            "Naaaah man",
-            "Signs point to no",
-            "The odds are not in your favor",
-            "No, and don't ask me again",
-            "Absolutely fucking not",
-            "Hard pass",
-            "Nope nope nope nope nope",
-            "Not on my watch",
-            "That's gonna be a no from me dawg",
-            "Error 404: Yes not found",
-            "The council has decided: no",
-            "I'm afraid I can't let you do that",
-            "Counterpoint: no",
-            "Have you considered: no?",
-            "This ain't it",
-            "Nah fam",
-            "Not even if you paid me",
-            "Zero chance, zilch, nada",
-            "What part of no don't you understand",
-            "Not in this timeline",
-            "Negatory",
-            "Absolutely not in any conceivable universe",
-            "Shut it down",
-            "Over my dead body",
-            "Yeah that's a no for me",
-            "The vibes are off (no)"
+            // More weeks will be added here
         ];
 
-        function shakeBall() {
-            const ball = document.getElementById('ball');
-            const answerEl = document.getElementById('answer');
-            const quotePanel = document.getElementById('quotePanel');
-            const quoteText = document.getElementById('quoteText');
-            const displayQuestion = document.getElementById('displayQuestion');
-            
-            // Only proceed if there's a question displayed
-            if (!displayQuestion.textContent.trim()) {
-                return; // Don't shake if no question was asked
-            }
-            
-            // Hide current answer and quote
-            answerEl.classList.remove('visible');
-            quotePanel.classList.remove('visible');
-            
-            // Add shaking animation
-            ball.classList.add('shaking');
-            
-            // Remove animation class after it completes
-            setTimeout(() => {
-                ball.classList.remove('shaking');
-                
-                // Show random answer
-                const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
-                answerEl.textContent = randomAnswer;
-                answerEl.classList.add('visible');
+        const calendar = document.getElementById('calendar');
+        const now = new Date();
+        const startOfYear = new Date(2026, 0, 1);
+        const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
 
-                // Show random quote from Book of Carp
-                if (carpQuotes.length > 0) {
-                    let randomQuote = carpQuotes[Math.floor(Math.random() * carpQuotes.length)];
-                    
-                    // Extract text between first and last quotation marks
-                    const firstQuote = randomQuote.indexOf('"');
-                    const lastQuote = randomQuote.lastIndexOf('"');
-                    
-                    if (firstQuote !== -1 && lastQuote !== -1 && firstQuote !== lastQuote) {
-                        randomQuote = randomQuote.substring(firstQuote + 1, lastQuote);
-                    }
-                    
-                    quoteText.textContent = randomQuote;
-                    quotePanel.classList.add('visible');
-                    document.getElementById('screenshotBtn').style.display = 'inline-block';
-                }
-            }, 500);
+        function isUnlocked(day) {
+            return day <= dayOfYear;
         }
 
-        function askQuestion() {
-            const questionInput = document.getElementById('question');
-            const displayQuestion = document.getElementById('displayQuestion');
-            
-            // Only shake if there's a question
-            if (questionInput.value.trim()) {
-                // Display the question
-                displayQuestion.textContent = '"' + questionInput.value + '"';
-                displayQuestion.classList.add('visible');
-                
-                shakeBall();
-                questionInput.value = ''; // Clear the question box
-            }
+        function getTextColor(hexColor) {
+            const r = parseInt(hexColor.substr(1,2), 16);
+            const g = parseInt(hexColor.substr(3,2), 16);
+            const b = parseInt(hexColor.substr(5,2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 155 ? '#000000' : '#FFFFFF';
         }
 
-        let currentCanvas = null;
-
-        async function takeScreenshot() {
-            const displayQuestion = document.getElementById('displayQuestion');
-            const answerEl = document.getElementById('answer');
-            const quoteText = document.getElementById('quoteText');
-            
-            if (!displayQuestion.textContent.trim()) {
-                alert('Please ask a question first!');
-                return;
-            }
-            
-            // Get the scale factor (200px screenshot / 300px original = 0.667)
-            const scale = 0.667;
-            
-            // Create a temporary container for the screenshot
-            const card = document.createElement('div');
-            card.className = 'screenshot-card';
-            card.style.position = 'fixed';
-            card.style.left = '-9999px';
-            card.innerHTML = `
-                <h2 style="color: white; margin: 0 0 20px 0; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-family: 'Inter', sans-serif; font-weight: 700;">🔮 Magic 8-Ball 🔮</h2>
-                <div style="color: white; font-size: 1.2em; font-style: italic; margin-bottom: 30px; text-align: center; font-family: 'Inter', sans-serif;">${displayQuestion.textContent}</div>
-                <div style="display: flex; justify-content: center; margin-bottom: 30px;">
-                    <div style="
-                        width: ${300 * scale}px;
-                        height: ${300 * scale}px;
-                        border-radius: 50%;
-                        background: radial-gradient(circle at ${100 * scale}px ${100 * scale}px, #2d2d2d, #000000);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        box-shadow: 
-                            inset ${-20 * scale}px ${-20 * scale}px ${50 * scale}px rgba(0,0,0,0.8),
-                            inset ${20 * scale}px ${20 * scale}px ${50 * scale}px rgba(255,255,255,0.1),
-                            0 ${12 * scale}px ${32 * scale}px rgba(0,0,0,0.25);
-                        position: relative;
-                    ">
-                        <div style="
-                            position: absolute;
-                            top: ${30 * scale}px;
-                            left: 50%;
-                            transform: translateX(-50%);
-                            font-size: ${4 * scale}em;
-                            font-weight: 700;
-                            color: white;
-                            font-family: 'Inter', sans-serif;
-                            text-shadow: 
-                                2px 2px 4px rgba(0,0,0,0.5),
-                                0 0 10px rgba(255,255,255,0.3);
-                        ">8</div>
-                        <div style="
-                            width: ${120 * scale}px;
-                            height: ${120 * scale}px;
-                            border-radius: 50%;
-                            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            box-shadow: 
-                                inset 0 0 ${20 * scale}px rgba(0,0,0,0.5),
-                                0 0 ${20 * scale}px rgba(59, 130, 246, 0.3);
-                            overflow: hidden;
-                        ">
-                            <div style="
-                                color: white;
-                                font-size: ${0.9 * scale}em;
-                                text-align: center;
-                                padding: ${15 * scale}px;
-                                font-weight: 600;
-                                font-family: 'Inter', sans-serif;
-                                text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-                            ">${answerEl.textContent}</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="
-                    background: rgba(255, 255, 255, 0.95);
-                    padding: 25px;
-                    border-radius: 16px;
-                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                    margin: 0;
-                ">
-                    <div style="
-                        font-size: 0.9em;
-                        color: #6d28d9;
-                        font-weight: 600;
-                        margin-bottom: 10px;
-                        text-align: center;
-                        font-family: 'Inter', sans-serif;
-                    ">From The Book of Carp:</div>
-                    <div style="
-                        font-size: 1.1em;
-                        font-style: italic;
-                        color: #4c1d95;
-                        line-height: 1.6;
-                        text-align: center;
-                        font-family: 'Inter', sans-serif;
-                    ">${quoteText.textContent}</div>
-                </div>
-            `;
-            
-            document.body.appendChild(card);
-            
-            // Use html2canvas library
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-            script.onload = async () => {
-                currentCanvas = await html2canvas(card, {
-                    backgroundColor: null,
-                    scale: 2
-                });
-                
-                // Show preview
-                const previewImage = document.getElementById('previewImage');
-                previewImage.innerHTML = '';
-                previewImage.appendChild(currentCanvas);
-                
-                document.getElementById('previewModal').classList.add('visible');
-                document.body.removeChild(card);
-            };
-            document.head.appendChild(script);
+        function getFlippedState() {
+            const stored = localStorage.getItem('color-calendar-flipped');
+            return stored ? JSON.parse(stored) : {};
         }
         
-        function downloadScreenshot() {
-            if (currentCanvas) {
-                currentCanvas.toBlob((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'magic-8-ball-prediction.png';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                });
-                closePreview();
-            }
-        }
-        
-        async function copyToClipboard() {
-            if (currentCanvas) {
-                try {
-                    currentCanvas.toBlob(async (blob) => {
-                        await navigator.clipboard.write([
-                            new ClipboardItem({
-                                'image/png': blob
-                            })
-                        ]);
-                        
-                        // Show feedback
-                        const btn = event.target;
-                        const originalText = btn.innerHTML;
-                        btn.innerHTML = '✅ Copied!';
-                        btn.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
-                        
-                        setTimeout(() => {
-                            btn.innerHTML = originalText;
-                            btn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
-                        }, 2000);
-                    });
-                } catch (err) {
-                    alert('Failed to copy to clipboard. Please try downloading instead.');
-                    console.error('Copy failed:', err);
-                }
-            }
-        }
-        
-        function closePreview(event) {
-            if (event) {
-                // Only close if clicking the modal backdrop, not the content
-                if (event.target.id !== 'previewModal') return;
-            }
-            document.getElementById('previewModal').classList.remove('visible');
-            currentCanvas = null;
+        function saveFlippedState(day, isFlipped) {
+            const state = getFlippedState();
+            state[day] = isFlipped;
+            localStorage.setItem('color-calendar-flipped', JSON.stringify(state));
         }
 
-        // Allow pressing Enter to ask question
-        document.getElementById('question').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                askQuestion();
+        document.getElementById('resetButton').addEventListener('click', function() {
+            if (confirm('Reset all opened colors?')) {
+                localStorage.removeItem('color-calendar-flipped');
+                location.reload();
             }
         });
+
+        document.getElementById('todayButton').addEventListener('click', function() {
+            const todayBox = document.getElementById('day-' + dayOfYear);
+            if (todayBox) {
+                todayBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+
+        function initializeCalendar() {
+            const flippedState = getFlippedState();
+            
+            // Find the highest flipped day and set background
+            const flippedDays = Object.keys(flippedState).filter(day => flippedState[day]).map(Number);
+            if (flippedDays.length > 0) {
+                const latestFlippedDay = Math.max(...flippedDays);
+                let dayCounter = 0;
+                for (let weekIndex = 0; weekIndex < weeks.length; weekIndex++) {
+                    for (let dayIndex = 0; dayIndex < weeks[weekIndex].colors.length; dayIndex++) {
+                        dayCounter++;
+                        if (dayCounter === latestFlippedDay) {
+                            const latestColor = weeks[weekIndex].colors[dayIndex];
+                            document.body.style.backgroundColor = latestColor.hex;
+                            document.body.style.transition = 'none';
+                            setTimeout(() => {
+                                document.body.style.transition = 'background-color 1.5s ease';
+                            }, 50);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            let dayCounter = 0;
+            
+            weeks.forEach((week, weekIndex) => {
+                const weekSection = document.createElement('div');
+                weekSection.className = 'week-section';
+                weekSection.id = 'week-' + (weekIndex + 1);
+                
+                const weekHeader = document.createElement('div');
+                weekHeader.className = 'week-header';
+                weekHeader.innerHTML = `
+                    <div class="week-theme">${week.theme}</div>
+                    <div class="week-description">${week.description}</div>
+                `;
+                
+                const weekGrid = document.createElement('div');
+                weekGrid.className = 'week-grid';
+                
+                week.colors.forEach((color, dayIndex) => {
+                    dayCounter++;
+                    const day = dayCounter;
+                    const unlocked = isUnlocked(day);
+                    const wasFlipped = flippedState[day] || false;
+                    
+                    const box = document.createElement('div');
+                    box.id = 'day-' + day;
+                    box.className = 'calendar-box' + (unlocked ? '' : ' locked') + (wasFlipped ? ' flipped' : '');
+                    
+                    const textColor = getTextColor(color.hex);
+                    const date = new Date(2026, 0, day);
+                    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    
+                    box.innerHTML = `
+                        <div class="box-inner">
+                            <div class="box-front">
+                                ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
+                                <div class="box-number">${day}</div>
+                                <div class="box-date">${dateStr}</div>
+                            </div>
+                            <div class="box-back" style="background-color: ${color.hex};">
+                                <div class="tron-border">
+                                    <svg width="100%" height="100%" viewBox="0 0 200 200" preserveAspectRatio="none">
+                                        <rect class="tron-path" x="5" y="5" width="190" height="190" rx="12" 
+                                          style="stroke: ${textColor}; color: ${textColor};" />
+                                    </svg>
+                                </div>
+                                <div class="box-back-content">
+                                    <div class="color-name" style="color: ${textColor}; font-size: clamp(0.9em, 3vw, 1.3em);">${color.name}</div>
+                                    <div class="color-hex" style="color: ${textColor}; font-size: clamp(0.75em, 2.5vw, 1em);">${color.hex}</div>
+                                    <div class="color-sentence" style="color: ${textColor}; font-size: clamp(0.65em, 2vw, 0.85em);">${color.sentence}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if (unlocked) {
+                        box.addEventListener('click', function(e) {
+                            this.classList.toggle('flipped');
+                            const isFlipped = this.classList.contains('flipped');
+                            
+                            saveFlippedState(day, isFlipped);
+                            
+                            if (isFlipped) {
+                                document.body.style.backgroundColor = color.hex;
+                                this.classList.add('revealing');
+                                setTimeout(() => {
+                                    this.classList.remove('revealing');
+                                }, 2000);
+                            } else {
+                                document.body.style.backgroundColor = '#1a1a2e';
+                            }
+                        });
+                    }
+                    
+                    weekGrid.appendChild(box);
+                });
+                
+                weekSection.appendChild(weekHeader);
+                weekSection.appendChild(weekGrid);
+                calendar.appendChild(weekSection);
+            });
+        }
+
+        initializeCalendar();
     </script>
 </body>
 </html>
