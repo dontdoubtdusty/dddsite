@@ -48,10 +48,15 @@
             font-size: 1.3em;
             margin-bottom: 20px;
             text-align: center;
-            color: #ffd700;
             font-style: italic;
             z-index: 2;
             position: relative;
+            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease infinite;
         }
 
         .controls {
@@ -276,7 +281,6 @@
     
     <div class="controls">
         <button class="button" id="resetButton">Reset All</button>
-        <button class="button" id="todayButton">Jump to Today</button>
     </div>
 
     <div class="calendar-container" id="calendar"></div>
@@ -343,13 +347,6 @@
             if (confirm('Reset all opened colors?')) {
                 localStorage.removeItem('color-calendar-flipped');
                 location.reload();
-            }
-        });
-
-        document.getElementById('todayButton').addEventListener('click', function() {
-            const todayBox = document.getElementById('day-' + dayOfYear);
-            if (todayBox) {
-                todayBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
 
