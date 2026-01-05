@@ -102,11 +102,11 @@
         }
 
         .week-theme {
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: bold;
             color: #E8E8E8;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             margin-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
@@ -268,6 +268,17 @@
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
 
+        .month-header {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #E8E8E8;
+            text-align: center;
+            margin: 30px 0 20px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+        }
+
         @media (max-width: 768px) {
             .week-grid {
                 grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -282,6 +293,7 @@
     <div class="controls">
         <button class="button" id="resetButton">Reset All</button>
     </div>
+    <div class="month-header" id="monthHeader"></div>
 
     <div class="calendar-container" id="calendar"></div>
 
@@ -311,6 +323,32 @@
                     {name: "Cozy Cocoa", hex: "#6F4E37", sentence: "Cozy cocoa steams in mugs held by mittened hands."},
                     {name: "Fireplace Amber", hex: "#FF7E00", sentence: "Fireplace amber flames dance and crackle through long evenings."},
                     {name: "Winter Plum", hex: "#8E4585", sentence: "Winter plum skies deepen as early darkness settles in."}
+                ]
+            },
+            {
+                theme: "Citrus Burst",
+                description: "Awaken your senses with bright, zesty energy",
+                colors: [
+                    {name: "Lemon Zest", hex: "#FFF44F", sentence: "Lemon zest brightens even the grayest winter morning."},
+                    {name: "Orange Sunshine", hex: "#FFA500", sentence: "Orange sunshine cuts through the cold with vitamin warmth."},
+                    {name: "Grapefruit Pink", hex: "#FF6B9D", sentence: "Grapefruit pink adds a tangy sweetness to breakfast tables."},
+                    {name: "Lime Twist", hex: "#32CD32", sentence: "Lime twist brings sharp refreshment to midwinter days."},
+                    {name: "Tangerine Dream", hex: "#FF9E44", sentence: "Tangerine dream peels away the blues of January."},
+                    {name: "Clementine Joy", hex: "#FF7F00", sentence: "Clementine joy bursts in your mouth like tiny sunshine."},
+                    {name: "Blood Orange", hex: "#D2042D", sentence: "Blood orange deepens the citrus palette with ruby richness."}
+                ]
+            },
+            {
+                theme: "Moonlit Mysteries",
+                description: "Discover the enchantment of long winter nights",
+                colors: [
+                    {name: "Moonbeam Silver", hex: "#E6E8FA", sentence: "Moonbeam silver illuminates the longest nights of winter."},
+                    {name: "Starlight Blue", hex: "#4682B4", sentence: "Starlight blue twinkles in the crisp, clear evening sky."},
+                    {name: "Shadow Violet", hex: "#8B00FF", sentence: "Shadow violet cloaks the mysteries hidden in darkness."},
+                    {name: "Twilight Grey", hex: "#708090", sentence: "Twilight grey bridges the space between day and night."},
+                    {name: "Nebula Purple", hex: "#B19CD9", sentence: "Nebula purple swirls with cosmic wonder above us."},
+                    {name: "Galaxy Black", hex: "#0C0C1E", sentence: "Galaxy black holds infinite possibilities in its depths."},
+                    {name: "Aurora Green", hex: "#7FFF00", sentence: "Aurora green dances across the northern winter sky."}
                 ]
             }
         ];
@@ -352,7 +390,14 @@
 
         function initializeCalendar() {
             const flippedState = getFlippedState();
-            
+    
+            // Set the month header based on the first week's first day
+            if (weeks.length > 0) {
+                const firstDayDate = new Date(2026, 0, 1); // January 1, 2026
+                const monthName = firstDayDate.toLocaleDateString('en-US', { month: 'long' });
+                document.getElementById('monthHeader').textContent = monthName;
+            }
+                        
             // Find the highest flipped day and set background
             const flippedDays = Object.keys(flippedState).filter(day => flippedState[day]).map(Number);
             if (flippedDays.length > 0) {
