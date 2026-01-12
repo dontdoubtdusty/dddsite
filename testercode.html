@@ -3,505 +3,567 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>365 Days of New Year's Colors</title>
+    <title>The Book of Carp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Georgia', serif;
-            background-color: #1a1a2e;
-            transition: background-color 1.5s ease;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            color: #fff;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        h1 {
-            font-size: 2.8em;
-            margin: 20px 0 10px;
-            text-align: center;
-            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-shift 3s ease infinite;
-            z-index: 2;
-            position: relative;
-        }
-
-        @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .subtitle {
-            font-size: 1.3em;
-            margin-bottom: 20px;
-            text-align: center;
-            font-style: italic;
-            z-index: 2;
-            position: relative;
-            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-shift 3s ease infinite;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            z-index: 2;
-            position: relative;
-        }
-
-        .button {
-            background: rgba(42, 42, 62, 0.7);
-            color: #ffd700;
-            border: 2px solid rgba(255, 215, 0, 0.5);
-            padding: 10px 20px;
-            font-size: 0.95em;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Georgia', serif;
-            transition: all 0.3s ease;
-        }
-        
-        .button:hover {
-            background: rgba(42, 42, 62, 0.9);
-            transform: translateY(-2px);
-        }
-
-        .calendar-container {
-            max-width: 1400px;
-            width: 100%;
-            padding: 20px;
-            z-index: 2;
-            position: relative;
-        }
-
-        .week-section {
-            margin-bottom: 40px;
-        }
-
-        .week-header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .week-theme {
-            font-size: 1.6em;
-            font-weight: bold;
-            color: #E8E8E8;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-        }
-        
-        .week-description {
-            font-size: 1.1em;
-            color: #B8B8B8;
-            font-style: italic;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-        }
-
-        .week-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 15px;
-        }
-
-        .calendar-box {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1;
-            perspective: 1000px;
-            cursor: pointer;
-        }
-
-        .calendar-box.locked {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .lock-icon {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            font-size: 1.1em;
-            z-index: 10;
-        }
-
-        .box-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-
-        .calendar-box.flipped .box-inner {
-            transform: rotateY(180deg);
-        }
-
-        .box-front, .box-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-        }
-
-        .box-front {
-            background: linear-gradient(135deg, rgba(30,30,50,0.9) 0%, rgba(50,30,70,0.9) 100%);
-            border: 3px solid rgba(255, 215, 0, 0.4);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.6);
-        }
-
-        .box-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-            margin-bottom: 5px;
-        }
-
-        .box-date {
-            font-size: 0.75em;
-            color: #ff69b4;
-        }
-
-        .box-back {
-            transform: rotateY(180deg);
-            text-align: center;
-            position: relative;
-            padding: 20px;
-            border-radius: 12px;
-        }
-
-        .box-back-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .tron-border {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-            border-radius: 12px;
-        }
-
-        .tron-border svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .tron-path {
-            fill: none;
-            stroke-width: 4;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            stroke-dasharray: 800;
-            stroke-dashoffset: 800;
-        }
-
-        .calendar-box.revealing .tron-path {
-            animation: draw-tron 2s ease-out forwards;
-        }
-
-        @keyframes draw-tron {
-            0% {
-                stroke-dashoffset: 800;
-                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
-            }
-            100% {
-                stroke-dashoffset: 0;
-                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
-            }
-        }
-
-        .color-name {
-            font-size: 1.3em;
-            font-weight: bold;
-            margin-bottom: 8px;
-            line-height: 1.2;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-        }
-
-        .color-hex {
-            font-size: 1em;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 12px;
-            opacity: 0.9;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-        }
-
-        .color-sentence {
-            font-size: 0.85em;
-            line-height: 1.4;
-            font-style: italic;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-        }
-
-        .month-header {
-            font-size: 2.2em;
-            font-weight: bold;
-            color: #E8E8E8;
-            text-align: center;
-            margin: 30px 0 20px;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
-        }
-
-        @media (max-width: 768px) {
-            .week-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            }
-        }
+		body {
+		    background: 
+		        radial-gradient(ellipse at 20% 30%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
+		        radial-gradient(ellipse at 80% 70%, rgba(167, 139, 250, 0.22) 0%, transparent 50%),
+		        linear-gradient(180deg, 
+		          rgba(61, 41, 82, 0.85) 0%,
+		          rgba(74, 53, 102, 0.85) 15%,
+		          rgba(90, 68, 120, 0.85) 35%,
+		          rgba(107, 83, 137, 0.85) 55%,
+		          rgba(124, 98, 154, 0.85) 75%,
+		          rgba(139, 113, 171, 0.85) 100%);
+		    background-attachment: fixed;
+		    min-height: 100vh;
+		    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+		}
+		.parchment {
+		    background: 
+		        repeating-linear-gradient(
+		            0deg,
+		            rgba(245, 237, 220, 0.03) 0px,
+		            transparent 1px,
+		            transparent 2px,
+		            rgba(245, 237, 220, 0.03) 3px
+		        ),
+		        repeating-linear-gradient(
+		            90deg,
+		            rgba(230, 220, 200, 0.02) 0px,
+		            transparent 1px,
+		            transparent 2px,
+		            rgba(230, 220, 200, 0.02) 3px
+		        ),
+		        linear-gradient(
+		            135deg,
+		            rgba(250, 245, 235, 0.9) 0%,
+		            rgba(245, 238, 225, 0.92) 50%,
+		            rgba(248, 242, 230, 0.88) 100%
+		        );
+		    box-shadow: 
+		        0 16px 40px rgba(61, 27, 82, 0.2),
+		        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+		        inset 0 0 100px rgba(139, 92, 246, 0.03);
+		}
+		h1, .text-purple-900, .text-purple-700, .text-purple-600 {
+		    color: #2d2240 !important;
+		}
+		
+		a.text-purple-600 {
+		    color: #6b4f9a !important;
+		}
+		
+		a.text-purple-600:hover {
+		    color: #3b2a62 !important;
+		}
     </style>
 </head>
-<body>
-    <h1><img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"> 365 Days of Colors <img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"></h1>
-    <p class="subtitle">A vibrant year of hues for 2026</p>
-    
-    <div class="controls">
-        <button class="button" id="resetButton">Reset All</button>
+<body class="p-6">
+    <div class="max-w-4xl mx-auto" style="max-width: 700px; padding: 60px 24px;">
+	<h1 
+    class="text-4xl font-bold text-purple-900 mb-2 text-center tracking-wide 
+           drop-shadow-md relative block mx-auto pb-3"
+    style="letter-spacing: 0.05em;"
+	>
+    <span class="px-4 py-1"
+          style="border-color: #6b21a8;"
+    >
+        THE BOOK OF CARP
+    </span>
+	</h1>
+
+	<div class="flex justify-center mt-2 mb-6">
+    <div class="h-1 w-24 bg-purple-900 rounded-full opacity-70"></div>
+	</div>
+
+
+        <p class="text-purple-700 text-center mb-2" id="quoteCount">
+		    Search through quotes
+		</p>
+		<p class="text-purple-600 text-center mb-8 text-sm italic" id="lostCount">
+		    
+		</p>
+		<p class="text-purple-600 text-center mb-8 text-sm">
+		    <a href="thebookofcarp.html" class="hover:text-purple-900 underline">What is the Book of Carp?</a>
+		</p>
+				
+		<!-- Quote of the Day -->
+<div id="quoteOfDayBox"
+     class="bg-gradient-to-r from-pink-100 to-purple-100 backdrop-blur-lg rounded-lg p-6 mb-6 border-2 border-pink-300 shadow-lg">
+
+    <h2 class="text-xl font-bold text-purple-900 mb-3">
+        Quote of the Day
+    </h2>
+
+    <p class="text-2xl text-purple-900 mb-2 italic" id="quoteOfDayText"></p>
+    <p class="text-sm text-purple-700" id="quoteOfDayInfo"></p>
+</div>
+
+
+		
+		
+
+        <!-- Search Bar -->
+        <div class="parchment rounded-lg p-6 mb-6 shadow-lg">
+            <div class="relative mb-4">
+                <svg class="absolute left-3 top-3 text-purple-400" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search quotes, games, or dates..."
+                    class="w-full pl-10 pr-4 py-3 bg-purple-50 border border-purple-200 rounded-lg text-purple-900 placeholder-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                />
+            </div>
+
+            <!-- Popular Terms -->
+            <div class="mb-4">
+                <p class="text-sm text-purple-700 mb-2">Games played:</p>
+                <div class="flex flex-wrap gap-2" id="popularTerms"></div>
+            </div>
+
+            <!-- Year Filter -->
+            <div class="mb-4">
+                <p class="text-sm text-purple-700 mb-2">Filter by year:</p>
+                <div class="flex flex-wrap gap-2" id="yearFilters"></div>
+            </div>
+
+            <!-- Random Quote Button -->
+            <button
+                id="randomBtn"
+                class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-105 shadow-md"
+            >
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                Random Quote
+            </button>
+        </div>
+
+        <!-- Random Quote Display -->
+        <div id="randomQuoteDisplay" class="hidden bg-gradient-to-r from-purple-100 to-pink-100 backdrop-blur-lg rounded-lg p-6 mb-6 border-2 border-purple-300 shadow-lg">
+            <p class="text-xl text-purple-900 mb-2 italic" id="randomQuoteText"></p>
+            <p class="text-sm text-purple-700" id="randomQuoteInfo"></p>
+        </div>
+
+        <!-- Results -->
+		<div class="parchment rounded-lg p-6 shadow-lg">
+		    <p class="text-purple-900 mb-4 font-semibold" id="resultCount"></p>
+		    
+		    <div class="space-y-4 max-h-[600px] overflow-y-auto" id="quotesList"></div>
+		    
+		    <div id="paginationContainer"></div>
+		</div>
     </div>
-    <div class="month-header" id="monthHeader"></div>
+	<!-- 1) Load the quotes file -->
+<script>
+async function loadQuotes() {
+    try {
+        const response = await fetch('thebookofcarp.txt');
+        const text = await response.text();
 
-    <div class="calendar-container" id="calendar"></div>
+        // Make this accessible to everything below
+        window.quotesData = text.split('\n').filter(line => line.trim() !== '');
 
-    <script>
-        const weeks = [
-            {
-                theme: "Celebration",
-                description: "Ring in the new year with sparkle and joy",
-                colors: [
-                    {name: "Champagne Sparkle", hex: "#F7E7CE", sentence: "The champagne sparkle of midnight toasts fills the air with golden promise."},
-                    {name: "Midnight Indigo", hex: "#191970", sentence: "A midnight indigo sky cradles the year's first stars."},
-                    {name: "Celebration Gold", hex: "#FFD700", sentence: "Celebration gold confetti rains down like precious dreams."},
-                    {name: "Party Pink", hex: "#FF69B4", sentence: "Party pink balloons drift toward endless possibilities."},
-                    {name: "Resolution Red", hex: "#DC143C", sentence: "Resolution red burns bright with determined energy."},
-                    {name: "Fresh Start White", hex: "#FFFAFA", sentence: "Fresh start white pages await our new stories."},
-                    {name: "Firework Silver", hex: "#C0C0C0", sentence: "Firework silver sparks illuminate the path ahead."}
-                ]
-            },
-            {
-                theme: "Winter Wonderland",
-                description: "Embrace the cozy magic of frost and warmth",
-                colors: [
-                    {name: "Frost Blue", hex: "#E0F2F7", sentence: "Frost blue crystals form delicate patterns on winter windows."},
-                    {name: "Icicle Clear", hex: "#D4F1F4", sentence: "Icicle clear droplets catch the morning light like diamonds."},
-                    {name: "Snow White", hex: "#FFFEF9", sentence: "Snow white blankets transform the world into quiet wonder."},
-                    {name: "Frozen Lake", hex: "#89CFF0", sentence: "Frozen lake surfaces reflect the pale winter sky perfectly."},
-                    {name: "Cozy Cocoa", hex: "#6F4E37", sentence: "Cozy cocoa steams in mugs held by mittened hands."},
-                    {name: "Fireplace Amber", hex: "#FF7E00", sentence: "Fireplace amber flames dance and crackle through long evenings."},
-                    {name: "Winter Plum", hex: "#8E4585", sentence: "Winter plum skies deepen as early darkness settles in."}
-                ]
-            },
-            {
-                theme: "Citrus Burst",
-                description: "Awaken your senses with bright, zesty energy",
-                colors: [
-                    {name: "Lemon Zest", hex: "#FFF44F", sentence: "Lemon zest brightens even the grayest winter morning."},
-                    {name: "Orange Sunshine", hex: "#FFA500", sentence: "Orange sunshine cuts through the cold with vitamin warmth."},
-                    {name: "Grapefruit Pink", hex: "#FF6B9D", sentence: "Grapefruit pink adds a tangy sweetness to breakfast tables."},
-                    {name: "Lime Twist", hex: "#32CD32", sentence: "Lime twist brings sharp refreshment to midwinter days."},
-                    {name: "Tangerine Dream", hex: "#FF9E44", sentence: "Tangerine dream peels away the blues of January."},
-                    {name: "Clementine Joy", hex: "#FF7F00", sentence: "Clementine joy bursts in your mouth like tiny sunshine."},
-                    {name: "Blood Orange", hex: "#D2042D", sentence: "Blood orange deepens the citrus palette with ruby richness."}
-                ]
-            },
-            {
-                theme: "Moonlit Mysteries",
-                description: "Discover the enchantment of long winter nights",
-                colors: [
-                    {name: "Moonbeam Silver", hex: "#E6E8FA", sentence: "Moonbeam silver illuminates the longest nights of winter."},
-                    {name: "Starlight Blue", hex: "#4682B4", sentence: "Starlight blue twinkles in the crisp, clear evening sky."},
-                    {name: "Shadow Violet", hex: "#8B00FF", sentence: "Shadow violet cloaks the mysteries hidden in darkness."},
-                    {name: "Twilight Grey", hex: "#708090", sentence: "Twilight grey bridges the space between day and night."},
-                    {name: "Nebula Purple", hex: "#B19CD9", sentence: "Nebula purple swirls with cosmic wonder above us."},
-                    {name: "Galaxy Black", hex: "#0C0C1E", sentence: "Galaxy black holds infinite possibilities in its depths."},
-                    {name: "Aurora Green", hex: "#7FFF00", sentence: "Aurora green dances across the northern winter sky."}
-                ]
-            }
+        console.log(`Loaded ${window.quotesData.length} quotes`);
+
+        initQuotes(); // Start the app AFTER file is loaded
+    } 
+    catch (error) {
+        console.error(`Error loading quotes file: ${error}`);
+    }
+}
+
+loadQuotes();
+</script>
+
+
+<!-- 2) All other logic goes inside initQuotes() -->
+<script>
+function initQuotes() {
+
+    // -------------------------------
+    // PARSE QUOTES
+    // -------------------------------
+    const quotes = quotesData.map(line => {
+        const match = line.match(/^(\d+):\s*"([^"]+)"\s*\[([^\]]+)\]\s*\[([^\]]+)\]/);
+        if (match) {
+            return {
+                id: match[1],
+                text: match[2],
+                game: match[3],
+                date: match[4]
+            };
+        }
+        return null;
+    }).filter(Boolean);
+
+    window.quotes = quotes; // make global for QOTD
+
+    document.getElementById('quoteCount').textContent = `Search through 1706 memorable moments`;
+	document.getElementById('lostCount').textContent = `103 lost to the depths of time`;
+
+
+    // -------------------------------
+    // DATE FORMATTER
+    // -------------------------------
+    function formatDate(rawDate) {
+        if (!rawDate) return '';
+
+        let clean = rawDate.replace(/\D/g, '');
+        let d, m, y;
+
+        if (clean.length === 8) {
+            d = parseInt(clean.slice(0, 2));
+            m = parseInt(clean.slice(2, 4)) - 1;
+            y = parseInt(clean.slice(4, 8));
+        } else if (rawDate.includes('/')) {
+            const p = rawDate.split('/');
+            d = parseInt(p[0]);
+            m = parseInt(p[1]) - 1;
+            y = parseInt(p[2]);
+        } else {
+            return rawDate;
+        }
+
+        const months = [
+            'January','February','March','April','May','June',
+            'July','August','September','October','November','December'
         ];
 
-        const calendar = document.getElementById('calendar');
-        const now = new Date();
-        const startOfYear = new Date(2026, 0, 1);
-        const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
+        return `${d} ${months[m]} ${y}`;
+    }
 
-        function isUnlocked(day) {
-            return day <= dayOfYear;
+
+	// -------------------------------
+    // GAMES PLAYED
+    // -------------------------------
+    const popularTerms = [
+        'Age of Empires II: Definitive Edition',
+        'Animal Crossing: New Horizons',
+        'Apex Legends',
+        'California Orange Tree Simulator',
+        'Citadel: Forged with Fire',
+        'Dead by Daylight',
+        'Deceit',
+        'Dragon Ball: The Breakers',
+        'Dragon Ball: Xenoverse 2',
+        'Dungeon of the Endless',
+        'Evil Dead: The Game',
+        'Extreme Maze Building Simulator',
+        'F-Zero 99',
+        'Fall Guys',
+        'Fortnite',
+        'Gartic',
+        'Jackbox Party Packs',
+        'Just Chatting',
+        'League of Legends',
+        'Little Nightmares',
+        'Luigi\'s Mansion 3',
+        'Mario Golf: Super Rush',
+        'Minecraft',
+        'My Hero Ultra Rumble',
+        'Not the Robots',
+        'Pokémon MMO 3D',
+        'Pokémon Unite',
+        'ROBLOX',
+        'Rumbleverse',
+        'Sea of Thieves',
+        'Special Events',
+        'Spellbreak',
+        'Split or Steal',
+        'Super Animal Royale',
+        'Super Mama Maker 2',
+        'Super Mario Maker 2',
+        'Super Smash Bros. Ultimate',
+        'Super Smash Bros. Ultimate on the Nintendo Switch',
+        'Super Smash Brethren',
+        'Super Spicy Bros',
+        'Supreme Smash Brothers Omega',
+        'Temtem',
+        'The Council',
+        'The Elder Scrolls Online',
+        'The Jackbox Party Pack 2',
+        'The Jackbox Party Pack 3',
+        'The Jackbox Party Pack 4',
+        'The Jackbox Party Pack 6',
+        'Throne of Lies',
+        'VRChat',
+        'Wildermyth',
+        'World of Warcraft',
+        'Yu-Gi-Oh! Master Duel'
+    ];
+
+    let currentSearch = '';
+	let selectedYear = null;
+	let currentPage = 1;
+	const itemsPerPage = 50;
+	
+
+
+    // -------------------------------
+    // YEAR FILTERS
+    // -------------------------------
+    const currentYear = new Date().getFullYear();
+    const years = [...new Set(quotes.map(q => {
+        const m = q.date.match(/\d{4}/);
+        if (m) {
+            const y = parseInt(m[0]);
+            if (y >= 2018 && y <= currentYear) return y.toString();
+        }
+        return null;
+    }).filter(Boolean))].sort((a, b) => b - a);
+
+    const yearFiltersContainer = document.getElementById('yearFilters');
+
+    const allYearsBtn = document.createElement('button');
+    allYearsBtn.textContent = 'All Years';
+    allYearsBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
+    allYearsBtn.onclick = () => {
+	    selectedYear = null;
+	    currentPage = 1;
+	    updateYearButtons();
+	    renderQuotes();
+	};
+    yearFiltersContainer.appendChild(allYearsBtn);
+
+    years.forEach(year => {
+        const btn = document.createElement('button');
+        btn.textContent = year;
+        btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
+        btn.dataset.year = year;
+        btn.onclick = () => {
+		    selectedYear = year;
+		    currentPage = 1;
+		    updateYearButtons();
+		    renderQuotes();
+		};
+        yearFiltersContainer.appendChild(btn);
+    });
+
+    function updateYearButtons() {
+        const allBtn = yearFiltersContainer.firstChild;
+        const yearBtns = [...yearFiltersContainer.children].slice(1);
+
+        if (selectedYear === null) {
+            allBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
+            yearBtns.forEach(btn => btn.className =
+                'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors'
+            );
+        } else {
+            allBtn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
+            yearBtns.forEach(btn => {
+                btn.className = (btn.dataset.year === selectedYear)
+                    ? 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors'
+                    : 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
+            });
+        }
+    }
+
+
+    // -------------------------------
+    // POPULAR TERM BUTTONS
+    // -------------------------------
+    const popularContainer = document.getElementById('popularTerms');
+
+    popularTerms.forEach(term => {
+        const btn = document.createElement('button');
+        btn.textContent = term;
+        btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 rounded-full text-sm text-purple-900 transition-colors';
+        btn.onclick = () => {
+            document.getElementById('searchInput').value = term;
+            currentSearch = term;
+            renderQuotes();
+        };
+        popularContainer.appendChild(btn);
+    });
+
+
+    // -------------------------------
+    // QUOTE FILTERING
+    // -------------------------------
+    function filterQuotes() {
+        let out = quotes;
+
+        if (selectedYear !== null) {
+            out = out.filter(q => q.date.includes(selectedYear));
         }
 
-        function getTextColor(hexColor) {
-            const r = parseInt(hexColor.substr(1,2), 16);
-            const g = parseInt(hexColor.substr(3,2), 16);
-            const b = parseInt(hexColor.substr(5,2), 16);
-            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            return brightness > 155 ? '#000000' : '#FFFFFF';
+        if (currentSearch) {
+            const s = currentSearch.toLowerCase();
+            out = out.filter(q =>
+                q.text.toLowerCase().includes(s) ||
+                q.game.toLowerCase().includes(s) ||
+                q.date.includes(s)
+            );
+        }
+        return out;
+    }
+
+
+    // -------------------------------
+    // RENDER LIST
+    // -------------------------------
+    function renderQuotes() {
+        const filtered = filterQuotes();
+        const list = document.getElementById('quotesList');
+        const resultCount = document.getElementById('resultCount');
+
+        resultCount.textContent = `${filtered.length} result${filtered.length !== 1 ? 's' : ''}`;
+        list.innerHTML = '';
+
+        const totalPages = Math.ceil(filtered.length / itemsPerPage);
+		const startIdx = (currentPage - 1) * itemsPerPage;
+		const endIdx = startIdx + itemsPerPage;
+		const display = filtered.slice(startIdx, endIdx);
+
+        if (!display.length) {
+            list.innerHTML = '<p class="text-center text-purple-600">No quotes found. Try a different search term!</p>';
+            return;
         }
 
-        function getFlippedState() {
-            const stored = localStorage.getItem('color-calendar-flipped');
-            return stored ? JSON.parse(stored) : {};
-        }
-        
-        function saveFlippedState(day, isFlipped) {
-            const state = getFlippedState();
-            state[day] = isFlipped;
-            localStorage.setItem('color-calendar-flipped', JSON.stringify(state));
-        }
-
-        document.getElementById('resetButton').addEventListener('click', function() {
-            if (confirm('Reset all opened colors?')) {
-                localStorage.removeItem('color-calendar-flipped');
-                location.reload();
-            }
-        });
-
-        function initializeCalendar() {
-            const flippedState = getFlippedState();
-    
-            // Set the month header based on the first week's first day
-            if (weeks.length > 0) {
-                const firstDayDate = new Date(2026, 0, 1); // January 1, 2026
-                const monthName = firstDayDate.toLocaleDateString('en-US', { month: 'long' });
-                document.getElementById('monthHeader').textContent = monthName;
-            }
-                        
-            // Find the highest flipped day and set background
-            const flippedDays = Object.keys(flippedState).filter(day => flippedState[day]).map(Number);
-            if (flippedDays.length > 0) {
-                const latestFlippedDay = Math.max(...flippedDays);
-                let dayCounter = 0;
-                for (let weekIndex = 0; weekIndex < weeks.length; weekIndex++) {
-                    for (let dayIndex = 0; dayIndex < weeks[weekIndex].colors.length; dayIndex++) {
-                        dayCounter++;
-                        if (dayCounter === latestFlippedDay) {
-                            const latestColor = weeks[weekIndex].colors[dayIndex];
-                            document.body.style.backgroundColor = latestColor.hex;
-                            document.body.style.transition = 'none';
-                            setTimeout(() => {
-                                document.body.style.transition = 'background-color 1.5s ease';
-                            }, 50);
-                            break;
-                        }
-                    }
+        display.forEach((q, index) => {
+            // Only show "lost" messages when no search/filter is active
+            if (index > 0 && !currentSearch && selectedYear === null) {
+                const prevId = parseInt(display[index - 1].id);
+                const currentId = parseInt(q.id);
+                const gap = currentId - prevId - 1;
+                
+                if (gap > 0) {
+                    const gapDiv = document.createElement('div');
+                    gapDiv.className = 'text-center py-3 my-2';
+                    gapDiv.innerHTML = `
+                        <p class="text-purple-400 italic text-sm">
+                            ✦ ${gap} moment${gap !== 1 ? 's' : ''} lost to the aether ✦
+                        </p>
+                    `;
+                    list.appendChild(gapDiv);
                 }
             }
             
-            let dayCounter = 0;
-            
-            weeks.forEach((week, weekIndex) => {
-                const weekSection = document.createElement('div');
-                weekSection.className = 'week-section';
-                weekSection.id = 'week-' + (weekIndex + 1);
-                
-                const weekHeader = document.createElement('div');
-                weekHeader.className = 'week-header';
-                weekHeader.innerHTML = `
-                    <div class="week-theme">${week.theme}</div>
-                    <div class="week-description">${week.description}</div>
-                `;
-                
-                const weekGrid = document.createElement('div');
-                weekGrid.className = 'week-grid';
-                
-                week.colors.forEach((color, dayIndex) => {
-                    dayCounter++;
-                    const day = dayCounter;
-                    const unlocked = isUnlocked(day);
-                    const wasFlipped = flippedState[day] || false;
-                    
-                    const box = document.createElement('div');
-                    box.id = 'day-' + day;
-                    box.className = 'calendar-box' + (unlocked ? '' : ' locked') + (wasFlipped ? ' flipped' : '');
-                    
-                    const textColor = getTextColor(color.hex);
-                    const date = new Date(2026, 0, day);
-                    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    
-                    box.innerHTML = `
-                        <div class="box-inner">
-                            <div class="box-front">
-                                ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
-                                <div class="box-number">${day}</div>
-                                <div class="box-date">${dateStr}</div>
-                            </div>
-                            <div class="box-back" style="background-color: ${color.hex};">
-                                <div class="tron-border">
-                                    <svg width="100%" height="100%" viewBox="0 0 200 200" preserveAspectRatio="none">
-                                        <rect class="tron-path" x="5" y="5" width="190" height="190" rx="12" 
-                                          style="stroke: ${textColor}; color: ${textColor};" />
-                                    </svg>
-                                </div>
-                                <div class="box-back-content">
-                                    <div class="color-name" style="color: ${textColor}; font-size: clamp(0.9em, 3vw, 1.3em);">${color.name}</div>
-                                    <div class="color-hex" style="color: ${textColor}; font-size: clamp(0.75em, 2.5vw, 1em);">${color.hex}</div>
-                                    <div class="color-sentence" style="color: ${textColor}; font-size: clamp(0.65em, 2vw, 0.85em);">${color.sentence}</div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    if (unlocked) {
-                        box.addEventListener('click', function(e) {
-                            this.classList.toggle('flipped');
-                            const isFlipped = this.classList.contains('flipped');
-                            
-                            saveFlippedState(day, isFlipped);
-                            
-                            if (isFlipped) {
-                                document.body.style.backgroundColor = color.hex;
-                                this.classList.add('revealing');
-                                setTimeout(() => {
-                                    this.classList.remove('revealing');
-                                }, 2000);
-                            } else {
-                                document.body.style.backgroundColor = '#1a1a2e';
-                            }
-                        });
-                    }
-                    
-                    weekGrid.appendChild(box);
-                });
-                
-                weekSection.appendChild(weekHeader);
-                weekSection.appendChild(weekGrid);
-                calendar.appendChild(weekSection);
-            });
-        }
+            // Original quote display code
+            const div = document.createElement('div');
+		    div.className = 'bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition-colors';
+		
+		    const safe = q.text.replace(/'/g, "\\'");
+		    const formatted = formatDate(q.date);
+		
+		    div.innerHTML = `
+		        <p class="text-purple-900 mb-2">
+		            <span class="text-purple-600 font-semibold">#${q.id}:</span>
+		            "${q.text}"
+		        </p>
+		        <p class="text-sm text-purple-700 mb-2">${q.game} • ${formatted}</p>
+		
+		        <button
+		            class="px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-xs transition-colors"
+		            onclick="copyQuote('${safe}')">
+		            Copy Quote
+		        </button>
+		    `;
+		    list.appendChild(div);
+		});
 
-        initializeCalendar();
-    </script>
+        if (totalPages > 1) {
+		    const paginationDiv = document.createElement('div');
+		    paginationDiv.className = 'flex justify-center items-center gap-3 mt-6';
+		    
+		    // Previous button
+		    const prevBtn = document.createElement('button');
+		    prevBtn.textContent = '← Previous';
+		    prevBtn.className = `px-4 py-2 rounded-lg transition-colors ${currentPage === 1 ? 'bg-purple-200 text-purple-400 cursor-not-allowed' : 'bg-purple-400 hover:bg-purple-500 text-white'}`;
+		    prevBtn.disabled = currentPage === 1;
+		    prevBtn.onclick = () => {
+		        if (currentPage > 1) {
+		            currentPage--;
+		            renderQuotes();
+		            document.getElementById('quotesList').scrollIntoView({ behavior: 'smooth' });
+		        }
+		    };
+		    
+		    // Page info
+		    const pageInfo = document.createElement('span');
+		    pageInfo.className = 'text-purple-900 font-semibold';
+		    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+		    
+		    // Next button
+		    const nextBtn = document.createElement('button');
+		    nextBtn.textContent = 'Next →';
+		    nextBtn.className = `px-4 py-2 rounded-lg transition-colors ${currentPage === totalPages ? 'bg-purple-200 text-purple-400 cursor-not-allowed' : 'bg-purple-400 hover:bg-purple-500 text-white'}`;
+		    nextBtn.disabled = currentPage === totalPages;
+		    nextBtn.onclick = () => {
+		        if (currentPage < totalPages) {
+		            currentPage++;
+		            renderQuotes();
+		            document.getElementById('quotesList').scrollIntoView({ behavior: 'smooth' });
+		        }
+		    };
+		    
+		    paginationDiv.appendChild(prevBtn);
+		    paginationDiv.appendChild(pageInfo);
+		    paginationDiv.appendChild(nextBtn);
+		    document.getElementById('paginationContainer').innerHTML = '';
+			document.getElementById('paginationContainer').appendChild(paginationDiv);
+		}
+    }
+
+
+    // -------------------------------
+    // SEARCH LISTENER
+    // -------------------------------
+    document.getElementById('searchInput').addEventListener('input', e => {
+	    currentSearch = e.target.value;
+	    currentPage = 1; // Reset to first page
+	    renderQuotes();
+	});
+
+
+    // -------------------------------
+    // RANDOM QUOTE
+    // -------------------------------
+    document.getElementById('randomBtn').addEventListener('click', () => {
+        const r = quotes[Math.floor(Math.random() * quotes.length)];
+        document.getElementById('randomQuoteText').textContent = `#${r.id}: "${r.text}"`;
+        document.getElementById('randomQuoteInfo').textContent = `${r.game} • ${formatDate(r.date)}`;
+        document.getElementById('randomQuoteDisplay').classList.remove('hidden');
+    });
+
+
+    // -------------------------------
+    // QUOTE OF THE DAY
+    // -------------------------------
+    function getQuoteOfTheDay() {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), 0, 0);
+        const diff = now - start;
+        const oneDay = 86400000;
+        const day = Math.floor(diff / oneDay);
+        const seed = now.getFullYear() * 1000 + day;
+        return quotes[seed % quotes.length];
+    }
+
+    const qod = getQuoteOfTheDay();
+    document.getElementById('quoteOfDayText').textContent = `#${qod.id}: "${qod.text}"`;
+    document.getElementById('quoteOfDayInfo').textContent = `${qod.game} • ${formatDate(qod.date)}`;
+
+
+    // -------------------------------
+    // CLIPBOARD
+    // -------------------------------
+    window.copyQuote = function(text) {
+        navigator.clipboard.writeText(text);
+    };
+
+
+    // INITIAL RENDER
+    renderQuotes();
+}
+</script>
+
 </body>
 </html>
