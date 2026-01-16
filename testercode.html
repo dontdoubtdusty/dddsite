@@ -592,7 +592,7 @@
           currentRotationY += Math.random() * 360 + 360;
 
           // Use 'linear' for the tumble so it looks like it's maintaining speed
-          cube.style.transition = "transform 0.5s linear";
+          cube.style.transition = "transform 0.4s linear";
           cube.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
 
           // 4. AFTER TUMBLE (500ms) -> LANDING PHASE
@@ -608,7 +608,7 @@
             currentRotationY += 720 + yOffset;
 
             // Use 'cubic-bezier' for a nice slow-down landing effect
-            cube.style.transition = "transform 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
+            cube.style.transition = "transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1)";
             cube.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
 
             // 5. FINISH
@@ -621,7 +621,7 @@
 			  diceContainer.classList.remove("tossing");
               isRolling = false;
               
-            }, 1000); // Wait for the 1s landing animation
+            }, 850); // Wait for the 1s landing animation
 
           }, 450); // Slight overlap with previous time (500ms) prevents stutter
         }, 300); // Wait for Shake
