@@ -618,8 +618,9 @@
               bodySound.play().catch(e => console.log("Audio play failed"));
               
               result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-              saveRoll(value);
-              diceContainer.classList.remove("tossing");
+			  userId = generateUsername(); // Generate new random number on each roll
+			  saveRoll(value);
+			  diceContainer.classList.remove("tossing");
               isRolling = false;
               
             }, 1000); // Wait for the 1s landing animation
