@@ -618,7 +618,6 @@
               bodySound.play().catch(e => console.log("Audio play failed"));
               
               result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-			  userId = generateUsername(); // Generate new random number on each roll
 			  saveRoll(value);
 			  diceContainer.classList.remove("tossing");
               isRolling = false;
