@@ -296,10 +296,77 @@
 	  from { opacity: 0; }
 	  to { opacity: 1; }
 	}
+	#username-picker {
+	  position: fixed;
+	  top: 20px;
+	  left: 50%;
+	  transform: translateX(-50%);
+	  z-index: 100;
+	  display: flex;
+	  gap: 10px;
+	  align-items: center;
+	  background: rgba(13, 31, 13, 0.95);
+	  padding: 15px 25px;
+	  border-radius: 10px;
+	  border: 2px solid #7cfc00;
+	  box-shadow: 0 0 15px rgba(124, 252, 0, 0.3);
+	}
+	
+	#username-picker label {
+	  color: #7cfc00;
+	  font-family: 'Arial Black', sans-serif;
+	  font-size: 14px;
+	  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+	}
+	
+	#username-picker select {
+	  background: rgba(0, 0, 0, 0.5);
+	  color: #7cfc00;
+	  border: 2px solid #7cfc00;
+	  border-radius: 5px;
+	  padding: 5px 10px;
+	  font-family: Arial, sans-serif;
+	  font-size: 14px;
+	  cursor: pointer;
+	}
+	
+	#username-picker select:focus {
+	  outline: none;
+	  box-shadow: 0 0 10px rgba(124, 252, 0, 0.5);
+	}
 
   </style>
 </head>
 <body>
+  <div id="username-picker">
+	  <label>Username:</label>
+	  <select id="adjective-select">
+	    <option value="Lucky">Lucky</option>
+	    <option value="Unlucky">Unlucky</option>
+	    <option value="Blessed">Blessed</option>
+	    <option value="Cursed">Cursed</option>
+	    <option value="Fortunate">Fortunate</option>
+	    <option value="Doomed">Doomed</option>
+	    <option value="Charmed">Charmed</option>
+	    <option value="Jinxed">Jinxed</option>
+	    <option value="Golden">Golden</option>
+	    <option value="Risky">Risky</option>
+	    <option value="Bold">Bold</option>
+	  </select>
+	  <select id="character-select">
+	    <option value="Shrek">Shrek</option>
+	    <option value="Fiona">Fiona</option>
+	    <option value="Donkey">Donkey</option>
+	    <option value="Puss">Puss</option>
+	    <option value="Farquaad">Farquaad</option>
+	    <option value="Dragon">Dragon</option>
+	    <option value="Gingy">Gingy</option>
+	    <option value="Pinocchio">Pinocchio</option>
+	    <option value="BigBadWolf">BigBadWolf</option>
+	    <option value="ThreePigs">ThreePigs</option>
+	    <option value="BlindMice">BlindMice</option>
+	  </select>
+	</div>
   <div id="dice-container">
     <div id="cube">
       <div class="face front one">
@@ -376,14 +443,27 @@
     const db = firebase.database();
 
     // Username generator
-    function generateUsername() {
-      const characters = ['Shrek', 'Fiona', 'Donkey', 'Puss', 'Farquaad', 'Dragon', 'Gingy', 'Pinocchio', 'BigBadWolf', 'ThreeLittlePigs', 'ThreeBlindMice'];
-      
-      const character = characters[Math.floor(Math.random() * characters.length)];
-      const number = Math.floor(Math.random() * 100);
-      
-      return `${character}${number}`;
-    }
+	function generateUsername() {
+	  const adjective = document.getElementById('adjective-select').value;
+	  const character = document.getElementById('character-select').value;
+	  const number = Math.floor(Math.random() * 100);
+	  
+	  return `${adjective}${character}${number}`;
+	}
+	
+	// Generate initial username
+	let userId = generateUsername();
+	
+	// Update username when dropdowns change
+	document.addEventListener('DOMContentLoaded', () => {
+	  document.getElementById('adjective-select').addEventListener('change', () => {
+	    userId = generateUsername();
+	  });
+	  
+	  document.getElementById('character-select').addEventListener('change', () => {
+	    userId = generateUsername();
+	  });
+	});
     
     // Generate a new user ID each time the page loads
     let userId = generateUsername();
