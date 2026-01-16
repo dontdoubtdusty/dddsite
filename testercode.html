@@ -36,8 +36,8 @@
     }
     
     #dice-container {
-	  width: 200px;
-	  height: 200px;
+	  width: 230px;
+	  height: 230px;
 	  perspective: 1000px;
 	  cursor: pointer;
 	  transition: transform 0.1s;
@@ -95,8 +95,8 @@
     }
     .face {
 	  position: absolute;
-	  width: 200px;
-	  height: 200px;
+	  width: 230px;
+	  height: 230px;
 	  border: 2px solid #a0a0a0;
 	  display: grid;
 	  padding: 8px;
@@ -163,12 +163,12 @@
     }
     
 
-    .front  { transform: rotateY(0deg)    translateZ(100px);  background: #689f38; }
-	.back   { transform: rotateY(180deg)  translateZ(100px);  background: #689f38; }
-	.right  { transform: rotateY(90deg)   translateZ(100px);  background: #689f38; }
-	.left   { transform: rotateY(-90deg)  translateZ(100px);  background: #689f38; }
-	.top    { transform: rotateX(90deg)   translateZ(100px);  background: #689f38; }
-	.bottom { transform: rotateX(-90deg)  translateZ(100px);  background: #689f38; }
+    .front  { transform: rotateY(0deg)    translateZ(115px);  background: #689f38; }
+	.back   { transform: rotateY(180deg)  translateZ(115px);  background: #689f38; }
+	.right  { transform: rotateY(90deg)   translateZ(115px);  background: #689f38; }
+	.left   { transform: rotateY(-90deg)  translateZ(115px);  background: #689f38; }
+	.top    { transform: rotateX(90deg)   translateZ(115px);  background: #689f38; }
+	.bottom { transform: rotateX(-90deg)  translateZ(115px);  background: #689f38; }
 
 
     .tint-red img { filter: sepia(100%) saturate(500%) hue-rotate(-50deg) brightness(0.8); }
@@ -555,8 +555,8 @@
       for (let i = 0; i < 15; i++) {
           const particle = document.createElement('div');
           particle.className = 'particle';
-          const startX = Math.random() * 200;
-		  const startY = Math.random() * 200;
+          const startX = Math.random() * 230;
+		  const startY = Math.random() * 230;
           particle.style.left = startX + 'px';
           particle.style.top = startY + 'px';
           const drift = (Math.random() - 0.5) * 100;
