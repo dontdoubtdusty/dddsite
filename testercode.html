@@ -418,7 +418,7 @@
     function displayRolls() {
 	  const rollsList = document.getElementById('rolls-list');
 	  let html = '';
-	  allRolls.slice(-5).reverse().forEach(roll => {
+	  allRolls.slice(-6).reverse().forEach(roll => {
 	    const seconds = Math.floor((Date.now() - roll.time) / 1000);
 	    const hours = Math.floor(seconds / 3600);
 	    const minutes = Math.floor((seconds % 3600) / 60);
