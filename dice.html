@@ -6,11 +6,12 @@
   <style>
     body {
       display: flex;
-      justify-content: center;
-      align-items: center;
+	  justify-content: center;
+	  align-items: center;
+	  gap: 80px;
       height: 100vh;
       margin: 0;
-      background-image: url('swamp.jpg');
+      background-image: url('shreks-swamp.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -177,32 +178,50 @@
     .tint-orange img { filter: sepia(100%) saturate(500%) hue-rotate(10deg) brightness(1.1); }
     .tint-pink img { filter: sepia(100%) saturate(300%) hue-rotate(300deg) brightness(1.2); }
 
-    #result {
-      position: absolute;
-      top: 25%;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #7cfc00;
-      font-size: 24px;
-      font-weight: bold;
-      font-family: 'Arial Black', sans-serif;
-      text-align: center;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    }
-
-    #rolls-list {
-      position: absolute;
-      top: 65%;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #7cfc00;
-      font-size: 16px;
-      font-family: Arial;
-      text-align: center;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-      width: 300px;
-      transition: opacity 2s;
-    }
+    #rolls-panel {
+	  background: rgba(13, 31, 13, 0.9);
+	  border: 3px solid #7cfc00;
+	  border-radius: 15px;
+	  padding: 20px;
+	  width: 280px;
+	  max-height: 80vh;
+	  overflow-y: auto;
+	  box-shadow: 0 0 20px rgba(124, 252, 0, 0.3);
+	}
+	
+	#rolls-panel h2 {
+	  color: #7cfc00;
+	  font-family: 'Arial Black', sans-serif;
+	  text-align: center;
+	  margin: 0 0 15px 0;
+	  font-size: 24px;
+	  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+	}
+	
+	#current-result {
+	  color: #7cfc00;
+	  font-size: 28px;
+	  font-weight: bold;
+	  font-family: 'Arial Black', sans-serif;
+	  text-align: center;
+	  margin-bottom: 20px;
+	  min-height: 35px;
+	  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+	}
+	
+	#rolls-list {
+	  color: #7cfc00;
+	  font-size: 16px;
+	  font-family: Arial;
+	}
+	
+	#rolls-list > div {
+	  padding: 8px;
+	  margin-bottom: 8px;
+	  background: rgba(0, 0, 0, 0.3);
+	  border-radius: 5px;
+	  border-left: 3px solid #7cfc00;
+	}
 
     @keyframes shake {
       0%   { transform: translateX(0) translateY(0) rotateZ(0deg); }
@@ -263,6 +282,20 @@
         transform: translateY(0) scale(1);
       }
     }
+	#rolls-panel {
+	  opacity: 1;
+	  transition: opacity 0.5s ease;
+	}
+	
+	#rolls-panel.fade-out {
+	  opacity: 0;
+	  pointer-events: none;
+	}
+	
+	@keyframes fadeIn {
+	  from { opacity: 0; }
+	  to { opacity: 1; }
+	}
 
   </style>
 </head>
@@ -322,14 +355,18 @@
     </div>
   </div>
   <div id="result"></div>
-  <div id="rolls-list"></div>
+  <div id="rolls-panel">
+	  <h2>LAST 6 SHROLLS</h2>
+	  <div id="current-result"></div>
+	  <div id="rolls-list"></div>
+	</div>
   
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   
   <script>
     const cube = document.getElementById("cube");
-    const result = document.getElementById("result");
+    const result = document.getElementById("current-result");
     const diceContainer = document.getElementById("dice-container");
 
     const firebaseConfig = {
@@ -352,7 +389,6 @@
     let userId = generateUsername();
     
     let allRolls = [];
-    let fadeTimeout;
     
     // Global tracking variables
     let currentRotationX = 0;
@@ -380,30 +416,24 @@
     document.querySelector('.face.bottom.two').classList.add(colors[5]);
 
     function displayRolls() {
-      const rollsList = document.getElementById('rolls-list');
-      let html = '';
-      allRolls.slice(-5).reverse().forEach(roll => {
-        const seconds = Math.floor((Date.now() - roll.time) / 1000);
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-        
-        let timeAgo = '';
-        if (hours > 0) timeAgo += `${hours} hour${hours > 1 ? 's' : ''} `;
-        if (minutes > 0) timeAgo += `${minutes} minute${minutes > 1 ? 's' : ''} `;
-        if (secs > 0 || timeAgo === '') timeAgo += `${secs} second${secs !== 1 ? 's' : ''}`;
-        timeAgo = timeAgo.trim();
-        const userName = roll.user || 'Someone';
-        html += `<div>${userName} rolled ${roll.value} SHREK${roll.value === 1 ? '' : 'S'} (${timeAgo} ago)</div>`;
-      });
-      rollsList.innerHTML = html;
-      
-      rollsList.style.opacity = '1';
-      clearTimeout(fadeTimeout);
-      fadeTimeout = setTimeout(() => {
-        rollsList.style.opacity = '0';
-      }, 3000);
-    }
+	  const rollsList = document.getElementById('rolls-list');
+	  let html = '';
+	  allRolls.slice(-6).reverse().forEach(roll => {
+	    const seconds = Math.floor((Date.now() - roll.time) / 1000);
+	    const hours = Math.floor(seconds / 3600);
+	    const minutes = Math.floor((seconds % 3600) / 60);
+	    const secs = seconds % 60;
+	    
+	    let timeAgo = '';
+	    if (hours > 0) timeAgo += `${hours}h `;
+	    if (minutes > 0) timeAgo += `${minutes}m `;
+	    if (secs > 0 || timeAgo === '') timeAgo += `${secs}s`;
+	    timeAgo = timeAgo.trim();
+	    const userName = roll.user || 'Someone';
+	    html += `<div>${userName} rolled ${roll.value} SHREK${roll.value === 1 ? '' : 'S'} (${timeAgo} ago)</div>`;
+	  });
+	  rollsList.innerHTML = html;
+	}
 
     db.ref('rolls').limitToLast(10).on('value', (snapshot) => {
       allRolls = [];
@@ -411,6 +441,16 @@
         allRolls.push(child.val());
       });
       displayRolls();
+	// Fade in the panel
+	const rollsPanel = document.getElementById('rolls-panel');
+	rollsPanel.classList.remove('fade-out');
+	rollsPanel.style.animation = 'fadeIn 0.3s ease';
+	
+	// Fade out after 3 seconds
+	clearTimeout(window.fadePanelTimeout);
+	window.fadePanelTimeout = setTimeout(() => {
+	  rollsPanel.classList.add('fade-out');
+	}, 3000);
     });
 
     function saveRoll(value) {
