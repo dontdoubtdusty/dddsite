@@ -282,6 +282,20 @@
         transform: translateY(0) scale(1);
       }
     }
+	#rolls-panel {
+	  opacity: 1;
+	  transition: opacity 0.5s ease;
+	}
+	
+	#rolls-panel.fade-out {
+	  opacity: 0;
+	  pointer-events: none;
+	}
+	
+	@keyframes fadeIn {
+	  from { opacity: 0; }
+	  to { opacity: 1; }
+	}
 
   </style>
 </head>
@@ -342,7 +356,7 @@
   </div>
   <div id="result"></div>
   <div id="rolls-panel">
-	  <h2>SHREK ROLLS</h2>
+	  <h2>LAST 6 SHROLLS</h2>
 	  <div id="current-result"></div>
 	  <div id="rolls-list"></div>
 	</div>
@@ -404,7 +418,7 @@
     function displayRolls() {
 	  const rollsList = document.getElementById('rolls-list');
 	  let html = '';
-	  allRolls.slice(-10).reverse().forEach(roll => {
+	  allRolls.slice(-5).reverse().forEach(roll => {
 	    const seconds = Math.floor((Date.now() - roll.time) / 1000);
 	    const hours = Math.floor(seconds / 3600);
 	    const minutes = Math.floor((seconds % 3600) / 60);
@@ -427,6 +441,16 @@
         allRolls.push(child.val());
       });
       displayRolls();
+	// Fade in the panel
+	const rollsPanel = document.getElementById('rolls-panel');
+	rollsPanel.classList.remove('fade-out');
+	rollsPanel.style.animation = 'fadeIn 0.3s ease';
+	
+	// Fade out after 3 seconds
+	clearTimeout(window.fadePanelTimeout);
+	window.fadePanelTimeout = setTimeout(() => {
+	  rollsPanel.classList.add('fade-out');
+	}, 3000);
     });
 
     function saveRoll(value) {
