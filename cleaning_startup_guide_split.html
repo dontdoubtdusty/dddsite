@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleaning Business Startup Guide</title>
+    <style>
+        :root {
+            --primary: #2c3e50;    /* Navy Blue */
+            --accent: #3498db;     /* Clean Blue */
+            --success: #27ae60;    /* Professional Green */
+            --bg: #f4f6f8;         /* Light Corporate Grey */
+            --text: #34495e;       /* Slate Grey */
+            --muted: #95a5a6;      /* Muted Grey for locked items */
+            --border: #dce1e5;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: var(--text);
+            background-color: var(--bg);
+            padding: 20px;
+            font-size: 15px;
+        }
+        
+        .container {
+            /* Widen the container to fit two columns comfortably */
+            max-width: 1200px; 
+            margin: 0 auto;
+            background: var(--bg); /* Transparent background for container */
+        }
+        
+        /* --- NEW LAYOUT GRID --- */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 50% / 50% Split */
+            gap: 25px;
+            align-items: start;
+        }
+
+        /* Mobile Responsiveness: Stack on small screens */
+        @media (max-width: 900px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+            .left-column {
+                position: static !important;
+            }
+        }
+
+        /* --- COLUMN STYLING --- */
+        .left-column {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 30px;
+            
+            /* Sticky effect: Keeps the list visible while you scroll the steps */
+            position: sticky;
+            top: 20px; 
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px; /* Gap between capabilities and roadmap */
+        }
+
+        /* --- HEADER --- */
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1em;
+        }
+        
+        .section {
+            margin-bottom: 0; /* Margin handled by grid gap now */
+        }
+        
+        .section-title {
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7f8c8d;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        /* --- GOAL BOX --- */
+        .goal-box {
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent);
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .goal-box h3 {
+            color: var(--primary);
+            font-size: 1em;
+            margin-bottom: 8px;
+        }
+        
+        .goal-box ul {
+            padding-left: 20px;
+            color: var(--text);
+        }
+
+        /* --- BUDGET ITEMS --- */
+        /* Changed to 1 column for the side-bar view, or auto-fit */
+        .budget-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .budget-category {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 20px;
+            position: relative;
+            transition: border-color 0.3s ease;
+        }
+        
+        .budget-category h3 {
+            color: var(--primary);
+            font-size: 1.1em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .item-list {
+            list-style: none;
+        }
+        
+        .item-list li {
+            padding: 8px 10px 8px 30px;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95em;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.2s;
+        }
+
+        .item-list li:hover {
+            background: #f8f9fa;
+        }
+
+        .item-list li:last-child {
+            border-bottom: none;
+        }
+        
+        /* Custom Checkbox Design */
+        .item-list li::before {
+            content: "";
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            border: 2px solid #bdc3c7;
+            border-radius: 3px;
+        }
+
+        .item-list li.checked {
+            color: var(--muted);
+            text-decoration: line-through;
+        }
+
+        .item-list li.checked::before {
+            border-color: var(--success);
+            background-color: var(--success);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path fill="white" d="M2 6l3 3 5-5"/></svg>');
+            background-size: 80%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .price {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .item-list li.checked .price {
+            color: var(--muted);
+        }
+
+        .subtotal {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 2px solid #eee;
+            text-align: right;
+            font-size: 0.9em;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .budget-category.completed {
+            border-color: var(--success);
+            background-color: #fcfdfc;
+        }
+        
+        .budget-category.completed::after {
+            content: "COMPLETE";
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.7em;
+            background: var(--success);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .total-box {
+            background: var(--primary);
+            color: var(--white);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 25px;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- RIGHT COLUMN BOXES --- */
+        .right-box {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 30px;
+        }
+
+        .capability-list {
+            background: #f8f9fa;
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 6px;
+        }
+        
+        .capability-list ul {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .capability-list li::before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            display: inline-block; 
+            width: 1em;
+            margin-left: -1em;
+        }
+
+        /* --- STEPS (ROADMAP) --- */
+        .step-box {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--muted);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .step-box.locked {
+            border-color: #f0f0f0;
+            border-left-color: #dce1e5;
+        }
+        
+        .step-box.locked:hover {
+            border-color: #dce1e5;
+            background: #fbfbfb;
+        }
+
+        .step-box.locked .step-title {
+            color: var(--muted);
+        }
+
+        .step-box.locked .step-number {
+            background: #e0e0e0;
+            color: #999;
+        }
+
+        .step-box.locked .step-content {
+            color: var(--muted);
+        }
+        
+        .step-box.locked .step-highlight {
+            background: #f5f5f5;
+            border-left-color: #dce1e5;
+            color: var(--muted);
+        }
+
+        .step-box.unlocked {
+            border-left-color: var(--success);
+            background: var(--white);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .step-title {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: color 0.3s;
+        }
+
+        .step-number {
+            background: var(--success);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .status-badge {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            background: #f0f0f0;
+        }
+
+        .step-box.unlocked .status-badge {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+
+        .step-content {
+            padding-left: 40px; 
+            font-size: 0.95em;
+            display: block;
+            transition: color 0.3s;
+        }
+        
+        .step-highlight {
+            background: #eef7fd;
+            border-left: 3px solid var(--accent);
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: var(--primary);
+            border-radius: 0 4px 4px 0;
+            transition: all 0.3s;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="layout-grid">
+            
+            <div class="left-column">
+                <div class="header">
+                    <h1>Business Launch Guide</h1>
+                    <p>Startup Capital: $200 | Phase: Startup</p>
+                </div>
+
+                <div class="goal-box">
+                    <h3>Objectives</h3>
+                    <ul>
+                        <li>Start taking paid residential jobs.</li>
+                        <li>Look professional and handle safety correctly.</li>
+                        <li>Generate cash for license and insurance.</li>
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title">Supplies to Buy</h2>
+                    
+                    <div class="budget-grid">
+                        <div class="budget-category">
+                            <h3>1. Core Equipment</h3>
+                            <p style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 15px;">The minimum kit you need.</p>
+                            <ul class="item-list">
+                                <li><span>Microfiber Rags (Pack)</span><span class="price">$27</span></li>
+                                <li><span>Spin Mop System</span><span class="price">$50</span></li>
+                                <li><span>Broom & Dustpan Set</span><span class="price">$21</span></li>
+                                <li><span>Heavy Duty Trash Bags</span><span class="price">$12</span></li>
+                                <li><span>Paper Towels (Bulk)</span><span class="price">$32</span></li>
+                            </ul>
+                            <div class="subtotal">Est: $142</div>
+                        </div>
+                        
+                        <div class="budget-category">
+                            <h3>2. Cleaning Solutions</h3>
+                            <p style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 15px;">Simple, effective chemicals.</p>
+                            <ul class="item-list">
+                                <li><span>All-Purpose Cleaner</span><span class="price">$5</span></li>
+                                <li><span>Neutral Floor Cleaner</span><span class="price">$13</span></li>
+                                <li><span>Bathroom Cleaner</span><span class="price">$9</span></li>
+                            </ul>
+                            <div class="subtotal">Est: $27</div>
+                        </div>
+                        
+                        <div class="budget-category">
+                            <h3>3. Safety Gear</h3>
+                            <p style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 15px;">Non-negotiable for hygiene.</p>
+                            <ul class="item-list">
+                                <li><span>Nitrile Gloves</span><span class="price">$10</span></li>
+                                <li><span>Face Masks</span><span class="price">$10</span></li>
+                            </ul>
+                            <div class="subtotal">Est: $20</div>
+                        </div>
+                    </div>
+
+                    <div class="total-box">
+                        Total Startup Cost: ~$189
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-column">
+                
+                <div class="right-box">
+                    <h2 class="section-title">What You Can Do</h2>
+                    <div class="capability-list">
+                        <p style="margin-bottom: 10px; font-weight: 600;">With this kit + your home vacuum, you can handle:</p>
+                        <ul>
+                            <li>Standard Houses & Apartments</li>
+                            <li>Move-out Cleans (General)</li>
+                            <li>Recurring Weekly/Bi-Weekly</li>
+                            <li>Light Deep Cleans</li>
+                        </ul>
+                        <p style="margin-top: 15px; font-size: 0.95em; color: var(--success); font-weight: 700; border-top: 1px solid #e0e0e0; padding-top: 10px;">
+                            Income Goal: $100–$150 per job
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="right-box">
+                    <h2 class="section-title">Action Plan</h2>
+                    
+                    <div class="step-box locked" onclick="unlockStep(this)" id="step1">
+                        <div class="step-header">
+                            <div class="step-title">
+                                <span class="step-number">1</span>
+                                Book Your First Jobs
+                            </div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                        <div class="step-content">
+                            <p style="margin-bottom: 10px;">Don't wait. Start posting ads the same day you buy your supplies.</p>
+                            <ul style="padding-left: 20px; margin-bottom: 10px;">
+                                <li><strong>Where:</strong> Neighborhood groups, Nextdoor, Craigslist.</li>
+                                <li><strong>What:</strong> Offer one-time cleans with limited slots.</li>
+                            </ul>
+                            <div class="step-highlight">
+                                <strong>Goal:</strong> Earn your first $200–$300 immediately.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-box locked" onclick="unlockStep(this)" id="step2">
+                        <div class="step-header">
+                            <div class="step-title">
+                                <span class="step-number">2</span>
+                                Get Your License
+                            </div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                        <div class="step-content">
+                            <p>Take the first profit you make and make the business official.</p>
+                            <ul style="padding-left: 20px; margin-top: 10px;">
+                                <li><strong>Business License ($100)</strong></li>
+                            </ul>
+                            <p style="font-size: 0.9em; margin-top: 5px;">You need this to advertise without worrying.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-box locked" onclick="unlockStep(this)" id="step3">
+                        <div class="step-header">
+                            <div class="step-title">
+                                <span class="step-number">3</span>
+                                Get Insured
+                            </div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                        <div class="step-content">
+                            <p>Protect yourself and your clients.</p>
+                            <ul style="padding-left: 20px; margin-top: 10px;">
+                                <li><strong>General Liability Insurance ($90)</strong></li>
+                            </ul>
+                            <p style="font-size: 0.9em; margin-top: 5px;">This proves you are a "real" professional.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-box locked" onclick="unlockStep(this)" id="step4">
+                        <div class="step-header">
+                            <div class="step-title">
+                                <span class="step-number">4</span>
+                                Organize Your Gear
+                            </div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                        <div class="step-content">
+                            <p>Time to look the part and speed up your workflow.</p>
+                            <ul style="padding-left: 20px; margin-top: 10px;">
+                                <li><strong>Cleaning Caddy/Tote ($30)</strong></li>
+                            </ul>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Stop fumbling with loose bottles. Organization saves time.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-box locked" onclick="unlockStep(this)" id="step5">
+                        <div class="step-header">
+                            <div class="step-title">
+                                <span class="step-number">5</span>
+                                Upgrade Your Vacuum
+                            </div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                        <div class="step-content">
+                            <p>Don't buy a high-end commercial vacuum until:</p>
+                            <ul style="padding-left: 20px; margin-top: 10px;">
+                                <li>You have steady weekly jobs.</li>
+                                <li>You know what kind of floors your clients have.</li>
+                                <li>You have the cash saved up from profits.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. SHOPPING LIST LOGIC ---
+            const budgetItems = document.querySelectorAll('.budget-category .item-list li');
+            
+            budgetItems.forEach((item, index) => {
+                const uniqueId = 'budget-item-' + index;
+                item.setAttribute('data-id', uniqueId);
+                
+                // Click Event
+                item.addEventListener('click', function() {
+                    toggleBudgetItem(this);
+                });
+                
+                // Load saved state
+                if (localStorage.getItem(uniqueId) === 'checked') {
+                    item.classList.add('checked');
+                }
+            });
+
+            // Initial check for category completion
+            document.querySelectorAll('.budget-category').forEach(category => {
+                checkCategoryCompletion(category);
+            });
+
+            // --- 2. ROADMAP STEPS LOGIC ---
+            const steps = ['step1', 'step2', 'step3', 'step4', 'step5'];
+            
+            steps.forEach(stepId => {
+                const saved = localStorage.getItem(stepId);
+                if (saved === 'unlocked') {
+                    const element = document.getElementById(stepId);
+                    element.classList.remove('locked');
+                    element.classList.add('unlocked');
+                    element.querySelector('.status-badge').textContent = 'Active';
+                }
+            });
+        });
+
+        // Shopping List Helper Functions
+        function toggleBudgetItem(item) {
+            item.classList.toggle('checked');
+            const id = item.getAttribute('data-id');
+            
+            if (item.classList.contains('checked')) {
+                localStorage.setItem(id, 'checked');
+            } else {
+                localStorage.removeItem(id);
+            }
+
+            const parentCategory = item.closest('.budget-category');
+            checkCategoryCompletion(parentCategory);
+        }
+
+        function checkCategoryCompletion(category) {
+            const allItems = category.querySelectorAll('li');
+            const checkedItems = category.querySelectorAll('li.checked');
+
+            if (allItems.length > 0 && allItems.length === checkedItems.length) {
+                category.classList.add('completed');
+            } else {
+                category.classList.remove('completed');
+            }
+        }
+        
+        // Roadmap Step Helper Function
+        function unlockStep(element) {
+            const stepId = element.id;
+            const badge = element.querySelector('.status-badge');
+            
+            if (element.classList.contains('locked')) {
+                // Unlock
+                element.classList.remove('locked');
+                element.classList.add('unlocked');
+                badge.textContent = 'Active';
+                localStorage.setItem(stepId, 'unlocked');
+            } else {
+                // Relock (toggle feature)
+                element.classList.remove('unlocked');
+                element.classList.add('locked');
+                badge.textContent = 'Pending';
+                localStorage.setItem(stepId, 'locked');
+            }
+        }
+    </script>
+</body>
+</html>
