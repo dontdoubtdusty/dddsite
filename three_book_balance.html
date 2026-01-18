@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three Book Balance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #2c1810 0%, #1a0f0a 100%);
+            color: #e8dcc8;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #d4af77;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .book-slots {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .book-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 119, 0.2);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .book-header {
+            margin-bottom: 1rem;
+        }
+
+        .book-type {
+            font-size: 1.1rem;
+            color: #d4af77;
+            font-weight: 600;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            color: #a89270;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .best-time {
+            color: #d4af77;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .book-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 119, 0.3);
+            border-radius: 4px;
+            padding: 0.75rem;
+            color: #e8dcc8;
+            font-size: 1rem;
+            font-family: 'Georgia', serif;
+            margin-bottom: 1rem;
+        }
+
+        .book-input::placeholder {
+            color: rgba(232, 220, 200, 0.4);
+        }
+
+        .book-input:focus {
+            outline: none;
+            border-color: #d4af77;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .complete-btn {
+            background: rgba(212, 175, 119, 0.15);
+            border: 1px solid #d4af77;
+            color: #d4af77;
+            padding: 0.5rem 1.25rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-family: 'Georgia', serif;
+        }
+
+        .complete-btn:hover:not(:disabled) {
+            background: rgba(212, 175, 119, 0.25);
+        }
+
+        .complete-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .saved-book {
+            background: rgba(212, 175, 119, 0.1);
+            border: 1px solid rgba(212, 175, 119, 0.3);
+            border-radius: 4px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .saved-book-title {
+            color: #e8dcc8;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Three Book Balance</h1>
+        </header>
+
+        <div class="book-slots">
+            <div class="book-card">
+                <div class="book-header">
+                    <div class="book-type">Primary Book</div>
+                </div>
+                <div class="description">
+                    Dense nonfiction or complex fiction you care most about finishing<br>
+                    <span class="best-time">Best time: Sharp focus time</span>
+                </div>
+                <div id="primary-saved"></div>
+                <input type="text" class="book-input" id="primary-input" placeholder="Enter book title...">
+                <button class="complete-btn" id="primary-btn" disabled>Complete & Clear</button>
+            </div>
+
+            <div class="book-card">
+                <div class="book-header">
+                    <div class="book-type">Secondary Book</div>
+                </div>
+                <div class="description">
+                    Lighter, narrative, or episodic reading<br>
+                    <span class="best-time">Best time: Soft / mildly tired time</span>
+                </div>
+                <div id="secondary-saved"></div>
+                <input type="text" class="book-input" id="secondary-input" placeholder="Enter book title...">
+                <button class="complete-btn" id="secondary-btn" disabled>Complete & Clear</button>
+            </div>
+
+            <div class="book-card">
+                <div class="book-header">
+                    <div class="book-type">Dip-in Book</div>
+                </div>
+                <div class="description">
+                    Poetry, essays, reference, rereads (2–10 pages at a time)<br>
+                    <span class="best-time">Best time: Fried / low energy time</span>
+                </div>
+                <div id="dip-saved"></div>
+                <input type="text" class="book-input" id="dip-input" placeholder="Enter book title...">
+                <button class="complete-btn" id="dip-btn" disabled>Complete & Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const books = {
+            primary: { input: null, saved: null, btn: null },
+            secondary: { input: null, saved: null, btn: null },
+            dip: { input: null, saved: null, btn: null }
+        };
+
+        const state = {
+            primary: '',
+            secondary: '',
+            dip: ''
+        };
+
+        function init() {
+            ['primary', 'secondary', 'dip'].forEach(type => {
+                books[type].input = document.getElementById(`${type}-input`);
+                books[type].saved = document.getElementById(`${type}-saved`);
+                books[type].btn = document.getElementById(`${type}-btn`);
+
+                books[type].input.addEventListener('input', (e) => handleInput(type, e.target.value));
+                books[type].btn.addEventListener('click', () => completeBook(type));
+
+                const saved = localStorage.getItem(type);
+                if (saved) {
+                    state[type] = saved;
+                    renderSaved(type);
+                }
+            });
+        }
+
+        function handleInput(type, value) {
+            state[type] = value;
+            books[type].btn.disabled = !value.trim();
+            localStorage.setItem(type, value);
+        }
+
+        function renderSaved(type) {
+            if (state[type]) {
+                books[type].saved.innerHTML = `
+                    <div class="saved-book">
+                        <div class="saved-book-title">${state[type]}</div>
+                    </div>
+                `;
+                books[type].input.style.display = 'none';
+                books[type].btn.disabled = false;
+                books[type].btn.textContent = 'Complete & Clear';
+            } else {
+                books[type].saved.innerHTML = '';
+                books[type].input.style.display = 'block';
+                books[type].input.value = '';
+                books[type].btn.disabled = true;
+            }
+        }
+
+        function completeBook(type) {
+            state[type] = '';
+            localStorage.removeItem(type);
+            renderSaved(type);
+        }
+
+        init();
+    </script>
+</body>
+</html>
