@@ -394,33 +394,40 @@
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+
     <script>
         const PASSWORD = 'bigjuicydoug'; // Change this to your desired password
         let isLoggedIn = false;
         let posts = [];
         let editingPostId = null;
         
-        // Load posts from storage
-        async function loadPosts() {
+        // --- 1. MODIFIED LOAD FUNCTION using localStorage ---
+        function loadPosts() {
             try {
-                const result = await window.storage.get('blog-posts');
-                if (result && result.value) {
-                    posts = JSON.parse(result.value);
+                // We look for 'blog-posts' in the browser's local memory
+                const storedPosts = localStorage.getItem('blog-posts');
+                
+                if (storedPosts) {
+                    posts = JSON.parse(storedPosts);
                     renderPosts();
+                } else {
+                    console.log('No existing posts found');
+                    posts = [];
                 }
             } catch (error) {
-                console.log('No existing posts found');
+                console.error('Error loading posts:', error);
                 posts = [];
             }
         }
         
-        // Save posts to storage
-        async function savePosts() {
+        // --- 2. MODIFIED SAVE FUNCTION using localStorage ---
+        function savePostsToStorage() {
             try {
-                await window.storage.set('blog-posts', JSON.stringify(posts));
+                // We save the array as a string into the browser's memory
+                localStorage.setItem('blog-posts', JSON.stringify(posts));
             } catch (error) {
                 console.error('Error saving posts:', error);
-                alert('Error saving posts!');
+                alert('Error saving posts! Your browser storage might be full.');
             }
         }
         
@@ -451,6 +458,7 @@
                     </div>
                 ` : '';
                 
+                // Using marked.parse to convert markdown to HTML
                 article.innerHTML = `
                     ${actions}
                     <h2 class="post-title">${post.title}</h2>
@@ -489,7 +497,8 @@
                 posts.unshift(post);
             }
             
-            savePosts();
+            // Call our new save function
+            savePostsToStorage();
             cancelEdit();
             renderPosts();
         }
@@ -509,7 +518,7 @@
         function deletePost(id) {
             if (confirm('Are you sure you want to delete this post?')) {
                 posts = posts.filter(p => p.id !== id);
-                savePosts();
+                savePostsToStorage(); // Save the deletion
                 renderPosts();
             }
         }
