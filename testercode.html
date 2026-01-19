@@ -1,631 +1,493 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Shrek Dice TEST</title>
-  <style>
-    body {
-      display: flex;
-	  justify-content: center;
-	  align-items: center;
-	  gap: 80px;
-      height: 100vh;
-      margin: 0;
-      background-image: url('shreks-swamp.png');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-color: #000;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    body::before {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(ellipse at center, rgba(45, 74, 43, 0.85) 0%, rgba(26, 46, 26, 0.85) 30%, rgba(13, 31, 13, 0.85) 60%, rgba(0, 0, 0, 0.85) 100%);
-      pointer-events: none;
-      z-index: 0;
-    }
-    
-    body > * {
-      position: relative;
-      z-index: 1;
-    }
-    
-    #dice-container {
-	  width: 200px;
-	  height: 200px;
-	  perspective: 1000px;
-	  cursor: pointer;
-	  transition: transform 0.1s;
-	}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>365 Days of New Year's Colors</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    #dice-container::after {
-      content: '';
-      position: absolute;
-      bottom: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 120px;
-      height: 20px;
-      background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4) 0%, transparent 70%);
-      border-radius: 50%;
-      transition: all 0.1s;
-    }
-    
-    #dice-container.tossing {
-      animation: diceToss 1.8s ease-in-out;
-    }
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #1a1a2e;
+            background-image: url('colors-rocks.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: multiply;
+            transition: background-color 1.5s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-    #dice-container.tossing::after {
-      animation: shadowShrink 1.8s ease-in-out;
-    }     
+        h1 {
+            font-size: 2.8em;
+            margin: 20px 0 10px;
+            text-align: center;
+            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease infinite;
+            z-index: 2;
+            position: relative;
+        }
 
-    @keyframes shadowShrink {
-      0% {
-        width: 120px;
-        opacity: 0.4;
-      }
-      25% {
-        width: 60px;
-        opacity: 0.15;
-      }
-      50% {
-        width: 40px;
-        opacity: 0.1;
-      }
-      75% {
-        width: 80px;
-        opacity: 0.25;
-      }
-      100% {
-        width: 120px;
-        opacity: 0.4;
-      }
-    }
-    #cube {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 1s;
-    }
-    .face {
-	  position: absolute;
-	  width: 200px;
-	  height: 200px;
-	  border: 2px solid #a0a0a0;
-	  display: grid;
-	  padding: 8px;
-	  gap: 3px;
-	  box-sizing: border-box;
-	}
-    .face img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-    
-    .face.one { 
-      grid-template: 1fr / 1fr; 
-      place-items: center;
-    }
-    
-    .face.two { 
-      display: grid;
-      grid-template-areas: 
-        "a . ."
-        ". . ."
-        ". . b";
-      grid-template-rows: 1fr 1fr 1fr;
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-    
-    .face.three { 
-      display: grid;
-      grid-template-areas: 
-        "a . ."
-        ". b ."
-        ". . c";
-      grid-template-rows: 1fr 1fr 1fr;
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-    
-    .face.four { 
-      grid-template: 1fr 1fr / 1fr 1fr; 
-    }
-    
-    .face.five { 
-      display: grid;
-      grid-template-areas: 
-        "a . b"
-        ". c ."
-        "d . e";
-      grid-template-rows: 1fr 1fr 1fr;
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-    
-    .face.six {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      padding: 8px;
-      gap: 3px;
-    }
-    
-    .face.six img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-    
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
 
-    .front  { transform: rotateY(0deg)    translateZ(100px);  background: #689f38; }
-	.back   { transform: rotateY(180deg)  translateZ(100px);  background: #689f38; }
-	.right  { transform: rotateY(90deg)   translateZ(100px);  background: #689f38; }
-	.left   { transform: rotateY(-90deg)  translateZ(100px);  background: #689f38; }
-	.top    { transform: rotateX(90deg)   translateZ(100px);  background: #689f38; }
-	.bottom { transform: rotateX(-90deg)  translateZ(100px);  background: #689f38; }
+        .subtitle {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            text-align: center;
+            font-style: italic;
+            z-index: 2;
+            position: relative;
+            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease infinite;
+        }
 
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            z-index: 2;
+            position: relative;
+        }
 
-    .tint-red img { filter: sepia(100%) saturate(500%) hue-rotate(-50deg) brightness(0.8); }
-    .tint-blue img { filter: sepia(100%) saturate(500%) hue-rotate(180deg) brightness(0.9); }
-    .tint-green img { filter: sepia(100%) saturate(500%) hue-rotate(60deg) brightness(1); }
-    .tint-purple img { filter: sepia(100%) saturate(500%) hue-rotate(260deg) brightness(0.9); }
-    .tint-orange img { filter: sepia(100%) saturate(500%) hue-rotate(10deg) brightness(1.1); }
-    .tint-pink img { filter: sepia(100%) saturate(300%) hue-rotate(300deg) brightness(1.2); }
+        .button {
+            background: rgba(42, 42, 62, 0.7);
+            color: #ffd700;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            padding: 10px 20px;
+            font-size: 0.95em;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            transition: all 0.3s ease;
+        }
+        
+        .button:hover {
+            background: rgba(42, 42, 62, 0.9);
+            transform: translateY(-2px);
+        }
 
-    #rolls-panel {
-	  background: rgba(13, 31, 13, 0.9);
-	  border: 3px solid #7cfc00;
-	  border-radius: 15px;
-	  padding: 20px;
-	  width: 280px;
-	  max-height: 80vh;
-	  overflow-y: auto;
-	  box-shadow: 0 0 20px rgba(124, 252, 0, 0.3);
-	  opacity: 1;
-	  transition: opacity 0.5s ease;
-	}
-	
-	#rolls-panel h2 {
-	  color: #7cfc00;
-	  font-family: 'Arial Black', sans-serif;
-	  text-align: center;
-	  margin: 0 0 15px 0;
-	  font-size: 24px;
-	  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-	}
-	
-	#current-result {
-	  color: #7cfc00;
-	  font-size: 28px;
-	  font-weight: bold;
-	  font-family: 'Arial Black', sans-serif;
-	  text-align: center;
-	  margin-bottom: 20px;
-	  min-height: 35px;
-	  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-	}
-	
-	#rolls-list {
-	  color: #7cfc00;
-	  font-size: 16px;
-	  font-family: Arial;
-	}
-	
-	#rolls-list > div {
-	  padding: 8px;
-	  margin-bottom: 8px;
-	  background: rgba(0, 0, 0, 0.3);
-	  border-radius: 5px;
-	  border-left: 3px solid #7cfc00;
-	}
+        .calendar-container {
+            max-width: 1400px;
+            width: 100%;
+            padding: 20px;
+            z-index: 2;
+            position: relative;
+        }
 
-    @keyframes shake {
-      0%   { transform: translateX(0) translateY(0) rotateZ(0deg); }
-      10%  { transform: translateX(-4px) translateY(2px) rotateZ(-2deg); }
-      20%  { transform: translateX(3px) translateY(-3px) rotateZ(1deg); }
-      30%  { transform: translateX(-2px) translateY(4px) rotateZ(-2deg); }
-      40%  { transform: translateX(4px) translateY(-2px) rotateZ(2deg); }
-      50%  { transform: translateX(-3px) translateY(-3px) rotateZ(-1deg); }
-      60%  { transform: translateX(2px) translateY(3px) rotateZ(2deg); }
-      70%  { transform: translateX(-3px) translateY(-2px) rotateZ(-1deg); }
-      80%  { transform: translateX(2px) translateY(3px) rotateZ(1deg); }
-      90%  { transform: translateX(-1px) translateY(-2px) rotateZ(-1deg); }
-      100% { transform: translateX(0) translateY(0) rotateZ(0deg); }
-    }
-    
-    .shaking {
-      animation: shake 0.3s ease;
-    }
-    .particle {
-      position: absolute;
-      width: 20px;        /* Bigger size */
-      height: 20px;       /* Bigger size */
-      background: radial-gradient(circle, #90ff00 0%, #7cfc00 30%, #228b22 100%);  /* More gradient layers for bubble effect */
-      border-radius: 50%;
-      pointer-events: none;
-      animation: float-up 2s ease-out forwards;
-      opacity: 0.8;
-      box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.3),   /* Inner shadow for depth */
-                  inset 3px 3px 8px rgba(255, 255, 255, 0.4),  /* Highlight for shine */
-                  0 0 10px rgba(124, 252, 0, 0.5);              /* Outer glow */
-    }
-    
-    @keyframes float-up {
-      0% {
-        transform: translateY(0) translateX(0) scale(1);
-        opacity: 0.7;
-      }
-      100% {
-        transform: translateY(-200px) translateX(var(--drift)) scale(0);
-        opacity: 0;
-      }
-    }
+        .week-section {
+            margin-bottom: 40px;
+        }
 
-    @keyframes diceToss {
-      0% {
-        transform: translateY(0) scale(1);
-      }
-      25% {
-        transform: translateY(-80px) scale(1.1);
-      }
-      50% {
-        transform: translateY(-100px) scale(1.15);
-      }
-      75% {
-        transform: translateY(-60px) scale(1.05);
-      }
-      100% {
-        transform: translateY(0) scale(1);
-      }
-    }
-	
-	#rolls-panel.fade-out {
-	  opacity: 0;
-	  pointer-events: none;
-	}
-	
-	@keyframes fadeIn {
-	  from { opacity: 0; }
-	  to { opacity: 1; }
-	}
-	#username-picker {
-	  position: fixed;
-	  top: 20px;
-	  left: 50%;
-	  transform: translateX(-50%);
-	  z-index: 100;
-	  display: flex;
-	  gap: 10px;
-	  align-items: center;
-	  background: rgba(13, 31, 13, 0.95);
-	  padding: 15px 25px;
-	  border-radius: 10px;
-	  border: 2px solid #7cfc00;
-	  box-shadow: 0 0 15px rgba(124, 252, 0, 0.3);
-	}
-	
-	#username-picker label {
-	  color: #7cfc00;
-	  font-family: 'Arial Black', sans-serif;
-	  font-size: 14px;
-	  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-	}
-	
-	#username-picker select {
-	  background: rgba(0, 0, 0, 0.5);
-	  color: #7cfc00;
-	  border: 2px solid #7cfc00;
-	  border-radius: 5px;
-	  padding: 5px 10px;
-	  font-family: Arial, sans-serif;
-	  font-size: 14px;
-	  cursor: pointer;
-	}
-	
-	#username-picker select:focus {
-	  outline: none;
-	  box-shadow: 0 0 10px rgba(124, 252, 0, 0.5);
-	}
+        .week-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
 
-  </style>
+        .week-theme {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #E8E8E8;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .week-description {
+            font-size: 1.1em;
+            color: #B8B8B8;
+            font-style: italic;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .calendar-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .calendar-box.locked {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 1.1em;
+            z-index: 10;
+        }
+
+        .box-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .calendar-box.flipped .box-inner {
+            transform: rotateY(180deg);
+        }
+
+        .box-front, .box-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .box-front {
+            background: linear-gradient(135deg, rgba(30,30,50,0.9) 0%, rgba(50,30,70,0.9) 100%);
+            border: 3px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+        }
+
+        .box-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            margin-bottom: 5px;
+        }
+
+        .box-date {
+            font-size: 0.75em;
+            color: #ff69b4;
+        }
+
+        .box-back {
+            transform: rotateY(180deg);
+            text-align: center;
+            position: relative;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .box-back-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .tron-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            border-radius: 12px;
+        }
+
+        .tron-border svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tron-path {
+            fill: none;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
+        }
+
+        .calendar-box.revealing .tron-path {
+            animation: draw-tron 2s ease-out forwards;
+        }
+
+        @keyframes draw-tron {
+            0% {
+                stroke-dashoffset: 800;
+                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
+            }
+            100% {
+                stroke-dashoffset: 0;
+                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
+            }
+        }
+
+        .color-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .color-hex {
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 12px;
+            opacity: 0.9;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .color-sentence {
+            font-size: 0.85em;
+            line-height: 1.4;
+            font-style: italic;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+        }
+
+        @media (max-width: 768px) {
+            .week-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+    </style>
 </head>
 <body>
-  <div id="username-picker">
-	  <label>Username:</label>
-	  <select id="adjective-select">
-		  <option value="Lucky">Lucky</option>
-		  <option value="Unlucky">Unlucky</option>
-		  <option value="Blessed">Blessed</option>
-		  <option value="Cursed">Cursed</option>
-		  <option value="Risky">Risky</option>
-		  <option value="Golden">Golden</option>
-		  <option value="Swampy">Swampy</option>
-		  <option value="Ogre">Ogre</option>
-		  <option value="Onion">Onion</option>
-		  <option value="Layered">Layered</option>
-		  <option value="Muddy">Muddy</option>
-		  <option value="Stinky">Stinky</option>
-	  </select>
-	  <select id="character-select">
-	    <option value="Shrek">Shrek</option>
-	    <option value="Fiona">Fiona</option>
-	    <option value="Donkey">Donkey</option>
-	    <option value="Puss">Puss</option>
-	    <option value="Farquaad">Farquaad</option>
-	    <option value="Dragon">Dragon</option>
-	    <option value="Gingy">Gingy</option>
-	    <option value="Pinocchio">Pinocchio</option>
-	    <option value="BigBadWolf">BigBadWolf</option>
-	    <option value="ThreePigs">ThreePigs</option>
-	    <option value="BlindMice">BlindMice</option>
-	  </select>
-	</div>
-  <div id="dice-container">
-    <div id="cube">
-      <div class="face front one">
-        <img src="shrek_PNG.png" alt="">
-      </div>
-      <div class="face back six">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-      </div>
-      <div class="face right three">
-        <img src="shrek_PNG.png" alt="">
-        <div></div>
-        <div></div>
-        <div></div>
-        <img src="shrek_PNG.png" alt="">
-        <div></div>
-        <div></div>
-        <div></div>
-        <img src="shrek_PNG.png" alt="">
-      </div>
-      <div class="face left four">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-        <img src="shrek_PNG.png" alt="">
-      </div>
-      <div class="face top five">
-      <img src="shrek_PNG.png" alt="">
-      <div></div>
-      <img src="shrek_PNG.png" alt="">
-      <div></div>
-      <img src="shrek_PNG.png" alt="">
-      <div></div>
-      <img src="shrek_PNG.png" alt="">
-      <div></div>
-      <img src="shrek_PNG.png" alt="">
+    <h1><img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"> 365 Days of Colors <img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"></h1>
+    <p class="subtitle">A vibrant year of hues for 2026</p>
+    
+    <div class="controls">
+        <button class="button" id="resetButton">Reset All</button>
     </div>
-      <div class="face bottom two">
-      <img src="shrek_PNG.png" alt="">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <img src="shrek_PNG.png" alt="">
-    </div>
-    </div>
-  </div>
-  <div id="result"></div>
-  <div id="rolls-panel">
-	  <h2>LAST 6 SHROLLS</h2>
-	  <div id="current-result"></div>
-	  <div id="rolls-list"></div>
-	</div>
-  
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  
-  <script>
-    const cube = document.getElementById("cube");
-    const result = document.getElementById("current-result");
-    const diceContainer = document.getElementById("dice-container");
 
-    const firebaseConfig = {
-      databaseURL: "https://shrek-dice-default-rtdb.firebaseio.com/"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    <div class="calendar-container" id="calendar"></div>
 
-    // Username generator
-	function generateUsername() {
-	  const adjective = document.getElementById('adjective-select').value;
-	  const character = document.getElementById('character-select').value;
-	  const number = Math.floor(Math.random() * 100);
-	  
-	  return `${adjective}${character}${number}`;
-	}
-	
-	// Generate initial username
-	let userId = generateUsername();
-	
-	// Update username when dropdowns change
-	document.addEventListener('DOMContentLoaded', () => {
-	  document.getElementById('adjective-select').addEventListener('change', () => {
-	    userId = generateUsername();
-	  });
-	  
-	  document.getElementById('character-select').addEventListener('change', () => {
-	    userId = generateUsername();
-	  });
-	});
-    
-    let allRolls = [];
-    
-    // Global tracking variables
-    let currentRotationX = 0;
-    let currentRotationY = 0;
-    let isRolling = false; // Lock to prevent double clicks
+    <script>
+        const weeks = [
+            {
+                theme: "Celebration",
+                description: "Ring in the new year with sparkle and joy",
+                colors: [
+                    {name: "Champagne Sparkle", hex: "#F7E7CE", sentence: "The champagne sparkle of midnight toasts fills the air with golden promise."},
+                    {name: "Midnight Indigo", hex: "#191970", sentence: "A midnight indigo sky cradles the year's first stars."},
+                    {name: "Celebration Gold", hex: "#FFD700", sentence: "Celebration gold confetti rains down like precious dreams."},
+                    {name: "Party Pink", hex: "#FF69B4", sentence: "Party pink balloons drift toward endless possibilities."},
+                    {name: "Resolution Red", hex: "#DC143C", sentence: "Resolution red burns bright with determined energy."},
+                    {name: "Fresh Start White", hex: "#FFFAFA", sentence: "Fresh start white pages await our new stories."},
+                    {name: "Firework Silver", hex: "#C0C0C0", sentence: "Firework silver sparks illuminate the path ahead."}
+                ]
+            },
+            {
+                theme: "Winter Wonderland",
+                description: "Embrace the cozy magic of frost and warmth",
+                colors: [
+                    {name: "Frost Blue", hex: "#E0F2F7", sentence: "Frost blue crystals form delicate patterns on winter windows."},
+                    {name: "Icicle Clear", hex: "#D4F1F4", sentence: "Icicle clear droplets catch the morning light like diamonds."},
+                    {name: "Snow White", hex: "#FFFEF9", sentence: "Snow white blankets transform the world into quiet wonder."},
+                    {name: "Frozen Lake", hex: "#89CFF0", sentence: "Frozen lake surfaces reflect the pale winter sky perfectly."},
+                    {name: "Cozy Cocoa", hex: "#6F4E37", sentence: "Cozy cocoa steams in mugs held by mittened hands."},
+                    {name: "Fireplace Amber", hex: "#FF7E00", sentence: "Fireplace amber flames dance and crackle through long evenings."},
+                    {name: "Winter Plum", hex: "#8E4585", sentence: "Winter plum skies deepen as early darkness settles in."}
+                ]
+            },
+            {
+                theme: "Northern Lights",
+                description: "Dance with the ethereal colors of the aurora",
+                colors: [
+                    {name: "Aurora Green", hex: "#00FF7F", sentence: "Aurora green waves ripple across the arctic night sky."},
+                    {name: "Celestial Purple", hex: "#9370DB", sentence: "Celestial purple ribbons twist and turn in cosmic winds."},
+                    {name: "Electric Teal", hex: "#00CED1", sentence: "Electric teal currents pulse with otherworldly energy."},
+                    {name: "Mystical Magenta", hex: "#FF00FF", sentence: "Mystical magenta glows illuminate the frozen landscape below."},
+                    {name: "Arctic Blue", hex: "#4169E1", sentence: "Arctic blue depths swirl in the magnetosphere's embrace."},
+                    {name: "Starlight Silver", hex: "#E8E8E8", sentence: "Starlight silver streaks pierce through the dancing colors."},
+                    {name: "Cosmic Violet", hex: "#8B00FF", sentence: "Cosmic violet shadows deepen the night's enchantment."}
+                ]
+            },
+            {
+                theme: "Morning Rituals",
+                description: "Savor the quiet beauty of dawn's awakening",
+                colors: [
+                    {name: "Dawn Blush", hex: "#FFB6C1", sentence: "Dawn blush spreads softly across the awakening horizon."},
+                    {name: "Morning Mist", hex: "#F5F5F5", sentence: "Morning mist hovers gently over sleeping valleys."},
+                    {name: "Coffee Bean", hex: "#3E2723", sentence: "Coffee bean richness grounds the start of a new day."},
+                    {name: "Sunrise Coral", hex: "#FF7F50", sentence: "Sunrise coral warmth melts away the night's chill."},
+                    {name: "Honey Gold", hex: "#DAA520", sentence: "Honey gold light drips sweetly through curtained windows."},
+                    {name: "Toast Tan", hex: "#D2B48C", sentence: "Toast tan comfort fills the kitchen with home."},
+                    {name: "Earl Grey", hex: "#8B8680", sentence: "Earl Grey steam rises in delicate, fragrant spirals."}
+                ]
+            }
+        ];
 
-    // Shuffle and assign colors to faces
-    function shuffleArray(array) {
-      const shuffled = [...array];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      return shuffled;
-    }
-    
-    const colors = shuffleArray(['tint-red', 'tint-blue', 'tint-green', 'tint-purple', 'tint-orange', 'tint-pink']);
-    
-    // Apply random colors to faces
-    document.querySelector('.face.front.one').classList.add(colors[0]);
-    document.querySelector('.face.back.six').classList.add(colors[1]);
-    document.querySelector('.face.right.three').classList.add(colors[2]);
-    document.querySelector('.face.left.four').classList.add(colors[3]);
-    document.querySelector('.face.top.five').classList.add(colors[4]);
-    document.querySelector('.face.bottom.two').classList.add(colors[5]);
+        const calendar = document.getElementById('calendar');
+        const now = new Date();
+        const startOfYear = new Date(2026, 0, 1);
+        const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
 
-    function displayRolls() {
-	  const rollsList = document.getElementById('rolls-list');
-	  let html = '';
-	  allRolls.slice(-6).reverse().forEach(roll => {
-	    const seconds = Math.floor((Date.now() - roll.time) / 1000);
-	    const hours = Math.floor(seconds / 3600);
-	    const minutes = Math.floor((seconds % 3600) / 60);
-	    const secs = seconds % 60;
-	    
-	    let timeAgo = '';
-	    if (hours > 0) timeAgo += `${hours}h `;
-	    if (minutes > 0) timeAgo += `${minutes}m `;
-	    if (secs > 0 || timeAgo === '') timeAgo += `${secs}s`;
-	    timeAgo = timeAgo.trim();
-	    const userName = roll.user || 'Someone';
-	    html += `<div>${userName} rolled ${roll.value} SHREK${roll.value === 1 ? '' : 'S'} (${timeAgo} ago)</div>`;
-	  });
-	  rollsList.innerHTML = html;
-	}
-
-    db.ref('rolls').limitToLast(10).on('value', (snapshot) => {
-      allRolls = [];
-      snapshot.forEach(child => {
-        allRolls.push(child.val());
-      });
-      displayRolls();
-	// Fade in the panel
-	const rollsPanel = document.getElementById('rolls-panel');
-	rollsPanel.classList.remove('fade-out');
-	rollsPanel.style.animation = 'fadeIn 0.3s ease';
-	
-	// Fade out after 3 seconds
-	clearTimeout(window.fadePanelTimeout);
-	window.fadePanelTimeout = setTimeout(() => {
-	  rollsPanel.classList.add('fade-out');
-	}, 3000);
-    });
-
-    function saveRoll(value) {
-      const roll = { 
-        value: value, 
-        time: Date.now(),
-        user: userId 
-      };
-      db.ref('rolls').push(roll);
-    }
-    
-    function randomRotation() {
-      const rotations = [
-        { x: 0, y: 0, value: 1 },    // front
-        { x: 0, y: 180, value: 6 },  // back
-        { x: 0, y: 90, value: 4 },   // right
-        { x: 0, y: -90, value: 3 },  // left
-        { x: -90, y: 0, value: 5 },  // top
-        { x: 90, y: 0, value: 2 }    // bottom
-      ];
-      return rotations[Math.floor(Math.random() * rotations.length)];
-    }
-    
-    // Helper to generate particles
-    function spawnParticles() {
-      for (let i = 0; i < 15; i++) {
-          const particle = document.createElement('div');
-          particle.className = 'particle';
-          const startX = Math.random() * 200;
-		  const startY = Math.random() * 200;
-          particle.style.left = startX + 'px';
-          particle.style.top = startY + 'px';
-          const drift = (Math.random() - 0.5) * 100;
-          particle.style.setProperty('--drift', `${drift}px`);
-          particle.style.animationDelay = `${Math.random() * 0.3}s`;
-          diceContainer.appendChild(particle);
-          setTimeout(() => particle.remove(), 2300);
+        function isUnlocked(day) {
+            return day <= dayOfYear;
         }
-    }
 
-    diceContainer.addEventListener("click", () => {
-        if (isRolling) return; // Stop if already spinning
-        isRolling = true;
+        function getTextColor(hexColor) {
+            const r = parseInt(hexColor.substr(1,2), 16);
+            const g = parseInt(hexColor.substr(3,2), 16);
+            const b = parseInt(hexColor.substr(5,2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 155 ? '#000000' : '#FFFFFF';
+        }
 
-        result.textContent = "";
+        function getFlippedState() {
+            const stored = localStorage.getItem('color-calendar-flipped');
+            return stored ? JSON.parse(stored) : {};
+        }
         
-        // 1. SOUND & PARTICLES
-        const someSound = new Audio('SOME.wav');
-        someSound.play().catch(e => console.log("Audio play failed"));
-        spawnParticles();
-        
-        // 2. SHAKE START
-        cube.classList.add("shaking");
-        diceContainer.classList.add("tossing");
-        
-        // 3. AFTER SHAKE (300ms) -> TUMBLE PHASE
-        setTimeout(() => {
-          cube.classList.remove("shaking");
+        function saveFlippedState(day, isFlipped) {
+            const state = getFlippedState();
+            state[day] = isFlipped;
+            localStorage.setItem('color-calendar-flipped', JSON.stringify(state));
+        }
 
-          // Add a random "Tumble" spin (between 360 and 720 degrees)
-          // This ensures visually chaotic movement before targeting
-          currentRotationX += Math.random() * 360 + 360;
-          currentRotationY += Math.random() * 360 + 360;
+        document.getElementById('resetButton').addEventListener('click', function() {
+            if (confirm('Reset all opened colors?')) {
+                localStorage.removeItem('color-calendar-flipped');
+                location.reload();
+            }
+        });
 
-          // Use 'linear' for the tumble so it looks like it's maintaining speed
-          cube.style.transition = "transform 0.4s linear";
-          cube.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
-
-          // 4. AFTER TUMBLE (500ms) -> LANDING PHASE
-          setTimeout(() => {
-            const { x, y, value } = randomRotation();
+        function initializeCalendar() {
+            const flippedState = getFlippedState();
             
-            // Calculate mathematical offset to land correctly
-            const xOffset = x - (currentRotationX % 360);
-            const yOffset = y - (currentRotationY % 360);
+            // Find the highest flipped day and set background
+            const flippedDays = Object.keys(flippedState).filter(day => flippedState[day]).map(Number);
+            if (flippedDays.length > 0) {
+                const latestFlippedDay = Math.max(...flippedDays);
+                let dayCounter = 0;
+                for (let weekIndex = 0; weekIndex < weeks.length; weekIndex++) {
+                    for (let dayIndex = 0; dayIndex < weeks[weekIndex].colors.length; dayIndex++) {
+                        dayCounter++;
+                        if (dayCounter === latestFlippedDay) {
+                            const latestColor = weeks[weekIndex].colors[dayIndex];
+                            document.body.style.backgroundColor = latestColor.hex;
+                            document.body.style.transition = 'none';
+                            setTimeout(() => {
+                                document.body.style.transition = 'background-color 1.5s ease';
+                            }, 50);
+                            break;
+                        }
+                    }
+                }
+            }
             
-            // Add 2 extra spins (720) + the offset for the landing
-            currentRotationX += 720 + xOffset;
-            currentRotationY += 720 + yOffset;
+            let dayCounter = 0;
+            
+            weeks.forEach((week, weekIndex) => {
+                const weekSection = document.createElement('div');
+                weekSection.className = 'week-section';
+                weekSection.id = 'week-' + (weekIndex + 1);
+                
+                const weekHeader = document.createElement('div');
+                weekHeader.className = 'week-header';
+                weekHeader.innerHTML = `
+                    <div class="week-theme">${week.theme}</div>
+                    <div class="week-description">${week.description}</div>
+                `;
+                
+                const weekGrid = document.createElement('div');
+                weekGrid.className = 'week-grid';
+                
+                week.colors.forEach((color, dayIndex) => {
+                    dayCounter++;
+                    const day = dayCounter;
+                    const unlocked = isUnlocked(day);
+                    const wasFlipped = flippedState[day] || false;
+                    
+                    const box = document.createElement('div');
+                    box.id = 'day-' + day;
+                    box.className = 'calendar-box' + (unlocked ? '' : ' locked') + (wasFlipped ? ' flipped' : '');
+                    
+                    const textColor = getTextColor(color.hex);
+                    const date = new Date(2026, 0, day);
+                    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    
+                    box.innerHTML = `
+                        <div class="box-inner">
+                            <div class="box-front">
+                                ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
+                                <div class="box-number">${day}</div>
+                                <div class="box-date">${dateStr}</div>
+                            </div>
+                            <div class="box-back" style="background-color: ${color.hex};">
+                                <div class="tron-border">
+                                    <svg width="100%" height="100%" viewBox="0 0 200 200" preserveAspectRatio="none">
+                                        <rect class="tron-path" x="5" y="5" width="190" height="190" rx="12" 
+                                          style="stroke: ${textColor}; color: ${textColor};" />
+                                    </svg>
+                                </div>
+                                <div class="box-back-content">
+                                    <div class="color-name" style="color: ${textColor}; font-size: clamp(0.9em, 3vw, 1.3em);">${color.name}</div>
+                                    <div class="color-hex" style="color: ${textColor}; font-size: clamp(0.75em, 2.5vw, 1em);">${color.hex}</div>
+                                    <div class="color-sentence" style="color: ${textColor}; font-size: clamp(0.65em, 2vw, 0.85em);">${color.sentence}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if (unlocked) {
+                        box.addEventListener('click', function(e) {
+                            this.classList.toggle('flipped');
+                            const isFlipped = this.classList.contains('flipped');
+                            
+                            saveFlippedState(day, isFlipped);
+                            
+                            if (isFlipped) {
+                                document.body.style.backgroundColor = color.hex;
+                                this.classList.add('revealing');
+                                setTimeout(() => {
+                                    this.classList.remove('revealing');
+                                }, 2000);
+                            } else {
+                                document.body.style.backgroundColor = '#1a1a2e';
+                            }
+                        });
+                    }
+                    
+                    weekGrid.appendChild(box);
+                });
+                
+                weekSection.appendChild(weekHeader);
+                weekSection.appendChild(weekGrid);
+                calendar.appendChild(weekSection);
+            });
+        }
 
-            // Use 'cubic-bezier' for a nice slow-down landing effect
-            cube.style.transition = "transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1)";
-            cube.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
-
-            // 5. FINISH
-            setTimeout(() => {
-              const bodySound = new Audio('BODY.wav');
-              bodySound.play().catch(e => console.log("Audio play failed"));
-              
-              result.textContent = `${value} SHREK${value === 1 ? '' : 'S'}!`;
-			  saveRoll(value);
-			  diceContainer.classList.remove("tossing");
-              isRolling = false;
-              
-            }, 850); // Wait for the 1s landing animation
-
-          }, 450); // Slight overlap with previous time (500ms) prevents stutter
-        }, 300); // Wait for Shake
-    });
-</script>
+        initializeCalendar();
+    </script>
 </body>
 </html>
