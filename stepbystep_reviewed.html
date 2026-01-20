@@ -439,7 +439,7 @@
         // --- 3. DATABASE LOGIC ---
         async function loadPosts() {
             try {
-                const response = await fetch('posts.json');
+                const response = await fetch('sbsrposts.json');
                 if (!response.ok) throw new Error('Network response was not ok');
                 posts = await response.json();
             } catch (error) {
@@ -452,7 +452,7 @@
         function exportDatabase() {
             const dataStr = JSON.stringify(posts, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            const exportFileDefaultName = 'posts.json';
+            const exportFileDefaultName = 'sbsrposts.json';
             
             const linkElement = document.createElement('a');
             linkElement.setAttribute('href', dataUri);
@@ -463,7 +463,7 @@
             hasUnsavedChanges = false;
             renderPosts(); // Re-render to remove the red warning text
             
-            alert("💾 DOWNLOADED!\n\nDon't forget to upload 'posts.json' to GitHub.");
+            alert("💾 DOWNLOADED!\n\nDon't forget to upload 'sbsrposts.json' to GitHub.");
         }
         
         // --- 4. RENDER & EDITOR LOGIC ---
