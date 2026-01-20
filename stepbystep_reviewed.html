@@ -395,333 +395,181 @@
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-<script>
-    // ==========================================
-    // 1. CONFIGURATION (FILL THIS IN!)
-    // ==========================================
-    const firebaseConfig = {
-        apiKey: "AIzaSyD7o1hNzFblyJzKtsQooJUYHvhsAvql84c",
-        authDomain: "stepbystep-reviewed.firebaseapp.com",
-        projectId: "stepbystep-reviewed",
-        storageBucket: "stepbystep-reviewed.firebasestorage.app",
-        messagingSenderId: "1041609546096",
-        appId: "1:1041609546096:web:2275972308309dba70d7b5"
-    };
 
-    const ADMIN_PASSWORD = 'bigjuicydoug'; // Your generic admin password
-    
-    // Initialize Firebase
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-
-    // ==========================================
-    // 2. STATE VARIABLES
-    // ==========================================
-    let isLoggedIn = false;
-    let posts = [];
-    let editingPostId = null;
-    let hasUnsavedChanges = false;
-    let activeListeners = {}; // Keeps track of comment connections
-
-    // ==========================================
-    // 3. STARTUP LOGIC
-    // ==========================================
-    function init() {
-        // Check for Admin Mode URL
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('admin') === 'true') {
-            document.getElementById('loginPanel').classList.remove('hidden');
-        }
-
-        // Prevent closing window if you have unsaved blog edits
-        window.addEventListener('beforeunload', function (e) {
-            if (hasUnsavedChanges) {
-                e.preventDefault();
-                e.returnValue = '';
+    <script>
+        // --- CONFIGURATION ---
+        const PASSWORD = 'bigjuicydoug'; 
+        
+        // --- STATE VARIABLES ---
+        let isLoggedIn = false;
+        let posts = [];
+        let editingPostId = null;
+        let hasUnsavedChanges = false; // Track if we need to warn user
+        
+        // --- 1. STARTUP SEQUENCE ---
+        function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === 'true') {
+                document.getElementById('loginPanel').classList.remove('hidden');
             }
-        });
-
-        loadPosts(); // Load the blog posts from JSON
-    }
-
-    // ==========================================
-    // 4. ADMIN LOGIN & POST MANAGEMENT
-    // ==========================================
-    function login() {
-        const inputPass = document.getElementById('password').value;
-        if (inputPass === ADMIN_PASSWORD) {
-            isLoggedIn = true;
-            document.getElementById('loginPanel').classList.add('hidden');
-            document.getElementById('editorPanel').classList.remove('hidden');
-            renderPosts();
-        } else {
-            alert('❌ WRONG PASSWORD! ❌');
+            loadPosts();
+            
+            // Safety: Warn user if they try to close/refresh with unsaved work
+            window.addEventListener('beforeunload', function (e) {
+                if (hasUnsavedChanges) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
         }
-    }
 
-    async function loadPosts() {
-        try {
-            const response = await fetch('posts.json');
-            if (response.ok) {
+        // --- 2. LOGIN LOGIC ---
+        function login() {
+            const inputPass = document.getElementById('password').value;
+            if (inputPass === PASSWORD) {
+                isLoggedIn = true;
+                document.getElementById('loginPanel').classList.add('hidden'); 
+                document.getElementById('editorPanel').classList.remove('hidden'); 
+                renderPosts(); 
+            } else {
+                alert('❌ WRONG PASSWORD! ❌');
+            }
+        }
+
+        // --- 3. DATABASE LOGIC ---
+        async function loadPosts() {
+            try {
+                const response = await fetch('sbsrposts.json');
+                if (!response.ok) throw new Error('Network response was not ok');
                 posts = await response.json();
-            } else {
-                posts = [];
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                posts = []; 
             }
-        } catch (error) {
-            console.error('Error loading posts.json:', error);
-            posts = [];
-        }
-        renderPosts();
-    }
-
-    function exportDatabase() {
-        const dataStr = JSON.stringify(posts, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        
-        const linkElement = document.createElement('a');
-        linkElement.href = dataUri;
-        linkElement.download = 'posts.json';
-        linkElement.click();
-        
-        hasUnsavedChanges = false;
-        renderPosts();
-        alert("💾 BLOG DATABASE DOWNLOADED!\n\nUpload 'posts.json' to GitHub to publish changes.");
-    }
-
-    // ==========================================
-    // 5. FIREBASE COMMENT LOGIC
-    // ==========================================
-    async function submitComment(postId) {
-        const nameInput = document.getElementById(`name-${postId}`);
-        const passInput = document.getElementById(`pass-${postId}`);
-        const msgInput = document.getElementById(`msg-${postId}`);
-        const statusDiv = document.getElementById(`status-${postId}`);
-
-        const username = nameInput.value.trim().toLowerCase(); // Normalize username
-        const displayName = nameInput.value.trim();
-        const password = passInput.value.trim();
-        const content = msgInput.value.trim();
-
-        if (!username || !content) {
-            alert("Name and Message are required!");
-            return;
-        }
-
-        statusDiv.innerText = "⏳ Saving...";
-        statusDiv.style.color = "#000";
-
-        try {
-            // A. TRIPCODE CHECK
-            // Check if this username is already claimed
-            const userRef = db.collection('users').doc(username);
-            const userDoc = await userRef.get();
-
-            if (userDoc.exists) {
-                // Name exists. Check if password matches.
-                const userData = userDoc.data();
-                if (userData.password && userData.password !== password) {
-                    statusDiv.innerText = "⛔ Name taken! Enter password to verify.";
-                    statusDiv.style.color = "red";
-                    return;
-                }
-            } else {
-                // Name is new. If password provided, CLAIM IT.
-                if (password) {
-                    await userRef.set({
-                        display_name: displayName,
-                        password: password,
-                        created_at: new Date()
-                    });
-                }
-            }
-
-            // B. SAVE COMMENT
-            await db.collection('comments').add({
-                postId: postId,
-                username: displayName,
-                content: content,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            // Reset Form
-            msgInput.value = "";
-            statusDiv.innerText = "✅ Posted!";
-            statusDiv.style.color = "green";
-            setTimeout(() => { statusDiv.innerText = ""; }, 3000);
-
-        } catch (error) {
-            console.error(error);
-            statusDiv.innerText = "❌ Error connecting to server.";
-            statusDiv.style.color = "red";
-        }
-    }
-
-    function loadComments(postId) {
-        // If we are already listening to this post, don't attach another listener
-        if (activeListeners[postId]) return;
-
-        const listDiv = document.getElementById(`list-${postId}`);
-        
-        // Connect to Firebase and listen for changes
-        activeListeners[postId] = db.collection('comments')
-            .where('postId', '==', postId)
-            .orderBy('timestamp', 'desc')
-            .limit(50)
-            .onSnapshot((snapshot) => {
-                let html = '';
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    // Basic HTML escape to prevent script injection in comments
-                    const safeName = data.username.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                    const safeContent = data.content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                    
-                    html += `
-                        <div style="background: #e0e0e0; border: 2px solid #fff; border-right: 2px solid #666; border-bottom: 2px solid #666; padding: 8px; margin-bottom: 8px;">
-                            <div style="font-weight: bold; color: #000080; border-bottom: 1px dotted #999; padding-bottom: 4px; margin-bottom: 4px;">
-                                ${safeName}
-                            </div>
-                            <div style="color: #000; font-family: 'Times New Roman', serif;">
-                                ${safeContent}
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                if (html === '') {
-                    listDiv.innerHTML = '<div style="color: #666; font-style: italic;">No comments yet. Be the first!</div>';
-                } else {
-                    listDiv.innerHTML = html;
-                }
-            });
-    }
-
-    // ==========================================
-    // 6. RENDER LOGIC (COMBINED)
-    // ==========================================
-    function renderPosts() {
-        const container = document.getElementById('postsContainer');
-        container.innerHTML = '';
-
-        // Admin Controls (Top of list)
-        if (isLoggedIn) {
-            const statusColor = hasUnsavedChanges ? 'red' : 'black';
-            const statusText = hasUnsavedChanges ? '⚠️ UNSAVED CHANGES ⚠️' : 'Ready to download';
-            
-            container.innerHTML += `
-                <div style="background: #ccc; border: 4px ridge #fff; padding: 15px; margin-bottom: 30px; text-align: center; color: #000;">
-                    <h3 style="margin-bottom: 10px; color: ${statusColor};">${statusText}</h3>
-                    <button onclick="exportDatabase()" style="background: #00ff00; font-size: 16px; font-weight: bold; padding: 10px 20px; border: 3px outset #fff; cursor: pointer;">
-                        💾 DOWNLOAD posts.json
-                    </button>
-                    <p style="margin-top: 5px; font-size: 12px;">(Remember to upload to GitHub after downloading)</p>
-                </div>
-            `;
-        }
-
-        // Loop through posts
-        posts.forEach(post => {
-            const article = document.createElement('article');
-            article.className = 'post';
-
-            const actions = isLoggedIn ? `
-                <div class="post-actions">
-                    <button onclick="editPost('${post.id}')">✎ EDIT</button>
-                    <button class="delete" onclick="deletePost('${post.id}')">✗ DELETE</button>
-                </div>
-            ` : '';
-
-            // Combine Blog Content + Comment Section
-            article.innerHTML = `
-                ${actions}
-                <h2 class="post-title">${post.title}</h2>
-                <div class="post-meta">📺 Posted on ${post.date} by Big Juicy Doug 📺</div>
-                <div class="post-content">${marked.parse(post.content)}</div>
-
-                <div style="margin-top: 40px; background: #c0c0c0; border: 4px ridge #dfdfdf; padding: 10px; color: #000;">
-                    <h4 style="background: linear-gradient(to right, #000080, #1084d0); color: #fff; padding: 5px; margin: -10px -10px 10px -10px; font-family: 'Verdana', sans-serif;">
-                        ✍ GUESTBOOK
-                    </h4>
-                    
-                    <div style="display: flex; gap: 5px; margin-bottom: 5px;">
-                        <input type="text" id="name-${post.id}" placeholder="Name / Handle" style="flex: 1; padding: 5px;">
-                        <input type="password" id="pass-${post.id}" placeholder="Password (Optional)" style="flex: 1; padding: 5px;">
-                    </div>
-                    
-                    <textarea id="msg-${post.id}" placeholder="Sign the guestbook..." style="width: 100%; height: 60px; padding: 5px; margin-bottom: 5px; font-family: sans-serif;"></textarea>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <button onclick="submitComment('${post.id}')" style="font-weight: bold; cursor: pointer; padding: 5px 15px;">Sign Guestbook</button>
-                        <span id="status-${post.id}" style="font-weight: bold; font-size: 12px;"></span>
-                    </div>
-
-                    <div id="list-${post.id}" style="margin-top: 15px; max-height: 300px; overflow-y: auto;">
-                        </div>
-                </div>
-            `;
-            
-            container.appendChild(article);
-            
-            // Start listening for comments on this post immediately
-            loadComments(post.id);
-        });
-    }
-
-    // ==========================================
-    // 7. HELPER FUNCTIONS
-    // ==========================================
-    function savePost() {
-        const title = document.getElementById('postTitle').value;
-        const date = document.getElementById('postDate').value;
-        const content = document.getElementById('markdownInput').value;
-        
-        if (!title || !date || !content) { alert('Missing fields!'); return; }
-        
-        if (editingPostId) {
-            const post = posts.find(p => p.id === editingPostId);
-            post.title = title; post.date = date; post.content = content;
-        } else {
-            posts.unshift({ id: Date.now().toString(), title: title, date: date, content: content });
-        }
-        
-        hasUnsavedChanges = true;
-        cancelEdit();
-        renderPosts();
-    }
-
-    function editPost(id) {
-        const post = posts.find(p => p.id === id);
-        if (post) {
-            editingPostId = id;
-            document.getElementById('editorTitle').textContent = '✎ EDIT POST ✎';
-            document.getElementById('postTitle').value = post.title;
-            document.getElementById('postDate').value = post.date;
-            document.getElementById('markdownInput').value = post.content;
-            document.getElementById('editorPanel').scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-
-    function deletePost(id) {
-        if (confirm('Delete this post?')) {
-            posts = posts.filter(p => p.id !== id);
-            hasUnsavedChanges = true;
             renderPosts();
         }
-    }
-
-    function cancelEdit() {
-        editingPostId = null;
-        document.getElementById('editorTitle').textContent = '✎ CREATE NEW POST ✎';
-        document.getElementById('postTitle').value = '';
-        document.getElementById('postDate').value = '';
-        document.getElementById('markdownInput').value = '';
-    }
-
-    // Start the engine
-    init();
-</script>
+        
+        function exportDatabase() {
+            const dataStr = JSON.stringify(posts, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'sbsrposts.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            // Reset the "unsaved changes" warning
+            hasUnsavedChanges = false;
+            renderPosts(); // Re-render to remove the red warning text
+            
+            alert("💾 DOWNLOADED!\n\nDon't forget to upload 'sbsrposts.json' to GitHub.");
+        }
+        
+        // --- 4. RENDER & EDITOR LOGIC ---
+        function renderPosts() {
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = '';
+            
+            if (isLoggedIn) {
+                const dbControls = document.createElement('div');
+                dbControls.style.marginBottom = '20px';
+                dbControls.style.textAlign = 'center';
+                
+                // Visual indicator for unsaved changes
+                const statusColor = hasUnsavedChanges ? '#ff0000' : '#000';
+                const statusText = hasUnsavedChanges ? '⚠️ UNSAVED CHANGES IN MEMORY ⚠️' : 'Ready to download';
+                
+                dbControls.innerHTML = `
+                    <div style="margin-bottom: 10px; color: ${statusColor}; font-weight: bold;">${statusText}</div>
+                    <button onclick="exportDatabase()" style="background: #0f0; color: #000; border: 3px solid #000; padding: 10px; font-weight: bold; cursor: pointer; box-shadow: 4px 4px 0 rgba(0,0,0,0.5);">
+                        💾 DOWNLOAD UPDATED DATABASE 💾
+                    </button>
+                `;
+                container.appendChild(dbControls);
+            }
+            
+            posts.forEach(post => {
+                const article = document.createElement('article');
+                article.className = 'post';
+                
+                const actions = isLoggedIn ? `
+                    <div class="post-actions">
+                        <button onclick="editPost('${post.id}')">✎ EDIT</button>
+                        <button class="delete" onclick="deletePost('${post.id}')">✗ DELETE</button>
+                    </div>
+                ` : '';
+                
+                article.innerHTML = `
+                    ${actions}
+                    <h2 class="post-title">${post.title}</h2>
+                    <div class="post-meta">📺 Posted on ${post.date} by Big Juicy Doug 📺</div>
+                    <div class="post-content">${marked.parse(post.content)}</div>
+                `;
+                
+                container.appendChild(article);
+            });
+        }
+        
+        function savePost() {
+            const title = document.getElementById('postTitle').value;
+            const date = document.getElementById('postDate').value;
+            const content = document.getElementById('markdownInput').value;
+            
+            if (!title || !date || !content) {
+                alert('Please fill in all fields!');
+                return;
+            }
+            
+            if (editingPostId) {
+                const post = posts.find(p => p.id === editingPostId);
+                post.title = title;
+                post.date = date;
+                post.content = content;
+            } else {
+                const post = {
+                    id: Date.now().toString(),
+                    title: title,
+                    date: date,
+                    content: content
+                };
+                posts.unshift(post);
+            }
+            
+            hasUnsavedChanges = true; // Mark work as needing save
+            cancelEdit();
+            renderPosts();
+        }
+        
+        function editPost(id) {
+            const post = posts.find(p => p.id === id);
+            if (post) {
+                editingPostId = id;
+                document.getElementById('editorTitle').textContent = '✎ EDIT POST ✎';
+                document.getElementById('postTitle').value = post.title;
+                document.getElementById('postDate').value = post.date;
+                document.getElementById('markdownInput').value = post.content;
+                document.getElementById('editorPanel').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function deletePost(id) {
+            if (confirm('Are you sure you want to delete this post?')) {
+                posts = posts.filter(p => p.id !== id);
+                hasUnsavedChanges = true; // Mark work as needing save
+                renderPosts();
+            }
+        }
+        
+        function cancelEdit() {
+            editingPostId = null;
+            document.getElementById('editorTitle').textContent = '✎ CREATE NEW POST ✎';
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postDate').value = '';
+            document.getElementById('markdownInput').value = '';
+        }
+        
+        init();
+    </script>
 </body>
 </html>
