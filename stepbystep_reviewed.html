@@ -409,7 +409,7 @@
         // --- 1. STARTUP SEQUENCE ---
         function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('admin') === 'true') {
+            if (urlParams.get('juicy') === 'true') {
                 document.getElementById('loginPanel').classList.remove('hidden');
             }
             loadPosts();
