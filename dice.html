@@ -282,16 +282,7 @@
         transform: translateY(0) scale(1);
       }
     }
-	#rolls-panel {
-	  opacity: 1;
-	  transition: opacity 0.5s ease;
-	}
-	
-	#rolls-panel.fade-out {
-	  opacity: 0;
-	  pointer-events: none;
-	}
-	
+	  
 	@keyframes fadeIn {
 	  from { opacity: 0; }
 	  to { opacity: 1; }
@@ -514,22 +505,12 @@
 	}
 
     db.ref('rolls').limitToLast(10).on('value', (snapshot) => {
-      allRolls = [];
-      snapshot.forEach(child => {
-        allRolls.push(child.val());
-      });
-      displayRolls();
-	// Fade in the panel
-	const rollsPanel = document.getElementById('rolls-panel');
-	rollsPanel.classList.remove('fade-out');
-	rollsPanel.style.animation = 'fadeIn 0.3s ease';
-	
-	// Fade out after 3 seconds
-	clearTimeout(window.fadePanelTimeout);
-	window.fadePanelTimeout = setTimeout(() => {
-	  rollsPanel.classList.add('fade-out');
-	}, 3000);
-    });
+		  allRolls = [];
+		  snapshot.forEach(child => {
+		    allRolls.push(child.val());
+		  });
+		  displayRolls();
+		});
 
     function saveRoll(value) {
       const roll = { 
