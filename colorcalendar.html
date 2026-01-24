@@ -310,6 +310,7 @@
         <button class="button nav-button" id="prevMonth">← Previous Month</button>
         <div class="month-indicator" id="monthIndicator">January 2026</div>
         <button class="button nav-button" id="nextMonth">Next Month →</button>
+        <button class="button" id="flipAllButton">Flip All</button>
         <button class="button" id="resetButton">Reset All</button>
     </div>
 
@@ -403,6 +404,39 @@
             if (confirm('Reset all opened colors?')) {
                 localStorage.removeItem('color-calendar-flipped');
                 location.reload();
+            }
+        });
+
+        document.getElementById('flipAllButton').addEventListener('click', function() {
+            if (confirm('Flip all unlocked colors?')) {
+                const flippedState = getFlippedState();
+                let dayCounter = 0;
+                let lastColor = null;
+                
+                weeks.forEach((week, weekIndex) => {
+                    week.colors.forEach((color, dayIndex) => {
+                        dayCounter++;
+                        const day = dayCounter;
+                        const unlocked = isUnlocked(day);
+                        
+                        if (unlocked) {
+                            flippedState[day] = true;
+                            lastColor = color;
+                            
+                            const box = document.getElementById('day-' + day);
+                            if (box && !box.classList.contains('flipped')) {
+                                box.classList.add('flipped');
+                            }
+                        }
+                    });
+                });
+                
+                localStorage.setItem('color-calendar-flipped', JSON.stringify(flippedState));
+                
+                // Set background to the last unlocked color
+                if (lastColor) {
+                    document.body.style.backgroundColor = lastColor.hex;
+                }
             }
         });
 
