@@ -317,6 +317,11 @@
     <div class="calendar-container" id="calendar"></div>
 
     <script>
+        // Randomize background image on page load
+        const backgrounds = ['colors-rocks.jpg', 'takisbg.jpg', 'spiralbg.jpg'];
+        const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+        document.body.style.backgroundImage = `url('./${randomBg}')`;
+        
         const weeks = [
             {
                 theme: "Celebration",
