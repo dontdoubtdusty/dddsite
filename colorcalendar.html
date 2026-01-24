@@ -568,19 +568,25 @@
                     
                     if (unlocked) {
                         box.addEventListener('click', function(e) {
-                            this.classList.toggle('flipped');
-                            const isFlipped = this.classList.contains('flipped');
+                            const isCurrentlyFlipped = this.classList.contains('flipped');
                             
-                            saveFlippedState(day, isFlipped);
-                            
-                            if (isFlipped) {
+                            if (!isCurrentlyFlipped) {
+                                // First time flipping - flip and reveal
+                                this.classList.add('flipped');
+                                saveFlippedState(day, true);
+                                
                                 document.body.style.backgroundColor = color.hex;
                                 this.classList.add('revealing');
                                 setTimeout(() => {
                                     this.classList.remove('revealing');
                                 }, 2000);
                             } else {
-                                document.body.style.backgroundColor = '#1a1a2e';
+                                // Already flipped - just activate the color
+                                document.body.style.backgroundColor = color.hex;
+                                this.classList.add('revealing');
+                                setTimeout(() => {
+                                    this.classList.remove('revealing');
+                                }, 2000);
                             }
                         });
                     }
