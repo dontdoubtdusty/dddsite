@@ -294,6 +294,24 @@
         .week-section.visible {
             display: block;
         }
+        
+        .bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            transition: opacity 2s ease;
+            z-index: -1;
+        }
+        
+        body {
+            background-image: none !important;
+        }
 
         @media (max-width: 768px) {
             .week-grid {
@@ -303,6 +321,8 @@
     </style>
 </head>
 <body>
+    <div class="bg-layer" id="bg1"></div>
+    <div class="bg-layer" id="bg2" style="opacity: 0;"></div>
     <h1><img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"> 365 Days of Colors <img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"></h1>
     <p class="subtitle">A vibrant year of hues for 2026</p>
     
@@ -317,18 +337,32 @@
     <div class="calendar-container" id="calendar"></div>
 
     <script>
-        // Randomize background image on page load and cycle through them
+        // Smooth background cycling with crossfade
         const backgrounds = ['colors-rocks.jpg', 'takisbg.jpg', 'spiralbg.jpg', 'spearsbg.jpg'];
         let currentBgIndex = Math.floor(Math.random() * backgrounds.length);
+        let bg1 = document.getElementById('bg1');
+        let bg2 = document.getElementById('bg2');
+        let useFirstLayer = true;
         
         // Set initial random background
-        document.body.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
+        bg1.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
         
-        // Cycle through backgrounds every 10 seconds
+        // Cycle through backgrounds every 10 seconds with smooth crossfade
         setInterval(() => {
             currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
-            document.body.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
-        }, 7000);
+            
+            if (useFirstLayer) {
+                bg2.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
+                bg2.style.opacity = '1';
+                bg1.style.opacity = '0';
+            } else {
+                bg1.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
+                bg1.style.opacity = '1';
+                bg2.style.opacity = '0';
+            }
+            
+            useFirstLayer = !useFirstLayer;
+        }, 10000);
         
        const weeks = [
             {
