@@ -273,6 +273,27 @@
             font-style: italic;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
+        
+        .month-indicator {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffd700;
+            padding: 10px 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .week-section {
+            display: none;
+        }
+        
+        .week-section.visible {
+            display: block;
+        }
 
         @media (max-width: 768px) {
             .week-grid {
@@ -286,63 +307,80 @@
     <p class="subtitle">A vibrant year of hues for 2026</p>
     
     <div class="controls">
+        <button class="button nav-button" id="prevMonth">← Previous Month</button>
+        <div class="month-indicator" id="monthIndicator">January 2026</div>
+        <button class="button nav-button" id="nextMonth">Next Month →</button>
+        <button class="button" id="flipAllButton">Flip All</button>
         <button class="button" id="resetButton">Reset All</button>
     </div>
 
     <div class="calendar-container" id="calendar"></div>
 
     <script>
-        const weeks = [
+        // Randomize background image on page load and cycle through them
+        const backgrounds = ['colors-rocks.jpg', 'takisbg.jpg', 'spiralbg.jpg', 'spearsbg.jpg'];
+        let currentBgIndex = Math.floor(Math.random() * backgrounds.length);
+        
+        // Set initial random background
+        document.body.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
+        
+        // Cycle through backgrounds every 10 seconds
+        setInterval(() => {
+            currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
+            document.body.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
+        }, 7000);
+        
+       const weeks = [
             {
                 theme: "Celebration",
                 description: "Ring in the new year with sparkle and joy",
                 colors: [
-                    {name: "Champagne Sparkle", hex: "#F7E7CE", sentence: "The champagne sparkle of midnight toasts fills the air with golden promise."},
-                    {name: "Midnight Indigo", hex: "#191970", sentence: "A midnight indigo sky cradles the year's first stars."},
-                    {name: "Celebration Gold", hex: "#FFD700", sentence: "Celebration gold confetti rains down like precious dreams."},
-                    {name: "Party Pink", hex: "#FF69B4", sentence: "Party pink balloons drift toward endless possibilities."},
-                    {name: "Resolution Red", hex: "#DC143C", sentence: "Resolution red burns bright with determined energy."},
-                    {name: "Fresh Start White", hex: "#FFFAFA", sentence: "Fresh start white pages await our new stories."},
-                    {name: "Firework Silver", hex: "#C0C0C0", sentence: "Firework silver sparks illuminate the path ahead."}
+                    {name: "Champagne Sparkle", hex: "#F7E7CE", sentence: "Named after France's Champagne region, this bubbly hue has celebrated victories since the 1600s."},
+                    {name: "Midnight Indigo", hex: "#191970", sentence: "Indigo dye was once so valuable it was called 'blue gold' and sparked global trade routes."},
+                    {name: "Celebration Gold", hex: "#FFD700", sentence: "Gold symbolized triumph in ancient Greece where Olympic victors wore golden olive wreaths."},
+                    {name: "Party Pink", hex: "#FF69B4", sentence: "Hot pink was invented by designer Elsa Schiaparelli in 1931, shocking the fashion world."},
+                    {name: "Resolution Red", hex: "#DC143C", sentence: "Crimson dye required 70,000 kermes insects to produce just one pound of vivid color."},
+                    {name: "Fresh Start White", hex: "#FFFAFA", sentence: "Snow white isn't pure white but slightly warm—real snow reflects about 90% of sunlight."},
+                    {name: "Firework Silver", hex: "#C0C0C0", sentence: "Silver fireworks use titanium or aluminum burning at over 3,000 degrees Fahrenheit."}
                 ]
             },
             {
                 theme: "Winter Wonderland",
                 description: "Embrace the cozy magic of frost and warmth",
                 colors: [
-                    {name: "Frost Blue", hex: "#E0F2F7", sentence: "Frost blue crystals form delicate patterns on winter windows."},
-                    {name: "Icicle Clear", hex: "#D4F1F4", sentence: "Icicle clear droplets catch the morning light like diamonds."},
-                    {name: "Snow White", hex: "#FFFEF9", sentence: "Snow white blankets transform the world into quiet wonder."},
-                    {name: "Frozen Lake", hex: "#89CFF0", sentence: "Frozen lake surfaces reflect the pale winter sky perfectly."},
-                    {name: "Cozy Cocoa", hex: "#6F4E37", sentence: "Cozy cocoa steams in mugs held by mittened hands."},
-                    {name: "Fireplace Amber", hex: "#FF7E00", sentence: "Fireplace amber flames dance and crackle through long evenings."},
-                    {name: "Winter Plum", hex: "#8E4585", sentence: "Winter plum skies deepen as early darkness settles in."}
+                    {name: "Frost Blue", hex: "#E0F2F7", sentence: "Frost appears blue because ice crystals scatter short light wavelengths, just like the sky."},
+                    {name: "Icicle Clear", hex: "#D4F1F4", sentence: "Icicles grow from the bottom up as water freezes layer by layer, reaching 20 feet long."},
+                    {name: "Snow White", hex: "#FFFEF9", sentence: "The Inuit people have over 50 different words for snow, each describing unique qualities."},
+                    {name: "Frozen Lake", hex: "#89CFF0", sentence: "Lake ice appears blue because it absorbs red wavelengths while reflecting blue light."},
+                    {name: "Cozy Cocoa", hex: "#6F4E37", sentence: "Hot chocolate was originally a bitter Aztec drink reserved for royalty and warriors."},
+                    {name: "Fireplace Amber", hex: "#FF7E00", sentence: "Amber flames indicate a temperature around 2,000°F—perfect for a cozy winter fire."},
+                    {name: "Winter Plum", hex: "#8E4585", sentence: "Plum purple was Queen Elizabeth I's favorite and was legally forbidden to commoners."}
                 ]
             },
             {
                 theme: "Northern Lights",
                 description: "Dance with the ethereal colors of the aurora",
                 colors: [
-                    {name: "Aurora Green", hex: "#00FF7F", sentence: "Aurora green waves ripple across the arctic night sky."},
-                    {name: "Celestial Purple", hex: "#9370DB", sentence: "Celestial purple ribbons twist and turn in cosmic winds."},
-                    {name: "Electric Teal", hex: "#00CED1", sentence: "Electric teal currents pulse with otherworldly energy."},
-                    {name: "Mystical Magenta", hex: "#FF00FF", sentence: "Mystical magenta glows illuminate the frozen landscape below."},
-                    {name: "Arctic Blue", hex: "#4169E1", sentence: "Arctic blue depths swirl in the magnetosphere's embrace."},
-                    {name: "Starlight Silver", hex: "#E8E8E8", sentence: "Starlight silver streaks pierce through the dancing colors."},
-                    {name: "Cosmic Violet", hex: "#8B00FF", sentence: "Cosmic violet shadows deepen the night's enchantment."}
+                    {name: "Aurora Green", hex: "#00FF7F", sentence: "Green auroras form when solar particles collide with oxygen 60-150 miles above Earth."},
+                    {name: "Celestial Purple", hex: "#9370DB", sentence: "Purple auroras are rare and occur when solar particles hit nitrogen at very high altitudes."},
+                    {name: "Electric Teal", hex: "#00CED1", sentence: "Teal is named after a duck species with distinctive eye stripes in this exact cyan-green."},
+                    {name: "Mystical Magenta", hex: "#FF00FF", sentence: "Magenta doesn't exist in rainbows—it's invented by our brains mixing red and violet."},
+                    {name: "Arctic Blue", hex: "#4169E1", sentence: "Arctic blue skies result from ice crystals refracting light in Earth's coldest regions."},
+                    {name: "Starlight Silver", hex: "#E8E8E8", sentence: "Stars appear silver-white because they emit all wavelengths of visible light equally."},
+                    {name: "Cosmic Violet", hex: "#8B00FF", sentence: "Violet is the highest frequency visible light, just before invisible ultraviolet begins."}
                 ]
             },
             {
                 theme: "Morning Rituals",
                 description: "Savor the quiet beauty of dawn's awakening",
                 colors: [
-                    {name: "Dawn Blush", hex: "#FFB6C1", sentence: "Dawn blush spreads softly across the awakening horizon."},
-                    {name: "Morning Mist", hex: "#F5F5F5", sentence: "Morning mist hovers gently over sleeping valleys."},
-                    {name: "Coffee Bean", hex: "#3E2723", sentence: "Coffee bean richness grounds the start of a new day."},
-                    {name: "Sunrise Coral", hex: "#FF7F50", sentence: "Sunrise coral warmth melts away the night's chill."},
-                    {name: "Honey Gold", hex: "#DAA520", sentence: "Honey gold light drips sweetly through curtained windows."},
-                    {name: "Toast Tan", hex: "#D2B48C", sentence: "Toast tan comfort fills the kitchen with home."},
-                    {name: "Earl Grey", hex: "#8B8680", sentence: "Earl Grey steam rises in delicate, fragrant spirals."}
+                    {name: "Dawn Blush", hex: "#FFB6C1", sentence: "Pink sunrises happen when light scatters through moisture and particles in the atmosphere."},
+                    {name: "Morning Mist", hex: "#F5F5F5", sentence: "Morning fog forms when warm air cools to its dew point, typically just before sunrise."},
+                    {name: "Coffee Bean", hex: "#3E2723", sentence: "Coffee beans are actually seeds of bright red or purple cherries that grow on trees."},
+                    {name: "Sunrise Coral", hex: "#FF7F50", sentence: "Coral the color was named after coral animals, which get their hue from symbiotic algae."},
+                    {name: "Honey Gold", hex: "#DAA520", sentence: "Honey's color comes from nectar sources—clover makes light honey, buckwheat makes dark."},
+                    {name: "Toast Tan", hex: "#D2B48C", sentence: "Toast's brown color comes from the Maillard reaction, discovered by Louis Maillard in 1912."},
+                    {name: "Earl Grey", hex: "#8B8680", sentence: "Earl Grey tea is named after Charles Grey, British Prime Minister in the 1830s."}
                 ]
             }
         ];
@@ -382,6 +420,82 @@
             }
         });
 
+        document.getElementById('flipAllButton').addEventListener('click', function() {
+            if (confirm('Flip all unlocked colors?')) {
+                const flippedState = getFlippedState();
+                let dayCounter = 0;
+                let lastColor = null;
+                
+                weeks.forEach((week, weekIndex) => {
+                    week.colors.forEach((color, dayIndex) => {
+                        dayCounter++;
+                        const day = dayCounter;
+                        const unlocked = isUnlocked(day);
+                        
+                        if (unlocked) {
+                            flippedState[day] = true;
+                            lastColor = color;
+                            
+                            const box = document.getElementById('day-' + day);
+                            if (box && !box.classList.contains('flipped')) {
+                                box.classList.add('flipped');
+                            }
+                        }
+                    });
+                });
+                
+                localStorage.setItem('color-calendar-flipped', JSON.stringify(flippedState));
+                
+                // Set background to the last unlocked color
+                if (lastColor) {
+                    document.body.style.backgroundColor = lastColor.hex;
+                }
+            }
+        });
+
+        let currentMonth = 0; // 0-based index for months
+        const monthNames = ["January", "February", "March", "April", "May", "June", 
+                            "July", "August", "September", "October", "November", "December"];
+        
+        function showMonth(monthIndex) {
+            // Hide all weeks
+            document.querySelectorAll('.week-section').forEach(section => {
+                section.classList.remove('visible');
+            });
+            
+            // Show the 4 weeks for the selected month
+            const startWeek = monthIndex * 4;
+            const endWeek = Math.min(startWeek + 4, weeks.length);
+            
+            for (let i = startWeek; i < endWeek; i++) {
+                const weekSection = document.getElementById('week-' + (i + 1));
+                if (weekSection) {
+                    weekSection.classList.add('visible');
+                }
+            }
+            
+            // Update month indicator
+            document.getElementById('monthIndicator').textContent = monthNames[monthIndex] + " 2026";
+            
+            // Update button states
+            document.getElementById('prevMonth').disabled = monthIndex === 0;
+            document.getElementById('nextMonth').disabled = monthIndex >= Math.floor((weeks.length - 1) / 4);
+        }
+        
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            if (currentMonth > 0) {
+                currentMonth--;
+                showMonth(currentMonth);
+            }
+        });
+        
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            if (currentMonth < Math.floor((weeks.length - 1) / 4)) {
+                currentMonth++;
+                showMonth(currentMonth);
+            }
+        });
+        
         function initializeCalendar() {
             const flippedState = getFlippedState();
             
@@ -462,19 +576,25 @@
                     
                     if (unlocked) {
                         box.addEventListener('click', function(e) {
-                            this.classList.toggle('flipped');
-                            const isFlipped = this.classList.contains('flipped');
+                            const isCurrentlyFlipped = this.classList.contains('flipped');
                             
-                            saveFlippedState(day, isFlipped);
-                            
-                            if (isFlipped) {
+                            if (!isCurrentlyFlipped) {
+                                // First time flipping - flip and reveal
+                                this.classList.add('flipped');
+                                saveFlippedState(day, true);
+                                
                                 document.body.style.backgroundColor = color.hex;
                                 this.classList.add('revealing');
                                 setTimeout(() => {
                                     this.classList.remove('revealing');
                                 }, 2000);
                             } else {
-                                document.body.style.backgroundColor = '#1a1a2e';
+                                // Already flipped - just activate the color
+                                document.body.style.backgroundColor = color.hex;
+                                this.classList.add('revealing');
+                                setTimeout(() => {
+                                    this.classList.remove('revealing');
+                                }, 2000);
                             }
                         });
                     }
@@ -486,6 +606,9 @@
                 weekSection.appendChild(weekGrid);
                 calendar.appendChild(weekSection);
             });
+
+            // Show the first month by default (moved outside the if block)
+            showMonth(currentMonth);
         }
 
         initializeCalendar();
