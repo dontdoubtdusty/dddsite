@@ -471,8 +471,6 @@
                         }
                     }
                 }
-                // Show the first month by default
-                showMonth(currentMonth);
             }
             
             let dayCounter = 0;
@@ -555,6 +553,9 @@
                 weekSection.appendChild(weekGrid);
                 calendar.appendChild(weekSection);
             });
+
+            // Show the first month by default (moved outside the if block)
+            showMonth(currentMonth);
         }
 
         initializeCalendar();
