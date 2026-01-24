@@ -273,6 +273,27 @@
             font-style: italic;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
+        
+        .month-indicator {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffd700;
+            padding: 10px 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .week-section {
+            display: none;
+        }
+        
+        .week-section.visible {
+            display: block;
+        }
 
         @media (max-width: 768px) {
             .week-grid {
@@ -286,6 +307,9 @@
     <p class="subtitle">A vibrant year of hues for 2026</p>
     
     <div class="controls">
+        <button class="button nav-button" id="prevMonth">← Previous Month</button>
+        <div class="month-indicator" id="monthIndicator">January 2026</div>
+        <button class="button nav-button" id="nextMonth">Next Month →</button>
         <button class="button" id="resetButton">Reset All</button>
     </div>
 
@@ -382,6 +406,49 @@
             }
         });
 
+        let currentMonth = 0; // 0-based index for months
+        const monthNames = ["January", "February", "March", "April", "May", "June", 
+                            "July", "August", "September", "October", "November", "December"];
+        
+        function showMonth(monthIndex) {
+            // Hide all weeks
+            document.querySelectorAll('.week-section').forEach(section => {
+                section.classList.remove('visible');
+            });
+            
+            // Show the 4 weeks for the selected month
+            const startWeek = monthIndex * 4;
+            const endWeek = Math.min(startWeek + 4, weeks.length);
+            
+            for (let i = startWeek; i < endWeek; i++) {
+                const weekSection = document.getElementById('week-' + (i + 1));
+                if (weekSection) {
+                    weekSection.classList.add('visible');
+                }
+            }
+            
+            // Update month indicator
+            document.getElementById('monthIndicator').textContent = monthNames[monthIndex] + " 2026";
+            
+            // Update button states
+            document.getElementById('prevMonth').disabled = monthIndex === 0;
+            document.getElementById('nextMonth').disabled = monthIndex >= Math.floor((weeks.length - 1) / 4);
+        }
+        
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            if (currentMonth > 0) {
+                currentMonth--;
+                showMonth(currentMonth);
+            }
+        });
+        
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            if (currentMonth < Math.floor((weeks.length - 1) / 4)) {
+                currentMonth++;
+                showMonth(currentMonth);
+            }
+        });
+        
         function initializeCalendar() {
             const flippedState = getFlippedState();
             
@@ -404,6 +471,8 @@
                         }
                     }
                 }
+                // Show the first month by default
+                showMonth(currentMonth);
             }
             
             let dayCounter = 0;
