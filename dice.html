@@ -442,6 +442,36 @@
 	  
 	  return `${adjective}${character}${number}`;
 	}
+
+	function randomizeDropdowns() {
+	  const adjectiveSelect = document.getElementById('adjective-select');
+	  const characterSelect = document.getElementById('character-select');
+	  
+	  // Randomly select an adjective
+	  const randomAdjectiveIndex = Math.floor(Math.random() * adjectiveSelect.options.length);
+	  adjectiveSelect.selectedIndex = randomAdjectiveIndex;
+	  
+	  // Randomly select a character
+	  const randomCharacterIndex = Math.floor(Math.random() * characterSelect.options.length);
+	  characterSelect.selectedIndex = randomCharacterIndex;
+	}
+	
+	// Then update your DOMContentLoaded event listener to call it:
+	document.addEventListener('DOMContentLoaded', () => {
+	  // Randomize the dropdowns on page load
+	  randomizeDropdowns();
+	  
+	  // Then generate the username based on the random selections
+	  userId = generateUsername();
+	  
+	  document.getElementById('adjective-select').addEventListener('change', () => {
+	    userId = generateUsername();
+	  });
+	  
+	  document.getElementById('character-select').addEventListener('change', () => {
+	    userId = generateUsername();
+	  });
+	});
 	
 	// Generate initial username
 	let userId = generateUsername();
