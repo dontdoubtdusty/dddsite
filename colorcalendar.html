@@ -71,6 +71,8 @@
             margin-bottom: 20px;
             z-index: 2;
             position: relative;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .button {
@@ -323,6 +325,7 @@
         document.body.style.backgroundImage = `url('./${randomBg}')`;
         
        const weeks = [
+            // JANUARY - Week 1
             {
                 theme: "Celebration",
                 description: "Ring in the new year with sparkle and joy",
@@ -336,6 +339,7 @@
                     {name: "Firework Silver", hex: "#C0C0C0", sentence: "Silver fireworks use titanium or aluminum burning at over 3,000 degrees Fahrenheit."}
                 ]
             },
+            // JANUARY - Week 2
             {
                 theme: "Winter Wonderland",
                 description: "Embrace the cozy magic of frost and warmth",
@@ -349,6 +353,7 @@
                     {name: "Winter Plum", hex: "#8E4585", sentence: "Plum purple was Queen Elizabeth I's favorite and was legally forbidden to commoners."}
                 ]
             },
+            // JANUARY - Week 3
             {
                 theme: "Northern Lights",
                 description: "Dance with the ethereal colors of the aurora",
@@ -362,6 +367,7 @@
                     {name: "Cosmic Violet", hex: "#8B00FF", sentence: "Violet is the highest frequency visible light, just before invisible ultraviolet begins."}
                 ]
             },
+            // JANUARY - Week 4
             {
                 theme: "Morning Rituals",
                 description: "Savor the quiet beauty of dawn's awakening",
@@ -373,6 +379,72 @@
                     {name: "Honey Gold", hex: "#DAA520", sentence: "Honey's color comes from nectar sources—clover makes light honey, buckwheat makes dark."},
                     {name: "Toast Tan", hex: "#D2B48C", sentence: "Toast's brown color comes from the Maillard reaction, discovered by Louis Maillard in 1912."},
                     {name: "Earl Grey", hex: "#8B8680", sentence: "Earl Grey tea is named after Charles Grey, British Prime Minister in the 1830s."}
+                ]
+            },
+            // JANUARY - Week 5 (partial - days 29-31)
+            {
+                theme: "Winter's End",
+                description: "Transition from frost to the promise of spring",
+                colors: [
+                    {name: "Twilight Lavender", hex: "#E6E6FA", sentence: "Lavender fields in Provence inspired countless artists including Vincent van Gogh."},
+                    {name: "Ice Storm Grey", hex: "#708090", sentence: "Slate grey gets its name from metamorphic rock that perfectly splits into thin layers."},
+                    {name: "Anticipation Aqua", hex: "#7FFFD4", sentence: "Aquamarine was believed by sailors to protect them from storms at sea."}
+                ]
+            },
+            // FEBRUARY - Week 1
+            {
+                theme: "Love & Romance",
+                description: "Celebrate affection in all its passionate hues",
+                colors: [
+                    {name: "Valentine Red", hex: "#E63946", sentence: "Red roses became symbols of love in Victorian England's coded flower language."},
+                    {name: "Sweetheart Pink", hex: "#FFB3BA", sentence: "Pink became associated with romance after Madame de Pompadour commissioned rose-themed porcelain."},
+                    {name: "Cupid's Blush", hex: "#FFAEC9", sentence: "The color of blushing cheeks results from blood vessels dilating when we feel attraction."},
+                    {name: "Romance Ruby", hex: "#9B111E", sentence: "Rubies were once believed to contain an inextinguishable flame of eternal love."},
+                    {name: "Chocolate Truffle", hex: "#3F2021", sentence: "Chocolate contains phenylethylamine, the same chemical your brain produces when falling in love."},
+                    {name: "Champagne Rose", hex: "#F4C2C2", sentence: "Pink champagne gets its color from grape skins left in contact with the juice longer."},
+                    {name: "Heart's Desire", hex: "#C41E3A", sentence: "The iconic heart shape may have originated from the silphium seed used in ancient contraception."}
+                ]
+            },
+            // FEBRUARY - Week 2
+            {
+                theme: "Gemstone Treasures",
+                description: "Discover the brilliant colors hidden in the earth",
+                colors: [
+                    {name: "Amethyst Purple", hex: "#9966CC", sentence: "Ancient Greeks believed amethyst prevented intoxication and made wine goblets from it."},
+                    {name: "Emerald Green", hex: "#50C878", sentence: "Cleopatra's legendary emerald mines supplied gems that adorned Egyptian royalty for centuries."},
+                    {name: "Sapphire Blue", hex: "#0F52BA", sentence: "Sapphires form deep underground over millions of years from crystallized aluminum oxide."},
+                    {name: "Topaz Gold", hex: "#FFCC00", sentence: "Brazilian topaz can fade in sunlight, prompting jewelers to store them in darkness."},
+                    {name: "Pearl Luster", hex: "#F0EAD6", sentence: "Pearls are the only gems produced by living creatures and can take years to form."},
+                    {name: "Garnet Burgundy", hex: "#800020", sentence: "Garnets were carried by travelers as protective talismans against accidents and nightmares."},
+                    {name: "Opal Fire", hex: "#A8C3BC", sentence: "Opals contain up to 20% water and display colors through light diffraction in silica spheres."}
+                ]
+            },
+            // FEBRUARY - Week 3
+            {
+                theme: "Carnival Colors",
+                description: "Revel in the vibrant spirit of celebration",
+                colors: [
+                    {name: "Mardi Gras Purple", hex: "#8B008B", sentence: "Purple represents justice in Mardi Gras tradition, chosen by the first Rex parade in 1872."},
+                    {name: "Carnival Green", hex: "#32CD32", sentence: "Green symbolizes faith in Mardi Gras and was likely inspired by spring's renewal."},
+                    {name: "Festival Gold", hex: "#FFD700", sentence: "Gold represents power in Mardi Gras celebrations, completing the iconic color trinity."},
+                    {name: "Confetti Multi", hex: "#FF6B9D", sentence: "Confetti originated in Italy where people threw sugared almonds during carnival celebrations."},
+                    {name: "Masquerade Teal", hex: "#008080", sentence: "Venetian carnival masks were originally white but evolved into elaborate colorful designs."},
+                    {name: "Parade Orange", hex: "#FF8C00", sentence: "Rio's carnival consumes enough orange fabric annually to circle the equator twice."},
+                    {name: "Celebration Coral", hex: "#FF7F50", sentence: "Coral became a festive color when Caribbean carnivals merged African and European traditions."}
+                ]
+            },
+            // FEBRUARY - Week 4
+            {
+                theme: "Forest Depths",
+                description: "Wander through nature's verdant sanctuary",
+                colors: [
+                    {name: "Moss Green", hex: "#8A9A5B", sentence: "Moss can absorb up to 20 times its dry weight in water, acting as a forest sponge."},
+                    {name: "Pine Needle", hex: "#01796F", sentence: "Pine trees keep their needles year-round because a waxy coating protects them from freezing."},
+                    {name: "Forest Floor", hex: "#5C4033", sentence: "A single teaspoon of forest soil contains more organisms than there are people on Earth."},
+                    {name: "Fern Frond", hex: "#4F7942", sentence: "Ferns are ancient plants that evolved before flowering plants, some 360 million years ago."},
+                    {name: "Bark Brown", hex: "#3D3635", sentence: "Tree bark contains tannins that were historically used to tan leather and preserve it."},
+                    {name: "Canopy Shadow", hex: "#2F4F4F", sentence: "Forest canopies can block 95% of sunlight, creating unique understory ecosystems below."},
+                    {name: "Wild Mushroom", hex: "#C8AD7F", sentence: "Mushrooms are more closely related to animals than plants in evolutionary terms."}
                 ]
             }
         ];
@@ -445,9 +517,11 @@
             }
         });
 
-        let currentMonth = 0; // 0-based index for months
-        const monthNames = ["January", "February", "March", "April", "May", "June", 
-                            "July", "August", "September", "October", "November", "December"];
+        let currentMonth = 0; // 0 = January, 1 = February
+        const monthData = [
+            { name: "January", startWeek: 0, endWeek: 5 },   // Weeks 0-4 (indices)
+            { name: "February", startWeek: 5, endWeek: 9 }   // Weeks 5-8 (indices)
+        ];
         
         function showMonth(monthIndex) {
             // Hide all weeks
@@ -455,23 +529,21 @@
                 section.classList.remove('visible');
             });
             
-            // Show the 4 weeks for the selected month
-            const startWeek = monthIndex * 4;
-            const endWeek = Math.min(startWeek + 4, weeks.length);
-            
-            for (let i = startWeek; i < endWeek; i++) {
-                const weekSection = document.getElementById('week-' + (i + 1));
+            // Show weeks for the selected month
+            const month = monthData[monthIndex];
+            for (let i = month.startWeek; i < month.endWeek; i++) {
+                const weekSection = document.getElementById('week-' + i);
                 if (weekSection) {
                     weekSection.classList.add('visible');
                 }
             }
             
             // Update month indicator
-            document.getElementById('monthIndicator').textContent = monthNames[monthIndex] + " 2026";
+            document.getElementById('monthIndicator').textContent = month.name + " 2026";
             
             // Update button states
             document.getElementById('prevMonth').disabled = monthIndex === 0;
-            document.getElementById('nextMonth').disabled = monthIndex >= Math.floor((weeks.length - 1) / 4);
+            document.getElementById('nextMonth').disabled = monthIndex >= monthData.length - 1;
         }
         
         document.getElementById('prevMonth').addEventListener('click', function() {
@@ -482,7 +554,7 @@
         });
         
         document.getElementById('nextMonth').addEventListener('click', function() {
-            if (currentMonth < Math.floor((weeks.length - 1) / 4)) {
+            if (currentMonth < monthData.length - 1) {
                 currentMonth++;
                 showMonth(currentMonth);
             }
@@ -517,7 +589,7 @@
             weeks.forEach((week, weekIndex) => {
                 const weekSection = document.createElement('div');
                 weekSection.className = 'week-section';
-                weekSection.id = 'week-' + (weekIndex + 1);
+                weekSection.id = 'week-' + weekIndex;
                 
                 const weekHeader = document.createElement('div');
                 weekHeader.className = 'week-header';
@@ -599,7 +671,7 @@
                 calendar.appendChild(weekSection);
             });
 
-            // Show the first month by default (moved outside the if block)
+            // Show the first month by default
             showMonth(currentMonth);
         }
 
