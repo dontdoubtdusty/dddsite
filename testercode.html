@@ -1,649 +1,681 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- SEO Meta Tags -->
-    <title>Big Juicy Doug's Step By Step Reviewed</title>
-    <meta name="description" content="Reviews of the 90s sitcom Step By Step. Deep dives into the Miller-Boyett universe, TGIF nostalgia, and why this show ended an empire.">
-    <meta name="keywords" content="Step By Step, 90s sitcom, TGIF, Patrick Duffy, Suzanne Somers, Miller-Boyett, sitcom reviews, 90s nostalgia, ABC TGIF, Full House, Family Matters">
-    <meta name="author" content="Big Juicy Doug">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://dontdoubtdusty.com/">
-    <meta property="og:title" content="Big Juicy Doug's Step By Step Reviewed">
-    <meta property="og:description" content="Reviews of the 90s sitcom Step By Step. Deep dives into the Miller-Boyett universe, TGIF nostalgia, and why this show ended an empire.">
-    <meta property="og:image" content="https://dontdoubtdusty.com/sbsbg.jpg">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://dontdoubtdusty.com/">
-    <meta property="twitter:title" content="Big Juicy Doug's Step By Step Reviewed">
-    <meta property="twitter:description" content="Reviews of the 90s sitcom Step By Step. Deep dives into the Miller-Boyett universe and TGIF nostalgia.">
-    <meta property="twitter:image" content="https://dontdoubtdusty.com/sbsbg.jpg">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://dontdoubtdusty.com/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step By Step Reviewed by Big Juicy Doug</title>
+    <title>365 Days of New Year's Colors</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Comic Sans MS', 'Trebuchet MS', Arial, sans-serif;
-            background-image: url("sbsbg.jpg");
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-attachment: fixed;             
+            font-family: 'Georgia', serif;
+            background-color: #1a1a2e;
+            background-image: url('./colors-rocks.jpg');
             background-size: cover;
-            background-color: #000;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-blend-mode: multiply;
+            transition: background-color 1.5s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
             color: #fff;
-            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 25%, #fbb03b 50%, #ed1c24 75%, #c1272d 100%);
-            border: 8px ridge #666;
-            box-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+        h1 {
+            font-size: 2.8em;
+            margin: 20px 0 10px;
+            text-align: center;
+            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease infinite;
+            z-index: 2;
+            position: relative;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            text-align: center;
+            font-style: italic;
+            z-index: 2;
+            position: relative;
+            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            z-index: 2;
+            position: relative;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .button {
+            background: rgba(42, 42, 62, 0.7);
+            color: #ffd700;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            padding: 10px 20px;
+            font-size: 0.95em;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            transition: all 0.3s ease;
         }
         
-        header {
-            background: linear-gradient(to bottom, #4169e1, #1e3a8a);
+        .button:hover {
+            background: rgba(42, 42, 62, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .calendar-container {
+            max-width: 1400px;
+            width: 100%;
             padding: 20px;
-            border-bottom: 5px solid #ffd700;
+            z-index: 2;
+            position: relative;
+        }
+
+        .week-section {
+            margin-bottom: 40px;
+        }
+
+        .week-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .week-theme {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #E8E8E8;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .week-description {
+            font-size: 1.1em;
+            color: #B8B8B8;
+            font-style: italic;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .calendar-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .calendar-box.locked {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 1.1em;
+            z-index: 10;
+        }
+
+        .box-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .calendar-box.flipped .box-inner {
+            transform: rotateY(180deg);
+        }
+
+        .box-front, .box-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .box-front {
+            background: linear-gradient(135deg, rgba(30,30,50,0.9) 0%, rgba(50,30,70,0.9) 100%);
+            border: 3px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+        }
+
+        .box-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            margin-bottom: 5px;
+        }
+
+        .box-date {
+            font-size: 0.75em;
+            color: #ff69b4;
+        }
+
+        .box-back {
+            transform: rotateY(180deg);
             text-align: center;
             position: relative;
-            overflow: hidden;
+            padding: 20px;
+            border-radius: 12px;
         }
-        
-        header::before {
-            content: '';
+
+        .box-back-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .tron-border {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(255,255,255,0.05) 10px,
-                rgba(255,255,255,0.05) 20px
-            );
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            border-radius: 12px;
         }
-        
-        header h1 {
-            color: #ffd700;
-            font-size: 42px;
-            text-shadow: 3px 3px 0 #ff1493, 5px 5px 0 #00ffff, 7px 7px 10px #000;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
-            position: relative;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        
-        header p {
-            color: #00ffff;
-            font-style: italic;
-            font-size: 18px;
-            text-shadow: 2px 2px 4px #000;
-            position: relative;
-        }
-        
-        nav {
-            background: linear-gradient(to right, #ff1493, #ffd700, #00ffff, #32cd32);
-            padding: 12px 20px;
-            border-bottom: 3px solid #000;
-            text-align: center;
-        }
-        
-        nav a {
-            color: #000;
-            text-decoration: none;
-            margin: 0 15px;
-            font-size: 16px;
-            font-weight: bold;
-            text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-            padding: 5px 10px;
-            border-radius: 3px;
-            background: rgba(255,255,255,0.3);
-        }
-        
-        nav a:hover {
-            background: rgba(255,255,255,0.6);
-            text-decoration: underline;
-        }
-        
-        main {
-            padding: 30px;
-            background: #fff;
-            color: #000;
-        }
-        
-        .login-panel {
-            background: linear-gradient(135deg, #ff1493 0%, #4169e1 100%);
-            padding: 30px;
-            margin-bottom: 30px;
-            border: 4px solid #000;
-            box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
-            text-align: center;
-        }
-        
-        .login-panel h3 {
-            color: #ffd700;
-            font-size: 24px;
-            text-shadow: 2px 2px 4px #000;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-        
-        .login-panel input {
-            width: 300px;
-            padding: 10px;
-            margin: 10px 0;
-            border: 3px solid #000;
-            font-size: 16px;
-            font-family: Arial, sans-serif;
-        }
-        
-        .login-panel button {
-            background: linear-gradient(to bottom, #ffd700, #ff6b35);
-            color: #000;
-            border: 3px solid #000;
-            padding: 12px 30px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
-            font-family: 'Comic Sans MS', Arial, sans-serif;
-            margin: 10px 5px;
-        }
-        
-        .login-panel button:hover {
-            background: linear-gradient(to bottom, #ff6b35, #ffd700);
-        }
-        
-        .post {
-            margin-bottom: 40px;
-            background: #fff;
-            padding: 20px;
-            border: 4px solid #000;
-            box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
-            position: relative;
-        }
-        
-        .post-title {
-            color: #ff1493;
-            font-size: 32px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 0 #ffd700;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        
-        .post-meta {
-            color: #666;
-            font-size: 13px;
-            margin-bottom: 20px;
-            font-family: Arial, sans-serif;
-            padding: 8px;
-            background: linear-gradient(to right, #ffd700, #ff6b35);
-            border-left: 4px solid #ff1493;
-        }
-        
-        .post-actions {
+
+        .tron-border svg {
             position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-        
-        .post-actions button {
-            background: linear-gradient(to bottom, #00ffff, #4169e1);
-            color: #000;
-            border: 3px solid #000;
-            padding: 8px 15px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
-            font-family: 'Comic Sans MS', Arial, sans-serif;
-            margin-left: 5px;
-        }
-        
-        .post-actions button:hover {
-            background: linear-gradient(to bottom, #4169e1, #00ffff);
-        }
-        
-        .post-actions button.delete {
-            background: linear-gradient(to bottom, #ff1493, #c1272d);
-            color: #fff;
-        }
-        
-        .post-content {
-            font-size: 15px;
-            font-family: 'Trebuchet MS', Arial, sans-serif;
-        }
-        
-        .post-content img {
-            max-width: 100%;
-            height: auto;
-            margin: 15px 0;
-            border: 4px solid #000;
-            box-shadow: 5px 5px 0 #ff1493;
-        }
-        
-        .post-content p {
-            margin-bottom: 15px;
-        }
-        
-        .post-content h2 {
-            color: #4169e1;
-            font-size: 26px;
-            margin: 30px 0 15px 0;
-            text-shadow: 2px 2px 0 #ffd700;
-            font-weight: bold;
-            border-bottom: 3px solid #ff1493;
-            padding-bottom: 5px;
-        }
-        
-        .post-content h3 {
-            color: #ff6b35;
-            font-size: 20px;
-            margin: 20px 0 10px 0;
-            font-weight: bold;
-        }
-        
-        .post-content blockquote {
-            border-left: 5px solid #00ffff;
-            padding-left: 15px;
-            margin: 15px 0;
-            background: #ffffcc;
-            padding: 10px 15px;
-            font-style: italic;
-        }
-        
-        .post-content strong {
-            font-weight: bold;
-            color: #ff1493;
-        }
-        
-        .post-content em {
-            font-style: italic;
-        }
-        
-        .editor-panel {
-            background: linear-gradient(135deg, #00ffff 0%, #ff1493 100%);
-            padding: 20px;
-            margin-bottom: 30px;
-            border: 4px solid #000;
-            box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
-        }
-        
-        .editor-panel h3 {
-            margin-bottom: 15px;
-            color: #ffd700;
-            font-size: 24px;
-            text-shadow: 2px 2px 4px #000;
-            font-weight: bold;
-        }
-        
-        .editor-panel input {
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 3px solid #000;
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            background: #fff;
+            height: 100%;
         }
-        
-        .editor-panel textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 3px solid #000;
+
+        .tron-path {
+            fill: none;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
+        }
+
+        .calendar-box.revealing .tron-path {
+            animation: draw-tron 2s ease-out forwards;
+        }
+
+        @keyframes draw-tron {
+            0% {
+                stroke-dashoffset: 800;
+                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
+            }
+            100% {
+                stroke-dashoffset: 0;
+                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
+            }
+        }
+
+        .color-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .color-hex {
+            font-size: 1em;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
-            min-height: 300px;
-            background: #fff;
+            margin-bottom: 12px;
+            opacity: 0.9;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .color-sentence {
+            font-size: 0.85em;
+            line-height: 1.4;
+            font-style: italic;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
         
-        .editor-panel button {
-            background: linear-gradient(to bottom, #ffd700, #ff6b35);
-            color: #000;
-            border: 3px solid #000;
-            padding: 12px 25px;
-            cursor: pointer;
-            font-size: 16px;
+        .month-indicator {
+            font-size: 1.5em;
             font-weight: bold;
-            margin-right: 10px;
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
-            font-family: 'Comic Sans MS', Arial, sans-serif;
-        }
-        
-        .editor-panel button:hover {
-            background: linear-gradient(to bottom, #ff6b35, #ffd700);
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
-        }
-        
-        .editor-panel button:active {
-            transform: translate(4px, 4px);
-            box-shadow: none;
-        }
-        
-        .help-text {
-            font-size: 13px;
-            color: #000;
-            margin-bottom: 10px;
-            background: rgba(255,255,255,0.8);
-            padding: 8px;
-            border: 2px solid #000;
-            font-weight: bold;
-        }
-        
-        footer {
-            background: linear-gradient(to right, #000, #4169e1, #000);
             color: #ffd700;
-            text-align: center;
-            padding: 20px;
-            font-size: 13px;
-            border-top: 5px solid #ff1493;
+            padding: 10px 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
         
-        .hidden {
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .week-section {
             display: none;
         }
         
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
+        .week-section.visible {
+            display: block;
         }
-        
-        .blink {
-            animation: blink 1s infinite;
-        }
-        .content-area {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .main-content {
-            flex: 1;
-        }
-        
-        .sidebar {
-            width: 250px;
-            flex-shrink: 0;
-        }
-        
-        .season-panel {
-            background: linear-gradient(135deg, #ffffcc 0%, #fff9e6 100%);
-            border: 4px solid #000;
-            box-shadow: 6px 6px 0 rgba(0,0,0,0.3);
-            padding: 15px;
-        }
-        
-        .season-panel h3 {
-            color: #ff1493;
-            font-size: 18px;
-            text-shadow: 2px 2px 0 #ffd700;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            border-bottom: 3px solid #4169e1;
-            padding-bottom: 5px;
-        }
-        
-        .season-panel ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .season-panel li {
-            padding: 5px 0;
-            font-size: 14px;
-            color: #333;
+
+        @media (max-width: 768px) {
+            .week-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>BIG JUICY DOUG'S<br>STEP BY STEP REVIEWED</h1>
-            <p>★ The Lamberts can't keep getting away with it ★</p>
-        </header>
-        
-        <nav>
-            <span style="font-size: 20px;">★</span>
-            <!-- Links will go here later -->
-            <span style="font-size: 20px;">★</span>
-        </nav>
-        
-        <main style="display: flex; gap: 20px; padding: 30px; background: #fff;">
-            <div style="flex: 1;">
-                <div id="loginPanel" class="login-panel hidden">
-                    <h3>🔐 ADMIN LOGIN 🔐</h3>
-                    <div>
-                        <input type="password" id="password" placeholder="Enter password" onkeypress="if(event.key === 'Enter') login()">
-                    </div>
-                    <button onclick="login()">★ LOGIN ★</button>
-                </div>
-                
-                <div id="editorPanel" class="editor-panel hidden">
-                    <h3 id="editorTitle">✎ CREATE NEW POST ✎</h3>
-                    <input type="text" id="postTitle" placeholder="Post Title">
-                    <input type="text" id="postDate" placeholder="Post Date (e.g., September 20, 2023)">
-                    <div class="help-text">
-                        📝 Use Markdown: **bold**, *italic*, ## Headers, ![alt](image-url) for images
-                    </div>
-                    <textarea id="markdownInput" placeholder="Paste your markdown content here..."></textarea>
-                    <button onclick="savePost()">★ SAVE POST ★</button>
-                    <button onclick="cancelEdit()" style="background: linear-gradient(to bottom, #999, #666); color: #fff;">✗ CANCEL</button>
-                </div>
-                
-                <div id="postsContainer"></div>
-            </div>
-            
-            <div style="width: 250px; flex-shrink: 0;">
-                <div style="background: linear-gradient(135deg, #ffffcc 0%, #fff9e6 100%); border: 4px solid #000; box-shadow: 6px 6px 0 rgba(0,0,0,0.3); padding: 15px;">
-                    <h3 style="color: #ff1493; font-size: 18px; text-shadow: 2px 2px 0 #ffd700; margin-bottom: 10px; text-transform: uppercase; border-bottom: 3px solid #4169e1; padding-bottom: 5px;">📺 Season 1</h3>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="padding: 5px 0; font-size: 14px; color: #333;">Episodes reviewed: <strong>0</strong></li>
-                    </ul>
-                </div>
-            </div>
-        </main>
-        
-        <footer>
-            &copy; 2003 Big Juicy Doug's 90s TV Webzine<br>
-            <span class="blink">★</span> Powered by nostalgia and regret <span class="blink">★</span>
-        </footer>
-    </div>
+    <h1><img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"> 365 Days of Colors <img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"></h1>
+    <p class="subtitle">A vibrant year of hues for 2026</p>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <div class="controls">
+        <button class="button nav-button" id="prevMonth">← Previous Month</button>
+        <div class="month-indicator" id="monthIndicator">January 2026</div>
+        <button class="button nav-button" id="nextMonth">Next Month →</button>
+        <button class="button" id="flipAllButton">Flip All</button>
+        <button class="button" id="resetButton">Reset All</button>
+    </div>
+
+    <div class="calendar-container" id="calendar"></div>
 
     <script>
-        // --- CONFIGURATION ---
-        const PASSWORD = 'bigjuicydoug'; 
+        // Randomize background image on page load
+        const backgrounds = ['colors-rocks.jpg', 'takisbg.jpg', 'spiralbg.jpg', 'spearsbg.jpg', 'zigzagbg.jpg'];
+        const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+        document.body.style.backgroundImage = `url('./${randomBg}')`;
         
-        // --- STATE VARIABLES ---
-        let isLoggedIn = false;
-        let posts = [];
-        let editingPostId = null;
-        let hasUnsavedChanges = false; // Track if we need to warn user
-        
-        // --- 1. STARTUP SEQUENCE ---
-        function init() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('juicy') === 'true') {
-                document.getElementById('loginPanel').classList.remove('hidden');
+       const weeks = [
+            // JANUARY - Week 1
+            {
+                theme: "Celebration",
+                description: "Ring in the new year with sparkle and joy",
+                colors: [
+                    {name: "Champagne Sparkle", hex: "#F7E7CE", sentence: "Named after France's Champagne region, this bubbly hue has celebrated victories since the 1600s."},
+                    {name: "Midnight Indigo", hex: "#191970", sentence: "Indigo dye was once so valuable it was called 'blue gold' and sparked global trade routes."},
+                    {name: "Celebration Gold", hex: "#FFD700", sentence: "Gold symbolized triumph in ancient Greece where Olympic victors wore golden olive wreaths."},
+                    {name: "Party Pink", hex: "#FF69B4", sentence: "Hot pink was invented by designer Elsa Schiaparelli in 1931, shocking the fashion world."},
+                    {name: "Resolution Red", hex: "#DC143C", sentence: "Crimson dye required 70,000 kermes insects to produce just one pound of vivid color."},
+                    {name: "Fresh Start White", hex: "#FFFAFA", sentence: "Snow white isn't pure white but slightly warm—real snow reflects about 90% of sunlight."},
+                    {name: "Firework Silver", hex: "#C0C0C0", sentence: "Silver fireworks use titanium or aluminum burning at over 3,000 degrees Fahrenheit."}
+                ]
+            },
+            // JANUARY - Week 2
+            {
+                theme: "Winter Wonderland",
+                description: "Embrace the cozy magic of frost and warmth",
+                colors: [
+                    {name: "Frost Blue", hex: "#E0F2F7", sentence: "Frost appears blue because ice crystals scatter short light wavelengths, just like the sky."},
+                    {name: "Icicle Clear", hex: "#D4F1F4", sentence: "Icicles grow from the bottom up as water freezes layer by layer, reaching 20 feet long."},
+                    {name: "Snow White", hex: "#FFFEF9", sentence: "The Inuit people have over 50 different words for snow, each describing unique qualities."},
+                    {name: "Frozen Lake", hex: "#89CFF0", sentence: "Lake ice appears blue because it absorbs red wavelengths while reflecting blue light."},
+                    {name: "Cozy Cocoa", hex: "#6F4E37", sentence: "Hot chocolate was originally a bitter Aztec drink reserved for royalty and warriors."},
+                    {name: "Fireplace Amber", hex: "#FF7E00", sentence: "Amber flames indicate a temperature around 2,000°F—perfect for a cozy winter fire."},
+                    {name: "Winter Plum", hex: "#8E4585", sentence: "Plum purple was Queen Elizabeth I's favorite and was legally forbidden to commoners."}
+                ]
+            },
+            // JANUARY - Week 3
+            {
+                theme: "Northern Lights",
+                description: "Dance with the ethereal colors of the aurora",
+                colors: [
+                    {name: "Aurora Green", hex: "#00FF7F", sentence: "Green auroras form when solar particles collide with oxygen 60-150 miles above Earth."},
+                    {name: "Celestial Purple", hex: "#9370DB", sentence: "Purple auroras are rare and occur when solar particles hit nitrogen at very high altitudes."},
+                    {name: "Electric Teal", hex: "#00CED1", sentence: "Teal is named after a duck species with distinctive eye stripes in this exact cyan-green."},
+                    {name: "Mystical Magenta", hex: "#FF00FF", sentence: "Magenta doesn't exist in rainbows—it's invented by our brains mixing red and violet."},
+                    {name: "Arctic Blue", hex: "#4169E1", sentence: "Arctic blue skies result from ice crystals refracting light in Earth's coldest regions."},
+                    {name: "Starlight Silver", hex: "#E8E8E8", sentence: "Stars appear silver-white because they emit all wavelengths of visible light equally."},
+                    {name: "Cosmic Violet", hex: "#8B00FF", sentence: "Violet is the highest frequency visible light, just before invisible ultraviolet begins."}
+                ]
+            },
+            // JANUARY - Week 4
+            {
+                theme: "Morning Rituals",
+                description: "Savor the quiet beauty of dawn's awakening",
+                colors: [
+                    {name: "Dawn Blush", hex: "#FFB6C1", sentence: "Pink sunrises happen when light scatters through moisture and particles in the atmosphere."},
+                    {name: "Morning Mist", hex: "#F5F5F5", sentence: "Morning fog forms when warm air cools to its dew point, typically just before sunrise."},
+                    {name: "Coffee Bean", hex: "#3E2723", sentence: "Coffee beans are actually seeds of bright red or purple cherries that grow on trees."},
+                    {name: "Sunrise Coral", hex: "#FF7F50", sentence: "Coral the color was named after coral animals, which get their hue from symbiotic algae."},
+                    {name: "Honey Gold", hex: "#DAA520", sentence: "Honey's color comes from nectar sources—clover makes light honey, buckwheat makes dark."},
+                    {name: "Toast Tan", hex: "#D2B48C", sentence: "Toast's brown color comes from the Maillard reaction, discovered by Louis Maillard in 1912."},
+                    {name: "Earl Grey", hex: "#8B8680", sentence: "Earl Grey tea is named after Charles Grey, British Prime Minister in the 1830s."}
+                ]
+            },
+            // JANUARY - Week 5 (partial - days 29-31)
+            {
+                theme: "Winter's End",
+                description: "Transition from frost to the promise of spring",
+                colors: [
+                    {name: "Twilight Lavender", hex: "#E6E6FA", sentence: "Lavender fields in Provence inspired countless artists including Vincent van Gogh."},
+                    {name: "Ice Storm Grey", hex: "#708090", sentence: "Slate grey gets its name from metamorphic rock that perfectly splits into thin layers."},
+                    {name: "Anticipation Aqua", hex: "#7FFFD4", sentence: "Aquamarine was believed by sailors to protect them from storms at sea."}
+                ]
+            },
+            // FEBRUARY - Week 1
+            {
+                theme: "Love & Romance",
+                description: "Celebrate affection in all its passionate hues",
+                colors: [
+                    {name: "Valentine Red", hex: "#E63946", sentence: "Red roses became symbols of love in Victorian England's coded flower language."},
+                    {name: "Sweetheart Pink", hex: "#FFB3BA", sentence: "Pink became associated with romance after Madame de Pompadour commissioned rose-themed porcelain."},
+                    {name: "Cupid's Blush", hex: "#FFAEC9", sentence: "The color of blushing cheeks results from blood vessels dilating when we feel attraction."},
+                    {name: "Romance Ruby", hex: "#9B111E", sentence: "Rubies were once believed to contain an inextinguishable flame of eternal love."},
+                    {name: "Chocolate Truffle", hex: "#3F2021", sentence: "Chocolate contains phenylethylamine, the same chemical your brain produces when falling in love."},
+                    {name: "Champagne Rose", hex: "#F4C2C2", sentence: "Pink champagne gets its color from grape skins left in contact with the juice longer."},
+                    {name: "Heart's Desire", hex: "#C41E3A", sentence: "The iconic heart shape may have originated from the silphium seed used in ancient contraception."}
+                ]
+            },
+            // FEBRUARY - Week 2
+            {
+                theme: "Gemstone Treasures",
+                description: "Discover the brilliant colors hidden in the earth",
+                colors: [
+                    {name: "Amethyst Purple", hex: "#9966CC", sentence: "Ancient Greeks believed amethyst prevented intoxication and made wine goblets from it."},
+                    {name: "Emerald Green", hex: "#50C878", sentence: "Cleopatra's legendary emerald mines supplied gems that adorned Egyptian royalty for centuries."},
+                    {name: "Sapphire Blue", hex: "#0F52BA", sentence: "Sapphires form deep underground over millions of years from crystallized aluminum oxide."},
+                    {name: "Topaz Gold", hex: "#FFCC00", sentence: "Brazilian topaz can fade in sunlight, prompting jewelers to store them in darkness."},
+                    {name: "Pearl Luster", hex: "#F0EAD6", sentence: "Pearls are the only gems produced by living creatures and can take years to form."},
+                    {name: "Garnet Burgundy", hex: "#800020", sentence: "Garnets were carried by travelers as protective talismans against accidents and nightmares."},
+                    {name: "Opal Fire", hex: "#A8C3BC", sentence: "Opals contain up to 20% water and display colors through light diffraction in silica spheres."}
+                ]
+            },
+            // FEBRUARY - Week 3
+            {
+                theme: "Carnival Colors",
+                description: "Revel in the vibrant spirit of celebration",
+                colors: [
+                    {name: "Mardi Gras Purple", hex: "#8B008B", sentence: "Purple represents justice in Mardi Gras tradition, chosen by the first Rex parade in 1872."},
+                    {name: "Carnival Green", hex: "#32CD32", sentence: "Green symbolizes faith in Mardi Gras and was likely inspired by spring's renewal."},
+                    {name: "Festival Gold", hex: "#FFD700", sentence: "Gold represents power in Mardi Gras celebrations, completing the iconic color trinity."},
+                    {name: "Confetti Multi", hex: "#FF6B9D", sentence: "Confetti originated in Italy where people threw sugared almonds during carnival celebrations."},
+                    {name: "Masquerade Teal", hex: "#008080", sentence: "Venetian carnival masks were originally white but evolved into elaborate colorful designs."},
+                    {name: "Parade Orange", hex: "#FF8C00", sentence: "Rio's carnival consumes enough orange fabric annually to circle the equator twice."},
+                    {name: "Celebration Coral", hex: "#FF7F50", sentence: "Coral became a festive color when Caribbean carnivals merged African and European traditions."}
+                ]
+            },
+            // FEBRUARY - Week 4
+            {
+                theme: "Forest Depths",
+                description: "Wander through nature's verdant sanctuary",
+                colors: [
+                    {name: "Moss Green", hex: "#8A9A5B", sentence: "Moss can absorb up to 20 times its dry weight in water, acting as a forest sponge."},
+                    {name: "Pine Needle", hex: "#01796F", sentence: "Pine trees keep their needles year-round because a waxy coating protects them from freezing."},
+                    {name: "Forest Floor", hex: "#5C4033", sentence: "A single teaspoon of forest soil contains more organisms than there are people on Earth."},
+                    {name: "Fern Frond", hex: "#4F7942", sentence: "Ferns are ancient plants that evolved before flowering plants, some 360 million years ago."},
+                    {name: "Bark Brown", hex: "#3D3635", sentence: "Tree bark contains tannins that were historically used to tan leather and preserve it."},
+                    {name: "Canopy Shadow", hex: "#2F4F4F", sentence: "Forest canopies can block 95% of sunlight, creating unique understory ecosystems below."},
+                    {name: "Wild Mushroom", hex: "#C8AD7F", sentence: "Mushrooms are more closely related to animals than plants in evolutionary terms."}
+                ]
             }
-            loadPosts();
-            
-            // Safety: Warn user if they try to close/refresh with unsaved work
-            window.addEventListener('beforeunload', function (e) {
-                if (hasUnsavedChanges) {
-                    e.preventDefault();
-                    e.returnValue = '';
+        ];
+
+        const calendar = document.getElementById('calendar');
+        const now = new Date();
+        const startOfYear = new Date(2026, 0, 1);
+        const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
+
+        function isUnlocked(day) {
+            return day <= dayOfYear;
+        }
+
+        function getTextColor(hexColor) {
+            const r = parseInt(hexColor.substr(1,2), 16);
+            const g = parseInt(hexColor.substr(3,2), 16);
+            const b = parseInt(hexColor.substr(5,2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 155 ? '#000000' : '#FFFFFF';
+        }
+
+        function getFlippedState() {
+            const stored = localStorage.getItem('color-calendar-flipped');
+            return stored ? JSON.parse(stored) : {};
+        }
+        
+        function saveFlippedState(day, isFlipped) {
+            const state = getFlippedState();
+            state[day] = isFlipped;
+            localStorage.setItem('color-calendar-flipped', JSON.stringify(state));
+        }
+
+        document.getElementById('resetButton').addEventListener('click', function() {
+            if (confirm('Reset all opened colors?')) {
+                localStorage.removeItem('color-calendar-flipped');
+                location.reload();
+            }
+        });
+
+        document.getElementById('flipAllButton').addEventListener('click', function() {
+            if (confirm('Flip all unlocked colors?')) {
+                const flippedState = getFlippedState();
+                let dayCounter = 0;
+                let lastColor = null;
+                
+                weeks.forEach((week, weekIndex) => {
+                    week.colors.forEach((color, dayIndex) => {
+                        dayCounter++;
+                        const day = dayCounter;
+                        const unlocked = isUnlocked(day);
+                        
+                        if (unlocked) {
+                            flippedState[day] = true;
+                            lastColor = color;
+                            
+                            const box = document.getElementById('day-' + day);
+                            if (box && !box.classList.contains('flipped')) {
+                                box.classList.add('flipped');
+                            }
+                        }
+                    });
+                });
+                
+                localStorage.setItem('color-calendar-flipped', JSON.stringify(flippedState));
+                
+                // Set background to the last unlocked color
+                if (lastColor) {
+                    document.body.style.backgroundColor = lastColor.hex;
                 }
+            }
+        });
+
+        let currentMonth = 0; // 0 = January, 1 = February
+        const monthData = [
+            { name: "January", startWeek: 0, endWeek: 5 },   // Weeks 0-4 (indices)
+            { name: "February", startWeek: 5, endWeek: 9 }   // Weeks 5-8 (indices)
+        ];
+        
+        function showMonth(monthIndex) {
+            // Hide all weeks
+            document.querySelectorAll('.week-section').forEach(section => {
+                section.classList.remove('visible');
             });
-        }
-
-        // --- 2. LOGIN LOGIC ---
-        function login() {
-            const inputPass = document.getElementById('password').value;
-            if (inputPass === PASSWORD) {
-                isLoggedIn = true;
-                document.getElementById('loginPanel').classList.add('hidden'); 
-                document.getElementById('editorPanel').classList.remove('hidden'); 
-                renderPosts(); 
-            } else {
-                alert('❌ WRONG PASSWORD! ❌');
+            
+            // Show weeks for the selected month
+            const month = monthData[monthIndex];
+            for (let i = month.startWeek; i < month.endWeek; i++) {
+                const weekSection = document.getElementById('week-' + i);
+                if (weekSection) {
+                    weekSection.classList.add('visible');
+                }
             }
-        }
-
-        // --- 3. DATABASE LOGIC ---
-        async function loadPosts() {
-            try {
-                const response = await fetch('sbsrposts.json');
-                if (!response.ok) throw new Error('Network response was not ok');
-                posts = await response.json();
-            } catch (error) {
-                console.error('Error loading posts:', error);
-                posts = []; 
-            }
-            renderPosts();
+            
+            // Update month indicator
+            document.getElementById('monthIndicator').textContent = month.name + " 2026";
+            
+            // Update button states
+            document.getElementById('prevMonth').disabled = monthIndex === 0;
+            document.getElementById('nextMonth').disabled = monthIndex >= monthData.length - 1;
         }
         
-        function exportDatabase() {
-            const dataStr = JSON.stringify(posts, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            const exportFileDefaultName = 'sbsrposts.json';
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            // Reset the "unsaved changes" warning
-            hasUnsavedChanges = false;
-            renderPosts(); // Re-render to remove the red warning text
-            
-            alert("💾 DOWNLOADED!\n\nDon't forget to upload 'sbsrposts.json' to GitHub.");
-        }
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            if (currentMonth > 0) {
+                currentMonth--;
+                showMonth(currentMonth);
+            }
+        });
         
-        // --- 4. RENDER & EDITOR LOGIC ---
-        function renderPosts() {
-            const container = document.getElementById('postsContainer');
-            container.innerHTML = '';
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            if (currentMonth < monthData.length - 1) {
+                currentMonth++;
+                showMonth(currentMonth);
+            }
+        });
+        
+        function initializeCalendar() {
+            const flippedState = getFlippedState();
             
-            if (isLoggedIn) {
-                const dbControls = document.createElement('div');
-                dbControls.style.marginBottom = '20px';
-                dbControls.style.textAlign = 'center';
-                
-                // Visual indicator for unsaved changes
-                const statusColor = hasUnsavedChanges ? '#ff0000' : '#000';
-                const statusText = hasUnsavedChanges ? '⚠️ UNSAVED CHANGES IN MEMORY ⚠️' : 'Ready to download';
-                
-                dbControls.innerHTML = `
-                    <div style="margin-bottom: 10px; color: ${statusColor}; font-weight: bold;">${statusText}</div>
-                    <button onclick="exportDatabase()" style="background: #0f0; color: #000; border: 3px solid #000; padding: 10px; font-weight: bold; cursor: pointer; box-shadow: 4px 4px 0 rgba(0,0,0,0.5);">
-                        💾 DOWNLOAD UPDATED DATABASE 💾
-                    </button>
-                `;
-                container.appendChild(dbControls);
+            // Find the highest flipped day and set background
+            const flippedDays = Object.keys(flippedState).filter(day => flippedState[day]).map(Number);
+            if (flippedDays.length > 0) {
+                const latestFlippedDay = Math.max(...flippedDays);
+                let dayCounter = 0;
+                for (let weekIndex = 0; weekIndex < weeks.length; weekIndex++) {
+                    for (let dayIndex = 0; dayIndex < weeks[weekIndex].colors.length; dayIndex++) {
+                        dayCounter++;
+                        if (dayCounter === latestFlippedDay) {
+                            const latestColor = weeks[weekIndex].colors[dayIndex];
+                            document.body.style.backgroundColor = latestColor.hex;
+                            document.body.style.transition = 'none';
+                            setTimeout(() => {
+                                document.body.style.transition = 'background-color 1.5s ease';
+                            }, 50);
+                            break;
+                        }
+                    }
+                }
             }
             
-            posts.forEach(post => {
-                const article = document.createElement('article');
-                article.className = 'post';
+            let dayCounter = 0;
+            
+            weeks.forEach((week, weekIndex) => {
+                const weekSection = document.createElement('div');
+                weekSection.className = 'week-section';
+                weekSection.id = 'week-' + weekIndex;
                 
-                const actions = isLoggedIn ? `
-                    <div class="post-actions">
-                        <button onclick="editPost('${post.id}')">✎ EDIT</button>
-                        <button class="delete" onclick="deletePost('${post.id}')">✗ DELETE</button>
-                    </div>
-                ` : '';
-                
-                article.innerHTML = `
-                    ${actions}
-                    <h2 class="post-title">${post.title}</h2>
-                    <div class="post-meta">📺 Posted on ${post.date} by Big Juicy Doug 📺</div>
-                    <div class="post-content">${marked.parse(post.content)}</div>
+                const weekHeader = document.createElement('div');
+                weekHeader.className = 'week-header';
+                weekHeader.innerHTML = `
+                    <div class="week-theme">${week.theme}</div>
+                    <div class="week-description">${week.description}</div>
                 `;
                 
-                container.appendChild(article);
+                const weekGrid = document.createElement('div');
+                weekGrid.className = 'week-grid';
+                
+                week.colors.forEach((color, dayIndex) => {
+                    dayCounter++;
+                    const day = dayCounter;
+                    const unlocked = isUnlocked(day);
+                    const wasFlipped = flippedState[day] || false;
+                    
+                    const box = document.createElement('div');
+                    box.id = 'day-' + day;
+                    box.className = 'calendar-box' + (unlocked ? '' : ' locked') + (wasFlipped ? ' flipped' : '');
+                    
+                    const textColor = getTextColor(color.hex);
+                    const date = new Date(2026, 0, day);
+                    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    
+                    box.innerHTML = `
+                        <div class="box-inner">
+                            <div class="box-front">
+                                ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
+                                <div class="box-number">${day}</div>
+                                <div class="box-date">${dateStr}</div>
+                            </div>
+                            <div class="box-back" style="background-color: ${color.hex};">
+                                <div class="tron-border">
+                                    <svg width="100%" height="100%" viewBox="0 0 200 200" preserveAspectRatio="none">
+                                        <rect class="tron-path" x="5" y="5" width="190" height="190" rx="12" 
+                                          style="stroke: ${textColor}; color: ${textColor};" />
+                                    </svg>
+                                </div>
+                                <div class="box-back-content">
+                                    <div class="color-name" style="color: ${textColor}; font-size: clamp(0.9em, 3vw, 1.3em);">${color.name}</div>
+                                    <div class="color-hex" style="color: ${textColor}; font-size: clamp(0.75em, 2.5vw, 1em);">${color.hex}</div>
+                                    <div class="color-sentence" style="color: ${textColor}; font-size: clamp(0.65em, 2vw, 0.85em);">${color.sentence}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if (unlocked) {
+                        box.addEventListener('click', function(e) {
+                            const isCurrentlyFlipped = this.classList.contains('flipped');
+                            
+                            if (!isCurrentlyFlipped) {
+                                // First time flipping - flip and reveal
+                                this.classList.add('flipped');
+                                saveFlippedState(day, true);
+                                
+                                document.body.style.backgroundColor = color.hex;
+                                this.classList.add('revealing');
+                                setTimeout(() => {
+                                    this.classList.remove('revealing');
+                                }, 2000);
+                            } else {
+                                // Already flipped - just activate the color
+                                document.body.style.backgroundColor = color.hex;
+                                this.classList.add('revealing');
+                                setTimeout(() => {
+                                    this.classList.remove('revealing');
+                                }, 2000);
+                            }
+                        });
+                    }
+                    
+                    weekGrid.appendChild(box);
+                });
+                
+                weekSection.appendChild(weekHeader);
+                weekSection.appendChild(weekGrid);
+                calendar.appendChild(weekSection);
             });
+
+            // Show the first month by default
+            showMonth(currentMonth);
         }
-        
-        function savePost() {
-            const title = document.getElementById('postTitle').value;
-            const date = document.getElementById('postDate').value;
-            const content = document.getElementById('markdownInput').value;
-            
-            if (!title || !date || !content) {
-                alert('Please fill in all fields!');
-                return;
-            }
-            
-            if (editingPostId) {
-                const post = posts.find(p => p.id === editingPostId);
-                post.title = title;
-                post.date = date;
-                post.content = content;
-            } else {
-                const post = {
-                    id: Date.now().toString(),
-                    title: title,
-                    date: date,
-                    content: content
-                };
-                posts.unshift(post);
-            }
-            
-            hasUnsavedChanges = true; // Mark work as needing save
-            cancelEdit();
-            renderPosts();
-        }
-        
-        function editPost(id) {
-            const post = posts.find(p => p.id === id);
-            if (post) {
-                editingPostId = id;
-                document.getElementById('editorTitle').textContent = '✎ EDIT POST ✎';
-                document.getElementById('postTitle').value = post.title;
-                document.getElementById('postDate').value = post.date;
-                document.getElementById('markdownInput').value = post.content;
-                document.getElementById('editorPanel').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-        
-        function deletePost(id) {
-            if (confirm('Are you sure you want to delete this post?')) {
-                posts = posts.filter(p => p.id !== id);
-                hasUnsavedChanges = true; // Mark work as needing save
-                renderPosts();
-            }
-        }
-        
-        function cancelEdit() {
-            editingPostId = null;
-            document.getElementById('editorTitle').textContent = '✎ CREATE NEW POST ✎';
-            document.getElementById('postTitle').value = '';
-            document.getElementById('postDate').value = '';
-            document.getElementById('markdownInput').value = '';
-        }
-        
-        init();
+
+        initializeCalendar();
     </script>
 </body>
 </html>
