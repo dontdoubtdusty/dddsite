@@ -320,9 +320,22 @@
 
     <script>
         // Randomize background image on page load
-        const backgrounds = ['colors-rocks.jpg', 'takisbg.jpg', 'spiralbg.jpg', 'spearsbg.jpg', 'zigzagbg.jpg'];
-        const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-        document.body.style.backgroundImage = `url('./${randomBg}')`;
+        // Smooth background transitions
+        const backgrounds = ['colors-rocks.jpg', 'takisbg.jpg', 'spiralbg.jpg', 'sunsetbg.jpg', 'zigzagbg.jpg'];
+        let currentBgIndex = Math.floor(Math.random() * backgrounds.length);
+        document.body.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
+
+        // Preload all backgrounds
+        backgrounds.forEach(bg => {
+            const img = new Image();
+            img.src = './' + bg;
+        });
+        
+        // Rotate backgrounds every 5 seconds
+        setInterval(() => {
+            currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
+            document.body.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
+        }, 5000);
         
        const weeks = [
             // JANUARY - Week 1
