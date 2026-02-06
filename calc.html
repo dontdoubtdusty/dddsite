@@ -540,7 +540,7 @@
             if (frequency === 'biweekly') discountPercent = 0.075;
 
             // Calculate final price
-            const roundedHours = Math.ceil(estimatedHours * 2) / 2;
+            const roundedHours = Math.ceil(estimatedHours * 4) / 4;
             const basePrice = roundedHours * hourlyRate;
             const discountAmount = (basePrice + addonsTotal) * discountPercent;
             const finalPrice = basePrice + addonsTotal - discountAmount;
