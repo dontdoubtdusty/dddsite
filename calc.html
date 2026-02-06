@@ -215,24 +215,36 @@
     .right-side .live-quote {
         width: 100%;
     }
+
+    .room-input-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .room-input-group input[type="number"] {
+        width: 80px;
+        margin-top: 5px;
+    }
+
     @media (max-width: 780px) {
-    .form-content {
-        flex-direction: column;
-        gap: 25px;
-        padding: 20px;
+        .form-content {
+            flex-direction: column;
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .right-side {
+            position: static;
+            width: 100%;
+        }
+
+        .right-side .live-quote {
+            width: 100%;
+        }
     }
 
-    .right-side {
-        position: static;   /* turns off sticky on mobile */
-        width: 100%;
-    }
-
-    .right-side .live-quote {
-        width: 100%;        /* full width on mobile */
-    }
-}
-
-</style>
+    </style>
 
 </head>
 <body>
@@ -246,43 +258,86 @@
             <div class="left-side">
                 <form id="quoteForm">
                     <div class="form-section">
-                        <h2>Basic Information</h2>
+                        <h2>Select Your Rooms</h2>
                         
                         <div class="form-group">
-                            <label for="squareFeet">Square Footage</label>
-                            <select id="squareFeet" required>
-                                <option value="1499">1 - 1499 Sq. ft</option>
-                                <option value="1999">1500 - 1999 Sq. ft</option>
-                                <option value="2499">2000 - 2499 Sq. ft</option>
-                                <option value="2999">2500 - 2999 Sq. ft</option>
-                                <option value="3499">3000 - 3499 Sq. ft</option>
-                                <option value="3999">3500 - 3999 Sq. ft</option>
-                                <option value="4499">4000 - 4499 Sq. ft</option>
-                            </select>
+                            <div class="room-input-group">
+                                <input type="checkbox" id="livingRoomCheck">
+                                <label for="livingRoomCheck">Living Room(s)</label>
+                                <input type="number" id="livingRoom" min="0" value="1" style="display:none;">
+                            </div>
                         </div>
-    
+
                         <div class="form-group">
-                            <label for="bedrooms">Bedrooms</label>
-                            <select id="bedrooms">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5+</option>
-                            </select>
+                            <div class="room-input-group">
+                                <input type="checkbox" id="diningRoomCheck">
+                                <label for="diningRoomCheck">Dining Room(s)</label>
+                                <input type="number" id="diningRoom" min="0" value="1" style="display:none;">
+                            </div>
                         </div>
-                        
-                        
+
                         <div class="form-group">
-                            <label for="bathrooms">Bathrooms</label>
-                            <select id="bathrooms">
-                                <option value="0.5">0.5</option>
-                                <option value="1">1</option>
-                                <option value="1.5">1.5</option>
-                                <option value="2">2</option>
-                                <option value="2.5">2.5</option>
-                                <option value="3">3+</option>
-                            </select>
+                            <div class="room-input-group">
+                                <input type="checkbox" id="kitchenCheck">
+                                <label for="kitchenCheck">Kitchen(s)</label>
+                                <input type="number" id="kitchen" min="0" value="1" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="bedroomCheck">
+                                <label for="bedroomCheck">Bedroom(s)</label>
+                                <input type="number" id="bedroom" min="0" value="1" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="fullBathCheck">
+                                <label for="fullBathCheck">Full Bathroom(s)</label>
+                                <input type="number" id="fullBath" min="0" value="1" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="halfBathCheck">
+                                <label for="halfBathCheck">Half Bathroom(s)</label>
+                                <input type="number" id="halfBath" min="0" value="1" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="officeCheck">
+                                <label for="officeCheck">Home Office/Study</label>
+                                <input type="number" id="office" min="0" value="1" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="laundryCheck">
+                                <label for="laundryCheck">Laundry Room(s)</label>
+                                <input type="number" id="laundry" min="0" value="1" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="hallwayCheck">
+                                <label for="hallwayCheck">Hallway(s)</label>
+                                <input type="number" id="hallway" min="0" value="1" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="bonusRoomCheck">
+                                <label for="bonusRoomCheck">Bonus/Rec Room(s)</label>
+                                <input type="number" id="bonusRoom" min="0" value="1" style="display:none;">
+                            </div>
                         </div>
 
                     </div>
@@ -304,11 +359,6 @@
                             <div class="checkbox-item">
                                 <input type="checkbox" id="deepClean">
                                 <label for="deepClean">First-time/deep clean</label>
-                            </div>
-    
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="moveInOut">
-                                <label for="moveInOut">Move-in/move-out</label>
                             </div>
                         </div>
                     </div>
@@ -334,7 +384,7 @@
 
                             <div class="addon-item">
                                 <input type="checkbox" id="eco-friendly">
-                                <label for="trash">Eco-Friendly (+$25)</label>
+                                <label for="eco-friendly">Eco-Friendly (+$25)</label>
                             </div>
                         </div>
     
@@ -358,35 +408,80 @@
                     </div>
                 </form>
             </div>
-<div class="right-side">
-            <div class="live-quote">
-                <div class="quote-label">Estimated Quote</div>
-                <div class="quote-amount" id="liveQuote">$0.00</div>
-                <div class="quote-details" id="quoteDetails">
-                    <div class="detail-item">
-                        <span>Estimated Hours:</span>
-                        <span id="totalHours">0</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Base Price:</span>
-                        <span id="basePrice">$0</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Add-ons:</span>
-                        <span id="addonsPrice">$0</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Frequency Discount:</span>
-                        <span id="discount">$0</span>
+
+            <div class="right-side">
+                <div class="live-quote">
+                    <div class="quote-label">Estimated Quote</div>
+                    <div class="quote-amount" id="liveQuote">$0.00</div>
+                    <div class="quote-details" id="quoteDetails">
+                        <div class="detail-item">
+                            <span>Estimated Hours:</span>
+                            <span id="totalHours">0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Base Price:</span>
+                            <span id="basePrice">$0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Add-ons:</span>
+                            <span id="addonsPrice">$0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Frequency Discount:</span>
+                            <span id="discount">$0</span>
+                        </div>
                     </div>
                 </div>
             </div>
-</div>
+        </div>
+    </div>
 
     <script>
+        // Room time estimates (in hours)
+        const roomTimes = {
+            livingRoom: 0.75,
+            diningRoom: 0.5,
+            kitchen: 1.0,
+            bedroom: 0.5,
+            fullBath: 1.0,
+            halfBath: 0.5,
+            office: 0.5,
+            laundry: 0.33,
+            hallway: 0.25,
+            bonusRoom: 0.75
+        };
+
+        const hourlyRate = 40;
+
+        // Handle checkbox toggles to show/hide number inputs
+        const roomCheckboxes = [
+            'livingRoomCheck', 'diningRoomCheck', 'kitchenCheck', 'bedroomCheck',
+            'fullBathCheck', 'halfBathCheck', 'officeCheck', 'laundryCheck',
+            'hallwayCheck', 'bonusRoomCheck'
+        ];
+
+        roomCheckboxes.forEach(checkboxId => {
+            const checkbox = document.getElementById(checkboxId);
+            const inputId = checkboxId.replace('Check', '');
+            const input = document.getElementById(inputId);
+
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    input.style.display = 'block';
+                    input.value = 1;
+                } else {
+                    input.style.display = 'none';
+                    input.value = 0;
+                }
+                calculateQuote();
+            });
+
+            input.addEventListener('input', calculateQuote);
+        });
+
+        // Add event listeners for all other inputs
         const form = document.getElementById('quoteForm');
         const inputs = form.querySelectorAll('input, select');
-
         inputs.forEach(input => {
             input.addEventListener('change', calculateQuote);
             input.addEventListener('input', calculateQuote);
@@ -395,31 +490,16 @@
         calculateQuote();
 
         function calculateQuote() {
-            const sqFt = parseFloat(document.getElementById('squareFeet').value) || 0;
-            const bathrooms = parseFloat(document.getElementById('bathrooms').value) || 0;
-            const bedrooms = parseFloat(document.getElementById('bedrooms').value) || 0;
-            const hourlyRate = 40;
-            let baseHours = 0;
+            // Calculate base hours from rooms
+            let estimatedHours = 0;
 
-            if (sqFt === 1499) baseHours = 1.5;     // 1 - 1499 sq ft
-            if (sqFt === 1999) baseHours = 2.0;     // 1500 - 1999 sq ft
-            if (sqFt === 2499) baseHours = 2.5;     // 2000 - 2499 sq ft
-            if (sqFt === 2999) baseHours = 3.0;     // 2500 - 2999 sq ft
-            if (sqFt === 3499) baseHours = 3.5;     // 3000 - 3499 sq ft
-            if (sqFt === 3999) baseHours = 4.0;     // 3500 - 3999 sq ft
-            if (sqFt === 4499) baseHours = 4.5;     // 4000 - 4499 sq ft
+            // Add time for each room type
+            Object.keys(roomTimes).forEach(roomType => {
+                const count = parseFloat(document.getElementById(roomType).value) || 0;
+                estimatedHours += count * roomTimes[roomType];
+            });
 
-            let bathroomHours = 0;
-            if (bathrooms === 0.5) bathroomHours = 0.5;   // Half bath
-            if (bathrooms === 1) bathroomHours = 0.75;     // 1 full bath
-            if (bathrooms === 1.5) bathroomHours = 1.25;   // 1 full + 1 half
-            if (bathrooms === 2) bathroomHours = 1.5;      // 2 full baths
-            if (bathrooms === 2.5) bathroomHours = 2.0;    // 2 full + 1 half
-            if (bathrooms >= 3) bathroomHours = 2.25;      // 3+ full baths
-
-            
-            let estimatedHours = baseHours + (bathroomHours) + (bedrooms * 0.5);
-
+            // Apply condition modifiers
             if (document.getElementById('pets').checked) {
                 estimatedHours += 0.5;
             }
@@ -432,47 +512,42 @@
                 estimatedHours *= 1.5;
             }
 
-            if (document.getElementById('moveInOut').checked) {
-                estimatedHours *= 2.0;
-            }
-
-
-
+            // Calculate add-ons
             let addonsTotal = 0;
-            if (document.getElementById('oven').checked){
+            if (document.getElementById('oven').checked) {
                 addonsTotal += 30;
                 estimatedHours += 0.5;
             }
-            if (document.getElementById('fridge').checked){
+            if (document.getElementById('fridge').checked) {
                 addonsTotal += 28;
                 estimatedHours += 0.5;
             }
-            if (document.getElementById('trash').checked){
+            if (document.getElementById('trash').checked) {
                 addonsTotal += 25;
                 estimatedHours += 0.5;
             }
-            if (document.getElementById('eco-friendly').checked) addonsTotal += 25;
+            if (document.getElementById('eco-friendly').checked) {
+                addonsTotal += 25;
+            }
             
             const windows = parseFloat(document.getElementById('windows').value) || 0;
             addonsTotal += windows * 6.5;
 
+            // Apply frequency discount
             const frequency = document.getElementById('frequency').value;
             let discountPercent = 0;
             if (frequency === 'weekly') discountPercent = 0.15;
             if (frequency === 'biweekly') discountPercent = 0.075;
 
+            // Calculate final price
             const roundedHours = Math.ceil(estimatedHours * 2) / 2;
             const basePrice = roundedHours * hourlyRate;
-
             const discountAmount = (basePrice + addonsTotal) * discountPercent;
             const finalPrice = basePrice + addonsTotal - discountAmount;
 
+            // Update display
             document.getElementById('liveQuote').textContent = '$' + finalPrice.toFixed(2);
-            
-
-
             document.getElementById('totalHours').textContent = `${roundedHours} hours`;
-
             document.getElementById('basePrice').textContent = '$' + basePrice.toFixed(2);
             document.getElementById('addonsPrice').textContent = '$' + addonsTotal.toFixed(2);
             document.getElementById('discount').textContent = '-$' + discountAmount.toFixed(2);
