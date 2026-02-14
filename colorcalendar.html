@@ -254,11 +254,13 @@
         }
 
         .color-name {
-            font-size: 1.3em;
+            font-size: clamp(0.85em, 2.5vw, 1.3em);
             font-weight: bold;
             margin-bottom: 8px;
             line-height: 1.2;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .color-hex {
