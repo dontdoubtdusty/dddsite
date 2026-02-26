@@ -498,7 +498,8 @@
                             <label for="frequency">Cleaning Frequency</label>
                             <select id="frequency">
                                 <option value="onetime">One-time (0% discount)</option>
-                                <option value="biweekly">Bi-weekly (7.5% discount)</option>
+                                <option value="monthly">Monthly (7.5% discount)</option>
+                                <option value="biweekly">Bi-weekly (10% discount)</option>
                                 <option value="weekly">Weekly (15% discount)</option>
                             </select>
                         </div>
@@ -699,7 +700,9 @@
             const frequency = document.getElementById('frequency').value;
             let discountPercent = 0;
             if (frequency === 'weekly') discountPercent = 0.15;
-            if (frequency === 'biweekly') discountPercent = 0.075;
+            if (frequency === 'biweekly') discountPercent = 0.1;
+            if (frequency === 'monthly') discountPercent = 0.075;
+            
 
             // Calculate final price
             const roundedHours = Math.ceil(estimatedHours * 4) / 4;
