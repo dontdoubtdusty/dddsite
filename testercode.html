@@ -3,692 +3,711 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>365 Days of New Year's Colors</title>
+    <title>Dusty's Cleaning Service Quote Estimator</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Georgia', serif;
-            background-color: #1a1a2e;
-            background-image: url('./colors-rocks.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            background-blend-mode: multiply;
-            transition: background-color 1.5s ease;
-            min-height: 100vh;
-            display: flex;
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #6b7ded 0%, #8458b3 100%);
+        min-height: 100vh;
+        padding: 20px;
+        line-height: 1.6;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 24px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #6b7ded 0%, #8458b3 100%);
+        color: #fff;
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+    .header h1 {
+        font-size: 2.1em;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .header p {
+        opacity: 0.92;
+        font-size: 1.1em;
+    }
+
+    .form-content {
+        padding: 40px;
+        display: flex;
+        gap: 40px;
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+    }
+
+    .form-section h2 {
+        color: #6b7ded;
+        margin-bottom: 20px;
+        font-size: 1.3em;
+        font-weight: 600;
+        border-bottom: 2px solid #f3f3f3;
+        padding-bottom: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 500;
+        font-size: 0.95em;
+    }
+
+    input[type="number"],
+    select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid #e4e4e4;
+        border-radius: 10px;
+        font-size: 1em;
+        transition: all 0.25s ease;
+        background: #fafafa;
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+        outline: none;
+        border-color: #6b7ded;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(107, 125, 237, 0.15);
+    }
+
+    .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.95em;
+    }
+
+    input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: #6b7ded;
+    }
+
+    .addons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .addon-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        background: #f6f7fb;
+        border-radius: 10px;
+        border: 1px solid #ececec;
+        transition: background 0.2s ease;
+    }
+
+    .addon-item:hover {
+        background: #eef0fa;
+    }
+
+    .live-quote {
+        width: 200px;
+        margin-top: 30px;
+        padding: 30px;
+        background: linear-gradient(135deg, #6b7ded 0%, #8458b3 100%);
+        border-radius: 18px;
+        color: #fff;
+        text-align: center;
+        box-shadow: 0 12px 40px rgba(107, 125, 237, 0.35);
+    }
+
+    .quote-label {
+        font-size: 1.2em;
+        opacity: 0.92;
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
+
+    .quote-amount {
+        font-size: 3.3em;
+        font-weight: 700;
+        margin: 10px 0;
+        text-shadow: 1px 2px 4px rgba(0,0,0,0.25);
+    }
+
+    .quote-details {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid rgba(255,255,255,0.28);
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 1em;
+        opacity: 0.95;
+    }
+
+    .info-box {
+        background: #eaf5ff;
+        border-left: 4px solid #6b7ded;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 8px;
+    }
+
+    .info-box h4 {
+        color: #6b7ded;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .info-box ul {
+        margin-left: 20px;
+        color: #555;
+    }
+
+    .quote-layout {
+        display: flex;
+        gap: 40px;
+        align-items: flex-start;
+        margin-top: 20px;
+    }
+
+    .left-side {
+        flex: 2;
+    }
+
+    .right-side {
+        flex: 1;
+        position: sticky;
+        top: 20px;
+    }
+
+    .right-side .live-quote {
+        width: 100%;
+    }
+
+    .room-input-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .room-input-group input[type="number"] {
+        width: 80px;
+        margin-top: 5px;
+    }
+
+    /* Preset button styles */
+    .preset-section {
+        margin-bottom: 30px;
+    }
+
+    .preset-section h2 {
+        color: #6b7ded;
+        margin-bottom: 14px;
+        font-size: 1.3em;
+        font-weight: 600;
+        border-bottom: 2px solid #f3f3f3;
+        padding-bottom: 10px;
+    }
+
+    .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .preset-btn {
+        padding: 10px 18px;
+        background: #f3f4fd;
+        border: 2px solid #c5caef;
+        border-radius: 10px;
+        font-size: 0.92em;
+        font-weight: 600;
+        color: #6b7ded;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .preset-btn:hover {
+        background: #6b7ded;
+        color: #fff;
+        border-color: #6b7ded;
+    }
+
+    .preset-btn.active {
+        background: #6b7ded;
+        color: #fff;
+        border-color: #6b7ded;
+    }
+
+    /* Travel rate inline inputs */
+    .travel-rate-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+        font-size: 0.95em;
+        color: #444;
+    }
+
+    .travel-rate-row input[type="number"] {
+        width: 80px;
+        padding: 8px 10px;
+        font-size: 0.95em;
+    }
+
+    .travel-rate-row span {
+        font-weight: 500;
+    }
+
+    @media (max-width: 780px) {
+        .form-content {
             flex-direction: column;
-            align-items: center;
+            gap: 25px;
             padding: 20px;
-            color: #fff;
-            position: relative;
-            overflow-x: hidden;
         }
 
-        h1 {
-            font-size: 2.8em;
-            margin: 20px 0 10px;
-            text-align: center;
-            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-shift 3s ease infinite;
-            z-index: 2;
-            position: relative;
-        }
-
-        @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .subtitle {
-            font-size: 1.3em;
-            margin-bottom: 20px;
-            text-align: center;
-            font-style: italic;
-            z-index: 2;
-            position: relative;
-            background: linear-gradient(45deg, #ffd700, #ff69b4, #00ffff, #ffd700);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-shift 3s ease infinite;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            z-index: 2;
-            position: relative;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .button {
-            background: rgba(42, 42, 62, 0.7);
-            color: #ffd700;
-            border: 2px solid rgba(255, 215, 0, 0.5);
-            padding: 10px 20px;
-            font-size: 0.95em;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Georgia', serif;
-            transition: all 0.3s ease;
-        }
-        
-        .button:hover {
-            background: rgba(42, 42, 62, 0.9);
-            transform: translateY(-2px);
-        }
-
-        .calendar-container {
-            max-width: 1400px;
+        .right-side {
+            position: static;
             width: 100%;
-            padding: 20px;
-            z-index: 2;
-            position: relative;
         }
 
-        .week-section {
-            margin-bottom: 40px;
-        }
-
-        .week-header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .week-theme {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #E8E8E8;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-        }
-        
-        .week-description {
-            font-size: 1.1em;
-            color: #B8B8B8;
-            font-style: italic;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-        }
-
-        .week-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 15px;
-        }
-
-        .calendar-box {
-            position: relative;
+        .right-side .live-quote {
             width: 100%;
-            aspect-ratio: 1;
-            perspective: 1000px;
-            cursor: pointer;
         }
+    }
 
-        .calendar-box.locked {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .lock-icon {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            font-size: 1.1em;
-            z-index: 10;
-        }
-
-        .box-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-
-        .calendar-box.flipped .box-inner {
-            transform: rotateY(180deg);
-        }
-
-        .box-front, .box-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-        }
-
-        .box-front {
-            background: linear-gradient(135deg, rgba(30,30,50,0.9) 0%, rgba(50,30,70,0.9) 100%);
-            border: 3px solid rgba(255, 215, 0, 0.4);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.6);
-        }
-
-        .box-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-            margin-bottom: 5px;
-        }
-
-        .box-date {
-            font-size: 0.75em;
-            color: #ff69b4;
-        }
-
-        .box-back {
-            transform: rotateY(180deg);
-            text-align: center;
-            position: relative;
-            padding: 20px;
-            border-radius: 12px;
-        }
-
-        .box-back-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .tron-border {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-            border-radius: 12px;
-        }
-
-        .tron-border svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .tron-path {
-            fill: none;
-            stroke-width: 4;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            stroke-dasharray: 800;
-            stroke-dashoffset: 800;
-        }
-
-        .calendar-box.revealing .tron-path {
-            animation: draw-tron 2s ease-out forwards;
-        }
-
-        @keyframes draw-tron {
-            0% {
-                stroke-dashoffset: 800;
-                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
-            }
-            100% {
-                stroke-dashoffset: 0;
-                filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 25px currentColor);
-            }
-        }
-
-        .color-name {
-            font-size: 1.3em;
-            font-weight: bold;
-            margin-bottom: 8px;
-            line-height: 1.2;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-        }
-
-        .color-hex {
-            font-size: 1em;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 12px;
-            opacity: 0.9;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-        }
-
-        .color-sentence {
-            font-size: 0.85em;
-            line-height: 1.4;
-            font-style: italic;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-        }
-        
-        .month-indicator {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #ffd700;
-            padding: 10px 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-        }
-        
-        .nav-button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-        
-        .week-section {
-            display: none;
-        }
-        
-        .week-section.visible {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .week-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            }
-        }
     </style>
+
 </head>
 <body>
-    <h1><img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"> 365 Days of Colors <img src="_DDD_LOGO_white.png" alt="" style="height: 0.8em; vertical-align: middle; margin: 0 10px;"></h1>
-    <p class="subtitle">A vibrant year of hues for 2026</p>
-    
-    <div class="controls">
-        <button class="button nav-button" id="prevMonth">← Previous Month</button>
-        <div class="month-indicator" id="monthIndicator">January 2026</div>
-        <button class="button nav-button" id="nextMonth">Next Month →</button>
-        <button class="button" id="flipAllButton">Flip All</button>
-        <button class="button" id="resetButton">Reset All</button>
-    </div>
+    <div class="container">
+        <div class="header">
+            <h1>Cleaning Service Quote</h1>
+            <p>Get an instant estimate for your cleaning needs</p>
+        </div>
 
-    <div class="calendar-container" id="calendar"></div>
+        <div class="form-content">
+            <div class="left-side">
+                <form id="quoteForm" autocomplete="off">
 
-    <script>
-        // Randomize background image on page load
-        // Smooth background transitions
-        const backgrounds = ['colors-rocks.jpg', 'takisbg.jpg', 'spiralbg.jpg', 'sunsetbg.jpg', 'zigzagbg.jpg', 'paintbg.jpg'];
-        let currentBgIndex = Math.floor(Math.random() * backgrounds.length);
-        document.body.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
+                    <!-- PRESETS -->
+                    <div class="preset-section">
+                        <h2>Quick Presets</h2>
+                        <div class="preset-buttons">
+                            <button type="button" class="preset-btn" id="presetStudio" onclick="applyPreset('studio')">🏠 Studio Apartment</button>
+                            <button type="button" class="preset-btn" onclick="applyPreset('clear')">✕ Clear All</button>
+                        </div>
+                    </div>
 
-        // Preload all backgrounds
-        backgrounds.forEach(bg => {
-            const img = new Image();
-            img.src = './' + bg;
-        });
-        
-        // Rotate backgrounds every 5 seconds
-        setInterval(() => {
-            currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
-            document.body.style.backgroundImage = `url('./${backgrounds[currentBgIndex]}')`;
-        }, 10000);
-        
-       const weeks = [
-            // JANUARY - Week 1
-            {
-                theme: "Celebration",
-                description: "Ring in the new year with sparkle and joy",
-                colors: [
-                    {name: "Champagne Sparkle", hex: "#F7E7CE", sentence: "Named after France's Champagne region, this bubbly hue has celebrated victories since the 1600s."},
-                    {name: "Midnight Indigo", hex: "#191970", sentence: "Indigo dye was once so valuable it was called 'blue gold' and sparked global trade routes."},
-                    {name: "Celebration Gold", hex: "#FFD700", sentence: "Gold symbolized triumph in ancient Greece where Olympic victors wore golden olive wreaths."},
-                    {name: "Party Pink", hex: "#FF69B4", sentence: "Hot pink was invented by designer Elsa Schiaparelli in 1931, shocking the fashion world."},
-                    {name: "Resolution Red", hex: "#DC143C", sentence: "Crimson dye required 70,000 kermes insects to produce just one pound of vivid color."},
-                    {name: "Fresh Start White", hex: "#FFFAFA", sentence: "Snow white isn't pure white but slightly warm—real snow reflects about 90% of sunlight."},
-                    {name: "Firework Silver", hex: "#C0C0C0", sentence: "Silver fireworks use titanium or aluminum burning at over 3,000 degrees Fahrenheit."}
-                ]
-            },
-            // JANUARY - Week 2
-            {
-                theme: "Winter Wonderland",
-                description: "Embrace the cozy magic of frost and warmth",
-                colors: [
-                    {name: "Frost Blue", hex: "#E0F2F7", sentence: "Frost appears blue because ice crystals scatter short light wavelengths, just like the sky."},
-                    {name: "Icicle Clear", hex: "#D4F1F4", sentence: "Icicles grow from the bottom up as water freezes layer by layer, reaching 20 feet long."},
-                    {name: "Snow White", hex: "#FFFEF9", sentence: "The Inuit people have over 50 different words for snow, each describing unique qualities."},
-                    {name: "Frozen Lake", hex: "#89CFF0", sentence: "Lake ice appears blue because it absorbs red wavelengths while reflecting blue light."},
-                    {name: "Cozy Cocoa", hex: "#6F4E37", sentence: "Hot chocolate was originally a bitter Aztec drink reserved for royalty and warriors."},
-                    {name: "Fireplace Amber", hex: "#FF7E00", sentence: "Amber flames indicate a temperature around 2,000°F—perfect for a cozy winter fire."},
-                    {name: "Winter Plum", hex: "#8E4585", sentence: "Plum purple was Queen Elizabeth I's favorite and was legally forbidden to commoners."}
-                ]
-            },
-            // JANUARY - Week 3
-            {
-                theme: "Northern Lights",
-                description: "Dance with the ethereal colors of the aurora",
-                colors: [
-                    {name: "Aurora Green", hex: "#00FF7F", sentence: "Green auroras form when solar particles collide with oxygen 60-150 miles above Earth."},
-                    {name: "Celestial Purple", hex: "#9370DB", sentence: "Purple auroras are rare and occur when solar particles hit nitrogen at very high altitudes."},
-                    {name: "Electric Teal", hex: "#00CED1", sentence: "Teal is named after a duck species with distinctive eye stripes in this exact cyan-green."},
-                    {name: "Mystical Magenta", hex: "#FF00FF", sentence: "Magenta doesn't exist in rainbows—it's invented by our brains mixing red and violet."},
-                    {name: "Arctic Blue", hex: "#4169E1", sentence: "Arctic blue skies result from ice crystals refracting light in Earth's coldest regions."},
-                    {name: "Starlight Silver", hex: "#E8E8E8", sentence: "Stars appear silver-white because they emit all wavelengths of visible light equally."},
-                    {name: "Cosmic Violet", hex: "#8B00FF", sentence: "Violet is the highest frequency visible light, just before invisible ultraviolet begins."}
-                ]
-            },
-            // JANUARY - Week 4
-            {
-                theme: "Morning Rituals",
-                description: "Savor the quiet beauty of dawn's awakening",
-                colors: [
-                    {name: "Dawn Blush", hex: "#FFB6C1", sentence: "Pink sunrises happen when light scatters through moisture and particles in the atmosphere."},
-                    {name: "Morning Mist", hex: "#F5F5F5", sentence: "Morning fog forms when warm air cools to its dew point, typically just before sunrise."},
-                    {name: "Coffee Bean", hex: "#3E2723", sentence: "Coffee beans are actually seeds of bright red or purple cherries that grow on trees."},
-                    {name: "Sunrise Coral", hex: "#FF7F50", sentence: "Coral the color was named after coral animals, which get their hue from symbiotic algae."},
-                    {name: "Honey Gold", hex: "#DAA520", sentence: "Honey's color comes from nectar sources—clover makes light honey, buckwheat makes dark."},
-                    {name: "Toast Tan", hex: "#D2B48C", sentence: "Toast's brown color comes from the Maillard reaction, discovered by Louis Maillard in 1912."},
-                    {name: "Earl Grey", hex: "#8B8680", sentence: "Earl Grey tea is named after Charles Grey, British Prime Minister in the 1830s."}
-                ]
-            },
-            // JANUARY - Week 5 (partial - days 29-31)
-            {
-                theme: "Winter's End",
-                description: "Transition from frost to the promise of spring",
-                colors: [
-                    {name: "Twilight Lavender", hex: "#E6E6FA", sentence: "Lavender fields in Provence inspired countless artists including Vincent van Gogh."},
-                    {name: "Ice Storm Grey", hex: "#708090", sentence: "Slate grey gets its name from metamorphic rock that perfectly splits into thin layers."},
-                    {name: "Anticipation Aqua", hex: "#7FFFD4", sentence: "Aquamarine was believed by sailors to protect them from storms at sea."}
-                ]
-            },
-            // FEBRUARY - Week 1
-            {
-                theme: "Love & Romance",
-                description: "Celebrate affection in all its passionate hues",
-                colors: [
-                    {name: "Valentine Red", hex: "#E63946", sentence: "Red roses became symbols of love in Victorian England's coded flower language."},
-                    {name: "Sweetheart Pink", hex: "#FFB3BA", sentence: "Pink became associated with romance after Madame de Pompadour commissioned rose-themed porcelain."},
-                    {name: "Cupid's Blush", hex: "#FFAEC9", sentence: "The color of blushing cheeks results from blood vessels dilating when we feel attraction."},
-                    {name: "Romance Ruby", hex: "#9B111E", sentence: "Rubies were once believed to contain an inextinguishable flame of eternal love."},
-                    {name: "Chocolate Truffle", hex: "#3F2021", sentence: "Chocolate contains phenylethylamine, the same chemical your brain produces when falling in love."},
-                    {name: "Champagne Rose", hex: "#F4C2C2", sentence: "Pink champagne gets its color from grape skins left in contact with the juice longer."},
-                    {name: "Heart's Desire", hex: "#C41E3A", sentence: "The iconic heart shape may have originated from the silphium seed used in ancient contraception."}
-                ]
-            },
-            // FEBRUARY - Week 2
-            {
-                theme: "Gemstone Treasures",
-                description: "Discover the brilliant colors hidden in the earth",
-                colors: [
-                    {name: "Amethyst Purple", hex: "#9966CC", sentence: "Ancient Greeks believed amethyst prevented intoxication and made wine goblets from it."},
-                    {name: "Emerald Green", hex: "#50C878", sentence: "Cleopatra's legendary emerald mines supplied gems that adorned Egyptian royalty for centuries."},
-                    {name: "Sapphire Blue", hex: "#0F52BA", sentence: "Sapphires form deep underground over millions of years from crystallized aluminum oxide."},
-                    {name: "Topaz Gold", hex: "#FFCC00", sentence: "Brazilian topaz can fade in sunlight, prompting jewelers to store them in darkness."},
-                    {name: "Pearl Luster", hex: "#F0EAD6", sentence: "Pearls are the only gems produced by living creatures and can take years to form."},
-                    {name: "Garnet Burgundy", hex: "#800020", sentence: "Garnets were carried by travelers as protective talismans against accidents and nightmares."},
-                    {name: "Opal Fire", hex: "#A8C3BC", sentence: "Opals contain up to 20% water and display colors through light diffraction in silica spheres."}
-                ]
-            },
-            // FEBRUARY - Week 3
-            {
-                theme: "Carnival Colors",
-                description: "Revel in the vibrant spirit of celebration",
-                colors: [
-                    {name: "Mardi Gras Purple", hex: "#8B008B", sentence: "Purple represents justice in Mardi Gras tradition, chosen by the first Rex parade in 1872."},
-                    {name: "Carnival Green", hex: "#32CD32", sentence: "Green symbolizes faith in Mardi Gras and was likely inspired by spring's renewal."},
-                    {name: "Festival Gold", hex: "#FFD700", sentence: "Gold represents power in Mardi Gras celebrations, completing the iconic color trinity."},
-                    {name: "Confetti Multi", hex: "#FF6B9D", sentence: "Confetti originated in Italy where people threw sugared almonds during carnival celebrations."},
-                    {name: "Masquerade Teal", hex: "#008080", sentence: "Venetian carnival masks were originally white but evolved into elaborate colorful designs."},
-                    {name: "Parade Orange", hex: "#FF8C00", sentence: "Rio's carnival consumes enough orange fabric annually to circle the equator twice."},
-                    {name: "Celebration Coral", hex: "#FF7F50", sentence: "Coral became a festive color when Caribbean carnivals merged African and European traditions."}
-                ]
-            },
-            // FEBRUARY - Week 4
-            {
-                theme: "Forest Depths",
-                description: "Wander through nature's verdant sanctuary",
-                colors: [
-                    {name: "Moss Green", hex: "#8A9A5B", sentence: "Moss can absorb up to 20 times its dry weight in water, acting as a forest sponge."},
-                    {name: "Pine Needle", hex: "#01796F", sentence: "Pine trees keep their needles year-round because a waxy coating protects them from freezing."},
-                    {name: "Forest Floor", hex: "#5C4033", sentence: "A single teaspoon of forest soil contains more organisms than there are people on Earth."},
-                    {name: "Fern Frond", hex: "#4F7942", sentence: "Ferns are ancient plants that evolved before flowering plants, some 360 million years ago."},
-                    {name: "Bark Brown", hex: "#3D3635", sentence: "Tree bark contains tannins that were historically used to tan leather and preserve it."},
-                    {name: "Canopy Shadow", hex: "#2F4F4F", sentence: "Forest canopies can block 95% of sunlight, creating unique understory ecosystems below."},
-                    {name: "Wild Mushroom", hex: "#C8AD7F", sentence: "Mushrooms are more closely related to animals than plants in evolutionary terms."}
-                ]
-            }
-        ];
-
-        const calendar = document.getElementById('calendar');
-        const now = new Date();
-        const startOfYear = new Date(2026, 0, 1);
-        const dayOfYear = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
-
-        function isUnlocked(day) {
-            return day <= dayOfYear;
-        }
-
-        function getTextColor(hexColor) {
-            const r = parseInt(hexColor.substr(1,2), 16);
-            const g = parseInt(hexColor.substr(3,2), 16);
-            const b = parseInt(hexColor.substr(5,2), 16);
-            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            return brightness > 155 ? '#000000' : '#FFFFFF';
-        }
-
-        function getFlippedState() {
-            const stored = localStorage.getItem('color-calendar-flipped');
-            return stored ? JSON.parse(stored) : {};
-        }
-        
-        function saveFlippedState(day, isFlipped) {
-            const state = getFlippedState();
-            state[day] = isFlipped;
-            localStorage.setItem('color-calendar-flipped', JSON.stringify(state));
-        }
-
-        document.getElementById('resetButton').addEventListener('click', function() {
-            if (confirm('Reset all opened colors?')) {
-                localStorage.removeItem('color-calendar-flipped');
-                location.reload();
-            }
-        });
-
-        document.getElementById('flipAllButton').addEventListener('click', function() {
-            if (confirm('Flip all unlocked colors?')) {
-                const flippedState = getFlippedState();
-                let dayCounter = 0;
-                let lastColor = null;
-                
-                weeks.forEach((week, weekIndex) => {
-                    week.colors.forEach((color, dayIndex) => {
-                        dayCounter++;
-                        const day = dayCounter;
-                        const unlocked = isUnlocked(day);
+                    <div class="form-section">
+                        <h2>Select Your Rooms</h2>
                         
-                        if (unlocked) {
-                            flippedState[day] = true;
-                            lastColor = color;
-                            
-                            const box = document.getElementById('day-' + day);
-                            if (box && !box.classList.contains('flipped')) {
-                                box.classList.add('flipped');
-                            }
-                        }
-                    });
-                });
-                
-                localStorage.setItem('color-calendar-flipped', JSON.stringify(flippedState));
-                
-                // Set background to the last unlocked color
-                if (lastColor) {
-                    document.body.style.backgroundColor = lastColor.hex;
-                }
-            }
-        });
-
-        let currentMonth = 0; // 0 = January, 1 = February
-        const monthData = [
-            { name: "January", startWeek: 0, endWeek: 5 },   // Weeks 0-4 (indices)
-            { name: "February", startWeek: 5, endWeek: 9 }   // Weeks 5-8 (indices)
-        ];
-        
-        function showMonth(monthIndex) {
-            // Hide all weeks
-            document.querySelectorAll('.week-section').forEach(section => {
-                section.classList.remove('visible');
-            });
-            
-            // Show weeks for the selected month
-            const month = monthData[monthIndex];
-            for (let i = month.startWeek; i < month.endWeek; i++) {
-                const weekSection = document.getElementById('week-' + i);
-                if (weekSection) {
-                    weekSection.classList.add('visible');
-                }
-            }
-            
-            // Update month indicator
-            document.getElementById('monthIndicator').textContent = month.name + " 2026";
-            
-            // Update button states
-            document.getElementById('prevMonth').disabled = monthIndex === 0;
-            document.getElementById('nextMonth').disabled = monthIndex >= monthData.length - 1;
-        }
-        
-        document.getElementById('prevMonth').addEventListener('click', function() {
-            if (currentMonth > 0) {
-                currentMonth--;
-                showMonth(currentMonth);
-            }
-        });
-        
-        document.getElementById('nextMonth').addEventListener('click', function() {
-            if (currentMonth < monthData.length - 1) {
-                currentMonth++;
-                showMonth(currentMonth);
-            }
-        });
-        
-        function initializeCalendar() {
-            const flippedState = getFlippedState();
-            
-            // Find the highest flipped day and set background
-            const flippedDays = Object.keys(flippedState).filter(day => flippedState[day]).map(Number);
-            if (flippedDays.length > 0) {
-                const latestFlippedDay = Math.max(...flippedDays);
-                let dayCounter = 0;
-                for (let weekIndex = 0; weekIndex < weeks.length; weekIndex++) {
-                    for (let dayIndex = 0; dayIndex < weeks[weekIndex].colors.length; dayIndex++) {
-                        dayCounter++;
-                        if (dayCounter === latestFlippedDay) {
-                            const latestColor = weeks[weekIndex].colors[dayIndex];
-                            document.body.style.backgroundColor = latestColor.hex;
-                            document.body.style.transition = 'none';
-                            setTimeout(() => {
-                                document.body.style.transition = 'background-color 1.5s ease';
-                            }, 50);
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            let dayCounter = 0;
-            
-            weeks.forEach((week, weekIndex) => {
-                const weekSection = document.createElement('div');
-                weekSection.className = 'week-section';
-                weekSection.id = 'week-' + weekIndex;
-                
-                const weekHeader = document.createElement('div');
-                weekHeader.className = 'week-header';
-                weekHeader.innerHTML = `
-                    <div class="week-theme">${week.theme}</div>
-                    <div class="week-description">${week.description}</div>
-                `;
-                
-                const weekGrid = document.createElement('div');
-                weekGrid.className = 'week-grid';
-                
-                week.colors.forEach((color, dayIndex) => {
-                    dayCounter++;
-                    const day = dayCounter;
-                    const unlocked = isUnlocked(day);
-                    const wasFlipped = flippedState[day] || false;
-                    
-                    const box = document.createElement('div');
-                    box.id = 'day-' + day;
-                    box.className = 'calendar-box' + (unlocked ? '' : ' locked') + (wasFlipped ? ' flipped' : '');
-                    
-                    const textColor = getTextColor(color.hex);
-                    const date = new Date(2026, 0, day);
-                    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    
-                    box.innerHTML = `
-                        <div class="box-inner">
-                            <div class="box-front">
-                                ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
-                                <div class="box-number">${day}</div>
-                                <div class="box-date">${dateStr}</div>
-                            </div>
-                            <div class="box-back" style="background-color: ${color.hex};">
-                                <div class="tron-border">
-                                    <svg width="100%" height="100%" viewBox="0 0 200 200" preserveAspectRatio="none">
-                                        <rect class="tron-path" x="5" y="5" width="190" height="190" rx="12" 
-                                          style="stroke: ${textColor}; color: ${textColor};" />
-                                    </svg>
-                                </div>
-                                <div class="box-back-content">
-                                    <div class="color-name" style="color: ${textColor}; font-size: clamp(0.9em, 3vw, 1.3em);">${color.name}</div>
-                                    <div class="color-hex" style="color: ${textColor}; font-size: clamp(0.75em, 2.5vw, 1em);">${color.hex}</div>
-                                    <div class="color-sentence" style="color: ${textColor}; font-size: clamp(0.65em, 2vw, 0.85em);">${color.sentence}</div>
-                                </div>
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="livingRoomCheck">
+                                <label for="livingRoomCheck">Living Room(s)</label>
+                                <input type="number" id="livingRoom" min="0" value="0" style="display:none;">
                             </div>
                         </div>
-                    `;
-                    
-                    if (unlocked) {
-                        box.addEventListener('click', function(e) {
-                            const isCurrentlyFlipped = this.classList.contains('flipped');
-                            
-                            if (!isCurrentlyFlipped) {
-                                // First time flipping - flip and reveal
-                                this.classList.add('flipped');
-                                saveFlippedState(day, true);
-                                
-                                document.body.style.backgroundColor = color.hex;
-                                this.classList.add('revealing');
-                                setTimeout(() => {
-                                    this.classList.remove('revealing');
-                                }, 2000);
-                            } else {
-                                // Already flipped - just activate the color
-                                document.body.style.backgroundColor = color.hex;
-                                this.classList.add('revealing');
-                                setTimeout(() => {
-                                    this.classList.remove('revealing');
-                                }, 2000);
-                            }
-                        });
-                    }
-                    
-                    weekGrid.appendChild(box);
-                });
-                
-                weekSection.appendChild(weekHeader);
-                weekSection.appendChild(weekGrid);
-                calendar.appendChild(weekSection);
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="diningRoomCheck">
+                                <label for="diningRoomCheck">Dining Room(s)</label>
+                                <input type="number" id="diningRoom" min="0" value="0" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="kitchenCheck">
+                                <label for="kitchenCheck">Kitchen(s)</label>
+                                <input type="number" id="kitchen" min="0" value="0" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="bedroomCheck">
+                                <label for="bedroomCheck">Bedroom(s)</label>
+                                <input type="number" id="bedroom" min="0" value="0" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="fullBathCheck">
+                                <label for="fullBathCheck">Full Bathroom(s)</label>
+                                <input type="number" id="fullBath" min="0" value="0" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="halfBathCheck">
+                                <label for="halfBathCheck">Half Bathroom(s)</label>
+                                <input type="number" id="halfBath" min="0" value="0" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="officeCheck">
+                                <label for="officeCheck">Home Office/Study</label>
+                                <input type="number" id="office" min="0" value="0" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="laundryCheck">
+                                <label for="laundryCheck">Laundry Room(s)</label>
+                                <input type="number" id="laundry" min="0" value="0" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="hallwayCheck">
+                                <label for="hallwayCheck">Hallway(s)</label>
+                                <input type="number" id="hallway" min="0" value="0" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="room-input-group">
+                                <input type="checkbox" id="bonusRoomCheck">
+                                <label for="bonusRoomCheck">Bonus/Rec Room(s)</label>
+                                <input type="number" id="bonusRoom" min="0" value="0" style="display:none;">
+                            </div>
+                        </div>
+
+                    </div>
+    
+                    <div class="form-section">
+                        <h2>Condition Adjustments</h2>
+                        
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="pets">
+                                <label for="pets">Pets in home</label>
+                            </div>
+    
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="clutter">
+                                <label for="clutter">Heavy clutter</label>
+                            </div>
+    
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="deepClean">
+                                <label for="deepClean">First-time/deep clean</label>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="form-section">
+                        <h2>Add-ons</h2>
+                        
+                        <div class="addons-grid">
+                            <div class="addon-item">
+                                <input type="checkbox" id="oven">
+                                <label for="oven">Inside Oven (+$30)</label>
+                            </div>
+    
+                            <div class="addon-item">
+                                <input type="checkbox" id="fridge">
+                                <label for="fridge">Inside Fridge (+$28)</label>
+                            </div>
+    
+                            <div class="addon-item">
+                                <input type="checkbox" id="trash">
+                                <label for="trash">Trash Takeout (+$25)</label>
+                            </div>
+
+                            <div class="addon-item">
+                                <input type="checkbox" id="eco-friendly">
+                                <label for="eco-friendly">Eco-Friendly (+$25)</label>
+                            </div>
+                        </div>
+    
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label for="windows">Interior Windows (count)</label>
+                            <input type="number" id="windows" min="0" value="0">
+                        </div>
+                    </div>
+
+                    <!-- TRAVEL EXPENSES -->
+                    <div class="form-section">
+                        <h2>Travel Expenses</h2>
+                        <div class="travel-rate-row">
+                            <span>$</span>
+                            <input type="number" id="travelRateCost" min="0" step="0.01" value="0.75">
+                            <span>per</span>
+                            <input type="number" id="travelRateMiles" min="1" step="1" value="5">
+                            <span>miles (over 15 miles)</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="travelMiles">Miles to job</label>
+                            <input type="number" id="travelMiles" min="0" value="0" placeholder="0">
+                        </div>
+                    </div>
+    
+                    <div class="form-section">
+                        <h2>Frequency</h2>
+                        
+                        <div class="form-group">
+                            <label for="frequency">Cleaning Frequency</label>
+                            <select id="frequency">
+                                <option value="onetime">One-time (0% discount)</option>
+                                <option value="biweekly">Bi-weekly (7.5% discount)</option>
+                                <option value="weekly">Weekly (15% discount)</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="right-side">
+                <div class="live-quote">
+                    <div class="quote-label">Estimated Quote</div>
+                    <div class="quote-amount" id="liveQuote">$0.00</div>
+                    <div class="quote-details" id="quoteDetails">
+                        <div class="detail-item">
+                            <span>Estimated Hours:</span>
+                            <span id="totalHours">0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Base Price:</span>
+                            <span id="basePrice">$0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Add-ons:</span>
+                            <span id="addonsPrice">$0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Travel:</span>
+                            <span id="travelPrice">$0.00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Frequency Discount:</span>
+                            <span id="discount">$0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Room time estimates (in hours)
+        const roomTimes = {
+            livingRoom: 0.75,
+            diningRoom: 0.5,
+            kitchen: 1.0,
+            bedroom: 0.5,
+            fullBath: 1.0,
+            halfBath: 0.5,
+            office: 0.5,
+            laundry: 0.33,
+            hallway: 0.25,
+            bonusRoom: 0.75
+        };
+
+        const hourlyRate = 40;
+
+        // Handle checkbox toggles to show/hide number inputs
+        const roomCheckboxes = [
+            'livingRoomCheck', 'diningRoomCheck', 'kitchenCheck', 'bedroomCheck',
+            'fullBathCheck', 'halfBathCheck', 'officeCheck', 'laundryCheck',
+            'hallwayCheck', 'bonusRoomCheck'
+        ];
+
+        roomCheckboxes.forEach(checkboxId => {
+            const checkbox = document.getElementById(checkboxId);
+            const inputId = checkboxId.replace('Check', '');
+            const input = document.getElementById(inputId);
+
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    input.style.display = 'block';
+                    input.value = 1;
+                } else {
+                    input.style.display = 'none';
+                    input.value = 0;
+                }
+                calculateQuote();
             });
 
-            // Show the first month by default
-            showMonth(currentMonth);
+            input.addEventListener('input', calculateQuote);
+        });
+
+        // Add event listeners for all other inputs
+        const form = document.getElementById('quoteForm');
+        const inputs = form.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('change', calculateQuote);
+            input.addEventListener('input', calculateQuote);
+        });
+
+        calculateQuote();
+
+        // ── Preset logic ──────────────────────────────────────────────────────
+        function applyPreset(name) {
+            // First clear everything
+            clearAll();
+
+            if (name === 'studio') {
+                // Studio apartment: sweep/mop floors (living room) + 1 full bathroom
+                // We'll use livingRoom for the main open space + fullBath
+                setRoom('livingRoomCheck', 'livingRoom', 1);
+                setRoom('fullBathCheck', 'fullBath', 1);
+
+                // Mark preset button active
+                document.getElementById('presetStudio').classList.add('active');
+            }
+
+            calculateQuote();
         }
 
-        initializeCalendar();
+        function setRoom(checkId, inputId, count) {
+            const checkbox = document.getElementById(checkId);
+            const input = document.getElementById(inputId);
+            checkbox.checked = true;
+            input.style.display = 'block';
+            input.value = count;
+        }
+
+        function clearAll() {
+            // Uncheck all room checkboxes and reset counts
+            roomCheckboxes.forEach(checkboxId => {
+                const checkbox = document.getElementById(checkboxId);
+                const inputId = checkboxId.replace('Check', '');
+                const input = document.getElementById(inputId);
+                checkbox.checked = false;
+                input.style.display = 'none';
+                input.value = 0;
+            });
+            // Uncheck condition adjustments
+            ['pets', 'clutter', 'deepClean'].forEach(id => {
+                document.getElementById(id).checked = false;
+            });
+            // Uncheck add-ons
+            ['oven', 'fridge', 'trash', 'eco-friendly'].forEach(id => {
+                document.getElementById(id).checked = false;
+            });
+            document.getElementById('windows').value = 0;
+            document.getElementById('travelMiles').value = 0;
+            document.getElementById('frequency').value = 'onetime';
+
+            // Remove active from all preset buttons
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+
+            calculateQuote();
+        }
+
+        function calculateQuote() {
+            // Calculate base hours from rooms
+            let estimatedHours = 0;
+
+            // Add time for each room type
+            Object.keys(roomTimes).forEach(roomType => {
+                const count = parseFloat(document.getElementById(roomType).value) || 0;
+                estimatedHours += count * roomTimes[roomType];
+            });
+
+            // Apply condition modifiers
+            if (document.getElementById('pets').checked) {
+                estimatedHours += 0.5;
+            }
+
+            if (document.getElementById('clutter').checked) {
+                estimatedHours += 1;
+            }
+
+            if (document.getElementById('deepClean').checked) {
+                estimatedHours *= 1.5;
+            }
+
+            // Calculate add-ons
+            let addonsTotal = 0;
+            if (document.getElementById('oven').checked) {
+                addonsTotal += 30;
+                estimatedHours += 0.5;
+            }
+            if (document.getElementById('fridge').checked) {
+                addonsTotal += 28;
+                estimatedHours += 0.5;
+            }
+            if (document.getElementById('trash').checked) {
+                addonsTotal += 25;
+                estimatedHours += 0.5;
+            }
+            if (document.getElementById('eco-friendly').checked) {
+                addonsTotal += 25;
+            }
+            
+            const windows = parseFloat(document.getElementById('windows').value) || 0;
+            addonsTotal += windows * 6.5;
+
+            // Calculate travel expenses
+            const travelMiles = parseFloat(document.getElementById('travelMiles').value) || 0;
+            const travelRateCost = parseFloat(document.getElementById('travelRateCost').value) || 0;
+            const travelRateMiles = parseFloat(document.getElementById('travelRateMiles').value) || 5;
+            const travelTotal = travelRateMiles > 0 ? (Math.max(0, travelMiles - 15) / travelRateMiles) * travelRateCost : 0;
+
+            // Apply frequency discount
+            const frequency = document.getElementById('frequency').value;
+            let discountPercent = 0;
+            if (frequency === 'weekly') discountPercent = 0.15;
+            if (frequency === 'biweekly') discountPercent = 0.075;
+
+            // Calculate final price
+            const roundedHours = Math.ceil(estimatedHours * 4) / 4;
+            const basePrice = roundedHours * hourlyRate;
+            const discountAmount = (basePrice + addonsTotal) * discountPercent;
+            const finalPrice = basePrice + addonsTotal + travelTotal - discountAmount;
+
+            // Update display
+            document.getElementById('liveQuote').textContent = '$' + finalPrice.toFixed(2);
+            document.getElementById('totalHours').textContent = `${roundedHours} hours`;
+            document.getElementById('basePrice').textContent = '$' + basePrice.toFixed(2);
+            document.getElementById('addonsPrice').textContent = '$' + addonsTotal.toFixed(2);
+            document.getElementById('travelPrice').textContent = '$' + travelTotal.toFixed(2);
+            document.getElementById('discount').textContent = '-$' + discountAmount.toFixed(2);
+        }
     </script>
 </body>
 </html>
