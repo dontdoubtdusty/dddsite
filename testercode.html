@@ -714,6 +714,9 @@
             document.getElementById('addonsPrice').textContent = '$' + addonsTotal.toFixed(2);
             document.getElementById('travelPrice').textContent = '$' + travelTotal.toFixed(2);
             document.getElementById('discount').textContent = '-$' + discountAmount.toFixed(2);
+
+            //Live update with hourly rate
+            document.getElementById('hourlyRate').addEventListener('input', calculateQuote);
         }
     </script>
 </body>
