@@ -552,8 +552,6 @@
             bonusRoom: 0.75
         };
 
-        const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 40;
-
         // Handle checkbox toggles to show/hide number inputs
         const roomCheckboxes = [
             'livingRoomCheck', 'diningRoomCheck', 'kitchenCheck', 'bedroomCheck',
@@ -645,6 +643,9 @@
         }
 
         function calculateQuote() {
+            //Set base rate from user input
+            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 40;
+            
             // Calculate base hours from rooms
             let estimatedHours = 0;
 
