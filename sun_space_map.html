@@ -202,11 +202,12 @@
     }
 
     @keyframes travel {
-      0%   { left: 80px;  top: 300px; }   /* Node 1 - Home */
-      33.33%  { left: 200px; top: 120px; }   /* Node 2 */
-      66.66%  { left: 380px; top: 200px; }   /* Node 3 */
-      99.99%  { left: 520px; top: 90px; }    /* Node 4 - RE4 */
-      100% { left: 80px;  top: 300px; }   /* Instant teleport back to Home */
+      0%    { left: 80px;  top: 300px; }
+      25%   { left: 200px; top: 120px; }
+      50%   { left: 380px; top: 200px; }
+      75%   { left: 520px; top: 90px;  }
+      99.99%{ left: 620px; top: 280px; }
+      100%  { left: 80px;  top: 300px; }
     }
 
     .label {
@@ -379,36 +380,46 @@
         <!-- Alternate/completed routes (dimmed) -->
         <polyline
           class="trajectory-alternate"
-          points="80,300 200,120 380,200 520,90"
+          points="80,300 200,120 380,200 520,90 620,280"
           fill="none" />
         
         <!-- Main trajectory: Home → RE4 (highlighted) -->
         <line
         class="trajectory-main"
         x1="84" y1="304"
-        x2="524" y2="94"
+        x2="624" y2="284"
+        fill="none" />
+
+        <line
+        class="trajectory-alternate"
+        x1="380" y1="200"
+        x2="620" y2="280"
         fill="none" />
       </svg>
+
+      
   
       <div class="star" style="left:80px; top:300px; background:#c44;"></div>
       <div class="star" style="left:200px; top:120px;"></div>
       <div class="star" style="left:380px; top:200px;"></div>
       <div class="star" style="left:520px; top:90px;"></div>
+      <div class="star" style="left:620px; top:280px;"></div>
   
       <div class="label" style="left:65px; top:315px;">Home</div>
       <div class="label" style="left:185px; top:135px;">😺</div>
       <div class="label" style="left:365px; top:215px;">🐾🐾</div>
       <div class="label" style="left:505px; top:105px;">RE4</div>
+      <div class="label" style="left:605px; top:295px;">RE9: Requiem</div>
   
       <div class="sun"></div>
   
       <div class="hud">
       <div class="hud-line small">TRANSIT VECTOR</div>
       <div class="hud-line route">
-        HOME NODE → RE4 NODE
+        RE4 NODE → RE9:REQUIEM NODE
       </div>
       <div class="hud-line time">
-        ⧖  Δ-RE4 : 4.73 σ
+        ⧖  Δ-RE9 : 4.73 σ
       </div>
     </div>
   
