@@ -1,726 +1,421 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dusty's Cleaning Service Quote Estimator</title>
-    <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+  <meta charset="UTF-8" />
+  <title>Sun Space Map</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 
+  <style>
     body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: linear-gradient(135deg, #6b7ded 0%, #8458b3 100%);
-        min-height: 100vh;
-        padding: 20px;
-        line-height: 1.6;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    
+      /* page-level space background placeholder */
+      background-image: url('starfield.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    
+      /* sci-fi overlay/tint */
+      background-blend-mode: overlay;
+      background-color: rgba(5, 10, 25, 0.7);
+    
+      /* optional subtle vignette for depth */
+      box-shadow: inset 0 0 150px rgba(0,0,0,0.5);
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.02), transparent 70%);
     }
 
-    .container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: #fff;
-        border-radius: 24px;
-        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
-        overflow: hidden;
+    .console-frame {
+      position: relative;
+      padding: 25px;
+      background: linear-gradient(135deg, #1a1208 0%, #2a1f10 100%);
+      border-radius: 8px;
+      box-shadow: 
+        inset 0 2px 4px rgba(255,200,100,0.05),
+        0 30px 80px rgba(0,0,0,0.8);
+    }
+    
+    .console-frame::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 1px solid rgba(255,180,80,0.2);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+    
+    /* Corner accents */
+    .corner {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border: 2px solid #d4a055;
+    }
+    .corner.tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+    .corner.tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+    .corner.bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
+    .corner.br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+    .console-header {
+      background: linear-gradient(180deg, #1a1508 0%, #0f0a05 100%);
+      padding: 12px 20px;
+      border-bottom: 1px solid #6b5a2a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .mission-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: #d4a055;
+      text-transform: uppercase;
+      font-weight: 400;
+      margin: 0;
+      opacity: 0.85;
+    }
+    
+    .mission-code {
+      font-family: monospace;
+      font-size: 10px;
+      color: #a88844;
+      letter-spacing: 0.1em;
+      opacity: 0.6;
     }
 
-    .header {
-        background: linear-gradient(135deg, #6b7ded 0%, #8458b3 100%);
-        color: #fff;
-        padding: 40px 30px;
-        text-align: center;
+    .console-container {
+      display: flex;
+      gap: 0;
     }
 
-    .header h1 {
-        font-size: 2.1em;
-        margin-bottom: 8px;
-        font-weight: 600;
+    .map {
+      position: relative;
+      width: 700px;
+      height: 400px;
+      border-radius: 4px;
+      overflow: hidden;
+      
+      /* dark map base with warm undertone */
+      background-color: #0f0a08;
+      
+      /* grid layers with amber tint */
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 180, 80, 0.08) 0px,
+          rgba(255, 180, 80, 0.08) 1px,
+          transparent 1px,
+          transparent 40px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 180, 80, 0.08) 0px,
+          rgba(255, 180, 80, 0.08) 1px,
+          transparent 1px,
+          transparent 40px
+        );
+      background-size: 40px 40px;
+      
+      /* Console border styling with warm tones */
+      border: 3px solid #3a2a1a;
+      box-shadow: 
+        0 0 0 1px #2d1f0d,
+        0 0 0 8px #1a1208,
+        0 0 0 10px #6b5a2a,
+        inset 0 0 20px rgba(0,0,0,0.5),
+        0 20px 60px rgba(0,0,0,0.6);
     }
 
-    .header p {
-        opacity: 0.92;
-        font-size: 1.1em;
+    .map::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 180, 80, 0.12) 0px,
+          rgba(255, 180, 80, 0.12) 1px,
+          transparent 1px,
+          transparent 40px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 180, 80, 0.12) 0px,
+          rgba(255, 180, 80, 0.12) 1px,
+          transparent 1px,
+          transparent 40px
+        );
+      pointer-events: none;
+      z-index: 1;
+      mix-blend-mode: lighten;
     }
 
-    .form-content {
-        padding: 40px;
-        display: flex;
-        gap: 40px;
+    .map::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(255,200,150,0.02), transparent 80%);
     }
 
-    .form-section {
-        margin-bottom: 30px;
+    .star {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffb366;
+      box-shadow: 0 0 10px rgba(255, 179, 102, 0.8);
     }
 
-    .form-section h2 {
-        color: #6b7ded;
-        margin-bottom: 20px;
-        font-size: 1.3em;
-        font-weight: 600;
-        border-bottom: 2px solid #f3f3f3;
-        padding-bottom: 10px;
+    .path {
+      position: absolute;
+      inset: 0;
     }
 
-    .form-group {
-        margin-bottom: 20px;
+    .sun {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      transform: translate(-50%, -50%);
+      animation: travel 6s linear infinite;
+    
+      background-image: url('/sun_icon.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    
+      filter: drop-shadow(0 0 12px rgba(255,200,0,0.9));
     }
 
-    label {
-        display: block;
-        margin-bottom: 8px;
-        color: #333;
-        font-weight: 500;
-        font-size: 0.95em;
+    @keyframes travel {
+      0%    { left: 80px;  top: 300px; }
+      25%   { left: 200px; top: 120px; }
+      50%   { left: 380px; top: 200px; }
+      75%   { left: 520px; top: 90px;  }
+      99.99%{ left: 620px; top: 280px; }
+      100%  { left: 80px;  top: 300px; }
     }
 
-    input[type="number"],
-    select {
-        width: 100%;
-        padding: 12px 14px;
-        border: 2px solid #e4e4e4;
-        border-radius: 10px;
-        font-size: 1em;
-        transition: all 0.25s ease;
-        background: #fafafa;
+    .label {
+      position: absolute;
+      color: rgba(255,230,200,0.7);
+      font-size: 16px;
+      font-family: 'Orbitron', sans-serif;
+      transform: translateY(10px);
+      letter-spacing: 0.05em;
+    }
+    
+    .hud {
+      position: absolute;
+      bottom: auto;
+      top: 18px;
+      left: 18px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(30, 20, 10, 0.6);
+      backdrop-filter: blur(6px);
+      box-shadow: inset 0 0 0 1px rgba(212, 160, 85, 0.2),
+                  0 0 20px rgba(212, 160, 85, 0.15);
+      color: #ffe8cf;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+    }
+    
+    .hud-line {
+      line-height: 1.4;
+    }
+    
+    .hud-line.small {
+      font-size: 10px;
+      opacity: 0.6;
+    }
+    
+    .hud-line.route {
+      font-size: 13px;
+    }
+    
+    .hud-line.time {
+      margin-top: 4px;
+      font-size: 16px;
+      color: #ffcc66;
+      text-shadow: 0 0 8px rgba(255, 204, 102, 0.6);
+    }
+    .hud-line.time {
+      animation: chronopulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes chronopulse {
+      0%   { opacity: 0.7; }
+      50%  { opacity: 1; }
+      100% { opacity: 0.7; }
     }
 
-    input[type="number"]:focus,
-    select:focus {
-        outline: none;
-        border-color: #6b7ded;
-        background: #fff;
-        box-shadow: 0 0 0 4px rgba(107, 125, 237, 0.15);
+    .trajectory-main {
+      stroke: #d4a055;
+      stroke-width: 3;
+      filter: drop-shadow(0 0 4px rgba(212, 160, 85, 0.5));
+      stroke-dasharray: none;
+    }
+    
+    .trajectory-alternate {
+      stroke: rgba(255,200,150,0.2);
+      stroke-width: 2;
+      stroke-dasharray: 6 6;
     }
 
-    .checkbox-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
+    .admirals-log {
+      width: 220px;
+      background: linear-gradient(180deg, #1a1208 0%, #1a1508 100%);
+      border-left: 1px solid #6b5a2a;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
 
-    .checkbox-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.95em;
+    .log-header {
+      background: linear-gradient(180deg, #1a1508 0%, #0f0a05 100%);
+      padding: 12px 16px;
+      border-bottom: 1px solid #6b5a2a;
     }
 
-    input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-        accent-color: #6b7ded;
+    .log-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: #d4a055;
+      text-transform: uppercase;
+      font-weight: 400;
+      margin: 0;
+      opacity: 0.85;
     }
 
-    .addons-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
+    .log-content {
+      padding: 16px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #d4b88f;
+      line-height: 1.6;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .addon-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px;
-        background: #f6f7fb;
-        border-radius: 10px;
-        border: 1px solid #ececec;
-        transition: background 0.2s ease;
+    .log-panels {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      width: 100%;
     }
 
-    .addon-item:hover {
-        background: #eef0fa;
+    .log-panel {
+      flex: 1;
+      background: rgba(20, 15, 8, 0.4);
+      border: 1px solid #6b5a2a;
+      border-radius: 4px;
+      padding: 12px;
+      font-family: monospace;
     }
 
-    .live-quote {
-        width: 200px;
-        margin-top: 30px;
-        padding: 30px;
-        background: linear-gradient(135deg, #6b7ded 0%, #8458b3 100%);
-        border-radius: 18px;
-        color: #fff;
-        text-align: center;
-        box-shadow: 0 12px 40px rgba(107, 125, 237, 0.35);
+    .log-entry {
+      position: relative;
+      padding-left: 20px;
+      border-left: 2px solid #6b5a2a;
+      margin: 0;
     }
 
-    .quote-label {
-        font-size: 1.2em;
-        opacity: 0.92;
-        margin-bottom: 10px;
-        font-weight: 500;
+    .log-entry::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d4a055;
+      box-shadow: 0 0 6px rgba(212, 160, 85, 0.5);
     }
 
-    .quote-amount {
-        font-size: 3.3em;
-        font-weight: 700;
-        margin: 10px 0;
-        text-shadow: 1px 2px 4px rgba(0,0,0,0.25);
+    .log-date {
+      color: #a88844;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
     }
 
-    .quote-details {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 2px solid rgba(255,255,255,0.28);
+    .log-text {
+      color: #ffe8cf;
+      font-size: 11px;
     }
-
-    .detail-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        font-size: 1em;
-        opacity: 0.95;
-    }
-
-    .info-box {
-        background: #eaf5ff;
-        border-left: 4px solid #6b7ded;
-        padding: 15px;
-        margin-top: 20px;
-        border-radius: 8px;
-    }
-
-    .info-box h4 {
-        color: #6b7ded;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-
-    .info-box ul {
-        margin-left: 20px;
-        color: #555;
-    }
-
-    .quote-layout {
-        display: flex;
-        gap: 40px;
-        align-items: flex-start;
-        margin-top: 20px;
-    }
-
-    .left-side {
-        flex: 2;
-    }
-
-    .right-side {
-        flex: 1;
-        position: sticky;
-        top: 20px;
-    }
-
-    .right-side .live-quote {
-        width: 100%;
-    }
-
-    .room-input-group {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .room-input-group input[type="number"] {
-        width: 80px;
-        margin-top: 5px;
-    }
-
-    /* Preset button styles */
-    .preset-section {
-        margin-bottom: 30px;
-    }
-
-    .preset-section h2 {
-        color: #6b7ded;
-        margin-bottom: 14px;
-        font-size: 1.3em;
-        font-weight: 600;
-        border-bottom: 2px solid #f3f3f3;
-        padding-bottom: 10px;
-    }
-
-    .preset-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-
-    .preset-btn {
-        padding: 10px 18px;
-        background: #f3f4fd;
-        border: 2px solid #c5caef;
-        border-radius: 10px;
-        font-size: 0.92em;
-        font-weight: 600;
-        color: #6b7ded;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .preset-btn:hover {
-        background: #6b7ded;
-        color: #fff;
-        border-color: #6b7ded;
-    }
-
-    .preset-btn.active {
-        background: #6b7ded;
-        color: #fff;
-        border-color: #6b7ded;
-    }
-
-    /* Travel rate inline inputs */
-    .travel-rate-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 14px;
-        font-size: 0.95em;
-        color: #444;
-    }
-
-    .travel-rate-row input[type="number"] {
-        width: 80px;
-        padding: 8px 10px;
-        font-size: 0.95em;
-    }
-
-    .travel-rate-row span {
-        font-weight: 500;
-    }
-
-    @media (max-width: 780px) {
-        .form-content {
-            flex-direction: column;
-            gap: 25px;
-            padding: 20px;
-        }
-
-        .right-side {
-            position: static;
-            width: 100%;
-        }
-
-        .right-side .live-quote {
-            width: 100%;
-        }
-    }
-
-    </style>
-
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Cleaning Service Quote</h1>
-            <p>Get an instant estimate for your cleaning needs</p>
-        </div>
+  <div class="console-frame">
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
 
-        
-        <div class="form-group">
-            <label for="hourlyRate">Hourly Rate ($)</label>
-            <input type="number" id="hourlyRate" min="0" step="0.01" value="40">
-        </div>
-
-        <div class="form-content">
-            <div class="left-side">
-                <form id="quoteForm" autocomplete="off">
-
-                    <!-- PRESETS -->
-                    <div class="preset-section">
-                        <h2>Quick Presets</h2>
-                        <div class="preset-buttons">
-                            <button type="button" class="preset-btn" id="presetStudio" onclick="applyPreset('studio')">🏠 Studio Apartment</button>
-                            <button type="button" class="preset-btn" onclick="applyPreset('clear')">✕ Clear All</button>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h2>Select Your Rooms</h2>
-                        
-                        <div class="form-group">
-                            <div class="room-input-group">
-                                <input type="checkbox" id="livingRoomCheck">
-                                <label for="livingRoomCheck">Living Room(s)</label>
-                                <input type="number" id="livingRoom" min="0" value="0" style="display:none;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="room-input-group">
-                                <input type="checkbox" id="diningRoomCheck">
-                                <label for="diningRoomCheck">Dining Room(s)</label>
-                                <input type="number" id="diningRoom" min="0" value="0" style="display:none;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="room-input-group">
-                                <input type="checkbox" id="kitchenCheck">
-                                <label for="kitchenCheck">Kitchen(s)</label>
-                                <input type="number" id="kitchen" min="0" value="0" style="display:none;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="room-input-group">
-                                <input type="checkbox" id="bedroomCheck">
-                                <label for="bedroomCheck">Bedroom(s)</label>
-                                <input type="number" id="bedroom" min="0" value="0" style="display:none;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="room-input-group">
-                                <input type="checkbox" id="fullBathCheck">
-                                <label for="fullBathCheck">Full Bathroom(s)</label>
-                                <input type="number" id="fullBath" min="0" value="0" style="display:none;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="room-input-group">
-                                <input type="checkbox" id="halfBathCheck">
-                                <label for="halfBathCheck">Half Bathroom(s)</label>
-                                <input type="number" id="halfBath" min="0" value="0" style="display:none;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="room-input-group">
-                                <input type="checkbox" id="officeCheck">
-                                <label for="officeCheck">Home Office/Study</label>
-                                <input type="number" id="office" min="0" value="0" style="display:none;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="room-input-group">
-                                <input type="checkbox" id="laundryCheck">
-                                <label for="laundryCheck">Laundry Room(s)</label>
-                                <input type="number" id="laundry" min="0" value="0" style="display:none;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="room-input-group">
-                                <input type="checkbox" id="hallwayCheck">
-                                <label for="hallwayCheck">Hallway(s)</label>
-                                <input type="number" id="hallway" min="0" value="0" style="display:none;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="room-input-group">
-                                <input type="checkbox" id="bonusRoomCheck">
-                                <label for="bonusRoomCheck">Bonus/Rec Room(s)</label>
-                                <input type="number" id="bonusRoom" min="0" value="0" style="display:none;">
-                            </div>
-                        </div>
-
-                    </div>
-    
-                    <div class="form-section">
-                        <h2>Condition Adjustments</h2>
-                        
-                        <div class="checkbox-group">
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="pets">
-                                <label for="pets">Pets in home</label>
-                            </div>
-    
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="clutter">
-                                <label for="clutter">Heavy clutter</label>
-                            </div>
-    
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="deepClean">
-                                <label for="deepClean">First-time/deep clean</label>
-                            </div>
-                        </div>
-                    </div>
-    
-                    <div class="form-section">
-                        <h2>Add-ons</h2>
-                        
-                        <div class="addons-grid">
-                            <div class="addon-item">
-                                <input type="checkbox" id="oven">
-                                <label for="oven">Inside Oven (+$30)</label>
-                            </div>
-    
-                            <div class="addon-item">
-                                <input type="checkbox" id="fridge">
-                                <label for="fridge">Inside Fridge (+$28)</label>
-                            </div>
-    
-                            <div class="addon-item">
-                                <input type="checkbox" id="trash">
-                                <label for="trash">Trash Takeout (+$25)</label>
-                            </div>
-
-                            <div class="addon-item">
-                                <input type="checkbox" id="eco-friendly">
-                                <label for="eco-friendly">Eco-Friendly (+$25)</label>
-                            </div>
-                        </div>
-    
-                        <div class="form-group" style="margin-top: 20px;">
-                            <label for="windows">Interior Windows (count)</label>
-                            <input type="number" id="windows" min="0" value="0">
-                        </div>
-                    </div>
-
-                    <!-- TRAVEL EXPENSES -->
-                    <div class="form-section">
-                        <h2>Travel Expenses</h2>
-                        <div class="travel-rate-row">
-                            <span>$</span>
-                            <input type="number" id="travelRateCost" min="0" step="0.01" value="0.75">
-                            <span>per</span>
-                            <input type="number" id="travelRateMiles" min="1" step="1" value="5">
-                            <span>miles (over 15 miles)</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="travelMiles">Miles to job</label>
-                            <input type="number" id="travelMiles" min="0" value="0" placeholder="0">
-                        </div>
-                    </div>
-    
-                    <div class="form-section">
-                        <h2>Frequency</h2>
-                        
-                        <div class="form-group">
-                            <label for="frequency">Cleaning Frequency</label>
-                            <select id="frequency">
-                                <option value="onetime">One-time (0% discount)</option>
-                                <option value="monthly">Monthly (7.5% discount)</option>
-                                <option value="biweekly">Bi-weekly (10% discount)</option>
-                                <option value="weekly">Weekly (15% discount)</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="right-side">
-                <div class="live-quote">
-                    <div class="quote-label">Estimated Quote</div>
-                    <div class="quote-amount" id="liveQuote">$0.00</div>
-                    <div class="quote-details" id="quoteDetails">
-                        <div class="detail-item">
-                            <span>Estimated Hours:</span>
-                            <span id="totalHours">0</span>
-                        </div>
-                        <div class="detail-item">
-                            <span>Base Price:</span>
-                            <span id="basePrice">$0</span>
-                        </div>
-                        <div class="detail-item">
-                            <span>Add-ons:</span>
-                            <span id="addonsPrice">$0</span>
-                        </div>
-                        <div class="detail-item">
-                            <span>Travel:</span>
-                            <span id="travelPrice">$0.00</span>
-                        </div>
-                        <div class="detail-item">
-                            <span>Frequency Discount:</span>
-                            <span id="discount">$0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="console-header">
+      <h1 class="mission-title">SUNADMIRAL NAVIGATION TRAJECTORY MAP</h1>
+      <span class="mission-code">SYS-NAV-04</span>
     </div>
-
-    <script>
-        // Room time estimates (in hours)
-        const roomTimes = {
-            livingRoom: 0.75,
-            diningRoom: 0.5,
-            kitchen: 1.0,
-            bedroom: 0.5,
-            fullBath: 1.0,
-            halfBath: 0.5,
-            office: 0.5,
-            laundry: 0.33,
-            hallway: 0.25,
-            bonusRoom: 0.75
-        };
-
-        // Handle checkbox toggles to show/hide number inputs
-        const roomCheckboxes = [
-            'livingRoomCheck', 'diningRoomCheck', 'kitchenCheck', 'bedroomCheck',
-            'fullBathCheck', 'halfBathCheck', 'officeCheck', 'laundryCheck',
-            'hallwayCheck', 'bonusRoomCheck'
-        ];
-
-        roomCheckboxes.forEach(checkboxId => {
-            const checkbox = document.getElementById(checkboxId);
-            const inputId = checkboxId.replace('Check', '');
-            const input = document.getElementById(inputId);
-
-            checkbox.addEventListener('change', function() {
-                if (this.checked) {
-                    input.style.display = 'block';
-                    input.value = 1;
-                } else {
-                    input.style.display = 'none';
-                    input.value = 0;
-                }
-                calculateQuote();
-            });
-
-            input.addEventListener('input', calculateQuote);
-        });
-
-        // Add event listeners for all other inputs
-        const form = document.getElementById('quoteForm');
-        const inputs = form.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            input.addEventListener('change', calculateQuote);
-            input.addEventListener('input', calculateQuote);
-        });
-
-        calculateQuote();
-
-        // ── Preset logic ──────────────────────────────────────────────────────
-        function applyPreset(name) {
-            // First clear everything
-            clearAll();
-
-            if (name === 'studio') {
-                // Studio apartment: sweep/mop floors (living room) + 1 full bathroom
-                // We'll use livingRoom for the main open space + fullBath
-                setRoom('livingRoomCheck', 'livingRoom', 1);
-                setRoom('fullBathCheck', 'fullBath', 1);
-
-                // Mark preset button active
-                document.getElementById('presetStudio').classList.add('active');
-            }
-
-            calculateQuote();
-        }
-
-        function setRoom(checkId, inputId, count) {
-            const checkbox = document.getElementById(checkId);
-            const input = document.getElementById(inputId);
-            checkbox.checked = true;
-            input.style.display = 'block';
-            input.value = count;
-        }
-
-        function clearAll() {
-            // Uncheck all room checkboxes and reset counts
-            roomCheckboxes.forEach(checkboxId => {
-                const checkbox = document.getElementById(checkboxId);
-                const inputId = checkboxId.replace('Check', '');
-                const input = document.getElementById(inputId);
-                checkbox.checked = false;
-                input.style.display = 'none';
-                input.value = 0;
-            });
-            // Uncheck condition adjustments
-            ['pets', 'clutter', 'deepClean'].forEach(id => {
-                document.getElementById(id).checked = false;
-            });
-            // Uncheck add-ons
-            ['oven', 'fridge', 'trash', 'eco-friendly'].forEach(id => {
-                document.getElementById(id).checked = false;
-            });
-            document.getElementById('windows').value = 0;
-            document.getElementById('travelMiles').value = 0;
-            document.getElementById('frequency').value = 'onetime';
-
-            // Remove active from all preset buttons
-            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
-
-            calculateQuote();
-        }
-
-        function calculateQuote() {
-            //Set base rate from user input
-            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 40;
-            
-            // Calculate base hours from rooms
-            let estimatedHours = 0;
-
-            // Add time for each room type
-            Object.keys(roomTimes).forEach(roomType => {
-                const count = parseFloat(document.getElementById(roomType).value) || 0;
-                estimatedHours += count * roomTimes[roomType];
-            });
-
-            // Apply condition modifiers
-            if (document.getElementById('pets').checked) {
-                estimatedHours += 0.5;
-            }
-
-            if (document.getElementById('clutter').checked) {
-                estimatedHours += 1;
-            }
-
-            if (document.getElementById('deepClean').checked) {
-                estimatedHours *= 1.5;
-            }
-
-            // Calculate add-ons
-            let addonsTotal = 0;
-            if (document.getElementById('oven').checked) {
-                addonsTotal += 30;
-                estimatedHours += 0.5;
-            }
-            if (document.getElementById('fridge').checked) {
-                addonsTotal += 28;
-                estimatedHours += 0.5;
-            }
-            if (document.getElementById('trash').checked) {
-                addonsTotal += 25;
-                estimatedHours += 0.5;
-            }
-            if (document.getElementById('eco-friendly').checked) {
-                addonsTotal += 25;
-            }
-            
-            const windows = parseFloat(document.getElementById('windows').value) || 0;
-            addonsTotal += windows * 6.5;
-
-            // Calculate travel expenses
-            const travelMiles = parseFloat(document.getElementById('travelMiles').value) || 0;
-            const travelRateCost = parseFloat(document.getElementById('travelRateCost').value) || 0;
-            const travelRateMiles = parseFloat(document.getElementById('travelRateMiles').value) || 5;
-            const travelTotal = travelRateMiles > 0 ? (Math.max(0, travelMiles - 15) / travelRateMiles) * travelRateCost : 0;
-
-            // Apply frequency discount
-            const frequency = document.getElementById('frequency').value;
-            let discountPercent = 0;
-            if (frequency === 'weekly') discountPercent = 0.15;
-            if (frequency === 'biweekly') discountPercent = 0.1;
-            if (frequency === 'monthly') discountPercent = 0.075;
-            
-
-            // Calculate final price
-            const roundedHours = Math.ceil(estimatedHours * 4) / 4;
-            const basePrice = roundedHours * hourlyRate;
-            const discountAmount = (basePrice + addonsTotal) * discountPercent;
-            const finalPrice = basePrice + addonsTotal + travelTotal - discountAmount;
-
-            // Update display
-            document.getElementById('liveQuote').textContent = '$' + finalPrice.toFixed(2);
-            document.getElementById('totalHours').textContent = `${roundedHours} hours`;
-            document.getElementById('basePrice').textContent = '$' + basePrice.toFixed(2);
-            document.getElementById('addonsPrice').textContent = '$' + addonsTotal.toFixed(2);
-            document.getElementById('travelPrice').textContent = '$' + travelTotal.toFixed(2);
-            document.getElementById('discount').textContent = '-$' + discountAmount.toFixed(2);
-
-            //Live update with hourly rate
-            document.getElementById('hourlyRate').addEventListener('input', calculateQuote);
-        }
-    </script>
+  
+    <div class="map">
+      <svg class="path" viewBox="0 0 700 400" preserveAspectRatio="none">
+        <!-- Alternate/completed routes (dimmed) -->
+        <polyline
+          class="trajectory-alternate"
+          points="80,300 200,120 380,200 520,90 620,280"
+          fill="none" />
+        
+        <!-- Main trajectory: Home → RE4 (highlighted) -->
+        <line
+        class="trajectory-main"
+        x1="84" y1="304"
+        x2="624" y2="284"
+        fill="none" />
+      </svg>
+  
+      <div class="star" style="left:80px; top:300px; background:#c44;"></div>
+      <div class="star" style="left:200px; top:120px;"></div>
+      <div class="star" style="left:380px; top:200px;"></div>
+      <div class="star" style="left:520px; top:90px;"></div>
+  
+      <div class="label" style="left:65px; top:315px;">Home</div>
+      <div class="label" style="left:185px; top:135px;">😺</div>
+      <div class="label" style="left:365px; top:215px;">🐾🐾</div>
+      <div class="label" style="left:505px; top:105px;">RE4</div>
+      <div class="star" style="left:620px; top:280px;">RE9: REQUIEM</div>
+  
+      <div class="sun"></div>
+  
+      <div class="hud">
+      <div class="hud-line small">TRANSIT VECTOR</div>
+      <div class="hud-line route">
+        HOME NODE → RE4 NODE
+      </div>
+      <div class="hud-line time">
+        ⧖  Δ-RE4 : 4.73 σ
+      </div>
+    </div>
+  
+    </div>
+  </div>
+  
 </body>
 </html>
