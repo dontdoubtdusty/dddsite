@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinco de Mayo Nacho Night</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FDF6E3;
+    --terracotta: #C4623A;
+    --deep: #2C1A0E;
+    --gold: #D4A017;
+    --sage: #7A9E7E;
+    --rust: #8B3A2A;
+    --warm-white: #FAF3E0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--deep);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='none'/%3E%3Ccircle cx='1' cy='1' r='0.5' fill='%23C4623A' opacity='0.07'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* Header */
+  header { text-align: center; margin-bottom: 56px; animation: fadeDown 0.8s ease both; }
+
+  .eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .eyebrow::before, .eyebrow::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--terracotta);
+    opacity: 0.5;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 7vw, 3.8rem);
+    line-height: 1.1;
+    color: var(--deep);
+    margin-bottom: 10px;
+  }
+  h1 em { color: var(--terracotta); font-style: italic; }
+
+  .subtitle {
+    font-size: 14px;
+    font-weight: 300;
+    color: #7A6550;
+    letter-spacing: 0.03em;
+  }
+
+  .flag-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 20px 0 10px;
+  }
+  .flag-dots span {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .flag-dots span:nth-child(1) { background: #006847; }
+  .flag-dots span:nth-child(2) { background: #FFFFFF; border: 1px solid #ddd; }
+  .flag-dots span:nth-child(3) { background: #CE1126; }
+
+  /* Timeline */
+  .timeline-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .timeline {
+    display: flex;
+    gap: 0;
+    margin-bottom: 52px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(196,98,58,0.2);
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+  .time-block {
+    flex: 1;
+    padding: 10px 14px;
+    background: var(--warm-white);
+    text-align: center;
+    font-size: 12px;
+    border-right: 1px solid rgba(196,98,58,0.15);
+    cursor: default;
+    transition: background 0.2s;
+  }
+  .time-block:last-child { border-right: none; }
+  .time-block:hover { background: rgba(196,98,58,0.07); }
+  .time-block .t-time { font-weight: 500; color: var(--terracotta); font-size: 13px; }
+  .time-block .t-label { color: #7A6550; margin-top: 2px; font-size: 11px; }
+
+  /* Section */
+  .section {
+    margin-bottom: 44px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .section:nth-child(1) { animation-delay: 0.1s; }
+  .section:nth-child(2) { animation-delay: 0.2s; }
+  .section:nth-child(3) { animation-delay: 0.3s; }
+  .section:nth-child(4) { animation-delay: 0.4s; }
+  .section:nth-child(5) { animation-delay: 0.5s; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .section-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(196,98,58,0.25);
+  }
+  .section-icon.sage { background: var(--sage); }
+  .section-icon.gold { background: var(--gold); }
+  .section-icon.rust { background: var(--rust); }
+  .section-icon.dark { background: var(--deep); }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--deep);
+    line-height: 1.2;
+  }
+  h2 small {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 2px;
+  }
+
+  /* Steps */
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    padding: 16px 18px;
+    background: var(--warm-white);
+    border-radius: 10px;
+    border: 1px solid rgba(196,98,58,0.1);
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+  .step:hover {
+    border-color: rgba(196,98,58,0.3);
+    transform: translateX(4px);
+    box-shadow: -3px 0 0 var(--terracotta);
+  }
+
+  .step-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-num.sage { background: var(--sage); }
+  .step-num.gold { background: var(--gold); }
+  .step-num.rust { background: var(--rust); }
+  .step-num.dark { background: var(--deep); }
+
+  .step-text { font-size: 14px; line-height: 1.65; color: #3D2B1A; font-weight: 400; }
+  .step-text strong { color: var(--deep); font-weight: 500; }
+
+  /* Tips */
+  .tip-box {
+    background: linear-gradient(135deg, #FFF8E7, #FDF0D5);
+    border: 1px solid rgba(212,160,23,0.35);
+    border-left: 3px solid var(--gold);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #5C4620;
+  }
+  .tip-box .tip-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* Nice touches section */
+  .touches-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 500px) { .touches-grid { grid-template-columns: 1fr; } }
+
+  .touch-card {
+    background: var(--warm-white);
+    border: 1px solid rgba(196,98,58,0.12);
+    border-radius: 12px;
+    padding: 18px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .touch-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(44,26,14,0.1);
+  }
+  .touch-card .tc-icon { font-size: 22px; margin-bottom: 8px; }
+  .touch-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    margin-bottom: 6px;
+    color: var(--deep);
+  }
+  .touch-card p { font-size: 13px; line-height: 1.6; color: #5C4620; }
+
+  /* Divider */
+  .divider {
+    text-align: center;
+    margin: 40px 0;
+    color: var(--terracotta);
+    opacity: 0.35;
+    font-size: 20px;
+    letter-spacing: 8px;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 12px;
+    color: #9E8060;
+    font-style: italic;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="eyebrow">Vegan · For Two · Cinco de Mayo</div>
+    <h1>Nacho <em>Night</em></h1>
+    <div class="flag-dots"><span></span><span></span><span></span></div>
+    <p class="subtitle">A full spread — salsa, guacamole, refried beans & vegan sour cream</p>
+  </header>
+
+  <div class="timeline-label">⏱ Prep Timeline</div>
+  <div class="timeline">
+    <div class="time-block"><div class="t-time">~15 min</div><div class="t-label">Salsa</div></div>
+    <div class="time-block"><div class="t-time">~10 min</div><div class="t-label">Beans</div></div>
+    <div class="time-block"><div class="t-time">~10 min</div><div class="t-label">Sour Cream</div></div>
+    <div class="time-block"><div class="t-time">~8 min</div><div class="t-label">Guac</div></div>
+    <div class="time-block"><div class="t-time">~10 min</div><div class="t-label">Nachos</div></div>
+  </div>
+
+  <!-- SALSA -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🍅</div>
+      <h2><small>Step 1 · ~15 mins</small>Mild Salsa</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Dice <strong>3 roma tomatoes</strong> small — remove the seeds to keep the salsa from going watery. Pat dry with paper towel.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Finely mince <strong>¼ white onion</strong>, <strong>1 small jalapeño</strong> (seeded for mild heat), <strong>1 garlic clove</strong>, and a <strong>small handful of cilantro</strong>.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Combine everything in a bowl. Add <strong>juice of ½ lime</strong> and a generous pinch of <strong>salt</strong>. Stir and taste — adjust salt and lime as needed.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">Cover and refrigerate for at least <strong>15 minutes</strong> before serving — the flavours meld beautifully with time.</div>
+      </div>
+    </div>
+    <div class="tip-box"><span class="tip-icon">✨</span><span><strong>Nice touch:</strong> Char your tomatoes and jalapeño directly on a gas burner or under the broiler for 5 minutes before dicing. It adds a subtle smoky depth that makes the salsa taste restaurant-quality.</span></div>
+  </div>
+
+  <div class="divider">· · ·</div>
+
+  <!-- REFRIED BEANS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon sage">🫘</div>
+      <h2><small>Step 2 · ~10 mins</small>Refried Beans</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num sage">1</div>
+        <div class="step-text">Heat <strong>1 tbsp olive oil</strong> in a pan over medium. Add <strong>¼ onion, finely diced</strong> and cook 3–4 minutes until soft. Add <strong>2 minced garlic cloves</strong> and cook 30 more seconds.</div>
+      </div>
+      <div class="step">
+        <div class="step-num sage">2</div>
+        <div class="step-text">Add one <strong>400g can of pinto beans</strong> (drained, but reserve the liquid). Sprinkle in <strong>½ tsp cumin</strong> and a pinch of <strong>salt</strong>.</div>
+      </div>
+      <div class="step">
+        <div class="step-num sage">3</div>
+        <div class="step-text">Mash the beans with a fork or potato masher as they warm, adding splashes of the <strong>reserved bean liquid</strong> (or vegetable broth) to reach your desired creamy consistency.</div>
+      </div>
+      <div class="step">
+        <div class="step-num sage">4</div>
+        <div class="step-text">Cook on low, stirring occasionally, until thick and creamy. Taste and adjust salt. Keep warm on the lowest heat until ready to serve.</div>
+      </div>
+    </div>
+    <div class="tip-box"><span class="tip-icon">✨</span><span><strong>Nice touch:</strong> Drizzle a tiny bit of olive oil and a sprinkle of smoked paprika over the finished beans when plating. It looks stunning and adds a gentle warmth.</span></div>
+  </div>
+
+  <div class="divider">· · ·</div>
+
+  <!-- SOUR CREAM -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon gold">🥛</div>
+      <h2><small>Step 3 · ~10 mins + soak</small>Cashew Sour Cream</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num gold">1</div>
+        <div class="step-text"><strong>Soak ¾ cup raw cashews</strong> in boiling water for at least 20 minutes (or overnight in cold water). Drain and rinse. <em>Do this first if making from scratch.</em></div>
+      </div>
+      <div class="step">
+        <div class="step-num gold">2</div>
+        <div class="step-text">Blend soaked cashews with <strong>3 tbsp lemon juice</strong>, <strong>1 tsp apple cider vinegar</strong>, <strong>¼ tsp salt</strong>, and <strong>3–4 tbsp water</strong> until completely silky smooth.</div>
+      </div>
+      <div class="step">
+        <div class="step-num gold">3</div>
+        <div class="step-text">Taste — it should be tangy, creamy, and slightly rich. Add a drop more vinegar or salt to taste. Refrigerate until serving. It thickens as it chills.</div>
+      </div>
+    </div>
+    <div class="tip-box"><span class="tip-icon">✨</span><span><strong>Short on time?</strong> Kite Hill or Forager store-bought vegan sour cream are excellent and nearly indistinguishable from dairy. Grab one as a backup.</span></div>
+  </div>
+
+  <div class="divider">· · ·</div>
+
+  <!-- GUACAMOLE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon rust">🥑</div>
+      <h2><small>Step 4 · ~8 mins</small>Guacamole</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num rust">1</div>
+        <div class="step-text">Halve and pit <strong>2 ripe avocados</strong>. Scoop into a bowl. They should give easily when pressed — firm avocados won't mash well.</div>
+      </div>
+      <div class="step">
+        <div class="step-num rust">2</div>
+        <div class="step-text">Add <strong>juice of 1 lime</strong>, <strong>¼ tsp salt</strong>, and mash to your preferred texture — chunky is great for nachos.</div>
+      </div>
+      <div class="step">
+        <div class="step-num rust">3</div>
+        <div class="step-text">Fold in <strong>2 tbsp finely diced red onion</strong>, <strong>1 tbsp cilantro</strong>, and optionally <strong>½ a seeded jalapeño</strong>, finely minced.</div>
+      </div>
+      <div class="step">
+        <div class="step-num rust">4</div>
+        <div class="step-text">Taste and adjust salt and lime. <strong>Make this last</strong> — guacamole browns quickly. Press cling wrap directly onto the surface if not serving immediately.</div>
+      </div>
+    </div>
+    <div class="tip-box"><span class="tip-icon">✨</span><span><strong>Nice touch:</strong> Serve the guacamole in one of the avocado skin halves. It looks beautiful and keeps it fresh longer. A little sprinkle of flaky sea salt on top elevates it instantly.</span></div>
+  </div>
+
+  <div class="divider">· · ·</div>
+
+  <!-- NACHOS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon dark">🧀</div>
+      <h2><small>Step 5 · ~10 mins</small>Building the Nachos</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num dark">1</div>
+        <div class="step-text">Preheat your oven to <strong>200°C / 400°F</strong>. Line a large baking sheet with parchment paper.</div>
+      </div>
+      <div class="step">
+        <div class="step-num dark">2</div>
+        <div class="step-text">Spread tortilla chips in a <strong>single layer</strong> — resist the urge to pile them high. Layering means soggy chips at the bottom. For a bigger portion, use two trays.</div>
+      </div>
+      <div class="step">
+        <div class="step-num dark">3</div>
+        <div class="step-text">Spoon the <strong>warm refried beans</strong> in small dollops across the chips. Add your toppings: a sprinkle of <strong>jalapeño slices</strong>, perhaps some <strong>corn or black beans</strong> for texture.</div>
+      </div>
+      <div class="step">
+        <div class="step-num dark">4</div>
+        <div class="step-text">If using a vegan shredded cheese, scatter it on now. Bake for <strong>8–10 minutes</strong> until edges are golden and everything is warmed through.</div>
+      </div>
+      <div class="step">
+        <div class="step-num dark">5</div>
+        <div class="step-text">Remove from the oven and immediately <strong>add the cold toppings</strong>: dollops of guacamole, salsa, and sour cream. Garnish with fresh cilantro. Serve straight from the tray.</div>
+      </div>
+    </div>
+    <div class="tip-box"><span class="tip-icon">✨</span><span><strong>Nice touch:</strong> Serve the nachos on a large wooden board brought to the table. Set small bowls of extra salsa, guac, and sour cream alongside for dipping. It feels like a feast.</span></div>
+  </div>
+
+  <div class="divider">· · ·</div>
+
+  <!-- NICE TOUCHES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background: #5A4A8A;">🌙</div>
+      <h2><small>Make it special</small>Tips for a Lovely Evening</h2>
+    </div>
+    <div class="touches-grid">
+      <div class="touch-card">
+        <div class="tc-icon">🕯️</div>
+        <h3>Set the Scene</h3>
+        <p>Light a couple of candles and put on some Latin jazz or mariachi playlist. Ambiance costs nothing but makes everything taste better.</p>
+      </div>
+      <div class="touch-card">
+        <div class="tc-icon">🍹</div>
+        <h3>Make Drinks</h3>
+        <p>Virgin margaritas are easy and festive: lime juice, agave syrup, sparkling water, and salt-rimmed glasses. Or go classic with a proper margarita.</p>
+      </div>
+      <div class="touch-card">
+        <div class="tc-icon">🌺</div>
+        <h3>Garnish Generously</h3>
+        <p>Fresh cilantro, lime wedges, and thinly sliced radishes scattered over the nachos add colour, freshness, and an impressive finishing touch.</p>
+      </div>
+      <div class="touch-card">
+        <div class="tc-icon">🫙</div>
+        <h3>Serve Family Style</h3>
+        <p>Put each condiment in its own little bowl. Arrange them around the nacho tray like a spread. It feels abundant and inviting — a real experience.</p>
+      </div>
+      <div class="touch-card">
+        <div class="tc-icon">🌶️</div>
+        <h3>Offer Heat Levels</h3>
+        <p>Keep a bottle of hot sauce on the table. It lets each of you customise and adds an interactive, fun element to the meal.</p>
+      </div>
+      <div class="touch-card">
+        <div class="tc-icon">🎵</div>
+        <h3>Timing is Everything</h3>
+        <p>Prep all the dips first, then build and bake the nachos last. Everything should land at the table at the same time, warm and fresh.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>¡Feliz Cinco de Mayo! 🌮 · Made with love, for two.</p>
+  </footer>
+
+</div>
+</body>
+</html>
