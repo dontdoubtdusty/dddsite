@@ -76,6 +76,7 @@
     bottom: 25px;
     height: 64px;            /* change to resize the cardinal */
     width: auto;
+    z-index: 2;
     image-rendering: pixelated;
     pointer-events: none;    /* never blocks clicks on the page */
     will-change: transform;
@@ -85,6 +86,16 @@
     body { padding: 16px; }
     .grid { grid-template-columns: 1fr; }
     .tile.big, .tile.small { grid-column: auto; }
+  }
+  .logo {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);   /* centers it horizontally */
+    height: 64px;                  /* adjust to your logo's size */
+    width: auto;
+    z-index: 1;
+    pointer-events: none;          /* optional: lets clicks pass through */
   }
 </style>
 </head>
@@ -131,6 +142,7 @@
   </main>
 
   <img class="cardinal" id="cardinal" src="images/cardinal-1.png" alt="" aria-hidden="true">
+  <img class="logo" src="images/dddlogo.png" alt="Don't Doubt Dusty logo">
 
   <script>
     (function () {
