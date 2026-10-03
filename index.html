@@ -1,472 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dusty's Goober Stop</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            color: #fff;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem 0;
-        }
-
-        h1 {
-            font-size: 4rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f7dc6f);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient 4s ease infinite;
-            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
-            margin-bottom: 0.5rem;
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #4ecdc4;
-            letter-spacing: 0.3rem;
-            text-transform: uppercase;
-            opacity: 0.8;
-        }
-
-        .advent-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(255, 107, 107, 0.1);
-            border: 2px solid rgba(255, 107, 107, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(255, 107, 107, 0.2);
-        }
-
-        .section-title {
-            font-size: 2rem;
-            color: #f7dc6f;
-            text-align: center;
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2rem;
-        }
-
-        .advent-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .advent-card {
-            border-color: rgba(255, 107, 107, 0.3);
-        }
-
-        .advent-card:hover {
-            border-color: #ff6b6b;
-            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
-        }
-
-        .toolkit-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(78, 205, 196, 0.1);
-            border: 2px solid rgba(78, 205, 196, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(78, 205, 196, 0.2);
-        }
-
-        .toolkit-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .toolkit-card {
-            border-color: rgba(78, 205, 196, 0.3);
-        }
-
-        .toolkit-card:hover {
-            border-color: #4ecdc4;
-            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.4);
-        }
-
-      .shrek-section {
-          margin-bottom: 4rem;
-          padding: 2rem;
-          background: linear-gradient(135deg, rgba(139, 195, 74, 0.15), rgba(104, 159, 56, 0.15));
-          border: 3px solid #7CB342;
-          border-radius: 20px;
-          box-shadow: 0 0 40px rgba(124, 179, 66, 0.3);
-          position: relative;
-          overflow: visible;
-      }
-      
-      .shrek-section .section-title {
-          color: #AED581;
-          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 195, 74, 0.6);
-          position: relative;
-          z-index: 1;
-      }
-      
-      .shrek-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 1.5rem;
-          position: relative;
-          z-index: 1;
-      }
-      
-      .shrek-card {
-          background: rgba(104, 159, 56, 0.2);
-          border-color: rgba(139, 195, 74, 0.4);
-      }
-      
-      .shrek-card:hover {
-          border-color: #8BC34A;
-          box-shadow: 0 10px 40px rgba(139, 195, 74, 0.5);
-          background: rgba(139, 195, 74, 0.15);
-      }
-      
-      .shrek-card .card-title {
-          color: #C5E1A5;
-      }
-      
-      .shrek-card:hover .card-title {
-          color: #DCEDC8;
-      }
-
-        .goober-stops-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(69, 183, 209, 0.1);
-            border: 2px solid rgba(69, 183, 209, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(69, 183, 209, 0.2);
-        }
-        
-        .goober-stops-section .section-title {
-            margin-bottom: 2rem;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .card:hover::before {
-            left: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: #4ecdc4;
-            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.3);
-        }
-
-        .grid .card::before {
-            display: none;
-        }
-
-        .grid .card:hover {
-            transform: none;
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: none;
-        }
-
-        .card-title {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #f7dc6f;
-            margin-bottom: 0.8rem;
-            text-decoration: none;
-            display: block;
-            transition: color 0.3s ease;
-        }
-
-        .card:hover .card-title {
-            color: #4ecdc4;
-        }
-
-        .card-desc {
-            color: #ddd;
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-
-        .link-wrapper {
-            text-decoration: none;
-            display: block;
-            height: 100%;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
-            }
-            
-            .subtitle {
-                font-size: 1rem;
-                letter-spacing: 0.2rem;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .advent-grid, .toolkit-grid {
-                grid-template-columns: 1fr;
-            }
-
-          .shrek-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .floating {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .archives-section {
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: rgba(156, 39, 176, 0.1);
-            border: 2px solid rgba(156, 39, 176, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(156, 39, 176, 0.2);
-        }
-        
-        .archives-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .archives-card {
-            border-color: rgba(156, 39, 176, 0.3);
-        }
-        
-        .archives-card:hover {
-            border-color: #9C27B0;
-            box-shadow: 0 10px 40px rgba(156, 39, 176, 0.4);
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Don't Doubt Dusty</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #9b1c1c;
+    --red-tint: #f9eaea;
+    --paper: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px 32px 100px;
+    background: var(--paper);
+    color: var(--red);
+    font-family: "Pixelify Sans", "Courier New", monospace;
+  }
+  h1 {
+    margin: 0 0 8px;
+    text-align: center;
+    font-size: clamp(2rem, 6vw, 3.4rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px 40px;
+  }
+  .tile {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    text-align: center;
+  }
+  .tile.big   { grid-column: span 3; }
+  .tile.small { grid-column: span 2; }
+  .label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+    font-weight: 600;
+  }
+  .box {
+    border: 3px solid var(--red);
+    background: var(--paper);
+    overflow: hidden;
+    transition: background-color 0.15s;
+  }
+  .big .box   { aspect-ratio: 2 / 1; }
+  .small .box { aspect-ratio: 16 / 10; }
+  .box img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .tile:hover .box { background: var(--red-tint); }
+  .tile:focus-visible { outline: none; }
+  .tile:focus-visible .box {
+    outline: 3px dashed var(--red);
+    outline-offset: 4px;
+  }
+  /* Cardinal patrol */
+  .cardinal {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 64px;            /* change to resize the cardinal */
+    width: auto;
+    image-rendering: pixelated;
+    pointer-events: none;    /* never blocks clicks on the page */
+    will-change: transform;
+  }
+  .cardinal[hidden] { display: none; }
+  @media (max-width: 720px) {
+    body { padding: 16px; }
+    .grid { grid-template-columns: 1fr; }
+    .tile.big, .tile.small { grid-column: auto; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <header class="floating">
-            <h1>Dusty's Goober Stop</h1>
-            <div class="subtitle">Web Experiments & Digital Oddities</div>
-        </header>
+  <h1>Don't Doubt Dusty</h1>
 
-        <section class="advent-section">
-            <h2 class="section-title">Advent Calendars</h2>
-            <div class="advent-grid">
-                <div class="card advent-card">
-                    <a href="horroradvent.html" class="link-wrapper">
-                        <div class="card-title">Horror Advent</div>
-                        <div class="card-desc">Open each door to discover a chilling blend of classic and contemporary horror and sci‑fi tales</div>
-                    </a>
-                </div>
-                
-                <div class="card advent-card">
-                    <a href="mtgadvent.html" class="link-wrapper">
-                        <div class="card-title">MTG Draft Mashup Advent</div>
-                        <div class="card-desc">MTG Draft Mashup Advent Calendar with daily card reveals</div>
-                    </a>
-                </div>
+  <main class="grid">
+    <!-- Replace each href and img src with your own. -->
 
-                <div class="card advent-card">
-                    <a href="otherworldlyadventcalendar.html" class="link-wrapper">
-                        <div class="card-title">Otherworldly Advent</div>
-                        <div class="card-desc">A new otherworldly horror every day to haunt your dreams</div>
-                    </a>
-                </div>
+    <a class="tile big" href="https://open.spotify.com/artist/2ZGyFnBKOQq7kMWWjX688f" target="_blank" rel="noopener">
+      <span class="label">Music</span>
+      <div class="box">
+        <img src="images/music.png" alt="Dusty's music on Spotify" onerror="this.style.display='none'">
+      </div>
+    </a>
 
-                <div class="card advent-card">
-                    <a href="silly_reasons_advent_calendar.html" class="link-wrapper">
-                        <div class="card-title">Silly Reasons Advent</div>
-                        <div class="card-desc">An advent calendar filled with absurd and delightful reasons to live</div>
-                    </a>
-                </div>
-            </div>
-        </section>
+    <a class="tile big" href="https://bigjuicydoug.itch.io/scoundrel" target="_blank" rel="noopener">
+      <span class="label">Game</span>
+      <div class="box">
+        <img src="images/game.png" alt="Screenshot of the game" onerror="this.style.display='none'">
+      </div>
+    </a>
 
-        <section class="toolkit-section">
-            <h2 class="section-title">Goober Toolkit</h2>
-            <div class="toolkit-grid">
-                <div class="card toolkit-card">
-                    <a href="8ball.html" class="link-wrapper">
-                        <div class="card-title">Magic 8-Ball</div>
-                        <div class="card-desc">Get cryptic answers to life's burning questions from the digital oracle</div>
-                    </a>
-                </div>
+    <a class="tile small" href="8-ball.html">
+      <span class="label">8-Ball</span>
+      <div class="box">
+        <img src="images/8-ball.png" alt="The 8-Ball page" onerror="this.style.display='none'">
+      </div>
+    </a>
 
-                <div class="card toolkit-card">
-                    <a href="bookchart.html" class="link-wrapper">
-                        <div class="card-title">Dusty's Book Flow Tool</div>
-                        <div class="card-desc">Organize your reading journey with a simple, satisfying flow from bookshelf to finished</div>
-                    </a>
-                </div>
-            </div>
-        </section>
+    <a class="tile small" href="thebookofcarp.html">
+      <span class="label">The Book Of Carp</span>
+      <div class="box">
+        <img src="images/book-of-carp.png" alt="The Book Of Carp" onerror="this.style.display='none'">
+      </div>
+    </a>
 
-        <section class="archives-section">
-            <h2 class="section-title">The Archives</h2>
-            <div class="archives-grid">
-                <div class="card archives-card">
-                    <a href="thebookofcarp.html" class="link-wrapper">
-                        <div class="card-title">The Book of Carp</div>
-                        <div class="card-desc">Sacred wisdom and profound musings from the ancient texts</div>
-                    </a>
-                </div>
-        
-                <div class="card archives-card">
-                    <a href="fhrquotes.html" class="link-wrapper">
-                        <div class="card-title">The FHR Archives</div>
-                        <div class="card-desc">A codex of 193 posts from Full House Reviewed celebrating Billy Superstar</div>
-                    </a>
-                </div>
-            </div>
-        </section>
+    <a class="tile small" href="https://www.youtube.com/@DontDoubtDusty" target="_blank" rel="noopener">
+      <span class="label">YouTube</span>
+      <div class="box">
+        <img src="images/youtube.png" alt="Dusty's YouTube channel" onerror="this.style.display='none'">
+      </div>
+    </a>
+  </main>
 
-        <section class="shrek-section">
-                <h2 class="section-title">The Swamp Sanctuary</h2>
-                <div class="shrek-grid">
-                    <div class="card shrek-card">
-                        <a href="shoracle.html" class="link-wrapper">
-                            <div class="card-title">Swamp Tarot</div>
-                            <div class="card-desc">Divine your destiny with the ancient wisdom of the swamp oracle</div>
-                        </a>
-                    </div>
-            
-                    <div class="card shrek-card">
-                        <a href="booster.html" class="link-wrapper">
-                            <div class="card-title">Shrek Booster Pack</div>
-                            <div class="card-desc">Shrek Booster Pack Simulator with layers of collectible surprises</div>
-                        </a>
-                    </div>
-            
-                    <div class="card shrek-card">
-                        <a href="dice.html" class="link-wrapper">
-                            <div class="card-title">Shrek Dice</div>
-                            <div class="card-desc">And you thought it was ogre</div>
-                        </a>
-                    </div>
-            
-                    <div class="card shrek-card">
-                        <a href="notepad-recreation.html" class="link-wrapper">
-                            <div class="card-title">ShrekPad</div>
-                            <div class="card-desc">A fully functional Notepad variant for all your swampy note-taking needs</div>
-                        </a>
-                    </div>
-                </div>
-            </section>
-        <section class="goober-stops-section">
-            <h2 class="section-title">Goober Stops</h2>
-                <div class="grid">
-                    <div class="card">
-                        <a href="beards.html" class="link-wrapper">
-                            <div class="card-title">Beards PSA</div>
-                            <div class="card-desc">An anti AI-beard public service announcement - there's too many!</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="freaksgiving.html" class="link-wrapper">
-                            <div class="card-title">Big Beautiful Bill's Freaksgiving</div>
-                            <div class="card-desc">A twisted holiday celebration you won't soon forget</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="donotresist.html" class="link-wrapper">
-                            <div class="card-title">Do Not Resist</div>
-                            <div class="card-desc">An experimental interactive experience that tests your will</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="horse.html" class="link-wrapper">
-                            <div class="card-title">Horse Rain</div>
-                            <div class="card-desc">The timeline of the horse rain horror - a catastrophic event</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="like_mike.html" class="link-wrapper">
-                            <div class="card-title">Like Mike Awards</div>
-                            <div class="card-desc">Basketball-inspired awards celebrating legendary achievements</div>
-                        </a>
-                    </div>
-        
-                    <div class="card">
-                        <a href="space_transfer.html" class="link-wrapper">
-                            <div class="card-title">Space Transfer</div>
-                            <div class="card-desc">Intergalactic shoe shopping experience - transfer to a footwear boutique in another galaxy</div>
-                        </a>
-                    </div>
+  <img class="cardinal" id="cardinal" src="images/cardinal1.png" alt="" aria-hidden="true">
 
-                    <div class="card">
-                        <a href="usps_mockery.html" class="link-wrapper">
-                            <div class="card-title">USPS Mockery</div>
-                            <div class="card-desc">A quick side thought about the mockery of mail</div>
-                        </a>
-                    </div>
-                </div>
-        </section>
-    </div>
+  <script>
+    (function () {
+      var bird = document.getElementById('cardinal');
+      var frames = ['images/cardinal1.png', 'images/cardinal2.png'];
+      var SPEED = 90;        // pixels per second
+      var FRAME_MS = 180;    // time each frame is shown
+
+      // Hide the bird if the first frame is missing.
+      bird.onerror = function () { bird.hidden = true; };
+
+      // Respect "reduce motion": show a still bird instead of patrolling.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      var x = 0, dir = 1, frame = 0, last = null;
+
+      setInterval(function () {
+        frame = (frame + 1) % frames.length;
+        bird.src = frames[frame];
+      }, FRAME_MS);
+
+      function step(t) {
+        if (last === null) last = t;
+        var dt = (t - last) / 1000;
+        last = t;
+
+        var max = window.innerWidth - bird.offsetWidth;
+        x += dir * SPEED * dt;
+        if (x >= max) { x = max; dir = -1; }
+        if (x <= 0)   { x = 0;   dir = 1; }
+
+        // Frames are assumed to face right; flip when walking left.
+        bird.style.transform = 'translateX(' + x + 'px) scaleX(' + dir + ')';
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    })();
+  </script>
 </body>
 </html>
