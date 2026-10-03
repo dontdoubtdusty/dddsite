@@ -158,12 +158,13 @@
         last = t;
 
         var max = Math.min(800, window.innerWidth - bird.offsetWidth);
+        var offset = (window.innerWidth - bird.offsetWidth - max) / 2;
         x += dir * SPEED * dt;
         if (x >= max) { x = max; dir = -1; }
         if (x <= 0)   { x = 0;   dir = 1; }
 
         // Frames are assumed to face right; flip when walking left.
-        bird.style.transform = 'translateX(' + x + 'px) scaleX(' + dir + ')';
+        bird.style.transform = 'translateX(' + (offset + x) + 'px) scaleX(' + dir + ')';
         requestAnimationFrame(step);
       }
       requestAnimationFrame(step);
