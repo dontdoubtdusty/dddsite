@@ -157,7 +157,7 @@
         var dt = (t - last) / 1000;
         last = t;
 
-        var max = window.innerWidth - bird.offsetWidth;
+        var max = Math.min(800, window.innerWidth - bird.offsetWidth);
         x += dir * SPEED * dt;
         if (x >= max) { x = max; dir = -1; }
         if (x <= 0)   { x = 0;   dir = 1; }
