@@ -207,7 +207,7 @@
       gap: 3px;
       background:
         radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.18), transparent 60%),
-        #689f38;
+        var(--tint, #689f38);
       /* bevel: light top-left rim, dark bottom-right rim */
       box-shadow:
         inset 3px 3px 0 rgba(255, 255, 255, 0.18),
@@ -231,6 +231,8 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+      /* small shadow so character art stays readable on any face color */
+      filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.5));
       pointer-events: none;
       user-select: none;
       -webkit-user-drag: none;
@@ -250,12 +252,13 @@
     .top    { transform: rotateX(90deg)  translateZ(var(--half)); }
     .bottom { transform: rotateX(-90deg) translateZ(var(--half)); }
 
-    .tint-red img    { filter: sepia(100%) saturate(500%) hue-rotate(-50deg) brightness(0.8); }
-    .tint-blue img   { filter: sepia(100%) saturate(500%) hue-rotate(180deg) brightness(0.9); }
-    .tint-green img  { filter: sepia(100%) saturate(500%) hue-rotate(60deg)  brightness(1); }
-    .tint-purple img { filter: sepia(100%) saturate(500%) hue-rotate(260deg) brightness(0.9); }
-    .tint-orange img { filter: sepia(100%) saturate(500%) hue-rotate(10deg)  brightness(1.1); }
-    .tint-pink img   { filter: sepia(100%) saturate(300%) hue-rotate(300deg) brightness(1.2); }
+    /* Face colors, shuffled per page load; the character art stays true-color */
+    .tint-red    { --tint: #9c3f33; }
+    .tint-blue   { --tint: #3d6a94; }
+    .tint-mud    { --tint: #6b4f2e; }
+    .tint-purple { --tint: #6a4c8c; }
+    .tint-orange { --tint: #b06a24; }
+    .tint-pink   { --tint: #a8577d; }
 
     #roll-hint {
       position: absolute;
@@ -553,8 +556,18 @@
     measureDie();
     addEventListener('resize', measureDie);
 
-    // ---------- Build die faces (pip layouts; null = empty cell) ----------
+    // ---------- Build die faces (pip layouts; 0 = empty cell) ----------
+    // Which character is the pip on each face. A null file uses the Shrek pip
+    // until that art is in the repo; fill in the filename when it lands.
     const PIP = 'dice-shrek.webp';
+    const CAST = {
+      one:   { name: 'Lord Farquaad', file: null },   // future: 'dice-farquaad.webp'
+      two:   { name: 'Donkey',        file: null },   // future: 'dice-donkey.webp'
+      three: { name: 'Gingy',         file: null },   // future: 'dice-gingy.webp'
+      four:  { name: 'Puss in Boots', file: null },   // future: 'dice-puss.webp'
+      five:  { name: 'Fiona',         file: null },   // future: 'dice-fiona.webp'
+      six:   { name: 'Shrek',         file: PIP }
+    };
     const LAYOUTS = {
       one:   [1],
       two:   [1,0,0, 0,0,0, 0,0,1],
@@ -565,10 +578,17 @@
     };
     const faces = [...cube.children];
     faces.forEach(face => {
-      const layout = LAYOUTS[Object.keys(LAYOUTS).find(k => face.classList.contains(k))];
-      layout.forEach(on => {
+      const key = Object.keys(LAYOUTS).find(k => face.classList.contains(k));
+      const art = CAST[key].file || PIP;
+      LAYOUTS[key].forEach(on => {
         const el = document.createElement(on ? 'img' : 'div');
-        if (on) { el.src = PIP; el.alt = ''; el.decoding = 'async'; }
+        if (on) {
+          el.alt = '';
+          el.decoding = 'async';
+          // A missing or broken file falls back to the Shrek pip (once, so no loop)
+          el.addEventListener('error', () => { el.src = PIP; }, { once: true });
+          el.src = art;
+        }
         face.append(el);
       });
       face._n = face.dataset.n.split(',').map(Number);
@@ -631,11 +651,12 @@
     let muted = store.get('shrekDiceMuted', false);
     let actx = null;
     const buffers = {};
-    const fallback = { some: new Audio('dice-some.mp3'), body: new Audio('dice-body.mp3') };
+    const CLIPS = ['some', 'body', 'fart'];
+    const fallback = Object.fromEntries(CLIPS.map(n => [n, new Audio(`dice-${n}.mp3`)]));
 
     // Download the clips at page load so the first tap only has to decode them
     const clipData = {};
-    for (const name of ['some', 'body']) {
+    for (const name of CLIPS) {
       clipData[name] = fetch(`dice-${name}.mp3`).then(r => r.arrayBuffer()).catch(() => null);
     }
 
@@ -645,7 +666,7 @@
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       actx = new AC();
-      for (const name of ['some', 'body']) {
+      for (const name of CLIPS) {
         clipData[name]
           .then(b => b && actx.decodeAudioData(b))
           .then(buf => { if (buf) buffers[name] = buf; })
@@ -683,6 +704,16 @@
       }
     }
 
+    // "BODY" remembers when it started so the fart on a 1 can follow right after it
+    let bodyAt = 0, fartTimer = 0;
+    function playBody() { bodyAt = performance.now(); play('body'); }
+    function fartAfterBody() {
+      const bodyMs = (buffers.body?.duration ?? 0.57) * 1000 - 80;   // overlap BODY's tail a little
+      clearTimeout(fartTimer);
+      fartTimer = setTimeout(() => play('fart'), Math.max(0, bodyAt + bodyMs - performance.now()));
+    }
+    const cancelFart = () => clearTimeout(fartTimer);
+
     // Procedural clack: a tiny filtered noise burst — no audio file needed
     let noiseBuf = null;
     function clack(volume = 0.5, pitch = 1) {
@@ -715,7 +746,7 @@
     syncMute();
 
     // ---------- Random face colors ----------
-    const colors = ['tint-red', 'tint-blue', 'tint-green', 'tint-purple', 'tint-orange', 'tint-pink'];
+    const colors = ['tint-red', 'tint-blue', 'tint-mud', 'tint-purple', 'tint-orange', 'tint-pink'];
     for (let i = colors.length - 1; i > 0; i--) {
       const j = randInt(i + 1);
       [colors[i], colors[j]] = [colors[j], colors[i]];
@@ -1101,7 +1132,7 @@
 
     function onImpact(kind, strength) {
       if (kind === 'floor') {
-        play('body');                       // "SOME…BODY" lands on the first hit
+        playBody();                         // "SOME…BODY" lands on the first hit
         vibrate(Math.round(20 + 20 * strength));
         flash(diceStage, strength > 0.9 ? 'thud-hard' : 'thud');
         if (strength > 1) flash(rollsPanel, 'bump');
@@ -1114,6 +1145,7 @@
       if (isRolling) return;
       isRolling = true;
       initAudio();
+      cancelFart();                         // a quick re-roll shouldn't fart over the new "SOME"
       diceContainer.classList.add('airborne');
       diceContainer.classList.remove('max', 'sad');
       rollHint.style.opacity = '0';
@@ -1132,7 +1164,7 @@
         rotY += mod(target.y - rotY, 360);
         render(0, 0, 0, 0, rotX, rotY, 0);
         await wait(250);
-        play('body');
+        playBody();
       } else {
         await animateThrow({ dir, strength, target });
       }
@@ -1148,6 +1180,7 @@
         vibrate([30, 60, 30]);
       } else if (value === 1) {
         flash(diceContainer, 'sad');
+        fartAfterBody();
       }
       diceContainer.setAttribute('aria-label', `Rolled ${plural(value)}. Roll again`);
 
