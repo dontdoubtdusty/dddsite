@@ -12,8 +12,14 @@
       --lime: #7cfc00;
       --gold: #ffe14d;
       --swamp-dark: rgba(13, 31, 13, 0.92);
-      --die-size: 150px;
-      --half: 75px;
+      --die-size: 150px;                       /* the one die size; JS measures it */
+      --half: calc(var(--die-size) / 2);
+      --air: calc(var(--die-size) * 1.3);     /* headroom above the die for throws */
+    }
+
+    /* Smaller die on very narrow phones */
+    @media (max-width: 360px) {
+      :root { --die-size: 128px; }
     }
 
     * { box-sizing: border-box; }
@@ -111,11 +117,11 @@
 
     #dice-shadow {
       position: absolute;
-      bottom: -26px;
+      bottom: calc(var(--die-size) * -0.17);
       left: 50%;
-      width: 130px;
-      height: 22px;
-      margin-left: -65px;
+      width: calc(var(--die-size) * 0.87);
+      height: calc(var(--die-size) * 0.15);
+      margin-left: calc(var(--die-size) * -0.435);
       background: radial-gradient(ellipse, rgba(0, 0, 0, 0.75) 0%, transparent 70%);
       border-radius: 50%;
       opacity: 0.85;
@@ -438,7 +444,7 @@
       body {
         flex-direction: column;
         justify-content: flex-start;
-        gap: 110px;
+        gap: 24px;
         padding-top: 24px;
       }
       #username-picker {
@@ -448,9 +454,9 @@
         transform: none;
         width: 100%;
         max-width: 420px;
-        margin-bottom: -20px;
       }
-      #dice-stage { margin-top: 110px; }
+      /* Room above for the throw arc, below for the shadow and hint */
+      #dice-stage { margin: var(--air) 0 64px; }
       #rolls-panel { max-height: none; }
     }
 
@@ -536,9 +542,16 @@
     const myStats       = $('my-stats');
     const statusNote    = $('status-note');
     const rollHint      = $('roll-hint');
+    const picker        = $('username-picker');
 
     const MAX_SHOWN = 6;
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Die size in px, measured from CSS --die-size so CSS stays the single source
+    let DIE = 150;
+    const measureDie = () => { DIE = diceMover.offsetWidth || 150; };
+    measureDie();
+    addEventListener('resize', measureDie);
 
     // ---------- Build die faces (pip layouts; null = empty cell) ----------
     const PIP = 'dice-shrek.webp';
@@ -620,19 +633,27 @@
     const buffers = {};
     const fallback = { some: new Audio('dice-some.mp3'), body: new Audio('dice-body.mp3') };
 
+    // Download the clips at page load so the first tap only has to decode them
+    const clipData = {};
+    for (const name of ['some', 'body']) {
+      clipData[name] = fetch(`dice-${name}.mp3`).then(r => r.arrayBuffer()).catch(() => null);
+    }
+
+    // Create (or wake) the audio context and decode the downloaded clips
     function initAudio() {
       if (actx) { if (actx.state === 'suspended') actx.resume(); return; }
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       actx = new AC();
       for (const name of ['some', 'body']) {
-        fetch(`dice-${name}.mp3`)
-          .then(r => r.arrayBuffer())
-          .then(b => actx.decodeAudioData(b))
-          .then(buf => { buffers[name] = buf; })
+        clipData[name]
+          .then(b => b && actx.decodeAudioData(b))
+          .then(buf => { if (buf) buffers[name] = buf; })
           .catch(() => {});
       }
     }
+    // Any first touch on the page starts decoding, not just a touch on the die
+    addEventListener('pointerdown', initAudio, { once: true, capture: true });
 
     // Returns stop() so a clip can be cut short (used when juggling "SOME")
     function play(name, volume = 1, rate = 1) {
@@ -719,12 +740,48 @@
       }
     }
 
-    // ---------- Roll history ----------
-    let allRolls = [];
+    // ---------- Feed state ----------
+    // server:  rolls the database has sent us (newest 10, by server time)
+    // pending: my rolls not yet confirmed by the database, or local-only
+    // status:  connection state, which picks the note under the list
+    const feed = { server: [], pending: [], status: 'connecting' };
+    let serverOffset = 0;                       // server clock minus this device's clock
+    const serverNow = () => Date.now() + serverOffset;
+
+    const FEED_NOTES = {
+      connecting:   '',
+      live:         '',
+      reconnecting: 'Reconnecting to the swamp…',
+      unreachable:  "Can't reach the swamp. Showing your shrolls only.",
+      unavailable:  'Shared roll list unavailable — showing your rolls only.',
+      rejected:     "That shroll didn't reach the swamp."
+    };
+
+    // Newest-first rolls to show: confirmed ones plus my unconfirmed ones
+    function visibleRolls() {
+      const keys = new Set(feed.server.map(r => r.key));
+      return [...feed.server, ...feed.pending.filter(r => !keys.has(r.key))]
+        .sort((a, b) => a.time - b.time)
+        .slice(-MAX_SHOWN)
+        .reverse();
+    }
+
+    function setFeedStatus(status) {
+      feed.status = status;
+      renderStatus();
+    }
+
+    // ---------- Feed rendering ----------
     let lastNewestKey = null;
 
+    function renderStatus() {
+      const note = FEED_NOTES[feed.status];
+      statusNote.textContent = note;
+      statusNote.hidden = !note;
+    }
+
     function timeAgo(t) {
-      const s = Math.max(0, Math.floor((Date.now() - t) / 1000));
+      const s = Math.max(0, Math.floor((serverNow() - t) / 1000));
       if (s < 5)     return 'just now';
       if (s < 60)    return `${s}s ago`;
       if (s < 3600)  return `${Math.floor(s / 60)}m ago`;
@@ -734,7 +791,7 @@
 
     // DOM + textContent so names from the shared database can't inject HTML
     function renderRolls() {
-      const shown = allRolls.slice(-MAX_SHOWN).reverse();
+      const shown = visibleRolls();
       const newestKey = shown[0]?.key ?? null;
       const isNew = lastNewestKey !== null && newestKey !== lastNewestKey;
       lastNewestKey = newestKey;
@@ -776,7 +833,7 @@
       const value = Number(raw.value), time = Number(raw.time);
       if (!Number.isInteger(value) || value < 1 || value > 6 || !Number.isFinite(time)) return null;
       const user = typeof raw.user === 'string' && raw.user.trim() ? raw.user.trim().slice(0, 40) : 'Someone';
-      return { key, value, time: Math.min(time, Date.now()), user };
+      return { key, value, time: Math.min(time, serverNow()), user };
     }
 
     let myRolls = store.get('shrekDiceMyRolls', []);
@@ -790,40 +847,67 @@
     renderStats();
 
     // ---------- Firebase (falls back to local-only) ----------
-    let db = null, online = false;
-    function goOffline() {
-      db = null;
-      online = false;
-      statusNote.textContent = 'Shared roll list unavailable — showing your rolls only.';
-      statusNote.hidden = false;
-      renderRolls();
-    }
+    let db = null, everConnected = false;
     try {
       firebase.initializeApp({ databaseURL: 'https://shrek-dice-default-rtdb.firebaseio.com/' });
       db = firebase.database();
-      db.ref('rolls').limitToLast(10).on('value', (snapshot) => {
-        online = true;
-        statusNote.hidden = true;
+
+      // Newest 10 rolls by server time (needs ".indexOn": "time" in the rules)
+      db.ref('rolls').orderByChild('time').limitToLast(10).on('value', (snapshot) => {
         const next = [];
         snapshot.forEach(child => { const r = cleanRoll(child.key, child.val()); if (r) next.push(r); });
-        next.sort((a, b) => a.time - b.time);
-        allRolls = next;
+        feed.server = next;
         renderRolls();
-      }, goOffline);
-      db.ref('.info/connected').on('value', snap => {
-        if (snap.val() === false && online) { statusNote.textContent = 'Reconnecting to the swamp…'; statusNote.hidden = false; }
-        else if (snap.val() === true) statusNote.hidden = true;
+      }, (err) => {
+        console.warn('Shroll feed closed:', err?.message);
+        setFeedStatus('unavailable');
       });
-    } catch { goOffline(); }
 
+      db.ref('.info/serverTimeOffset').on('value', snap => { serverOffset = Number(snap.val()) || 0; });
+
+      // Connection state drives the note; "unreachable" if we never connect at all
+      db.ref('.info/connected').on('value', snap => {
+        if (feed.status === 'unavailable') return;
+        if (snap.val() === true) { everConnected = true; setFeedStatus('live'); }
+        else if (everConnected) setFeedStatus('reconnecting');
+      });
+      setTimeout(() => { if (feed.status === 'connecting') setFeedStatus('unreachable'); }, 6000);
+    } catch {
+      db = null;
+      setFeedStatus('unavailable');
+    }
+
+    // Record a roll locally, show it right away, and send it to the shared feed
     function saveRoll(value) {
-      const roll = { value, time: Date.now(), user: userId };
       myRolls.push(value);
       if (myRolls.length > 500) myRolls = myRolls.slice(-500);
       store.set('shrekDiceMyRolls', myRolls);
       renderStats();
-      if (db) db.ref('rolls').push(roll).catch(goOffline);
-      else { allRolls.push({ key: 'local-' + roll.time, ...roll }); renderRolls(); }
+
+      const entry = { key: '', value, time: serverNow(), user: userId };
+      if (!db) {
+        entry.key = 'local-' + entry.time;
+        feed.pending.push(entry);
+        renderRolls();
+        return;
+      }
+
+      const ref = db.ref('rolls').push();       // key is made on this device, no server trip
+      entry.key = ref.key;
+      feed.pending.push(entry);
+      renderRolls();
+      ref.set({ value, user: userId, time: firebase.database.ServerValue.TIMESTAMP })
+        .then(() => {
+          feed.pending = feed.pending.filter(r => r !== entry);
+          if (feed.status === 'rejected') setFeedStatus('live');
+          renderRolls();
+        })
+        .catch((err) => {
+          console.warn('Shroll not saved:', err?.message);
+          entry.key = 'local-' + entry.key;     // keep showing it as a local-only roll
+          setFeedStatus('rejected');
+          renderRolls();
+        });
     }
 
     // ---------- Particles ----------
@@ -836,13 +920,14 @@
         if (gold) {
           const ang = Math.random() * Math.PI * 2, dist = 90 + Math.random() * 110;
           p.style.left = cx + 'px';
-          p.style.top = '75px';
+          p.style.top = DIE / 2 + 'px';
           p.style.setProperty('--bx', `${Math.cos(ang) * dist}px`);
           p.style.setProperty('--by', `${Math.sin(ang) * dist - 40}px`);
           p.style.width = p.style.height = `${10 + Math.random() * 16}px`;
         } else {
-          p.style.left = cx - 65 + Math.random() * 130 + 'px';
-          p.style.top = Math.random() * 130 + 'px';
+          const spread = DIE * 0.87;
+          p.style.left = cx - spread / 2 + Math.random() * spread + 'px';
+          p.style.top = Math.random() * spread + 'px';
           p.style.setProperty('--drift', `${(Math.random() - 0.5) * 100}px`);
           p.style.animationDelay = `${Math.random() * 0.3}s`;
         }
@@ -865,8 +950,21 @@
     let rotX = 0, rotY = 0;
     let isRolling = false;
 
+    // Grows the die slightly with height (rigid: uniform scale, anchored at its base)
+    const LIFT = 0.12;
+
+    // Highest the die may fly (px above its resting spot) without going under
+    // the name bar or off the top of the screen
+    function ceiling() {
+      const stage = diceStage.getBoundingClientRect();
+      const bar = picker.getBoundingClientRect();
+      const barAbove = bar.top < stage.top && bar.right > stage.left && bar.left < stage.right;
+      const roof = Math.max(0, barAbove ? bar.bottom : 0) + 8;
+      return Math.max(60, (stage.top - roof) / (1 + LIFT));
+    }
+
     function render(x, h, tiltX, tiltZ, rx, ry, H) {
-      const lift = 1 + (h / 150) * 0.12;   // rigid: uniform scale only, from height
+      const lift = 1 + (h / DIE) * LIFT;
       diceMover.style.transform = `translate(${x}px, ${-h}px) scale(${lift})`;
       cube.style.transform = `rotateX(${tiltX}deg) rotateZ(${tiltZ}deg) rotateX(${rx}deg) rotateY(${ry}deg)`;
       const k = H ? Math.min(h / H, 1) : 0;
@@ -884,9 +982,11 @@
     // a short rock to rest. Each mid-air tap re-plans the rest of the flight
     // from wherever the die is — but always toward the same pre-chosen target.
     function animateThrow({ dir, strength, target }) {
-      const maxDx = Math.max(0, (diceStage.clientWidth - 150) / 2 - 6);
+      const k = DIE / 150;                         // tuned at 150px; scale to the real die
+      const maxH = ceiling();                      // highest the die may fly this roll
+      const maxDx = Math.max(0, (diceStage.clientWidth - DIE) / 2 - 6);
       const reach = maxDx * clamp(0.45 + strength * 0.45, 0.4, 1);
-      const H = clamp(95 * strength + 25, 70, 150);
+      const H = Math.min(clamp(95 * strength + 25, 70, 150) * k, maxH);
       const tArc = 480 + 220 * strength;
       const g = 8 * H / (tArc * tArc);              // gravity (px/ms²) that gives this arc
       const HOP = 150, hopH = Math.min(10, H * 0.07);
@@ -921,8 +1021,8 @@
           lastBoost = now;
           boosts++;
 
-          // Little jump from the current height (capped so it stays on screen)
-          const apex = Math.max(cur.h + 25, Math.min(cur.h + 55 + 20 * strength, 150));
+          // Little jump from the current height, never above the ceiling
+          const apex = clamp(cur.h + (55 + 20 * strength) * k, cur.h + 25 * k, Math.max(maxH, cur.h));
           const v0 = Math.sqrt(2 * g * (apex - cur.h));
           const x0 = cur.x;
           const drift = (Math.random() - 0.5) * maxDx * 0.7;
@@ -947,7 +1047,8 @@
           let h = 0;
           if (t < s.tAir) h = Math.max(0, s.h0 + s.v0 * t - 0.5 * g * t * t);
           else if (t < s.tLand) { const u = (t - s.tAir) / HOP; h = 4 * hopH * u * (1 - u); }
-          if (!s.landed && t >= s.tAir) { s.landed = true; onImpact('floor', strength); }
+          // Juggling ends at the first floor hit, so "BODY" plays once per roll
+          if (!s.landed && t >= s.tAir) { s.landed = true; juggle = null; onImpact('floor', strength); }
           if (!s.hopped && t >= s.tLand) { s.hopped = true; onImpact('hop', strength); }
 
           const p = Math.min(t / s.tLand, 1);
@@ -989,9 +1090,9 @@
       el.textContent = n >= 3 ? `SOME… ×${n + 1}` : 'SOME…';
       // Beside the die (alternating sides) so it never hides under the header
       const side = n % 2 ? 1 : -1;
-      const cx = clamp(diceStage.clientWidth / 2 + x + side * 112, 60, diceStage.clientWidth - 60);
+      const cx = clamp(diceStage.clientWidth / 2 + x + side * DIE * 0.75, 60, diceStage.clientWidth - 60);
       el.style.left = `${cx}px`;
-      el.style.top = `${40 - h + (Math.random() - 0.5) * 20}px`;
+      el.style.top = `${DIE * 0.27 - h + (Math.random() - 0.5) * 20}px`;
       el.style.setProperty('--s', String(Math.min(1 + n * 0.06, 1.5)));
       el.style.setProperty('--r', `${(Math.random() - 0.5) * 16}deg`);
       diceStage.appendChild(el);
@@ -1112,7 +1213,9 @@
     diceContainer.addEventListener('lostpointercapture', () => { if (hold) endHold(); });
 
     diceContainer.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); juggle ? juggle() : roll(); }
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      if (!e.repeat) juggle ? juggle() : roll();   // holding a key shouldn't spam juggles
     });
     document.addEventListener('keydown', (e) => {
       if (e.key !== ' ' || e.repeat) return;
