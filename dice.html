@@ -105,6 +105,8 @@
       width: min(380px, 100%);
       height: var(--die-size);
       flex-shrink: 0;
+      touch-action: manipulation;   /* rapid mid-air taps must not double-tap-zoom */
+      -webkit-tap-highlight-color: transparent;
     }
 
     #dice-shadow {
@@ -154,7 +156,7 @@
     }
 
     #dice-container:active { cursor: grabbing; }
-    #dice-container[aria-disabled="true"] { cursor: progress; }
+    #dice-container.airborne { cursor: pointer; }
     #dice-container:focus-visible .face { border-color: var(--lime); }
 
     #dice-container.holding { animation: shake 0.22s linear infinite; }
@@ -284,6 +286,24 @@
                   inset 3px 3px 8px rgba(255, 255, 255, 0.4),
                   0 0 10px rgba(124, 252, 0, 0.5);
       z-index: 3;
+    }
+
+    /* "SOME…" call-out that pops above the die on each mid-air tap */
+    .some-pop {
+      position: absolute;
+      transform: translate(-50%, 0);
+      color: var(--lime);
+      font: bold 22px 'Arial Black', sans-serif;
+      text-shadow: 2px 2px 0 #1b3a10, 0 0 10px rgba(124, 252, 0, 0.6);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 4;
+      animation: somePop 0.75s ease-out forwards;
+    }
+    @keyframes somePop {
+      0%   { opacity: 0; transform: translate(-50%, 8px) scale(calc(var(--s, 1) * 0.6)) rotate(var(--r, 0deg)); }
+      20%  { opacity: 1; transform: translate(-50%, -6px) scale(calc(var(--s, 1) * 1.1)) rotate(var(--r, 0deg)); }
+      100% { opacity: 0; transform: translate(-50%, -46px) scale(var(--s, 1)) rotate(var(--r, 0deg)); }
     }
 
     .particle.gold {
@@ -442,7 +462,7 @@
       #current-result.min,
       #rolls-list li.fresh,
       .bump, .thud, .thud-hard { animation: none; }
-      .particle { display: none; }
+      .particle, .some-pop { display: none; }
     }
   </style>
 </head>
@@ -614,8 +634,9 @@
       }
     }
 
+    // Returns stop() so a clip can be cut short (used when juggling "SOME")
     function play(name, volume = 1, rate = 1) {
-      if (muted) return;
+      if (muted) return () => {};
       if (actx && buffers[name]) {
         const src = actx.createBufferSource();
         const g = actx.createGain();
@@ -624,11 +645,20 @@
         g.gain.value = volume;
         src.connect(g).connect(actx.destination);
         src.start();
+        return () => {
+          try {
+            const t = actx.currentTime;
+            g.gain.setValueAtTime(g.gain.value, t);
+            g.gain.linearRampToValueAtTime(0, t + 0.04);
+            src.stop(t + 0.05);
+          } catch {}
+        };
       } else {
         const a = fallback[name];
         try { a.currentTime = 0; } catch {}
         a.volume = clamp(volume, 0, 1);
         a.play().catch(() => {});
+        return () => { try { a.pause(); } catch {} };
       }
     }
 
@@ -839,73 +869,133 @@
       const lift = 1 + (h / 150) * 0.12;   // rigid: uniform scale only, from height
       diceMover.style.transform = `translate(${x}px, ${-h}px) scale(${lift})`;
       cube.style.transform = `rotateX(${tiltX}deg) rotateZ(${tiltZ}deg) rotateX(${rx}deg) rotateY(${ry}deg)`;
-      const k = H ? h / H : 0;
+      const k = H ? Math.min(h / H, 1) : 0;
       diceShadow.style.transform = `translateX(${x}px) scale(${1 - k * 0.55})`;
       diceShadow.style.opacity = (0.85 - k * 0.6).toFixed(3);
       shade(rx, ry);
     }
 
+    // While a throw is in flight this holds a function that kicks the die back
+    // up (tap it mid-air → "SOME… SOME… SOME… BODY"). null when grounded.
+    let juggle = null;
+    let stopSome = () => {};
+
     // One continuous motion: arc up while tumbling, slam down, one small hop,
-    // a short rock to rest.
+    // a short rock to rest. Each mid-air tap re-plans the rest of the flight
+    // from wherever the die is — but always toward the same pre-chosen target.
     function animateThrow({ dir, strength, target }) {
       const maxDx = Math.max(0, (diceStage.clientWidth - 150) / 2 - 6);
       const reach = maxDx * clamp(0.45 + strength * 0.45, 0.4, 1);
       const H = clamp(95 * strength + 25, 70, 150);
       const tArc = 480 + 220 * strength;
-      const hop = { dur: 150, h: Math.min(10, H * 0.07) };
-      const tLand = tArc + hop.dur;
+      const g = 8 * H / (tArc * tArc);              // gravity (px/ms²) that gives this arc
+      const HOP = 150, hopH = Math.min(10, H * 0.07);
       const tSettle = 220;
-      const total = tLand + tSettle;
-
-      const spins = 1 + Math.round(strength * 1.6);
-      const sX = rotX, sY = rotY;
-      const eX = sX + 360 * spins       + mod(target.x - sX, 360);
-      const eY = sY + 360 * (spins + 1) + mod(target.y - sY, 360);
       const rockDir = Math.random() < 0.5 ? -1 : 1;
 
+      let seg = null, peak = H, boosts = 0, lastBoost = -1e9;
+      const cur = { h: 0, x: 0, rx: rotX, ry: rotY };
+
+      // A flight: launched at t0 from height h0 with upward speed v0, travelling
+      // sideways along xPath(p), spinning from (sX, sY) to rest on the target.
+      function plan(t0, h0, v0, xPath, sX, sY, spins) {
+        const tAir = (v0 + Math.sqrt(v0 * v0 + 2 * g * h0)) / g;
+        seg = {
+          t0, h0, v0, tAir, tLand: tAir + HOP, xPath, sX, sY,
+          eX: sX + 360 * spins       + mod(target.x - sX, 360),
+          eY: sY + 360 * (spins + 1) + mod(target.y - sY, 360),
+          landed: false, hopped: false
+        };
+        peak = Math.max(H, h0 + (v0 * v0) / (2 * g));
+      }
+
+      // Initial throw: straight from the floor, out to the side and back
+      plan(performance.now(), 0, 4 * H / tArc,
+           p => dir * reach * Math.sin(Math.PI * Math.pow(p, 0.6)),
+           rotX, rotY, 1 + Math.round(strength * 1.6));
+
       return new Promise(resolve => {
-        const t0 = performance.now();
-        let landed = false, hopped = false;
+        juggle = () => {
+          const now = performance.now();
+          if (now - lastBoost < 90) return;          // ignore accidental double-fires
+          lastBoost = now;
+          boosts++;
+
+          // Little jump from the current height (capped so it stays on screen)
+          const apex = Math.max(cur.h + 25, Math.min(cur.h + 55 + 20 * strength, 150));
+          const v0 = Math.sqrt(2 * g * (apex - cur.h));
+          const x0 = cur.x;
+          const drift = (Math.random() - 0.5) * maxDx * 0.7;
+          plan(now, cur.h, v0,
+               p => clamp(x0 * (1 - p) + drift * Math.sin(Math.PI * p), -maxDx, maxDx),
+               cur.rx, cur.ry, 1);
+
+          // "SOME…" again, a touch higher-pitched each time
+          stopSome();
+          stopSome = play('some', 1, 1 + Math.min(boosts, 8) * 0.04);
+          clack(0.22, 1.4);
+          vibrate(12);
+          bubbles(4, x0);
+          somePop(x0, cur.h, boosts);
+        };
 
         function frame(now) {
-          const t = Math.min(now - t0, total);
+          const s = seg;
+          const t = Math.max(0, now - s.t0);
 
-          // Height: main arc, then one tiny hop
+          // Height: free flight under gravity, then one tiny hop
           let h = 0;
-          if (t < tArc) { const u = t / tArc; h = 4 * H * u * (1 - u); }
-          else if (t < tLand) { const u = (t - tArc) / hop.dur; h = 4 * hop.h * u * (1 - u); }
-          if (!landed && t >= tArc) { landed = true; onImpact('floor', strength); }
-          if (!hopped && t >= tLand) { hopped = true; onImpact('hop', strength); }
+          if (t < s.tAir) h = Math.max(0, s.h0 + s.v0 * t - 0.5 * g * t * t);
+          else if (t < s.tLand) { const u = (t - s.tAir) / HOP; h = 4 * hopH * u * (1 - u); }
+          if (!s.landed && t >= s.tAir) { s.landed = true; onImpact('floor', strength); }
+          if (!s.hopped && t >= s.tLand) { s.hopped = true; onImpact('hop', strength); }
 
-          // Out to the side, then skid back to center
-          const p = Math.min(t / tLand, 1);
-          const x = dir * reach * Math.sin(Math.PI * Math.pow(p, 0.6));
+          const p = Math.min(t / s.tLand, 1);
+          const x = s.xPath(p);
 
           // Spin fast at first, slowing to land exactly on the target face
           const e = 1 - Math.pow(1 - p, 3.2);
-          const rx = sX + (eX - sX) * e;
-          const ry = sY + (eY - sY) * e;
+          const rx = s.sX + (s.eX - s.sX) * e;
+          const ry = s.sY + (s.eY - s.sY) * e;
 
           // One quick, stiff rock after landing
           let tiltX = 0, tiltZ = 0;
-          if (t > tLand) {
-            const w = (t - tLand) / tSettle;
+          if (t > s.tLand) {
+            const w = Math.min((t - s.tLand) / tSettle, 1);
             const amp = (1.5 + 1.5 * strength) * (1 - w);
             tiltZ = rockDir * amp * Math.sin(w * Math.PI * 2);
             tiltX = amp * 0.4 * Math.sin(w * Math.PI * 2);
           }
 
-          render(x, h, tiltX, tiltZ, rx, ry, H);
+          Object.assign(cur, { h, x, rx, ry });
+          render(x, h, tiltX, tiltZ, rx, ry, peak);
 
-          if (t < total) requestAnimationFrame(frame);
+          if (t < s.tLand + tSettle) requestAnimationFrame(frame);
           else {
-            rotX = eX; rotY = eY;
+            juggle = null;
+            rotX = s.eX; rotY = s.eY;
             render(0, 0, 0, 0, rotX, rotY, H);
             resolve();
           }
         }
         requestAnimationFrame(frame);
       });
+    }
+
+    function somePop(x, h, n) {
+      const el = document.createElement('div');
+      el.className = 'some-pop';
+      el.setAttribute('aria-hidden', 'true');
+      el.textContent = n >= 3 ? `SOME… ×${n + 1}` : 'SOME…';
+      // Beside the die (alternating sides) so it never hides under the header
+      const side = n % 2 ? 1 : -1;
+      const cx = clamp(diceStage.clientWidth / 2 + x + side * 112, 60, diceStage.clientWidth - 60);
+      el.style.left = `${cx}px`;
+      el.style.top = `${40 - h + (Math.random() - 0.5) * 20}px`;
+      el.style.setProperty('--s', String(Math.min(1 + n * 0.06, 1.5)));
+      el.style.setProperty('--r', `${(Math.random() - 0.5) * 16}deg`);
+      diceStage.appendChild(el);
+      setTimeout(() => el.remove(), 800);
     }
 
     function onImpact(kind, strength) {
@@ -923,7 +1013,7 @@
       if (isRolling) return;
       isRolling = true;
       initAudio();
-      diceContainer.setAttribute('aria-disabled', 'true');
+      diceContainer.classList.add('airborne');
       diceContainer.classList.remove('max', 'sad');
       rollHint.style.opacity = '0';
       result.textContent = '';
@@ -933,7 +1023,7 @@
       strength = clamp(strength, 0.5, 1.6);
       const target = FACES[randInt(FACES.length)];
 
-      play('some');
+      stopSome = play('some');
       bubbles(12, 0);
 
       if (reducedMotion) {
@@ -961,12 +1051,19 @@
       diceContainer.setAttribute('aria-label', `Rolled ${plural(value)}. Roll again`);
 
       saveRoll(value);
-      diceContainer.removeAttribute('aria-disabled');
+      diceContainer.classList.remove('airborne');
       isRolling = false;
     }
 
     // ---------- Input: tap, hold-to-shake, flick-to-throw ----------
     let hold = null;
+
+    // Mid-roll taps anywhere on the die or its floor keep it in the air
+    diceStage.addEventListener('pointerdown', (e) => {
+      if (!juggle || (e.button !== undefined && e.button !== 0)) return;
+      e.preventDefault();
+      juggle();
+    });
 
     diceContainer.addEventListener('pointerdown', (e) => {
       if (isRolling || (e.button !== undefined && e.button !== 0)) return;
@@ -1015,14 +1112,14 @@
     diceContainer.addEventListener('lostpointercapture', () => { if (hold) endHold(); });
 
     diceContainer.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); roll(); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); juggle ? juggle() : roll(); }
     });
     document.addEventListener('keydown', (e) => {
       if (e.key !== ' ' || e.repeat) return;
       const tag = (document.activeElement?.tagName || '').toLowerCase();
       if (['select', 'button', 'input', 'textarea'].includes(tag) || document.activeElement === diceContainer) return;
       e.preventDefault();
-      roll();
+      juggle ? juggle() : roll();
     });
 
     render(0, 0, 0, 0, rotX, rotY, 0);
