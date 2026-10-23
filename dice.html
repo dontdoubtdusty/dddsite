@@ -99,37 +99,79 @@
     }
 
     /* ---------- Arena + die ---------- */
+    /* Wooden dice tray with a felt floor */
     #dice-stage {
       position: relative;
-      width: min(380px, 100%);
-      height: var(--die-size);
+      width: min(400px, 100%);
+      height: 200px;
       flex-shrink: 0;
+      border-radius: 26px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(0, 0, 0, 0.25)),
+        repeating-linear-gradient(92deg, #7a4b26 0 7px, #6a3f1f 7px 12px, #84552d 12px 18px, #70441f 18px 22px);
+      box-shadow:
+        0 18px 30px rgba(0, 0, 0, 0.6),
+        0 0 0 2px #3b2210,
+        inset 0 2px 0 rgba(255, 220, 170, 0.35),
+        inset 0 -3px 0 rgba(0, 0, 0, 0.35);
+    }
+
+    /* Felt floor, sunk inside the rim */
+    #dice-stage::before {
+      content: '';
+      position: absolute;
+      inset: 16px;
+      border-radius: 14px;
+      background:
+        radial-gradient(ellipse at 50% 45%, #3f5f2a 0%, #2a4419 55%, #1c2f10 100%);
+      box-shadow:
+        inset 0 10px 18px rgba(0, 0, 0, 0.65),
+        inset 0 -4px 10px rgba(0, 0, 0, 0.35),
+        inset 6px 0 12px rgba(0, 0, 0, 0.35),
+        inset -6px 0 12px rgba(0, 0, 0, 0.35);
+      z-index: 0;
     }
 
     #dice-shadow {
       position: absolute;
-      bottom: -26px;
+      bottom: 14px;
       left: 50%;
       width: 130px;
       height: 22px;
       margin-left: -65px;
-      background: radial-gradient(ellipse, rgba(0, 0, 0, 0.7) 0%, transparent 70%);
+      background: radial-gradient(ellipse, rgba(0, 0, 0, 0.75) 0%, transparent 70%);
       border-radius: 50%;
       opacity: 0.85;
       pointer-events: none;
       will-change: transform, opacity;
+      z-index: 1;
     }
 
     #dice-mover {
       position: absolute;
       left: 50%;
-      top: 0;
+      top: 18px;
       width: var(--die-size);
       height: var(--die-size);
       margin-left: calc(var(--die-size) / -2);
       transform-origin: 50% 100%;
       will-change: transform;
       z-index: 2;
+    }
+
+    .thud      { animation: thud 0.18s ease-out; }
+    .thud-hard { animation: thud 0.24s ease-out; --ty: 6px; }
+    @keyframes thud {
+      0%   { transform: translateY(0); }
+      35%  { transform: translateY(var(--ty, 3px)); }
+      100% { transform: translateY(0); }
+    }
+
+    .jolt { animation: jolt 0.2s ease-out; }
+    @keyframes jolt {
+      0%   { transform: translateX(0); }
+      35%  { transform: translateX(var(--jx, 4px)); }
+      100% { transform: translateX(0); }
     }
 
     #dice-container {
@@ -167,8 +209,8 @@
 
     @keyframes droop {
       0%   { transform: none; filter: none; }
-      25%  { transform: translateY(8px) scale(1.04, 0.9); filter: grayscale(0.7) brightness(0.8); }
-      75%  { transform: translateY(8px) scale(1.04, 0.9) rotate(-3deg); filter: grayscale(0.7) brightness(0.8); }
+      25%  { transform: translateY(4px) rotate(-5deg); filter: grayscale(0.7) brightness(0.8); }
+      75%  { transform: translateY(4px) rotate(-5deg); filter: grayscale(0.7) brightness(0.8); }
       100% { transform: none; filter: none; }
     }
 
@@ -241,7 +283,7 @@
 
     #roll-hint {
       position: absolute;
-      top: calc(100% + 44px);
+      top: calc(100% + 14px);
       left: 0;
       right: 0;
       text-align: center;
@@ -420,7 +462,7 @@
         max-width: 420px;
         margin-bottom: -20px;
       }
-      #dice-stage { margin-top: 110px; }
+      #dice-stage { margin-top: 90px; }
       #rolls-panel { max-height: none; }
     }
 
@@ -431,7 +473,7 @@
       #current-result.pop,
       #current-result.min,
       #rolls-list li.fresh,
-      .bump { animation: none; }
+      .bump, .thud, .thud-hard, .jolt { animation: none; }
       .particle { display: none; }
     }
   </style>
@@ -796,13 +838,13 @@
         if (gold) {
           const ang = Math.random() * Math.PI * 2, dist = 90 + Math.random() * 110;
           p.style.left = cx + 'px';
-          p.style.top = '75px';
+          p.style.top = '93px';
           p.style.setProperty('--bx', `${Math.cos(ang) * dist}px`);
           p.style.setProperty('--by', `${Math.sin(ang) * dist - 40}px`);
           p.style.width = p.style.height = `${10 + Math.random() * 16}px`;
         } else {
           p.style.left = cx - 65 + Math.random() * 130 + 'px';
-          p.style.top = Math.random() * 130 + 'px';
+          p.style.top = 18 + Math.random() * 130 + 'px';
           p.style.setProperty('--drift', `${(Math.random() - 0.5) * 100}px`);
           p.style.animationDelay = `${Math.random() * 0.3}s`;
         }
@@ -825,9 +867,11 @@
     let rotX = 0, rotY = 0;
     let isRolling = false;
 
-    function render(x, h, sx, sy, tiltX, tiltZ, rx, ry, H) {
-      const lift = 1 + (h / 150) * 0.18;
-      diceMover.style.transform = `translate(${x}px, ${-h}px) scale(${lift * sx}, ${lift * sy})`;
+    const TRAY_RIM = 16;   // keep in sync with the felt inset in CSS
+
+    function render(x, h, tiltX, tiltZ, rx, ry, H) {
+      const lift = 1 + (h / 150) * 0.12;   // rigid: uniform scale only, from height
+      diceMover.style.transform = `translate(${x}px, ${-h}px) scale(${lift})`;
       cube.style.transform = `rotateX(${tiltX}deg) rotateZ(${tiltZ}deg) rotateX(${rx}deg) rotateY(${ry}deg)`;
       const k = H ? h / H : 0;
       diceShadow.style.transform = `translateX(${x}px) scale(${1 - k * 0.55})`;
@@ -835,76 +879,68 @@
       shade(rx, ry);
     }
 
-    // One continuous motion: arc up while tumbling, land, two small bounces,
-    // then rock to rest. Everything is computed per frame from elapsed time.
+    // One continuous motion: arc up while tumbling, slam down, one small hop,
+    // a short rock to rest. Strong throws knock into the tray wall and rebound.
     function animateThrow({ dir, strength, target }) {
-      const maxDx = Math.max(0, (diceStage.clientWidth - 150) / 2 - 6);
-      const dx = dir * maxDx * clamp(0.45 + strength * 0.45, 0.4, 1);
+      const wall = Math.max(0, (diceStage.clientWidth - 150) / 2 - TRAY_RIM - 4);
+      // Aim past the wall on strong throws so the die hits it and comes back
+      const reach = wall * clamp(0.5 + strength * 0.55, 0.5, 1.45);
       const H = clamp(95 * strength + 25, 70, 150);
-      const segs = [
-        { dur: 520 + 260 * strength, h: H },
-        { dur: 260, h: H * 0.2 },
-        { dur: 160, h: H * 0.06 }
-      ];
-      const impacts = [0.14, 0.07, 0.035];
-      const tLand = segs.reduce((a, s) => a + s.dur, 0);
-      const tSettle = 420;
+      const tArc = 480 + 220 * strength;
+      const hop = { dur: 150, h: Math.min(10, H * 0.07) };
+      const tLand = tArc + hop.dur;
+      const tSettle = 220;
       const total = tLand + tSettle;
 
       const spins = 1 + Math.round(strength * 1.6);
       const sX = rotX, sY = rotY;
       const eX = sX + 360 * spins       + mod(target.x - sX, 360);
       const eY = sY + 360 * (spins + 1) + mod(target.y - sY, 360);
-      const wobbleDir = Math.random() < 0.5 ? -1 : 1;
+      const rockDir = Math.random() < 0.5 ? -1 : 1;
 
       return new Promise(resolve => {
         const t0 = performance.now();
-        let seg = 0, impactAt = -1e9, impactK = 0;
+        let landed = false, hopped = false, hitWall = false;
 
         function frame(now) {
           const t = Math.min(now - t0, total);
 
-          // Height: a parabola per bounce segment
-          let h = 0, acc = 0, idx = segs.length;
-          for (let i = 0; i < segs.length; i++) {
-            if (t < acc + segs[i].dur) { idx = i; const u = (t - acc) / segs[i].dur; h = 4 * segs[i].h * u * (1 - u); break; }
-            acc += segs[i].dur;
-          }
-          // Fire impacts for every segment boundary crossed since last frame
-          while (seg < idx && seg < segs.length) {
-            onImpact(seg, strength, dx);
-            impactAt = t; impactK = impacts[seg];
-            seg++;
-          }
+          // Height: main arc, then one tiny hop
+          let h = 0;
+          if (t < tArc) { const u = t / tArc; h = 4 * H * u * (1 - u); }
+          else if (t < tLand) { const u = (t - tArc) / hop.dur; h = 4 * hop.h * u * (1 - u); }
+          if (!landed && t >= tArc) { landed = true; onImpact('floor', strength); }
+          if (!hopped && t >= tLand) { hopped = true; onImpact('hop', strength); }
 
-          // Out to the side, then skid back to center
+          // Out to the side and back; reflect off the tray wall if it gets there
           const p = Math.min(t / tLand, 1);
-          const x = dx * Math.sin(Math.PI * Math.pow(p, 0.6));
+          let x = reach * Math.sin(Math.PI * Math.pow(p, 0.6));
+          if (x > wall) {
+            x = wall - (x - wall) * 0.6;
+            if (!hitWall) { hitWall = true; onImpact('wall', strength, dir); }
+          }
+          x *= dir;
 
           // Spin fast at first, slowing to land exactly on the target face
           const e = 1 - Math.pow(1 - p, 3.2);
           const rx = sX + (eX - sX) * e;
           const ry = sY + (eY - sY) * e;
 
-          // Squash on impact
-          const d = (t - impactAt) / 150;
-          const sq = d >= 0 && d < 1 ? impactK * Math.sin(Math.PI * d) : 0;
-
-          // Damped rocking after the last bounce
+          // One quick, stiff rock after landing
           let tiltX = 0, tiltZ = 0;
           if (t > tLand) {
             const w = (t - tLand) / tSettle;
-            const amp = (4 + 4 * strength) * Math.pow(1 - w, 2);
-            tiltZ = wobbleDir * amp * Math.sin(w * Math.PI * 3);
-            tiltX = amp * 0.5 * Math.sin(w * Math.PI * 3 + 1.2);
+            const amp = (1.5 + 1.5 * strength) * (1 - w);
+            tiltZ = rockDir * amp * Math.sin(w * Math.PI * 2);
+            tiltX = amp * 0.4 * Math.sin(w * Math.PI * 2);
           }
 
-          render(x, h, 1 + sq * 0.8, 1 - sq, tiltX, tiltZ, rx, ry, H);
+          render(x, h, tiltX, tiltZ, rx, ry, H);
 
           if (t < total) requestAnimationFrame(frame);
           else {
             rotX = eX; rotY = eY;
-            render(0, 0, 1, 1, 0, 0, rotX, rotY, H);
+            render(0, 0, 0, 0, rotX, rotY, H);
             resolve();
           }
         }
@@ -912,14 +948,19 @@
       });
     }
 
-    function onImpact(i, strength, dx) {
-      if (i === 0) {
+    function onImpact(kind, strength, dir) {
+      if (kind === 'floor') {
         play('body');                       // "SOME…BODY" lands on the first hit
         vibrate(Math.round(20 + 20 * strength));
-        if (strength > 0.8) { flash(diceStage, 'bump'); flash(rollsPanel, 'bump'); }
+        flash(diceStage, strength > 0.9 ? 'thud-hard' : 'thud');
+        if (strength > 1) flash(rollsPanel, 'bump');
+      } else if (kind === 'wall') {
+        clack(0.45, 0.85);
+        vibrate(15);
+        diceStage.style.setProperty('--jx', `${dir * 5}px`);
+        flash(diceStage, 'jolt');
       } else {
-        clack(i === 1 ? 0.35 : 0.15, i === 1 ? 1 : 1.25);
-        vibrate(i === 1 ? 12 : 6);
+        clack(0.18, 1.2);
       }
     }
 
@@ -943,7 +984,7 @@
       if (reducedMotion) {
         rotX += mod(target.x - rotX, 360);
         rotY += mod(target.y - rotY, 360);
-        render(0, 0, 1, 1, 0, 0, rotX, rotY, 0);
+        render(0, 0, 0, 0, rotX, rotY, 0);
         await wait(250);
         play('body');
       } else {
@@ -1029,7 +1070,7 @@
       roll();
     });
 
-    render(0, 0, 1, 1, 0, 0, rotX, rotY, 0);
+    render(0, 0, 0, 0, rotX, rotY, 0);
     updateUsername();
   </script>
 </body>
