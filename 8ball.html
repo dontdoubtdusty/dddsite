@@ -4,26 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magic 8-Ball</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
             --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
             --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.25);
+
+            --ball-size: 300px;
+            /* Keep these in sync with the timing constants in the script. */
+            --shake-time: 500ms;
+            --flip-half: 200ms;  /* the flip is two halves: old face rolls off, new face rolls on */
+            --fade-time: 400ms;  /* reduced-motion cross-fade, same total as the flip */
+            --rise-time: 600ms;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            padding: 0;
             min-height: 100vh;
+            min-height: 100dvh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            overflow-y: auto;
             overflow-x: hidden;
             padding: 40px 20px;
         }
@@ -32,7 +41,8 @@
             color: white;
             font-size: 2.5em;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin: 0 0 10px;
+            text-align: center;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
@@ -40,12 +50,12 @@
             color: rgba(255,255,255,0.9);
             font-size: 1.1em;
             font-weight: 400;
-            margin-bottom: 50px;
+            margin: 0 0 40px;
             text-align: center;
         }
 
         .input-container {
-            margin-bottom: 40px;
+            margin-bottom: 32px;
             text-align: center;
         }
 
@@ -64,7 +74,7 @@
 
         #question:focus {
             outline: none;
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-lg), 0 0 0 3px rgba(255,255,255,0.6);
         }
 
         .button-group {
@@ -110,9 +120,11 @@
             font-size: 1.4em;
             font-weight: 500;
             font-style: italic;
-            margin-bottom: 50px;
+            margin: 0 0 32px;
+            max-width: 600px;
+            overflow-wrap: anywhere;
             text-align: center;
-            min-height: 40px;
+            min-height: 1.4em;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -122,86 +134,319 @@
             opacity: 1;
         }
 
-        .ball-container {
-            perspective: 1000px;
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* ---------- The ball ----------
+           1em inside .ball = 1% of the ball's diameter, so every part scales
+           with --ball-size (the screenshot card just sets a smaller one). */
+
+        .ball-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .ball-button {
+            display: block;
+            position: relative;
+            z-index: 1;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            border-radius: 50%;
+            background: none;
+            font: inherit;
+            color: inherit;
             cursor: pointer;
-            margin-bottom: 50px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ball-button:focus {
+            outline: none;
+        }
+
+        .ball-button:focus-visible {
+            outline: 3px solid rgba(255,255,255,0.9);
+            outline-offset: 6px;
         }
 
         .ball {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 100px 100px, #2d2d2d, #000000);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                inset -20px -20px 50px rgba(0,0,0,0.8),
-                inset 20px 20px 50px rgba(255,255,255,0.1),
-                var(--shadow-xl);
-            transition: transform 0.1s ease;
+            --sx: 4em;
+            --sy: 1em;
+            --sr: 9deg;
+            display: block;
             position: relative;
-        }
-
-        .ball::before {
-            content: '';
-            position: absolute;
-            top: 30px;
-            left: 40px;
-            width: 80px;
-            height: 60px;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.2), transparent);
+            width: var(--ball-size);
+            height: var(--ball-size);
+            font-size: calc(var(--ball-size) / 100);
             border-radius: 50%;
-            filter: blur(10px);
+            overflow: hidden;
+            isolation: isolate;
+            background: radial-gradient(circle at 34% 30%, #44444c 0%, #1d1d22 24%, #0a0a0c 52%, #000 78%);
         }
 
         .ball.shaking {
-            animation: shake 0.5s ease-in-out;
+            animation: shake var(--shake-time) ease-in-out;
         }
 
+        /* --sx/--sy/--sr are re-rolled by the script before each shake. */
         @keyframes shake {
-            0%, 100% { transform: rotate(0deg) translateX(0); }
-            10% { transform: rotate(-10deg) translateX(-10px); }
-            20% { transform: rotate(10deg) translateX(10px); }
-            30% { transform: rotate(-10deg) translateX(-10px); }
-            40% { transform: rotate(10deg) translateX(10px); }
-            50% { transform: rotate(-10deg) translateX(-10px); }
-            60% { transform: rotate(10deg) translateX(10px); }
-            70% { transform: rotate(-10deg) translateX(-10px); }
-            80% { transform: rotate(10deg) translateX(10px); }
-            90% { transform: rotate(-5deg) translateX(-5px); }
+            0%, 100% { transform: none; }
+            12% { transform: translate(calc(var(--sx) * -1), var(--sy)) rotate(calc(var(--sr) * -1)); }
+            27% { transform: translate(var(--sx), calc(var(--sy) * -1)) rotate(var(--sr)); }
+            42% { transform: translate(calc(var(--sx) * -0.8), var(--sy)) rotate(calc(var(--sr) * -0.8)); }
+            57% { transform: translate(calc(var(--sx) * 0.6), 0) rotate(calc(var(--sr) * 0.6)); }
+            72% { transform: translate(calc(var(--sx) * -0.4), 0) rotate(calc(var(--sr) * -0.4)); }
+            87% { transform: translate(calc(var(--sx) * 0.15), 0) rotate(calc(var(--sr) * 0.15)); }
         }
 
-        .window {
-            width: 120px;
-            height: 120px;
+        /* Faces printed on the sphere. Centred with margins so transform is
+           free for the roll animation. */
+        .decal {
+            display: block;
+            position: absolute;
+            left: 50%;
+            top: 50%;
             border-radius: 50%;
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        }
+
+        .decal-eight {
+            width: 45em;
+            height: 45em;
+            margin: -22.5em 0 0 -22.5em;
+        }
+
+        .decal-window {
+            width: 64em;
+            height: 64em;
+            margin: -32em 0 0 -32em;
+        }
+
+        /* Turning the ball over: the old face slides down over the bottom of
+           the sphere (foreshortening as it goes) and the new face comes over
+           the top. Keyframes sample sin/cos at 0, 30, 60 and 90 degrees. */
+        @keyframes roll-out {
+            0%   { transform: translateY(0) scaleY(1); }
+            33%  { transform: translateY(25em) scaleY(0.866); }
+            66%  { transform: translateY(43.3em) scaleY(0.5); }
+            100% { transform: translateY(50em) scaleY(0); }
+        }
+
+        @keyframes roll-in {
+            0%   { transform: translateY(-50em) scaleY(0); }
+            33%  { transform: translateY(-43.3em) scaleY(0.5); }
+            66%  { transform: translateY(-25em) scaleY(0.866); }
+            100% { transform: translateY(0) scaleY(1); }
+        }
+
+        @keyframes fade-out {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .ball[data-face="eight"] .decal-window,
+        .ball[data-face="window"] .decal-eight {
+            visibility: hidden;
+        }
+
+        .ball[data-face="to-window"] .decal-eight,
+        .ball[data-face="to-eight"] .decal-window {
+            animation: roll-out var(--flip-half) linear forwards;
+        }
+
+        .ball[data-face="to-window"] .decal-window,
+        .ball[data-face="to-eight"] .decal-eight {
+            animation: roll-in var(--flip-half) linear var(--flip-half) both;
+        }
+
+        /* Idle side: white circle with a black 8. */
+        .eight-circle {
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 
-                inset 0 0 20px rgba(0,0,0,0.5),
-                0 0 20px rgba(59, 130, 246, 0.3);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 42% 38%, #ffffff 0%, #f3f3f3 55%, #d6d6d6 100%);
+            box-shadow:
+                inset -1.2em -1.6em 3em rgba(0,0,0,0.3),
+                inset 0.6em 0.8em 1.6em rgba(255,255,255,0.9);
+        }
+
+        .eight {
+            display: block;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 700;
+            font-size: 33em;
+            line-height: 1;
+            color: #0d0d0d;
+        }
+
+        /* Answer side: black rim, blue liquid, floating triangle. */
+        .window {
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 1.6em;
+            border-radius: 50%;
+            background: #040405;
+            box-shadow: 0 0 0 0.5em rgba(255,255,255,0.05);
+        }
+
+        .liquid {
+            display: block;
             position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            /* Inner shadow is baked into the gradients: html2canvas paints
+               blurred inset box-shadows as solid black. */
+            background:
+                linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 12%, rgba(0,0,0,0) 28%),
+                radial-gradient(circle at 50% 45%, #1d3cab 0%, #11277e 30%, #08144c 58%, #020822 80%, #000208 100%);
+        }
+
+        /* Point-down equilateral triangle, centroid on the window centre. */
+        .die {
+            display: block;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 50em;
+            height: 43.3em;
+            margin: -14.43em 0 0 -25em;
+            transform-origin: 50% 33.3%;
+            opacity: 0;
+        }
+
+        .die.risen {
+            opacity: 1;
+            animation: rise var(--rise-time) cubic-bezier(0.2, 0.7, 0.3, 1) both;
+        }
+
+        @keyframes rise {
+            0%   { opacity: 0; transform: translateY(8em) scale(0.4); filter: blur(1.4em) brightness(0.4); }
+            55%  { opacity: 0.85; filter: blur(0.4em) brightness(0.8); }
+            100% { opacity: 1; transform: none; filter: none; }
+        }
+
+        .die-shape {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Text box inside the wide top part of the triangle. */
+        .die-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: absolute;
+            left: 11em;
+            top: 3em;
+            width: 28em;
+            height: 16em;
             overflow: hidden;
         }
 
         .answer {
-            color: white;
-            font-size: 0.9em;
-            font-weight: 600;
+            display: block;
+            font-family: 'Oswald', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+            font-weight: 500;
+            font-size: 7em; /* overwritten by fitAnswer() */
+            line-height: 1.05;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
             text-align: center;
-            padding: 15px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            overflow-wrap: normal; /* fitAnswer() switches to anywhere if it must */
+            color: #eef3ff;
+            text-shadow: 0 0 0.35em rgba(150,185,255,0.55);
         }
 
-        .answer.visible {
-            opacity: 1;
+        /* Lighting sits above both faces so it never moves with them. */
+        .shade,
+        .spec {
+            display: block;
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
         }
+
+        .shade {
+            inset: 0;
+            background: radial-gradient(circle at 36% 32%, rgba(0,0,0,0) 48%, rgba(0,0,0,0.35) 72%, rgba(0,0,0,0.8) 100%);
+        }
+
+        /* Highlights are square circles squashed with scaleY, rather than
+           elliptical gradients, because html2canvas draws every radial
+           gradient as a circle. */
+        .spec-glow {
+            left: 12em;
+            top: 3em;
+            width: 44em;
+            height: 44em;
+            transform: scaleY(0.77);
+            background: radial-gradient(circle closest-side, rgba(255,255,255,0.16), rgba(255,255,255,0));
+        }
+
+        .spec-main {
+            left: 19em;
+            top: 7.5em;
+            width: 20em;
+            height: 20em;
+            transform: rotate(-28deg) scaleY(0.55);
+            background: radial-gradient(circle closest-side, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 35%, rgba(255,255,255,0) 100%);
+        }
+
+        .spec-low {
+            left: 58em;
+            top: 72em;
+            width: 26em;
+            height: 26em;
+            transform: rotate(-38deg) scaleY(0.385);
+            background: radial-gradient(circle closest-side, rgba(255,255,255,0.12), rgba(255,255,255,0));
+        }
+
+        .floor-shadow {
+            display: block;
+            position: relative;
+            width: calc(var(--ball-size) * 0.72);
+            height: calc(var(--ball-size) * 0.11);
+            margin-top: calc(var(--ball-size) * -0.045);
+        }
+
+        .floor-shadow::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: calc(var(--ball-size) * 0.72);
+            margin-top: calc(var(--ball-size) * -0.36);
+            transform: scaleY(0.153);
+            border-radius: 50%;
+            background: radial-gradient(circle closest-side, rgba(20,8,40,0.55), rgba(20,8,40,0.25) 55%, rgba(20,8,40,0));
+        }
+
+        /* ---------- Quote panel ---------- */
 
         .quote-panel {
             background: rgba(255, 255, 255, 0.95);
@@ -231,6 +476,7 @@
             color: #4c1d95;
             line-height: 1.7;
             text-align: center;
+            overflow-wrap: anywhere;
         }
 
         .quote-label {
@@ -241,40 +487,72 @@
             text-align: center;
         }
 
-        .number-8 {
-            position: absolute;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 4em;
-            font-weight: 700;
-            color: white;
-            text-shadow: 
-                2px 2px 4px rgba(0,0,0,0.5),
-                0 0 10px rgba(255,255,255,0.3);
-        }
+        /* ---------- Screenshot card ----------
+           Built from the same ball markup and classes as the page. */
 
         .screenshot-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px;
+            --ball-size: 220px;
+            position: fixed;
+            left: -9999px;
+            top: 0;
+            width: 440px;
+            padding: 32px;
             border-radius: 20px;
-            box-shadow: var(--shadow-xl);
-            max-width: 500px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        
-        .screenshot-card h2 {
+
+        .screenshot-card *,
+        .screenshot-card *::before,
+        .screenshot-card *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .card-title {
             color: white;
-            margin: 0 0 20px 0;
+            margin: 0 0 16px;
+            font-size: 1.6em;
+            font-weight: 700;
             text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        
-        .screenshot-card .question-display {
+
+        .card-question {
             color: white;
-            font-size: 1.2em;
+            margin: 0 0 24px;
+            font-size: 1.15em;
+            font-weight: 500;
             font-style: italic;
-            margin-bottom: 30px;
             text-align: center;
+            overflow-wrap: anywhere;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
         }
+
+        .card-ball {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .card-ball .ball {
+            position: relative;
+            z-index: 1;
+        }
+
+        .screenshot-card .quote-panel {
+            width: 100%;
+            padding: 22px;
+            backdrop-filter: none;
+        }
+
+        .screenshot-card .quote-text {
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        /* ---------- Preview modal ---------- */
 
         .preview-modal {
             position: fixed;
@@ -289,11 +567,11 @@
             z-index: 1000;
             backdrop-filter: blur(4px);
         }
-        
+
         .preview-modal.visible {
             display: flex;
         }
-        
+
         .preview-content {
             background: white;
             padding: 24px;
@@ -304,7 +582,14 @@
             position: relative;
             box-shadow: var(--shadow-xl);
         }
-        
+
+        #previewImage canvas {
+            display: block;
+            max-width: 100% !important;
+            height: auto !important;
+            margin: 0 auto;
+        }
+
         .preview-buttons {
             margin-top: 20px;
             display: flex;
@@ -312,7 +597,7 @@
             justify-content: center;
             flex-wrap: wrap;
         }
-        
+
         .preview-buttons button {
             padding: 12px 28px;
             font-size: 1.05em;
@@ -324,29 +609,77 @@
             box-shadow: var(--shadow-md);
             transition: all 0.2s ease;
         }
-        
+
         .preview-buttons button:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
 
         @media (max-width: 600px) {
+            :root {
+                --ball-size: 250px;
+            }
+
+            body {
+                padding: 24px 16px;
+            }
+
             h1 {
                 font-size: 2em;
             }
-            
-            .ball {
-                width: 250px;
-                height: 250px;
+
+            .instruction {
+                margin-bottom: 20px;
             }
-            
-            .window {
-                width: 100px;
-                height: 100px;
+
+            .input-container {
+                margin-bottom: 20px;
             }
-            
-            .number-8 {
-                font-size: 3em;
+
+            #question {
+                margin-bottom: 12px;
+            }
+
+            #displayQuestion {
+                font-size: 1.2em;
+                margin-bottom: 16px;
+            }
+
+            .ball-area {
+                margin-bottom: 24px;
+            }
+
+            .quote-panel {
+                width: 100%;
+                padding: 22px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ball.shaking {
+                animation: none;
+            }
+
+            .ball[data-face="to-window"] .decal-eight,
+            .ball[data-face="to-eight"] .decal-window {
+                animation: fade-out var(--fade-time) ease forwards;
+            }
+
+            .ball[data-face="to-window"] .decal-window,
+            .ball[data-face="to-eight"] .decal-eight {
+                animation: fade-in var(--fade-time) ease both;
+            }
+
+            .die.risen,
+            .quote-panel.visible {
+                animation: none;
+            }
+
+            .btn,
+            .btn:hover,
+            .preview-buttons button:hover {
+                transition: none;
+                transform: none;
             }
         }
     </style>
@@ -354,9 +687,9 @@
 <body>
     <h1>🔮 Magic 8-Ball 🔮</h1>
     <p class="instruction">Ask a yes/no question!</p>
-    
+
     <div class="input-container">
-        <input type="text" id="question" placeholder="Enter your question...">
+        <input type="text" id="question" placeholder="Enter your question..." aria-label="Your yes/no question" autocomplete="off" enterkeyhint="go">
         <div class="button-group">
             <button class="btn btn-primary" onclick="askQuestion()">
                 Ask the 8-Ball
@@ -366,17 +699,42 @@
             </button>
         </div>
     </div>
-    
+
     <div id="displayQuestion"></div>
-    
-    <div class="ball-container" onclick="shakeBall()">
-        <div class="ball" id="ball">
-            <div class="number-8">8</div>
-            <div class="window">
-                <div class="answer" id="answer"></div>
-            </div>
-        </div>
+
+    <div class="ball-area">
+        <button type="button" class="ball-button" id="ballButton" aria-label="Shake the 8-ball again" onclick="shakeBall()">
+            <span class="ball" id="ball" data-face="eight">
+                <span class="decal decal-eight">
+                    <span class="eight-circle"><span class="eight">8</span></span>
+                </span>
+                <span class="decal decal-window">
+                    <span class="window">
+                        <span class="liquid">
+                            <span class="die" id="die">
+                                <svg class="die-shape" viewBox="0 0 100 86.6" aria-hidden="true" focusable="false">
+                                    <defs>
+                                        <linearGradient id="dieFill" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0" stop-color="#3f66ea"/>
+                                            <stop offset="1" stop-color="#1a32a6"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <polygon points="3,2.5 97,2.5 50,84" fill="url(#dieFill)" stroke="#6283f2" stroke-width="1.5" stroke-linejoin="round"/>
+                                </svg>
+                                <span class="die-text"><span class="answer" id="answer"></span></span>
+                            </span>
+                        </span>
+                    </span>
+                </span>
+                <span class="shade"></span>
+                <span class="spec spec-glow"></span>
+                <span class="spec spec-main"></span>
+                <span class="spec spec-low"></span>
+            </span>
+        </button>
+        <span class="floor-shadow"></span>
     </div>
+    <p class="sr-only" id="answerLive" aria-live="polite"></p>
 
     <div class="quote-panel" id="quotePanel">
         <div class="quote-label">From The Book of Carp:</div>
@@ -387,7 +745,7 @@
         <div class="preview-content" onclick="event.stopPropagation()">
             <div id="previewImage"></div>
             <div class="preview-buttons">
-                <button onclick="copyToClipboard()" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
+                <button onclick="copyToClipboard(this)" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
                     📋 Copy to Clipboard
                 </button>
                 <button onclick="downloadScreenshot()" style="background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white;">
@@ -401,22 +759,60 @@
     </div>
 
     <script>
+        // Keep in sync with the CSS custom properties in :root.
+        const SHAKE_TIME = 500;
+        const FLIP_TIME = 400;   // 2 x --flip-half, and --fade-time for reduced motion
+        const RISE_TIME = 600;
+        const ANSWER_MAX_EM = 7;    // answer font size, in % of the ball's diameter
+        const ANSWER_MIN_EM = 2.5;
+        const QUOTES_FALLBACK = 'The Book of Carp could not be loaded.';
+        const HTML2CANVAS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        const DOWNLOAD_NAME = 'magic-8-ball-prediction.png';
+
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        const els = {
+            question: document.getElementById('question'),
+            displayQuestion: document.getElementById('displayQuestion'),
+            ballButton: document.getElementById('ballButton'),
+            ball: document.getElementById('ball'),
+            die: document.getElementById('die'),
+            answer: document.getElementById('answer'),
+            answerLive: document.getElementById('answerLive'),
+            quotePanel: document.getElementById('quotePanel'),
+            quoteText: document.getElementById('quoteText'),
+            screenshotBtn: document.getElementById('screenshotBtn'),
+            previewModal: document.getElementById('previewModal'),
+            previewImage: document.getElementById('previewImage')
+        };
+
         let carpQuotes = [];
 
         // Fetch quotes from thebookofcarp.txt
         async function loadQuotes() {
             try {
                 const response = await fetch('thebookofcarp.txt');
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
                 const text = await response.text();
-                carpQuotes = text.split('\n').filter(line => line.trim() !== '');
+                carpQuotes = text.split(/\r?\n/).filter(line => line.trim() !== '');
+                if (carpQuotes.length === 0) {
+                    throw new Error('The quotes file is empty');
+                }
             } catch (error) {
-                console.error('Error loading quotes:', error);
-                carpQuotes = ['The Book of Carp could not be loaded.'];
+                console.warn('Error loading quotes:', error);
+                carpQuotes = [QUOTES_FALLBACK];
             }
         }
 
         // Load quotes when page loads
-        loadQuotes();
+        const quotesReady = loadQuotes();
+
+        // Wait for the answer font before measuring text, so the fit is right.
+        const fontsReady = document.fonts
+            ? document.fonts.load('500 20px Oswald').catch(() => {})
+            : Promise.resolve();
 
         const answers = [
             "It is certain",
@@ -575,247 +971,313 @@
             "The vibes are off (no)"
         ];
 
-        function shakeBall() {
-            const ball = document.getElementById('ball');
-            const answerEl = document.getElementById('answer');
-            const quotePanel = document.getElementById('quotePanel');
-            const quoteText = document.getElementById('quoteText');
-            const displayQuestion = document.getElementById('displayQuestion');
-            
-            // Only proceed if there's a question displayed
-            if (!displayQuestion.textContent.trim()) {
-                return; // Don't shake if no question was asked
-            }
-            
-            // Hide current answer and quote
-            answerEl.classList.remove('visible');
-            quotePanel.classList.remove('visible');
-            
-            // Add shaking animation
-            ball.classList.add('shaking');
-            
-            // Remove animation class after it completes
-            setTimeout(() => {
-                ball.classList.remove('shaking');
-                
-                // Show random answer
-                const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
-                answerEl.textContent = randomAnswer;
-                answerEl.classList.add('visible');
+        let busy = false;
 
-                // Show random quote from Book of Carp
-                if (carpQuotes.length > 0) {
-                    let randomQuote = carpQuotes[Math.floor(Math.random() * carpQuotes.length)];
-                    
-                    // Extract text between first and last quotation marks
-                    const firstQuote = randomQuote.indexOf('"');
-                    const lastQuote = randomQuote.lastIndexOf('"');
-                    
-                    if (firstQuote !== -1 && lastQuote !== -1 && firstQuote !== lastQuote) {
-                        randomQuote = randomQuote.substring(firstQuote + 1, lastQuote);
-                    }
-                    
-                    quoteText.textContent = randomQuote;
-                    quotePanel.classList.add('visible');
-                    document.getElementById('screenshotBtn').style.display = 'inline-block';
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function randomItem(list) {
+            return list[Math.floor(Math.random() * list.length)];
+        }
+
+        // Show the text between the first and last double quote, or the whole
+        // line if it has no quoted section.
+        function extractQuote(line) {
+            const firstQuote = line.indexOf('"');
+            const lastQuote = line.lastIndexOf('"');
+            if (firstQuote !== -1 && lastQuote !== -1 && firstQuote !== lastQuote) {
+                return line.substring(firstQuote + 1, lastQuote);
+            }
+            return line.trim();
+        }
+
+        // Shrink the answer until it fits the text box in the triangle. Words
+        // only break mid-word if they can't fit whole even at the minimum size.
+        function fitAnswer() {
+            const answer = els.answer;
+            const box = answer.parentElement;
+            const overflows = () => answer.offsetHeight > box.clientHeight || answer.scrollWidth > box.clientWidth;
+            for (const wrap of ['normal', 'anywhere']) {
+                answer.style.overflowWrap = wrap;
+                let size = ANSWER_MAX_EM;
+                answer.style.fontSize = size + 'em';
+                while (size > ANSWER_MIN_EM && overflows()) {
+                    size = Math.max(ANSWER_MIN_EM, size - 0.25);
+                    answer.style.fontSize = size + 'em';
                 }
-            }, 500);
+                if (!overflows()) {
+                    return;
+                }
+            }
+        }
+
+        // Re-fit if the answer font arrives after the first measurement.
+        if (document.fonts) {
+            document.fonts.addEventListener('loadingdone', () => {
+                if (els.answer.textContent) fitAnswer();
+            });
+        }
+
+        async function flipTo(face) {
+            els.ball.dataset.face = face === 'window' ? 'to-window' : 'to-eight';
+            await wait(FLIP_TIME);
+            els.ball.dataset.face = face;
+        }
+
+        function randomizeShake() {
+            const sign = Math.random() < 0.5 ? -1 : 1;
+            els.ball.style.setProperty('--sx', (sign * (3 + Math.random() * 2)).toFixed(2) + 'em');
+            els.ball.style.setProperty('--sy', (0.5 + Math.random()).toFixed(2) + 'em');
+            els.ball.style.setProperty('--sr', (sign * (6 + Math.random() * 6)).toFixed(1) + 'deg');
+        }
+
+        async function shakeBall() {
+            // Ignore clicks mid-shake, and before a question has been asked.
+            if (busy || !els.displayQuestion.textContent.trim()) {
+                return;
+            }
+            busy = true;
+            els.ballButton.setAttribute('aria-busy', 'true');
+            els.quotePanel.classList.remove('visible');
+            els.answerLive.textContent = '';
+
+            try {
+                if (els.ball.dataset.face !== 'eight') {
+                    await flipTo('eight');
+                }
+
+                if (!reducedMotion.matches) {
+                    randomizeShake();
+                    els.ball.classList.add('shaking');
+                    await wait(SHAKE_TIME);
+                    els.ball.classList.remove('shaking');
+                }
+
+                const answer = randomItem(answers);
+                els.die.classList.remove('risen');
+                els.answer.textContent = answer;
+                await fontsReady;
+                fitAnswer();
+
+                await flipTo('window');
+                void els.die.offsetWidth; // restart the rise animation
+                els.die.classList.add('risen');
+                els.answerLive.textContent = answer;
+
+                await quotesReady;
+                els.quoteText.textContent = extractQuote(randomItem(carpQuotes));
+                els.quotePanel.classList.add('visible');
+                els.screenshotBtn.style.display = 'inline-block';
+
+                if (!reducedMotion.matches) {
+                    await wait(RISE_TIME);
+                }
+            } finally {
+                busy = false;
+                els.ballButton.removeAttribute('aria-busy');
+            }
         }
 
         function askQuestion() {
-            const questionInput = document.getElementById('question');
-            const displayQuestion = document.getElementById('displayQuestion');
-            
-            // Only shake if there's a question
-            if (questionInput.value.trim()) {
-                // Display the question
-                displayQuestion.textContent = '"' + questionInput.value + '"';
-                displayQuestion.classList.add('visible');
-                
-                shakeBall();
-                questionInput.value = ''; // Clear the question box
+            const question = els.question.value.trim();
+
+            // Only shake if there's a question, and not mid-shake
+            if (!question || busy) {
+                return;
             }
+
+            els.displayQuestion.textContent = '"' + question + '"';
+            els.displayQuestion.classList.add('visible');
+
+            shakeBall();
+            els.question.value = ''; // Clear the question box
         }
 
         let currentCanvas = null;
+        let html2canvasPromise = null;
+        let screenshotBusy = false;
+
+        // Load html2canvas once; a failed load can be retried later.
+        function loadHtml2Canvas() {
+            if (window.html2canvas) {
+                return Promise.resolve(window.html2canvas);
+            }
+            if (!html2canvasPromise) {
+                html2canvasPromise = new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = HTML2CANVAS_URL;
+                    script.onload = () => {
+                        if (window.html2canvas) {
+                            resolve(window.html2canvas);
+                        } else {
+                            reject(new Error('html2canvas did not load'));
+                        }
+                    };
+                    script.onerror = () => {
+                        script.remove();
+                        reject(new Error('Could not load html2canvas'));
+                    };
+                    document.head.appendChild(script);
+                }).catch(error => {
+                    html2canvasPromise = null;
+                    throw error;
+                });
+            }
+            return html2canvasPromise;
+        }
+
+        // The card reuses the page's ball markup and classes, so the two
+        // can't drift apart. Every string goes in through textContent.
+        function buildScreenshotCard() {
+            const card = document.createElement('div');
+            card.className = 'screenshot-card';
+
+            const title = document.createElement('h2');
+            title.className = 'card-title';
+            title.textContent = '🔮 Magic 8-Ball 🔮';
+
+            const question = document.createElement('p');
+            question.className = 'card-question';
+            question.textContent = els.displayQuestion.textContent;
+
+            const ballWrap = document.createElement('div');
+            ballWrap.className = 'card-ball';
+            const ball = els.ball.cloneNode(true);
+            ball.dataset.face = 'window';
+            ball.classList.remove('shaking');
+            [ball, ...ball.querySelectorAll('[id]')]
+                .filter(node => !(node instanceof SVGElement))
+                .forEach(node => node.removeAttribute('id'));
+            const floorShadow = document.createElement('span');
+            floorShadow.className = 'floor-shadow';
+            ballWrap.append(ball, floorShadow);
+
+            const quotePanel = document.createElement('div');
+            quotePanel.className = 'quote-panel visible';
+            const label = document.createElement('div');
+            label.className = 'quote-label';
+            label.textContent = 'From The Book of Carp:';
+            const quote = document.createElement('div');
+            quote.className = 'quote-text';
+            quote.textContent = els.quoteText.textContent;
+            quotePanel.append(label, quote);
+
+            card.append(title, question, ballWrap, quotePanel);
+            return card;
+        }
 
         async function takeScreenshot() {
-            const displayQuestion = document.getElementById('displayQuestion');
-            const answerEl = document.getElementById('answer');
-            const quoteText = document.getElementById('quoteText');
-            
-            if (!displayQuestion.textContent.trim()) {
+            if (busy || screenshotBusy) {
+                return;
+            }
+            if (!els.displayQuestion.textContent.trim()) {
                 alert('Please ask a question first!');
                 return;
             }
-            
-            // Get the scale factor (200px screenshot / 300px original = 0.667)
-            const scale = 0.667;
-            
-            // Create a temporary container for the screenshot
-            const card = document.createElement('div');
-            card.className = 'screenshot-card';
-            card.style.position = 'fixed';
-            card.style.left = '-9999px';
-            card.innerHTML = `
-                <h2 style="color: white; margin: 0 0 20px 0; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-family: 'Inter', sans-serif; font-weight: 700;">🔮 Magic 8-Ball 🔮</h2>
-                <div style="color: white; font-size: 1.2em; font-style: italic; margin-bottom: 30px; text-align: center; font-family: 'Inter', sans-serif;">${displayQuestion.textContent}</div>
-                <div style="display: flex; justify-content: center; margin-bottom: 30px;">
-                    <div style="
-                        width: ${300 * scale}px;
-                        height: ${300 * scale}px;
-                        border-radius: 50%;
-                        background: radial-gradient(circle at ${100 * scale}px ${100 * scale}px, #2d2d2d, #000000);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        box-shadow: 
-                            inset ${-20 * scale}px ${-20 * scale}px ${50 * scale}px rgba(0,0,0,0.8),
-                            inset ${20 * scale}px ${20 * scale}px ${50 * scale}px rgba(255,255,255,0.1),
-                            0 ${12 * scale}px ${32 * scale}px rgba(0,0,0,0.25);
-                        position: relative;
-                    ">
-                        <div style="
-                            position: absolute;
-                            top: ${30 * scale}px;
-                            left: 50%;
-                            transform: translateX(-50%);
-                            font-size: ${4 * scale}em;
-                            font-weight: 700;
-                            color: white;
-                            font-family: 'Inter', sans-serif;
-                            text-shadow: 
-                                2px 2px 4px rgba(0,0,0,0.5),
-                                0 0 10px rgba(255,255,255,0.3);
-                        ">8</div>
-                        <div style="
-                            width: ${120 * scale}px;
-                            height: ${120 * scale}px;
-                            border-radius: 50%;
-                            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            box-shadow: 
-                                inset 0 0 ${20 * scale}px rgba(0,0,0,0.5),
-                                0 0 ${20 * scale}px rgba(59, 130, 246, 0.3);
-                            overflow: hidden;
-                        ">
-                            <div style="
-                                color: white;
-                                font-size: ${0.9 * scale}em;
-                                text-align: center;
-                                padding: ${15 * scale}px;
-                                font-weight: 600;
-                                font-family: 'Inter', sans-serif;
-                                text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-                            ">${answerEl.textContent}</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="
-                    background: rgba(255, 255, 255, 0.95);
-                    padding: 25px;
-                    border-radius: 16px;
-                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                    margin: 0;
-                ">
-                    <div style="
-                        font-size: 0.9em;
-                        color: #6d28d9;
-                        font-weight: 600;
-                        margin-bottom: 10px;
-                        text-align: center;
-                        font-family: 'Inter', sans-serif;
-                    ">From The Book of Carp:</div>
-                    <div style="
-                        font-size: 1.1em;
-                        font-style: italic;
-                        color: #4c1d95;
-                        line-height: 1.6;
-                        text-align: center;
-                        font-family: 'Inter', sans-serif;
-                    ">${quoteText.textContent}</div>
-                </div>
-            `;
-            
+
+            screenshotBusy = true;
+            const card = buildScreenshotCard();
             document.body.appendChild(card);
-            
-            // Use html2canvas library
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-            script.onload = async () => {
+
+            try {
+                const html2canvas = await loadHtml2Canvas();
                 currentCanvas = await html2canvas(card, {
                     backgroundColor: null,
-                    scale: 2
+                    scale: 2,
+                    logging: false
                 });
-                
-                // Show preview
-                const previewImage = document.getElementById('previewImage');
-                previewImage.innerHTML = '';
-                previewImage.appendChild(currentCanvas);
-                
-                document.getElementById('previewModal').classList.add('visible');
-                document.body.removeChild(card);
-            };
-            document.head.appendChild(script);
+                els.previewImage.replaceChildren(currentCanvas);
+                els.previewModal.classList.add('visible');
+            } catch (error) {
+                console.error('Screenshot failed:', error);
+                alert("Couldn't make the screenshot. Check your connection and try again.");
+            } finally {
+                card.remove();
+                screenshotBusy = false;
+            }
         }
-        
+
+        function canvasToBlob(canvas) {
+            return new Promise((resolve, reject) => {
+                canvas.toBlob(blob => {
+                    if (blob) {
+                        resolve(blob);
+                    } else {
+                        reject(new Error('Could not create the image'));
+                    }
+                }, 'image/png');
+            });
+        }
+
         function downloadScreenshot() {
-            if (currentCanvas) {
-                currentCanvas.toBlob((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'magic-8-ball-prediction.png';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                });
-                closePreview();
+            const canvas = currentCanvas;
+            if (!canvas) {
+                return;
             }
+            canvasToBlob(canvas).then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = DOWNLOAD_NAME;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }).catch(error => {
+                console.error('Download failed:', error);
+                alert('Failed to save the image. Please try again.');
+            });
+            closePreview();
         }
-        
-        async function copyToClipboard() {
-            if (currentCanvas) {
-                try {
-                    currentCanvas.toBlob(async (blob) => {
-                        await navigator.clipboard.write([
-                            new ClipboardItem({
-                                'image/png': blob
-                            })
-                        ]);
-                        
-                        // Show feedback
-                        const btn = event.target;
-                        const originalText = btn.innerHTML;
-                        btn.innerHTML = '✅ Copied!';
-                        btn.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
-                        
-                        setTimeout(() => {
-                            btn.innerHTML = originalText;
-                            btn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
-                        }, 2000);
-                    });
-                } catch (err) {
-                    alert('Failed to copy to clipboard. Please try downloading instead.');
-                    console.error('Copy failed:', err);
+
+        async function copyToClipboard(btn) {
+            const canvas = currentCanvas;
+            if (!canvas) {
+                return;
+            }
+            try {
+                if (!navigator.clipboard || !navigator.clipboard.write || typeof ClipboardItem === 'undefined') {
+                    throw new Error('Copying images is not supported in this browser');
                 }
+                // Passing the blob as a promise keeps Safari's user-gesture check happy.
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': canvasToBlob(canvas) })
+                ]);
+                showCopied(btn);
+            } catch (error) {
+                console.error('Copy failed:', error);
+                alert('Failed to copy to clipboard. Please try downloading instead.');
             }
         }
-        
+
+        function showCopied(btn) {
+            if (!btn.dataset.label) {
+                btn.dataset.label = btn.textContent.trim();
+                btn.dataset.background = btn.style.background;
+            }
+            clearTimeout(btn.copiedTimer);
+            btn.textContent = '✅ Copied!';
+            btn.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+            btn.copiedTimer = setTimeout(() => {
+                btn.textContent = btn.dataset.label;
+                btn.style.background = btn.dataset.background;
+            }, 2000);
+        }
+
         function closePreview(event) {
             if (event) {
                 // Only close if clicking the modal backdrop, not the content
                 if (event.target.id !== 'previewModal') return;
             }
-            document.getElementById('previewModal').classList.remove('visible');
+            els.previewModal.classList.remove('visible');
             currentCanvas = null;
         }
 
         // Allow pressing Enter to ask question
-        document.getElementById('question').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+        els.question.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.isComposing) {
+                e.preventDefault();
                 askQuestion();
             }
         });
