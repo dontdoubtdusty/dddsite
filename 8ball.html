@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magic 8-Ball</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@800&display=swap" rel="stylesheet">
     <style>
         :root {
             --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -323,20 +323,22 @@
                 radial-gradient(circle at 50% 45%, #1d3cab 0%, #11277e 30%, #08144c 58%, #020822 80%, #000208 100%);
         }
 
-        /* Point-down equilateral triangle, centroid on the window centre. */
-        .die {
-            display: block;
+        /* The answer floats in the liquid, centred in the window. The box is
+           a rectangle that fits comfortably inside the window's circle. */
+        .answer-float {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             position: absolute;
             left: 50%;
             top: 50%;
-            width: 50em;
-            height: 43.3em;
-            margin: -14.43em 0 0 -25em;
-            transform-origin: 50% 33.3%;
+            width: 42em;
+            height: 34em;
+            margin: -17em 0 0 -21em;
             opacity: 0;
         }
 
-        .die.risen {
+        .answer-float.risen {
             opacity: 1;
             animation: rise var(--rise-time) cubic-bezier(0.2, 0.7, 0.3, 1) both;
         }
@@ -347,38 +349,18 @@
             100% { opacity: 1; transform: none; filter: none; }
         }
 
-        .die-shape {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Text box inside the wide top part of the triangle. */
-        .die-text {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: absolute;
-            left: 11em;
-            top: 3em;
-            width: 28em;
-            height: 16em;
-            overflow: hidden;
-        }
-
         .answer {
             display: block;
-            font-family: 'Oswald', 'Arial Narrow', 'Roboto Condensed', sans-serif;
-            font-weight: 500;
-            font-size: 7em; /* overwritten by fitAnswer() */
-            line-height: 1.05;
-            letter-spacing: 0.02em;
-            text-transform: uppercase;
+            font-family: 'Nunito', 'Arial Rounded MT Bold', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 800;
+            font-size: 10em; /* overwritten by fitAnswer() */
+            line-height: 1.1;
             text-align: center;
             overflow-wrap: normal; /* fitAnswer() switches to anywhere if it must */
-            color: #eef3ff;
-            text-shadow: 0 0 0.35em rgba(150,185,255,0.55);
+            color: #dce8ff;
+            text-shadow:
+                0 0 0.25em rgba(110,160,255,0.85),
+                0 0 0.7em rgba(70,120,255,0.55);
         }
 
         /* Lighting sits above both faces so it never moves with them. */
@@ -670,7 +652,7 @@
                 animation: fade-in var(--fade-time) ease both;
             }
 
-            .die.risen,
+            .answer-float.risen,
             .quote-panel.visible {
                 animation: none;
             }
@@ -711,18 +693,7 @@
                 <span class="decal decal-window">
                     <span class="window">
                         <span class="liquid">
-                            <span class="die" id="die">
-                                <svg class="die-shape" viewBox="0 0 100 86.6" aria-hidden="true" focusable="false">
-                                    <defs>
-                                        <linearGradient id="dieFill" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0" stop-color="#3f66ea"/>
-                                            <stop offset="1" stop-color="#1a32a6"/>
-                                        </linearGradient>
-                                    </defs>
-                                    <polygon points="3,2.5 97,2.5 50,84" fill="url(#dieFill)" stroke="#6283f2" stroke-width="1.5" stroke-linejoin="round"/>
-                                </svg>
-                                <span class="die-text"><span class="answer" id="answer"></span></span>
-                            </span>
+                            <span class="answer-float" id="answerFloat"><span class="answer" id="answer"></span></span>
                         </span>
                     </span>
                 </span>
@@ -763,8 +734,8 @@
         const SHAKE_TIME = 500;
         const FLIP_TIME = 400;   // 2 x --flip-half, and --fade-time for reduced motion
         const RISE_TIME = 600;
-        const ANSWER_MAX_EM = 7;    // answer font size, in % of the ball's diameter
-        const ANSWER_MIN_EM = 2.5;
+        const ANSWER_MAX_EM = 10;   // answer font size, in % of the ball's diameter
+        const ANSWER_MIN_EM = 3;
         const QUOTES_FALLBACK = 'The Book of Carp could not be loaded.';
         const HTML2CANVAS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
         const DOWNLOAD_NAME = 'magic-8-ball-prediction.png';
@@ -776,7 +747,7 @@
             displayQuestion: document.getElementById('displayQuestion'),
             ballButton: document.getElementById('ballButton'),
             ball: document.getElementById('ball'),
-            die: document.getElementById('die'),
+            answerFloat: document.getElementById('answerFloat'),
             answer: document.getElementById('answer'),
             answerLive: document.getElementById('answerLive'),
             quotePanel: document.getElementById('quotePanel'),
@@ -811,7 +782,7 @@
 
         // Wait for the answer font before measuring text, so the fit is right.
         const fontsReady = document.fonts
-            ? document.fonts.load('500 20px Oswald').catch(() => {})
+            ? document.fonts.load('800 20px Nunito').catch(() => {})
             : Promise.resolve();
 
         const answers = [
@@ -1055,14 +1026,14 @@
                 }
 
                 const answer = randomItem(answers);
-                els.die.classList.remove('risen');
+                els.answerFloat.classList.remove('risen');
                 els.answer.textContent = answer;
                 await fontsReady;
                 fitAnswer();
 
                 await flipTo('window');
-                void els.die.offsetWidth; // restart the rise animation
-                els.die.classList.add('risen');
+                void els.answerFloat.offsetWidth; // restart the rise animation
+                els.answerFloat.classList.add('risen');
                 els.answerLive.textContent = answer;
 
                 await quotesReady;
@@ -1146,9 +1117,7 @@
             const ball = els.ball.cloneNode(true);
             ball.dataset.face = 'window';
             ball.classList.remove('shaking');
-            [ball, ...ball.querySelectorAll('[id]')]
-                .filter(node => !(node instanceof SVGElement))
-                .forEach(node => node.removeAttribute('id'));
+            [ball, ...ball.querySelectorAll('[id]')].forEach(node => node.removeAttribute('id'));
             const floorShadow = document.createElement('span');
             floorShadow.className = 'floor-shadow';
             ballWrap.append(ball, floorShadow);
