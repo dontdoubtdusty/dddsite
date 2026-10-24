@@ -716,6 +716,8 @@
       fart:   'dice-fart.mp3',
       heynow: 'heynow.mp3'
     };
+    // Per-clip volume trim (1 = as recorded)
+    const CLIP_GAIN = { heynow: 0.5 };
     const fallback = Object.fromEntries(Object.entries(CLIPS).map(([n, file]) => [n, new Audio(file)]));
 
     // Download the clips at page load so the first tap only has to decode them
@@ -748,7 +750,7 @@
         const g = actx.createGain();
         src.buffer = buffers[name];
         src.playbackRate.value = rate;
-        g.gain.value = volume;
+        g.gain.value = volume * (CLIP_GAIN[name] ?? 1);
         src.connect(g).connect(actx.destination);
         src.start();
         return () => {
@@ -762,7 +764,7 @@
       } else {
         const a = fallback[name];
         try { a.currentTime = 0; } catch {}
-        a.volume = clamp(volume, 0, 1);
+        a.volume = clamp(volume * (CLIP_GAIN[name] ?? 1), 0, 1);
         a.play().catch(() => {});
         return () => { try { a.pause(); } catch {} };
       }
