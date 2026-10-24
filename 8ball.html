@@ -4,6 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magic 8-Ball</title>
+    <meta name="description" content="Ask a yes/no question and get a terrible answer, plus a quote from The Book of Carp.">
+    <meta name="theme-color" content="#6f63d6">
+
+    <!-- Link previews (iMessage, Discord, etc.). The image URL must be absolute. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Magic 8-Ball">
+    <meta property="og:description" content="Ask a yes/no question and get a terrible answer, plus a quote from The Book of Carp.">
+    <meta property="og:url" content="https://dontdoubtdusty.com/8ball.html">
+    <meta property="og:image" content="https://dontdoubtdusty.com/8ball-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="A glossy black Magic 8-Ball on a purple background">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Magic 8-Ball">
+    <meta name="twitter:description" content="Ask a yes/no question and get a terrible answer, plus a quote from The Book of Carp.">
+    <meta name="twitter:image" content="https://dontdoubtdusty.com/8ball-preview.png">
+
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='.35' cy='.3' r='.75'%3E%3Cstop offset='0' stop-color='%23555'/%3E%3Cstop offset='.5' stop-color='%23111'/%3E%3Cstop offset='1' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23fff'/%3E%3Ctext x='32' y='39.5' font-family='Arial,sans-serif' font-weight='700' font-size='21' text-anchor='middle' fill='%23000'%3E8%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="8ball-icon-180.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,10 +39,15 @@
             --flip-half: 200ms;  /* the flip is two halves: old face rolls off, new face rolls on */
             --fade-time: 400ms;  /* reduced-motion cross-fade, same total as the flip */
             --rise-time: 600ms;
+            --sink-time: 150ms;  /* old answer fades out before the ball flips back */
         }
 
         *, *::before, *::after {
             box-sizing: border-box;
+        }
+
+        [hidden] {
+            display: none !important;
         }
 
         body {
@@ -298,7 +325,7 @@
             color: #0d0d0d;
         }
 
-        /* Answer side: black rim, blue liquid, floating triangle. */
+        /* Answer side: black rim and blue liquid with the answer floating in it. */
         .window {
             display: block;
             width: 100%;
@@ -341,6 +368,11 @@
         .answer-float.risen {
             opacity: 1;
             animation: rise var(--rise-time) cubic-bezier(0.2, 0.7, 0.3, 1) both;
+        }
+
+        /* Asking again: the old answer sinks back into the dark first. */
+        .answer-float.risen.sinking {
+            animation: fade-out var(--sink-time) ease forwards;
         }
 
         @keyframes rise {
@@ -428,6 +460,63 @@
             background: radial-gradient(circle closest-side, rgba(20,8,40,0.55), rgba(20,8,40,0.25) 55%, rgba(20,8,40,0));
         }
 
+        /* ---------- Shake-to-ask toggle (phones only) ---------- */
+
+        .shake-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 6px 14px 6px 8px;
+            border: 0;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.16);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .shake-toggle:focus {
+            outline: none;
+        }
+
+        .shake-toggle:focus-visible {
+            outline: 2px solid rgba(255,255,255,0.9);
+            outline-offset: 2px;
+        }
+
+        .shake-toggle .switch {
+            position: relative;
+            width: 30px;
+            height: 18px;
+            border-radius: 9px;
+            background: rgba(255,255,255,0.35);
+            transition: background 0.2s ease;
+        }
+
+        .shake-toggle .switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: white;
+            transition: transform 0.2s ease;
+        }
+
+        .shake-toggle[aria-pressed="true"] .switch {
+            background: #4ade80;
+        }
+
+        .shake-toggle[aria-pressed="true"] .switch::after {
+            transform: translateX(12px);
+        }
+
         /* ---------- Quote panel ---------- */
 
         .quote-panel {
@@ -461,11 +550,59 @@
             overflow-wrap: anywhere;
         }
 
+        /* On the page the quote is a button: tap it for another one. */
+        button.quote-text {
+            display: block;
+            width: 100%;
+            margin: 0;
+            padding: 4px 8px;
+            border: 0;
+            border-radius: 10px;
+            background: none;
+            font-family: inherit;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button.quote-text:hover {
+            background: rgba(109, 40, 217, 0.06);
+        }
+
+        button.quote-text:focus {
+            outline: none;
+        }
+
+        button.quote-text:focus-visible {
+            outline: 2px solid #6d28d9;
+            outline-offset: 2px;
+        }
+
+        button.quote-text:disabled {
+            cursor: default;
+            background: none;
+        }
+
+        .quote-text.swapped {
+            animation: quote-swap 250ms ease;
+        }
+
+        @keyframes quote-swap {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: none; }
+        }
+
         .quote-label {
             font-size: 0.95em;
             color: #6d28d9;
             font-weight: 600;
             margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .quote-hint {
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #8b5cf6;
             text-align: center;
         }
 
@@ -478,7 +615,7 @@
             left: -9999px;
             top: 0;
             width: 440px;
-            padding: 32px;
+            padding: 32px 32px 20px;
             border-radius: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -532,6 +669,15 @@
         .screenshot-card .quote-text {
             font-size: 1.05em;
             line-height: 1.6;
+        }
+
+        .card-watermark {
+            margin: 16px 0 0;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85em;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-align: center;
         }
 
         /* ---------- Preview modal ---------- */
@@ -590,11 +736,32 @@
             cursor: pointer;
             box-shadow: var(--shadow-md);
             transition: all 0.2s ease;
+            color: white;
         }
 
         .preview-buttons button:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
+        }
+
+        .preview-buttons .btn-share {
+            background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+        }
+
+        .preview-buttons .btn-copy {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .preview-buttons .btn-copy.copied {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        .preview-buttons .btn-download {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+        }
+
+        .preview-buttons .btn-close {
+            background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
         }
 
         @media (max-width: 600px) {
@@ -653,7 +820,8 @@
             }
 
             .answer-float.risen,
-            .quote-panel.visible {
+            .quote-panel.visible,
+            .quote-text.swapped {
                 animation: none;
             }
 
@@ -662,6 +830,11 @@
             .preview-buttons button:hover {
                 transition: none;
                 transform: none;
+            }
+
+            .shake-toggle .switch,
+            .shake-toggle .switch::after {
+                transition: none;
             }
         }
     </style>
@@ -673,10 +846,10 @@
     <div class="input-container">
         <input type="text" id="question" placeholder="Enter your question..." aria-label="Your yes/no question" autocomplete="off" enterkeyhint="go">
         <div class="button-group">
-            <button class="btn btn-primary" onclick="askQuestion()">
+            <button type="button" class="btn btn-primary" id="askBtn">
                 Ask the 8-Ball
             </button>
-            <button id="screenshotBtn" class="btn btn-secondary" onclick="takeScreenshot()" style="display: none;">
+            <button type="button" id="screenshotBtn" class="btn btn-secondary" hidden>
                 📸 Take Screenshot
             </button>
         </div>
@@ -685,7 +858,7 @@
     <div id="displayQuestion"></div>
 
     <div class="ball-area">
-        <button type="button" class="ball-button" id="ballButton" aria-label="Shake the 8-ball again" onclick="shakeBall()">
+        <button type="button" class="ball-button" id="ballButton" aria-label="Shake the 8-ball again">
             <span class="ball" id="ball" data-face="eight">
                 <span class="decal decal-eight">
                     <span class="eight-circle"><span class="eight">8</span></span>
@@ -704,86 +877,65 @@
             </span>
         </button>
         <span class="floor-shadow"></span>
+        <button type="button" class="shake-toggle" id="shakeToggle" aria-pressed="false" hidden>
+            <span class="switch" aria-hidden="true"></span>Shake to ask
+        </button>
     </div>
     <p class="sr-only" id="answerLive" aria-live="polite"></p>
 
     <div class="quote-panel" id="quotePanel">
         <div class="quote-label">From The Book of Carp:</div>
-        <div class="quote-text" id="quoteText"></div>
+        <button type="button" class="quote-text" id="quoteText" aria-describedby="quoteHint"></button>
+        <div class="quote-hint" id="quoteHint">Tap the quote for another one</div>
     </div>
 
-    <div id="previewModal" class="preview-modal" onclick="closePreview(event)">
-        <div class="preview-content" onclick="event.stopPropagation()">
+    <div id="previewModal" class="preview-modal">
+        <div class="preview-content" role="dialog" aria-modal="true" aria-label="Screenshot preview">
             <div id="previewImage"></div>
             <div class="preview-buttons">
-                <button onclick="copyToClipboard(this)" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
+                <button type="button" class="btn-share" id="shareBtn" hidden>
+                    Share
+                </button>
+                <button type="button" class="btn-copy" id="copyBtn">
                     📋 Copy to Clipboard
                 </button>
-                <button onclick="downloadScreenshot()" style="background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white;">
+                <button type="button" class="btn-download" id="downloadBtn">
                     💾 Download PNG
                 </button>
-                <button onclick="closePreview()" style="background: linear-gradient(135deg, #f87171 0%, #dc2626 100%); color: white;">
+                <button type="button" class="btn-close" id="closeBtn">
                     ✖ Close
                 </button>
             </div>
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // ================= Settings =================
+
         // Keep in sync with the CSS custom properties in :root.
         const SHAKE_TIME = 500;
         const FLIP_TIME = 400;   // 2 x --flip-half, and --fade-time for reduced motion
         const RISE_TIME = 600;
+        const SINK_TIME = 150;
         const ANSWER_MAX_EM = 10;   // answer font size, in % of the ball's diameter
         const ANSWER_MIN_EM = 3;
         const QUOTES_FALLBACK = 'The Book of Carp could not be loaded.';
         const HTML2CANVAS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
         const DOWNLOAD_NAME = 'magic-8-ball-prediction.png';
+        const CARD_WATERMARK = 'dontdoubtdusty.com/8ball';
+        const PLACEHOLDER = 'Enter your question...';
+        const PLACEHOLDER_SHAKE = 'Type a question, then shake';
 
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        // Shake detection: total change in acceleration (m/s², summed over the
+        // three axes) between samples taken SHAKE_SAMPLE_MS apart. Two strong
+        // jolts within SHAKE_WINDOW_MS count as a shake.
+        const SHAKE_THRESHOLD = 15;
+        const SHAKE_SAMPLE_MS = 100;
+        const SHAKE_WINDOW_MS = 600;
+        const SHAKE_COOLDOWN_MS = 1500;
+        const MOTION_CHECK_MS = 2000;   // no readings by then means no sensor
 
-        const els = {
-            question: document.getElementById('question'),
-            displayQuestion: document.getElementById('displayQuestion'),
-            ballButton: document.getElementById('ballButton'),
-            ball: document.getElementById('ball'),
-            answerFloat: document.getElementById('answerFloat'),
-            answer: document.getElementById('answer'),
-            answerLive: document.getElementById('answerLive'),
-            quotePanel: document.getElementById('quotePanel'),
-            quoteText: document.getElementById('quoteText'),
-            screenshotBtn: document.getElementById('screenshotBtn'),
-            previewModal: document.getElementById('previewModal'),
-            previewImage: document.getElementById('previewImage')
-        };
-
-        let carpQuotes = [];
-
-        // Fetch quotes from thebookofcarp.txt
-        async function loadQuotes() {
-            try {
-                const response = await fetch('thebookofcarp.txt');
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-                const text = await response.text();
-                carpQuotes = text.split(/\r?\n/).filter(line => line.trim() !== '');
-                if (carpQuotes.length === 0) {
-                    throw new Error('The quotes file is empty');
-                }
-            } catch (error) {
-                console.warn('Error loading quotes:', error);
-                carpQuotes = [QUOTES_FALLBACK];
-            }
-        }
-
-        // Load quotes when page loads
-        const quotesReady = loadQuotes();
-
-        // Wait for the answer font before measuring text, so the fit is right.
-        const fontsReady = document.fonts
-            ? document.fonts.load('800 20px Nunito').catch(() => {})
-            : Promise.resolve();
+        // ================= Data =================
 
         const answers = [
             "It is certain",
@@ -942,14 +1094,40 @@
             "The vibes are off (no)"
         ];
 
-        let busy = false;
+        // ================= State and logic (no DOM) =================
 
-        function wait(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+        const state = {
+            question: '',        // the question currently on screen, unquoted
+            busy: false,         // a shake sequence is running
+            lastAnswer: -1,      // index of the answer shown last, to avoid repeats
+            lastQuote: -1,
+            quotes: [],          // display-ready quote strings
+            shakeToAsk: false,
+            screenshotBusy: false,
+            canvas: null,        // the current screenshot, while the preview is open
+            blob: null
+        };
+
+        // Random index in [0, length), never equal to `avoid` when there's a choice.
+        function pickIndex(length, avoid) {
+            if (length <= 1) {
+                return 0;
+            }
+            if (avoid < 0 || avoid >= length) {
+                return Math.floor(Math.random() * length);
+            }
+            const i = Math.floor(Math.random() * (length - 1));
+            return i >= avoid ? i + 1 : i;
         }
 
-        function randomItem(list) {
-            return list[Math.floor(Math.random() * list.length)];
+        function nextAnswer() {
+            state.lastAnswer = pickIndex(answers.length, state.lastAnswer);
+            return answers[state.lastAnswer];
+        }
+
+        function nextQuote() {
+            state.lastQuote = pickIndex(state.quotes.length, state.lastQuote);
+            return state.quotes[state.lastQuote];
         }
 
         // Show the text between the first and last double quote, or the whole
@@ -963,8 +1141,77 @@
             return line.trim();
         }
 
-        // Shrink the answer until it fits the text box in the triangle. Words
-        // only break mid-word if they can't fit whole even at the minimum size.
+        function parseQuotes(text) {
+            return text.split(/\r?\n/)
+                .filter(line => line.trim() !== '')
+                .map(extractQuote);
+        }
+
+        function formatQuestion(question) {
+            return '"' + question + '"';
+        }
+
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function loadQuotes() {
+            try {
+                const response = await fetch('thebookofcarp.txt');
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                const quotes = parseQuotes(await response.text());
+                if (quotes.length === 0) {
+                    throw new Error('The quotes file is empty');
+                }
+                state.quotes = quotes;
+            } catch (error) {
+                console.warn('Error loading quotes:', error);
+                state.quotes = [QUOTES_FALLBACK];
+            }
+        }
+
+        // ================= DOM =================
+
+        const els = {
+            question: document.getElementById('question'),
+            askBtn: document.getElementById('askBtn'),
+            screenshotBtn: document.getElementById('screenshotBtn'),
+            displayQuestion: document.getElementById('displayQuestion'),
+            ballButton: document.getElementById('ballButton'),
+            ball: document.getElementById('ball'),
+            answerFloat: document.getElementById('answerFloat'),
+            answer: document.getElementById('answer'),
+            answerLive: document.getElementById('answerLive'),
+            shakeToggle: document.getElementById('shakeToggle'),
+            quotePanel: document.getElementById('quotePanel'),
+            quoteText: document.getElementById('quoteText'),
+            quoteHint: document.getElementById('quoteHint'),
+            previewModal: document.getElementById('previewModal'),
+            previewImage: document.getElementById('previewImage'),
+            shareBtn: document.getElementById('shareBtn'),
+            copyBtn: document.getElementById('copyBtn'),
+            downloadBtn: document.getElementById('downloadBtn'),
+            closeBtn: document.getElementById('closeBtn')
+        };
+
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        const quotesReady = loadQuotes().then(() => {
+            // Tapping for another quote only makes sense with more than one.
+            const canCycle = state.quotes.length > 1;
+            els.quoteText.disabled = !canCycle;
+            els.quoteHint.hidden = !canCycle;
+        });
+
+        // Wait for the answer font before measuring text, so the fit is right.
+        const fontsReady = document.fonts
+            ? document.fonts.load('800 20px Nunito').catch(() => {})
+            : Promise.resolve();
+
+        // Shrink the answer until it fits its box in the window. Words only
+        // break mid-word if they can't fit whole even at the minimum size.
         function fitAnswer() {
             const answer = els.answer;
             const box = answer.parentElement;
@@ -990,6 +1237,51 @@
             });
         }
 
+        function setBusy(busy) {
+            state.busy = busy;
+            if (busy) {
+                els.ballButton.setAttribute('aria-busy', 'true');
+            } else {
+                els.ballButton.removeAttribute('aria-busy');
+            }
+        }
+
+        function renderQuestion(question) {
+            els.displayQuestion.textContent = formatQuestion(question);
+            els.displayQuestion.classList.add('visible');
+        }
+
+        // Put the answer in the (hidden) window and size it, ready to rise.
+        function renderAnswer(text) {
+            els.answerFloat.classList.remove('risen', 'sinking');
+            els.answer.textContent = text;
+            fitAnswer();
+        }
+
+        function revealAnswer(text) {
+            void els.answerFloat.offsetWidth; // restart the rise animation
+            els.answerFloat.classList.add('risen');
+            els.answerLive.textContent = text;
+        }
+
+        function renderQuote(text, animate) {
+            els.quoteText.textContent = text;
+            if (animate) {
+                els.quoteText.classList.remove('swapped');
+                void els.quoteText.offsetWidth;
+                els.quoteText.classList.add('swapped');
+            }
+        }
+
+        function showQuotePanel() {
+            els.quotePanel.classList.add('visible');
+            els.screenshotBtn.hidden = false;
+        }
+
+        function hideQuotePanel() {
+            els.quotePanel.classList.remove('visible');
+        }
+
         async function flipTo(face) {
             els.ball.dataset.face = face === 'window' ? 'to-window' : 'to-eight';
             await wait(FLIP_TIME);
@@ -1003,50 +1295,60 @@
             els.ball.style.setProperty('--sr', (sign * (6 + Math.random() * 6)).toFixed(1) + 'deg');
         }
 
+        // A short buzz during the shake. Android only; other browsers ignore it.
+        function buzz() {
+            if (navigator.vibrate) {
+                try {
+                    navigator.vibrate([30, 50, 30, 50, 30]);
+                } catch (error) {
+                    // Not allowed right now; the shake works without it.
+                }
+            }
+        }
+
+        // ================= Actions =================
+
         async function shakeBall() {
             // Ignore clicks mid-shake, and before a question has been asked.
-            if (busy || !els.displayQuestion.textContent.trim()) {
+            if (state.busy || !state.question) {
                 return;
             }
-            busy = true;
-            els.ballButton.setAttribute('aria-busy', 'true');
-            els.quotePanel.classList.remove('visible');
+            setBusy(true);
+            hideQuotePanel();
             els.answerLive.textContent = '';
 
             try {
                 if (els.ball.dataset.face !== 'eight') {
+                    els.answerFloat.classList.add('sinking');
+                    await wait(SINK_TIME);
                     await flipTo('eight');
                 }
 
                 if (!reducedMotion.matches) {
                     randomizeShake();
+                    buzz();
                     els.ball.classList.add('shaking');
                     await wait(SHAKE_TIME);
                     els.ball.classList.remove('shaking');
                 }
 
-                const answer = randomItem(answers);
-                els.answerFloat.classList.remove('risen');
-                els.answer.textContent = answer;
+                const answer = nextAnswer();
                 await fontsReady;
-                fitAnswer();
+                renderAnswer(answer);
 
                 await flipTo('window');
-                void els.answerFloat.offsetWidth; // restart the rise animation
-                els.answerFloat.classList.add('risen');
-                els.answerLive.textContent = answer;
+                revealAnswer(answer);
 
                 await quotesReady;
-                els.quoteText.textContent = extractQuote(randomItem(carpQuotes));
-                els.quotePanel.classList.add('visible');
-                els.screenshotBtn.style.display = 'inline-block';
+                renderQuote(nextQuote(), false);
+                showQuotePanel();
 
                 if (!reducedMotion.matches) {
                     await wait(RISE_TIME);
                 }
             } finally {
-                busy = false;
-                els.ballButton.removeAttribute('aria-busy');
+                setBusy(false);
+                preloadHtml2Canvas();
             }
         }
 
@@ -1054,20 +1356,115 @@
             const question = els.question.value.trim();
 
             // Only shake if there's a question, and not mid-shake
-            if (!question || busy) {
+            if (!question || state.busy) {
                 return;
             }
 
-            els.displayQuestion.textContent = '"' + question + '"';
-            els.displayQuestion.classList.add('visible');
-
-            shakeBall();
+            state.question = question;
+            renderQuestion(question);
             els.question.value = ''; // Clear the question box
+            shakeBall();
         }
 
-        let currentCanvas = null;
+        function anotherQuote() {
+            if (state.busy || state.quotes.length < 2) {
+                return;
+            }
+            renderQuote(nextQuote(), !reducedMotion.matches);
+        }
+
+        // ================= Shake to ask =================
+
+        const motion = {
+            supported: 'DeviceMotionEvent' in window && window.matchMedia('(pointer: coarse)').matches,
+            last: null,         // last sampled reading
+            lastSampleAt: 0,
+            lastJoltAt: 0,
+            lastShakeAt: 0,
+            gotReading: false
+        };
+
+        function onMotion(event) {
+            const a = event.accelerationIncludingGravity;
+            if (!a || a.x === null || a.y === null || a.z === null) {
+                return;
+            }
+            motion.gotReading = true;
+            const now = Date.now();
+            if (now - motion.lastSampleAt < SHAKE_SAMPLE_MS) {
+                return;
+            }
+            motion.lastSampleAt = now;
+            if (motion.last) {
+                const change = Math.abs(a.x - motion.last.x) + Math.abs(a.y - motion.last.y) + Math.abs(a.z - motion.last.z);
+                if (change > SHAKE_THRESHOLD) {
+                    const isShake = now - motion.lastJoltAt < SHAKE_WINDOW_MS;
+                    motion.lastJoltAt = now;
+                    if (isShake && now - motion.lastShakeAt > SHAKE_COOLDOWN_MS) {
+                        motion.lastShakeAt = now;
+                        onShakeGesture();
+                    }
+                }
+            }
+            motion.last = { x: a.x, y: a.y, z: a.z };
+        }
+
+        // A typed question gets asked; otherwise re-shake the current one.
+        function onShakeGesture() {
+            if (state.busy || els.previewModal.classList.contains('visible')) {
+                return;
+            }
+            if (els.question.value.trim()) {
+                askQuestion();
+            } else {
+                shakeBall();
+            }
+        }
+
+        function setShakeToAsk(on) {
+            state.shakeToAsk = on;
+            els.shakeToggle.setAttribute('aria-pressed', String(on));
+            els.question.placeholder = on ? PLACEHOLDER_SHAKE : PLACEHOLDER;
+            if (on) {
+                motion.last = null;
+                window.addEventListener('devicemotion', onMotion);
+            } else {
+                window.removeEventListener('devicemotion', onMotion);
+            }
+        }
+
+        async function toggleShakeToAsk() {
+            if (state.shakeToAsk) {
+                setShakeToAsk(false);
+                return;
+            }
+            // iOS asks for permission, and only from a tap like this one.
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                try {
+                    if (await DeviceMotionEvent.requestPermission() !== 'granted') {
+                        alert('Motion access is off, so shaking won\'t work. The buttons still do.');
+                        return;
+                    }
+                } catch (error) {
+                    console.warn('Motion permission failed:', error);
+                    return;
+                }
+            }
+            setShakeToAsk(true);
+
+            // Some devices claim support but never send readings.
+            setTimeout(() => {
+                if (state.shakeToAsk && !motion.gotReading) {
+                    setShakeToAsk(false);
+                    els.shakeToggle.hidden = true;
+                    alert('This device doesn\'t report motion, so shake to ask is off.');
+                }
+            }, MOTION_CHECK_MS);
+        }
+
+        // ================= Screenshot =================
+
         let html2canvasPromise = null;
-        let screenshotBusy = false;
 
         // Load html2canvas once; a failed load can be retried later.
         function loadHtml2Canvas() {
@@ -1098,6 +1495,20 @@
             return html2canvasPromise;
         }
 
+        // Fetch html2canvas quietly once the page is idle, so the first
+        // screenshot is quick. A failure here is retried on the real click.
+        function preloadHtml2Canvas() {
+            if (window.html2canvas || html2canvasPromise) {
+                return;
+            }
+            const load = () => loadHtml2Canvas().catch(() => {});
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(load, { timeout: 3000 });
+            } else {
+                setTimeout(load, 1000);
+            }
+        }
+
         // The card reuses the page's ball markup and classes, so the two
         // can't drift apart. Every string goes in through textContent.
         function buildScreenshotCard() {
@@ -1110,7 +1521,7 @@
 
             const question = document.createElement('p');
             question.className = 'card-question';
-            question.textContent = els.displayQuestion.textContent;
+            question.textContent = formatQuestion(state.question);
 
             const ballWrap = document.createElement('div');
             ballWrap.className = 'card-ball';
@@ -1132,39 +1543,12 @@
             quote.textContent = els.quoteText.textContent;
             quotePanel.append(label, quote);
 
-            card.append(title, question, ballWrap, quotePanel);
+            const watermark = document.createElement('p');
+            watermark.className = 'card-watermark';
+            watermark.textContent = CARD_WATERMARK;
+
+            card.append(title, question, ballWrap, quotePanel, watermark);
             return card;
-        }
-
-        async function takeScreenshot() {
-            if (busy || screenshotBusy) {
-                return;
-            }
-            if (!els.displayQuestion.textContent.trim()) {
-                alert('Please ask a question first!');
-                return;
-            }
-
-            screenshotBusy = true;
-            const card = buildScreenshotCard();
-            document.body.appendChild(card);
-
-            try {
-                const html2canvas = await loadHtml2Canvas();
-                currentCanvas = await html2canvas(card, {
-                    backgroundColor: null,
-                    scale: 2,
-                    logging: false
-                });
-                els.previewImage.replaceChildren(currentCanvas);
-                els.previewModal.classList.add('visible');
-            } catch (error) {
-                console.error('Screenshot failed:', error);
-                alert("Couldn't make the screenshot. Check your connection and try again.");
-            } finally {
-                card.remove();
-                screenshotBusy = false;
-            }
         }
 
         function canvasToBlob(canvas) {
@@ -1179,39 +1563,100 @@
             });
         }
 
-        function downloadScreenshot() {
-            const canvas = currentCanvas;
-            if (!canvas) {
+        function screenshotFile(blob) {
+            return new File([blob], DOWNLOAD_NAME, { type: 'image/png' });
+        }
+
+        function canShareImage(blob) {
+            try {
+                return Boolean(navigator.share && navigator.canShare && navigator.canShare({ files: [screenshotFile(blob)] }));
+            } catch (error) {
+                return false;
+            }
+        }
+
+        async function takeScreenshot() {
+            if (state.busy || state.screenshotBusy) {
                 return;
             }
-            canvasToBlob(canvas).then(blob => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = DOWNLOAD_NAME;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                setTimeout(() => URL.revokeObjectURL(url), 1000);
-            }).catch(error => {
-                console.error('Download failed:', error);
-                alert('Failed to save the image. Please try again.');
-            });
+            if (!state.question) {
+                alert('Please ask a question first!');
+                return;
+            }
+
+            state.screenshotBusy = true;
+            const card = buildScreenshotCard();
+            document.body.appendChild(card);
+
+            try {
+                const html2canvas = await loadHtml2Canvas();
+                if (document.fonts) {
+                    await document.fonts.ready;
+                }
+                const canvas = await html2canvas(card, {
+                    backgroundColor: null,
+                    scale: 2,
+                    logging: false
+                });
+                // Make the PNG now, so Share, Copy and Download can use it
+                // straight from the tap (Safari requires that).
+                state.blob = await canvasToBlob(canvas);
+                state.canvas = canvas;
+                els.previewImage.replaceChildren(canvas);
+                els.shareBtn.hidden = !canShareImage(state.blob);
+                els.previewModal.classList.add('visible');
+            } catch (error) {
+                console.error('Screenshot failed:', error);
+                alert("Couldn't make the screenshot. Check your connection and try again.");
+            } finally {
+                card.remove();
+                state.screenshotBusy = false;
+            }
+        }
+
+        async function shareScreenshot() {
+            if (!state.blob) {
+                return;
+            }
+            try {
+                await navigator.share({
+                    files: [screenshotFile(state.blob)],
+                    title: 'Magic 8-Ball'
+                });
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    return; // closed the share sheet
+                }
+                console.error('Share failed:', error);
+                alert('Sharing failed. Try copying or downloading instead.');
+            }
+        }
+
+        function downloadScreenshot() {
+            if (!state.blob) {
+                return;
+            }
+            const url = URL.createObjectURL(state.blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = DOWNLOAD_NAME;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
             closePreview();
         }
 
         async function copyToClipboard(btn) {
-            const canvas = currentCanvas;
-            if (!canvas) {
+            if (!state.blob) {
                 return;
             }
             try {
                 if (!navigator.clipboard || !navigator.clipboard.write || typeof ClipboardItem === 'undefined') {
                     throw new Error('Copying images is not supported in this browser');
                 }
-                // Passing the blob as a promise keeps Safari's user-gesture check happy.
                 await navigator.clipboard.write([
-                    new ClipboardItem({ 'image/png': canvasToBlob(canvas) })
+                    new ClipboardItem({ 'image/png': state.blob })
                 ]);
                 showCopied(btn);
             } catch (error) {
@@ -1223,33 +1668,50 @@
         function showCopied(btn) {
             if (!btn.dataset.label) {
                 btn.dataset.label = btn.textContent.trim();
-                btn.dataset.background = btn.style.background;
             }
             clearTimeout(btn.copiedTimer);
             btn.textContent = '✅ Copied!';
-            btn.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+            btn.classList.add('copied');
             btn.copiedTimer = setTimeout(() => {
                 btn.textContent = btn.dataset.label;
-                btn.style.background = btn.dataset.background;
+                btn.classList.remove('copied');
             }, 2000);
         }
 
-        function closePreview(event) {
-            if (event) {
-                // Only close if clicking the modal backdrop, not the content
-                if (event.target.id !== 'previewModal') return;
-            }
+        function closePreview() {
             els.previewModal.classList.remove('visible');
-            currentCanvas = null;
+            state.canvas = null;
+            state.blob = null;
         }
 
-        // Allow pressing Enter to ask question
-        els.question.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.isComposing) {
-                e.preventDefault();
+        // ================= Wiring =================
+
+        els.askBtn.addEventListener('click', askQuestion);
+        els.question.addEventListener('keydown', event => {
+            if (event.key === 'Enter' && !event.isComposing) {
+                event.preventDefault();
                 askQuestion();
             }
         });
+        els.ballButton.addEventListener('click', shakeBall);
+        els.quoteText.addEventListener('click', anotherQuote);
+        els.screenshotBtn.addEventListener('click', takeScreenshot);
+
+        els.previewModal.addEventListener('click', event => {
+            // Only the backdrop closes it, not clicks inside the preview.
+            if (event.target === els.previewModal) {
+                closePreview();
+            }
+        });
+        els.shareBtn.addEventListener('click', shareScreenshot);
+        els.copyBtn.addEventListener('click', () => copyToClipboard(els.copyBtn));
+        els.downloadBtn.addEventListener('click', downloadScreenshot);
+        els.closeBtn.addEventListener('click', closePreview);
+
+        if (motion.supported) {
+            els.shakeToggle.hidden = false;
+            els.shakeToggle.addEventListener('click', toggleShakeToAsk);
+        }
     </script>
 </body>
 </html>
