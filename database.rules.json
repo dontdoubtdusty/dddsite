@@ -3,25 +3,40 @@
     ".read": false,
     ".write": false,
 
-    "rolls": {
+    "feed": {
       ".read": true,
-      ".indexOn": ["time"],
 
-      "$rollId": {
-        ".write": "!data.exists() && newData.exists()",
-        ".validate": "newData.hasChildren(['value', 'user', 'time'])",
+      "next": {
+        ".write": "newData.exists()",
+        ".validate": "newData.isNumber() && ((!data.exists() && newData.val() === 1) || (data.exists() && newData.val() === data.val() + 1))"
+      },
 
-        "value": {
-          ".validate": "newData.isNumber() && (newData.val() === 1 || newData.val() === 2 || newData.val() === 3 || newData.val() === 4 || newData.val() === 5 || newData.val() === 6)"
-        },
-        "user": {
-          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
-        },
-        "time": {
-          ".validate": "newData.isNumber() && newData.val() === now"
-        },
-        "$other": {
-          ".validate": false
+      "slots": {
+        "$slot": {
+          ".write": "newData.exists()",
+          ".validate": "$slot.matches(/^[0-5]$/) && newData.hasChildren(['kind', 'user', 'value', 'time']) && ((newData.child('kind').val() === 'roll' && !newData.hasChild('vs') && !newData.hasChild('vsValue')) || (newData.child('kind').val() === 'duel' && newData.hasChildren(['vs', 'vsValue']) && newData.child('vsValue').val() < newData.child('value').val()))",
+
+          "kind": {
+            ".validate": "newData.val() === 'roll' || newData.val() === 'duel'"
+          },
+          "user": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+          },
+          "value": {
+            ".validate": "newData.isNumber() && (newData.val() === 1 || newData.val() === 2 || newData.val() === 3 || newData.val() === 4 || newData.val() === 5 || newData.val() === 6)"
+          },
+          "vs": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+          },
+          "vsValue": {
+            ".validate": "newData.isNumber() && (newData.val() === 1 || newData.val() === 2 || newData.val() === 3 || newData.val() === 4 || newData.val() === 5)"
+          },
+          "time": {
+            ".validate": "newData.isNumber() && newData.val() === now"
+          },
+          "$other": {
+            ".validate": false
+          }
         }
       }
     },

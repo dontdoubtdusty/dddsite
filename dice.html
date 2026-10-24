@@ -465,15 +465,20 @@
       font-style: italic;
     }
 
-    #my-stats {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed rgba(124, 252, 0, 0.4);
-      color: rgba(200, 255, 154, 0.85);
-      font-size: 13px;
-      text-align: center;
-      min-height: 1em;
+    /* Duel result lines: a small DUEL tag and the score */
+    #rolls-list .tag {
+      display: inline-block;
+      margin-right: 6px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: var(--gold);
+      color: #1b2a0e;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      vertical-align: 2px;
     }
+    #rolls-list .score { color: var(--gold); font-weight: 700; white-space: nowrap; }
 
     /* ---------- Duel box (top of the rolls panel) ---------- */
     #duel-box {
@@ -612,7 +617,6 @@
     <h2>LAST 6 SHROLLS</h2>
     <div id="current-result" aria-live="polite"></div>
     <ul id="rolls-list"></ul>
-    <div id="my-stats"></div>
     <div id="status-note" hidden></div>
   </div>
 
@@ -633,7 +637,6 @@
     const charSelect  = $('character-select');
     const userTag     = $('user-tag');
     const muteBtn     = $('mute-btn');
-    const myStats     = $('my-stats');
     const statusNote  = $('status-note');
     const rollHint    = $('roll-hint');
     const picker      = $('username-picker');
@@ -654,7 +657,8 @@
         try { const v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); }
         catch { return fallback; }
       },
-      set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
+      set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} },
+      remove(key) { try { localStorage.removeItem(key); } catch {} }
     };
 
     const randInt = (n) => {
@@ -705,13 +709,19 @@
     let muted = store.get('shrekDiceMuted', false);
     let actx = null;
     const buffers = {};
-    const CLIPS = ['some', 'body', 'fart'];
-    const fallback = Object.fromEntries(CLIPS.map(n => [n, new Audio(`dice-${n}.mp3`)]));
+    // Clip name -> file in the repo root
+    const CLIPS = {
+      some:   'dice-some.mp3',
+      body:   'dice-body.mp3',
+      fart:   'dice-fart.mp3',
+      heynow: 'heynow.mp3'
+    };
+    const fallback = Object.fromEntries(Object.entries(CLIPS).map(([n, file]) => [n, new Audio(file)]));
 
     // Download the clips at page load so the first tap only has to decode them
     const clipData = {};
-    for (const name of CLIPS) {
-      clipData[name] = fetch(`dice-${name}.mp3`).then(r => r.arrayBuffer()).catch(() => null);
+    for (const [name, file] of Object.entries(CLIPS)) {
+      clipData[name] = fetch(file).then(r => r.arrayBuffer()).catch(() => null);
     }
 
     // Create (or wake) the audio context and decode the downloaded clips
@@ -720,7 +730,7 @@
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       actx = new AC();
-      for (const name of CLIPS) {
+      for (const name of Object.keys(CLIPS)) {
         clipData[name]
           .then(b => b && actx.decodeAudioData(b))
           .then(buf => { if (buf) buffers[name] = buf; })
@@ -758,14 +768,15 @@
       }
     }
 
-    // "BODY" remembers (per die) when it started so the fart on a 1 can follow right after it
+    // "BODY" remembers (per die) when it started so a tail clip (fart on a 1,
+    // Hey Now on a 6) can follow right after it
     function playBody(die) { die.bodyAt = performance.now(); play('body', die.vol); }
-    function fartAfterBody(die) {
+    function playAfterBody(die, name) {
       const bodyMs = (buffers.body?.duration ?? 0.57) * 1000 - 80;   // overlap BODY's tail a little
-      clearTimeout(die.fartTimer);
-      die.fartTimer = setTimeout(() => play('fart', die.vol), Math.max(0, die.bodyAt + bodyMs - performance.now()));
+      clearTimeout(die.tailTimer);
+      die.tailTimer = setTimeout(() => play(name, die.vol), Math.max(0, die.bodyAt + bodyMs - performance.now()));
     }
-    const cancelFart = (die) => clearTimeout(die.fartTimer);
+    const cancelAfterBody = (die) => clearTimeout(die.tailTimer);
 
     // Procedural clack: a tiny filtered noise burst — no audio file needed
     let noiseBuf = null;
@@ -799,12 +810,17 @@
     syncMute();
 
     // ---------- Feed state ----------
-    // server:  rolls the database has sent us (newest 10, by server time)
-    // pending: my rolls not yet confirmed by the database, or local-only
+    // The shared list is 6 reusable slots at feed/slots/0-5. Each entry is a
+    // roll { kind: 'roll', user, value, time } or a duel result
+    // { kind: 'duel', user (winner), value, vs (loser), vsValue, time }.
+    // server:  entries the database has sent us, keyed by slot number
+    // pending: my entries not yet in a slot, or local-only
     // status:  connection state, which picks the note under the list
+    const FEED_SIZE = MAX_SHOWN;
     const feed = { server: [], pending: [], status: 'connecting' };
     let serverOffset = 0;                       // server clock minus this device's clock
     const serverNow = () => Date.now() + serverOffset;
+    let localSeq = 0;
 
     const FEED_NOTES = {
       connecting:   '',
@@ -815,10 +831,9 @@
       rejected:     "That shroll didn't reach the swamp."
     };
 
-    // Newest-first rolls to show: confirmed ones plus my unconfirmed ones
-    function visibleRolls() {
-      const keys = new Set(feed.server.map(r => r.key));
-      return [...feed.server, ...feed.pending.filter(r => !keys.has(r.key))]
+    // Newest-first entries to show: the slots plus my unconfirmed ones
+    function visibleEntries() {
+      return [...feed.server, ...feed.pending]
         .sort((a, b) => a.time - b.time)
         .slice(-MAX_SHOWN)
         .reverse();
@@ -828,6 +843,25 @@
       feed.status = status;
       renderStatus();
     }
+
+    // Checks a slot's data from the database; null if it isn't a valid entry
+    function cleanEntry(key, raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      const cleanName = (v) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 40) : 'Someone');
+      const isFace = (v) => Number.isInteger(v) && v >= 1 && v <= 6;
+      const value = Number(raw.value), time = Number(raw.time);
+      if (!isFace(value) || !Number.isFinite(time)) return null;
+      const entry = { key, kind: 'roll', user: cleanName(raw.user), value, time: Math.min(time, serverNow()) };
+      if (raw.kind === 'duel') {
+        const vsValue = Number(raw.vsValue);
+        if (!isFace(vsValue) || vsValue >= value) return null;
+        Object.assign(entry, { kind: 'duel', vs: cleanName(raw.vs), vsValue });
+      }
+      return entry;
+    }
+
+    // The old per-device stats are gone; clear what earlier versions stored
+    store.remove('shrekDiceMyRolls');
 
     // ---------- Feed rendering ----------
     let lastNewestKey = null;
@@ -847,9 +881,28 @@
       return `${Math.floor(s / 86400)}d ago`;
     }
 
+    // One list item's text: "Name rolled 4 SHREKS" or "DUEL Winner out-shrekked Loser 6–3"
+    function entryText(entry) {
+      const who = document.createElement('span');
+      who.className = 'who';
+      const bold = (text) => { const b = document.createElement('b'); b.textContent = text; return b; };
+      if (entry.kind === 'duel') {
+        const tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.textContent = 'DUEL';
+        const score = document.createElement('span');
+        score.className = 'score';
+        score.textContent = `${entry.value}–${entry.vsValue}`;
+        who.append(tag, bold(entry.user), ' out\u2011shrekked ', bold(entry.vs), ' ', score);   // \u2011: hyphen that won't wrap
+      } else {
+        who.append(bold(entry.user), ` rolled ${plural(entry.value)}`);
+      }
+      return who;
+    }
+
     // DOM + textContent so names from the shared database can't inject HTML
     function renderRolls() {
-      const shown = visibleRolls();
+      const shown = visibleEntries();
       const newestKey = shown[0]?.key ?? null;
       const isNew = lastNewestKey !== null && newestKey !== lastNewestKey;
       lastNewestKey = newestKey;
@@ -863,20 +916,15 @@
         return;
       }
 
-      shown.forEach((roll, i) => {
+      shown.forEach((entry, i) => {
         const li = document.createElement('li');
-        if (roll.user === userId) li.classList.add('mine');
+        if (entry.user === userId || entry.vs === userId) li.classList.add('mine');
         if (i === 0 && isNew) li.classList.add('fresh');
-        const who = document.createElement('span');
-        who.className = 'who';
-        const name = document.createElement('b');
-        name.textContent = roll.user;
-        who.append(name, ` rolled ${plural(roll.value)}`);
         const ago = document.createElement('span');
         ago.className = 'ago';
-        ago.dataset.time = roll.time;
-        ago.textContent = timeAgo(roll.time);
-        li.append(who, ago);
+        ago.dataset.time = entry.time;
+        ago.textContent = timeAgo(entry.time);
+        li.append(entryText(entry), ago);
         rollsList.append(li);
       });
     }
@@ -886,34 +934,16 @@
       rollsList.querySelectorAll('.ago').forEach(el => { el.textContent = timeAgo(Number(el.dataset.time)); });
     }, 1000);
 
-    function cleanRoll(key, raw) {
-      if (!raw || typeof raw !== 'object') return null;
-      const value = Number(raw.value), time = Number(raw.time);
-      if (!Number.isInteger(value) || value < 1 || value > 6 || !Number.isFinite(time)) return null;
-      const user = typeof raw.user === 'string' && raw.user.trim() ? raw.user.trim().slice(0, 40) : 'Someone';
-      return { key, value, time: Math.min(time, serverNow()), user };
-    }
-
-    let myRolls = store.get('shrekDiceMyRolls', []);
-    if (!Array.isArray(myRolls)) myRolls = [];
-    function renderStats() {
-      if (!myRolls.length) { myStats.textContent = ''; return; }
-      const avg = (myRolls.reduce((a, b) => a + b, 0) / myRolls.length).toFixed(2);
-      const sixes = myRolls.filter(v => v === 6).length;
-      myStats.textContent = `Your shrolls: ${myRolls.length} · avg ${avg} · max shreks ${sixes}×`;
-    }
-    renderStats();
-
     // ---------- Firebase (falls back to local-only) ----------
     let db = null, everConnected = false;
     try {
       firebase.initializeApp({ databaseURL: 'https://shrek-dice-default-rtdb.firebaseio.com/' });
       db = firebase.database();
 
-      // Newest 10 rolls by server time (needs ".indexOn": "time" in the rules)
-      db.ref('rolls').orderByChild('time').limitToLast(10).on('value', (snapshot) => {
+      // All 6 slots; the list sorts them by server time
+      db.ref('feed/slots').on('value', (snapshot) => {
         const next = [];
-        snapshot.forEach(child => { const r = cleanRoll(child.key, child.val()); if (r) next.push(r); });
+        snapshot.forEach(child => { const e = cleanEntry(child.key, child.val()); if (e) next.push(e); });
         feed.server = next;
         renderRolls();
       }, (err) => {
@@ -935,38 +965,37 @@
       setFeedStatus('unavailable');
     }
 
-    // Record a roll locally, show it right away, and send it to the shared feed
-    function saveRoll(value) {
-      myRolls.push(value);
-      if (myRolls.length > 500) myRolls = myRolls.slice(-500);
-      store.set('shrekDiceMyRolls', myRolls);
-      renderStats();
-
-      const entry = { key: '', value, time: serverNow(), user: userId };
-      if (!db) {
-        entry.key = 'local-' + entry.time;
-        feed.pending.push(entry);
-        renderRolls();
-        return;
-      }
-
-      const ref = db.ref('rolls').push();       // key is made on this device, no server trip
-      entry.key = ref.key;
+    // Shows an entry right away, then claims the next slot (counter at feed/next)
+    // and writes it there, overwriting the oldest entry
+    function postToFeed(fields) {
+      const entry = { key: `local-${++localSeq}`, ...fields, time: serverNow() };
       feed.pending.push(entry);
       renderRolls();
-      ref.set({ value, user: userId, time: firebase.database.ServerValue.TIMESTAMP })
-        .then(() => {
-          feed.pending = feed.pending.filter(r => r !== entry);
-          if (feed.status === 'rejected') setFeedStatus('live');
-          renderRolls();
+      if (!db) return;
+
+      const keepLocal = (err) => {
+        console.warn('Shroll not saved:', err?.message);
+        if (!feed.pending.includes(entry)) feed.pending.push(entry);
+        setFeedStatus('rejected');
+        renderRolls();
+      };
+
+      db.ref('feed/next').transaction(n => (Number.isInteger(n) ? n : 0) + 1)
+        .then(({ committed, snapshot }) => {
+          if (!committed) throw new Error('No feed slot claimed');
+          const slot = String(snapshot.val() % FEED_SIZE);
+          // The slot's own listener event takes over from the pending copy
+          feed.pending = feed.pending.filter(e => e !== entry);
+          if (lastNewestKey === entry.key) lastNewestKey = slot;
+          return db.ref(`feed/slots/${slot}`).set({ ...fields, time: firebase.database.ServerValue.TIMESTAMP });
         })
-        .catch((err) => {
-          console.warn('Shroll not saved:', err?.message);
-          entry.key = 'local-' + entry.key;     // keep showing it as a local-only roll
-          setFeedStatus('rejected');
-          renderRolls();
-        });
+        .then(() => {
+          if (feed.status === 'rejected') setFeedStatus('live');
+        })
+        .catch(keepLocal);
     }
+
+    const postRoll = (value) => postToFeed({ kind: 'roll', user: userId, value });
 
 
     // ---------- Die faces and art ----------
@@ -1086,7 +1115,7 @@
         vol: 1,
         juggle: null,           // while airborne: kicks the die back up; null when grounded
         stopSome: () => {},
-        bodyAt: 0, fartTimer: 0,
+        bodyAt: 0, tailTimer: 0,
 
         measure() { die.size = mover.offsetWidth || 150; },
 
@@ -1299,7 +1328,7 @@
       die.rolling = true;
       die.replaying = replay;
       die.vol = replay ? 0.6 : 1;           // the other player's die is a little quieter
-      cancelFart(die);
+      cancelAfterBody(die);
       die.box.classList.add('airborne');
       die.box.classList.remove('max', 'sad');
 
@@ -1322,15 +1351,16 @@
       die.rolling = false;
     }
 
-    // Gold for a 6, droop and fart for a 1
+    // Gold and Hey Now for a 6, droop and fart for a 1
     function landingFeedback(die, value) {
       if (value === 6) {
         flash(die.box, 'max');
         bubbles(die, 30, 0, true);
         if (!die.replaying) vibrate([30, 60, 30]);
+        playAfterBody(die, 'heynow');
       } else if (value === 1) {
         flash(die.box, 'sad');
-        fartAfterBody(die);
+        playAfterBody(die, 'fart');
       }
     }
 
@@ -1358,7 +1388,7 @@
       if (value === 6) result.classList.add('max');
       myBox.setAttribute('aria-label', `Rolled ${plural(value)}. Roll again`);
 
-      saveRoll(value);
+      if (!duelThrow) postRoll(value);   // duel rolls post one result line instead
       duelThrow?.landed();
     }
 
@@ -1379,6 +1409,7 @@
       rounds: {},
       playback: {},      // `${round}:${slot}` -> 'flying' | 'landed' on this screen
       announced: 0,      // last round whose result was shown
+      thrownHere: {},    // round -> true when I threw it on this page (not before a reload)
       round: 0,          // round the screen is showing, to notice when a new one starts
       creating: false,
       joining: false,
@@ -1561,6 +1592,7 @@
       const r = currentRound(), key = `${r}:${duel.me}`;
       const ref = duelDb(`rounds/${r}/${duel.me}`);
       duel.playback[key] = 'flying';
+      duel.thrownHere[r] = true;
       ref.set({ value, dir, strength: Math.round(strength * 1000) / 1000, time: TIMESTAMP() })
         .catch(duelWriteFailed);
       renderDuel();
@@ -1630,12 +1662,25 @@
         duel.announced = r;
         const w = winnerOf(r);
         showOutcome(w);
+        if (w === duel.me && duel.thrownHere[r]) postDuelResult(r);
         if (w === 'tie' && duel.me) {
           clearTimeout(tieTimer);
           tieTimer = setTimeout(() => setReady(r + 1), 1800);
         }
       }
       renderDuel();
+    }
+
+    // The winner's screen posts the round to the shared list (ties never do)
+    function postDuelResult(r) {
+      const loser = other(duel.me);
+      postToFeed({
+        kind: 'duel',
+        user: nameOf(duel.me) || userId,
+        value: throwOf(r, duel.me).value,
+        vs: nameOf(loser) || 'Someone',
+        vsValue: throwOf(r, loser).value
+      });
     }
 
     function showDuelNote(text) {
