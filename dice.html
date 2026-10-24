@@ -108,14 +108,54 @@
     /* Arena the die moves around in */
     #dice-stage {
       position: relative;
+      display: flex;
       width: min(380px, 100%);
-      height: var(--die-size);
       flex-shrink: 0;
       touch-action: manipulation;   /* rapid mid-air taps must not double-tap-zoom */
       -webkit-tap-highlight-color: transparent;
     }
 
-    #dice-shadow {
+    /* One lane per die; solo has one full-width lane, a duel splits the stage */
+    .lane {
+      position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      height: var(--die-size);
+    }
+    .lane[hidden] { display: none; }
+
+    #dice-stage.duel { width: min(520px, 100%); }
+    /* Two dice side by side need to be smaller on a phone */
+    @media (max-width: 760px) {
+      #dice-stage.duel .lane {
+        --die-size: 112px;
+        --half: calc(var(--die-size) / 2);     /* re-derive: the :root value used the solo size */
+      }
+    }
+    @media (max-width: 360px) {
+      #dice-stage.duel .lane { --die-size: 96px; }
+    }
+
+    /* Name + state under each die in a duel */
+    .lane-label {
+      position: absolute;
+      top: calc(100% + 30px);
+      left: 4px;
+      right: 4px;
+      text-align: center;
+      color: #c8ff9a;
+      font-size: 13px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      pointer-events: none;
+    }
+    .lane-label[hidden] { display: none; }
+    .lane-label .name { display: block; font-weight: bold; }
+    .lane-label .state { display: block; color: rgba(200, 255, 154, 0.7); }
+    .lane-label.win .name { color: var(--gold); text-shadow: 0 0 10px rgba(255, 225, 77, 0.7); }
+    .lane-label.win .state { color: var(--gold); }
+
+    .die-shadow {
       position: absolute;
       bottom: calc(var(--die-size) * -0.17);
       left: 50%;
@@ -130,7 +170,7 @@
       z-index: 1;
     }
 
-    #dice-mover {
+    .die-mover {
       position: absolute;
       left: 50%;
       top: 0;
@@ -150,7 +190,7 @@
       100% { transform: translateY(0); }
     }
 
-    #dice-container {
+    .die-box {
       width: 100%;
       height: 100%;
       perspective: 800px;
@@ -161,13 +201,13 @@
       user-select: none;
     }
 
-    #dice-container:active { cursor: grabbing; }
-    #dice-container.airborne { cursor: pointer; }
-    #dice-container:focus-visible .face { border-color: var(--lime); }
+    .die-box:active { cursor: grabbing; }
+    .die-box.airborne { cursor: pointer; }
+    .die-box:focus-visible .face { border-color: var(--lime); }
 
-    #dice-container.holding { animation: shake 0.22s linear infinite; }
-    #dice-container.max { animation: goldGlow 1.8s ease-out; }
-    #dice-container.sad { animation: droop 1.6s ease-in-out; }
+    .die-box.holding { animation: shake 0.22s linear infinite; }
+    .die-box.max { animation: goldGlow 1.8s ease-out; }
+    .die-box.sad { animation: droop 1.6s ease-in-out; }
 
     @keyframes shake {
       0%   { transform: translate(0, 0) rotate(0deg); }
@@ -190,7 +230,7 @@
       100% { transform: none; filter: none; }
     }
 
-    #cube {
+    .cube {
       width: 100%;
       height: 100%;
       position: relative;
@@ -435,6 +475,39 @@
       min-height: 1em;
     }
 
+    /* ---------- Duel box (top of the rolls panel) ---------- */
+    #duel-box {
+      margin: 0 0 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed rgba(124, 252, 0, 0.4);
+      text-align: center;
+    }
+    #duel-box button {
+      background: rgba(0, 0, 0, 0.5);
+      color: var(--lime);
+      border: 2px solid var(--lime);
+      border-radius: 6px;
+      padding: 7px 12px;
+      font: bold 14px Arial, sans-serif;
+      cursor: pointer;
+    }
+    #duel-box button:disabled { opacity: 0.45; cursor: default; }
+    #duel-box button:focus-visible { outline: none; box-shadow: 0 0 10px rgba(124, 252, 0, 0.6); }
+    #duel-box button.primary { background: var(--lime); color: #0d1f0d; }
+    #duel-info[hidden], #duel-box button[hidden] { display: none; }
+    #duel-vs {
+      color: #c8ff9a;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+    #duel-status {
+      margin: 6px 0 10px;
+      min-height: 1.3em;
+      color: rgba(200, 255, 154, 0.85);
+      font-size: 13px;
+    }
+    .duel-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+
     #status-note {
       margin-top: 8px;
       color: #ffb74d;
@@ -464,9 +537,9 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      #dice-container.holding,
-      #dice-container.max,
-      #dice-container.sad,
+      .die-box.holding,
+      .die-box.max,
+      .die-box.sad,
       #current-result.pop,
       #current-result.min,
       #rolls-list li.fresh,
@@ -500,23 +573,42 @@
   </div>
 
   <div id="dice-stage">
-    <div id="dice-shadow"></div>
-    <div id="dice-mover">
-      <div id="dice-container" role="button" tabindex="0" aria-label="Roll the Shrek die">
-        <div id="cube">
-          <div class="face front one" data-n="0,0,1"></div>
-          <div class="face back six" data-n="0,0,-1"></div>
-          <div class="face right three" data-n="1,0,0"></div>
-          <div class="face left four" data-n="-1,0,0"></div>
-          <div class="face top five" data-n="0,-1,0"></div>
-          <div class="face bottom two" data-n="0,1,0"></div>
+    <!-- My die (spectators see player 1 here). Faces are built in JS. -->
+    <div class="lane" id="lane-left">
+      <div class="die-shadow"></div>
+      <div class="die-mover">
+        <div class="die-box" id="dice-container" role="button" tabindex="0" aria-label="Roll the Shrek die">
+          <div class="cube"></div>
         </div>
       </div>
+      <div class="lane-label" hidden></div>
+    </div>
+    <!-- Opponent's die, only shown in a duel -->
+    <div class="lane" id="lane-right" hidden>
+      <div class="die-shadow"></div>
+      <div class="die-mover">
+        <div class="die-box" aria-hidden="true">
+          <div class="cube"></div>
+        </div>
+      </div>
+      <div class="lane-label"></div>
     </div>
     <div id="roll-hint">tap to shroll · hold to shake · flick to throw</div>
   </div>
 
   <div id="rolls-panel">
+    <section id="duel-box" aria-label="Duel">
+      <button id="duel-btn" type="button">Challenge a friend</button>
+      <div id="duel-info" hidden>
+        <div id="duel-vs"></div>
+        <div id="duel-status" aria-live="polite"></div>
+        <div class="duel-actions">
+          <button id="duel-action" class="primary" type="button"></button>
+          <button id="duel-share" type="button">Share link</button>
+          <button id="duel-leave" type="button">Leave</button>
+        </div>
+      </div>
+    </section>
     <h2>LAST 6 SHROLLS</h2>
     <div id="current-result" aria-live="polite"></div>
     <ul id="rolls-list"></ul>
@@ -530,69 +622,31 @@
   <!-- type="module" runs after the deferred Firebase scripts, without blocking page render -->
   <script type="module">
     const $ = (id) => document.getElementById(id);
-    const cube          = $('cube');
-    const result        = $('current-result');
-    const diceStage     = $('dice-stage');
-    const diceMover     = $('dice-mover');
-    const diceContainer = $('dice-container');
-    const diceShadow    = $('dice-shadow');
-    const rollsPanel    = $('rolls-panel');
-    const rollsList     = $('rolls-list');
-    const adjSelect     = $('adjective-select');
-    const charSelect    = $('character-select');
-    const userTag       = $('user-tag');
-    const muteBtn       = $('mute-btn');
-    const myStats       = $('my-stats');
-    const statusNote    = $('status-note');
-    const rollHint      = $('roll-hint');
-    const picker        = $('username-picker');
+    const result      = $('current-result');
+    const diceStage   = $('dice-stage');
+    const laneLeft    = $('lane-left');
+    const laneRight   = $('lane-right');
+    const myBox       = $('dice-container');
+    const rollsPanel  = $('rolls-panel');
+    const rollsList   = $('rolls-list');
+    const adjSelect   = $('adjective-select');
+    const charSelect  = $('character-select');
+    const userTag     = $('user-tag');
+    const muteBtn     = $('mute-btn');
+    const myStats     = $('my-stats');
+    const statusNote  = $('status-note');
+    const rollHint    = $('roll-hint');
+    const picker      = $('username-picker');
+    const duelBtn     = $('duel-btn');
+    const duelInfo    = $('duel-info');
+    const duelVs      = $('duel-vs');
+    const duelStatus  = $('duel-status');
+    const duelAction  = $('duel-action');
+    const duelShare   = $('duel-share');
+    const duelLeave   = $('duel-leave');
 
     const MAX_SHOWN = 6;
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Die size in px, measured from CSS --die-size so CSS stays the single source
-    let DIE = 150;
-    const measureDie = () => { DIE = diceMover.offsetWidth || 150; };
-    measureDie();
-    addEventListener('resize', measureDie);
-
-    // ---------- Build die faces (pip layouts; 0 = empty cell) ----------
-    // Which character is the pip on each face. A null file uses the Shrek pip
-    // until that art is in the repo; fill in the filename when it lands.
-    const PIP = 'dice-shrek.webp';
-    const CAST = {
-      one:   { name: 'Lord Farquaad', file: null },   // future: 'dice-farquaad.webp'
-      two:   { name: 'Donkey',        file: null },   // future: 'dice-donkey.webp'
-      three: { name: 'Gingy',         file: null },   // future: 'dice-gingy.webp'
-      four:  { name: 'Puss in Boots', file: null },   // future: 'dice-puss.webp'
-      five:  { name: 'Fiona',         file: null },   // future: 'dice-fiona.webp'
-      six:   { name: 'Shrek',         file: PIP }
-    };
-    const LAYOUTS = {
-      one:   [1],
-      two:   [1,0,0, 0,0,0, 0,0,1],
-      three: [1,0,0, 0,1,0, 0,0,1],
-      four:  [1,1, 1,1],
-      five:  [1,0,1, 0,1,0, 1,0,1],
-      six:   [1,1,1, 1,1,1]
-    };
-    const faces = [...cube.children];
-    faces.forEach(face => {
-      const key = Object.keys(LAYOUTS).find(k => face.classList.contains(k));
-      const art = CAST[key].file || PIP;
-      LAYOUTS[key].forEach(on => {
-        const el = document.createElement(on ? 'img' : 'div');
-        if (on) {
-          el.alt = '';
-          el.decoding = 'async';
-          // A missing or broken file falls back to the Shrek pip (once, so no loop)
-          el.addEventListener('error', () => { el.src = PIP; }, { once: true });
-          el.src = art;
-        }
-        face.append(el);
-      });
-      face._n = face.dataset.n.split(',').map(Number);
-    });
 
     // ---------- Helpers ----------
     const store = {
@@ -704,15 +758,14 @@
       }
     }
 
-    // "BODY" remembers when it started so the fart on a 1 can follow right after it
-    let bodyAt = 0, fartTimer = 0;
-    function playBody() { bodyAt = performance.now(); play('body'); }
-    function fartAfterBody() {
+    // "BODY" remembers (per die) when it started so the fart on a 1 can follow right after it
+    function playBody(die) { die.bodyAt = performance.now(); play('body', die.vol); }
+    function fartAfterBody(die) {
       const bodyMs = (buffers.body?.duration ?? 0.57) * 1000 - 80;   // overlap BODY's tail a little
-      clearTimeout(fartTimer);
-      fartTimer = setTimeout(() => play('fart'), Math.max(0, bodyAt + bodyMs - performance.now()));
+      clearTimeout(die.fartTimer);
+      die.fartTimer = setTimeout(() => play('fart', die.vol), Math.max(0, die.bodyAt + bodyMs - performance.now()));
     }
-    const cancelFart = () => clearTimeout(fartTimer);
+    const cancelFart = (die) => clearTimeout(die.fartTimer);
 
     // Procedural clack: a tiny filtered noise burst — no audio file needed
     let noiseBuf = null;
@@ -744,32 +797,6 @@
     }
     muteBtn.addEventListener('click', () => { muted = !muted; store.set('shrekDiceMuted', muted); syncMute(); });
     syncMute();
-
-    // ---------- Random face colors ----------
-    const colors = ['tint-red', 'tint-blue', 'tint-mud', 'tint-purple', 'tint-orange', 'tint-pink'];
-    for (let i = colors.length - 1; i > 0; i--) {
-      const j = randInt(i + 1);
-      [colors[i], colors[j]] = [colors[j], colors[i]];
-    }
-    faces.forEach((f, i) => f.classList.add(colors[i]));
-
-    // ---------- Lighting ----------
-    // Light comes from the viewer's upper-left. Each face is darkened by how far
-    // its normal points away from the light after the cube's rotation.
-    const L = (() => { const v = [-0.45, -0.6, 0.66]; const m = Math.hypot(...v); return v.map(c => c / m); })();
-    function shade(rxDeg, ryDeg) {
-      const a = rxDeg * Math.PI / 180, b = ryDeg * Math.PI / 180;
-      const ca = Math.cos(a), sa = Math.sin(a), cb = Math.cos(b), sb = Math.sin(b);
-      for (const f of faces) {
-        const [x, y, z] = f._n;
-        // rotateY(b) then rotateX(a), matching CSS "rotateX(a) rotateY(b)"
-        const x1 = x * cb + z * sb, z1 = -x * sb + z * cb;
-        const y2 = y * ca - z1 * sa, z2 = y * sa + z1 * ca;
-        const lit = Math.max(0, x1 * L[0] + y2 * L[1] + z2 * L[2]);
-        // Facing the viewer at rest = fully lit; turned away = up to 60% darker
-        f.style.setProperty('--shade', clamp(0.6 * (1 - lit / L[2]), 0, 0.6).toFixed(3));
-      }
-    }
 
     // ---------- Feed state ----------
     // server:  rolls the database has sent us (newest 10, by server time)
@@ -941,33 +968,92 @@
         });
     }
 
-    // ---------- Particles ----------
-    function bubbles(count, x, gold = false) {
-      if (reducedMotion) return;
-      const cx = diceStage.clientWidth / 2 + x;
-      for (let i = 0; i < count; i++) {
-        const p = document.createElement('div');
-        p.className = gold ? 'particle gold' : 'particle';
-        if (gold) {
-          const ang = Math.random() * Math.PI * 2, dist = 90 + Math.random() * 110;
-          p.style.left = cx + 'px';
-          p.style.top = DIE / 2 + 'px';
-          p.style.setProperty('--bx', `${Math.cos(ang) * dist}px`);
-          p.style.setProperty('--by', `${Math.sin(ang) * dist - 40}px`);
-          p.style.width = p.style.height = `${10 + Math.random() * 16}px`;
-        } else {
-          const spread = DIE * 0.87;
-          p.style.left = cx - spread / 2 + Math.random() * spread + 'px';
-          p.style.top = Math.random() * spread + 'px';
-          p.style.setProperty('--drift', `${(Math.random() - 0.5) * 100}px`);
-          p.style.animationDelay = `${Math.random() * 0.3}s`;
-        }
-        diceStage.appendChild(p);
-        setTimeout(() => p.remove(), 2400);
+
+    // ---------- Die faces and art ----------
+    // Which character is the pip on each face. A null file uses the Shrek pip
+    // until that art is in the repo; fill in the filename when it lands.
+    const PIP = 'dice-shrek.webp';
+    const CAST = {
+      one:   { name: 'Lord Farquaad', file: null },   // future: 'dice-farquaad.webp'
+      two:   { name: 'Donkey',        file: null },   // future: 'dice-donkey.webp'
+      three: { name: 'Gingy',         file: null },   // future: 'dice-gingy.webp'
+      four:  { name: 'Puss in Boots', file: null },   // future: 'dice-puss.webp'
+      five:  { name: 'Fiona',         file: null },   // future: 'dice-fiona.webp'
+      six:   { name: 'Shrek',         file: PIP }
+    };
+    // Pip grids per face (0 = empty cell)
+    const LAYOUTS = {
+      one:   [1],
+      two:   [1,0,0, 0,0,0, 0,0,1],
+      three: [1,0,0, 0,1,0, 0,0,1],
+      four:  [1,1, 1,1],
+      five:  [1,0,1, 0,1,0, 1,0,1],
+      six:   [1,1,1, 1,1,1]
+    };
+    // Each face's CSS classes (position, value) and outward normal for lighting
+    const FACE_DEFS = [
+      ['front',  'one',   [0, 0, 1]],
+      ['back',   'six',   [0, 0, -1]],
+      ['right',  'three', [1, 0, 0]],
+      ['left',   'four',  [-1, 0, 0]],
+      ['top',    'five',  [0, -1, 0]],
+      ['bottom', 'two',   [0, 1, 0]]
+    ];
+    const TINTS = ['tint-red', 'tint-blue', 'tint-mud', 'tint-purple', 'tint-orange', 'tint-pink'];
+
+    // Returns a shuffled copy (Fisher-Yates)
+    function shuffled(list) {
+      const a = [...list];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = randInt(i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // Builds the six faces inside a cube, each with a random tint; returns them
+    function buildFaces(cube) {
+      const tints = shuffled(TINTS);
+      return FACE_DEFS.map(([side, key, normal], i) => {
+        const face = document.createElement('div');
+        face.className = `face ${side} ${key} ${tints[i]}`;
+        const art = CAST[key].file || PIP;
+        LAYOUTS[key].forEach(on => {
+          const el = document.createElement(on ? 'img' : 'div');
+          if (on) {
+            el.alt = '';
+            el.decoding = 'async';
+            // A missing or broken file falls back to the Shrek pip (once, so no loop)
+            el.addEventListener('error', () => { el.src = PIP; }, { once: true });
+            el.src = art;
+          }
+          face.append(el);
+        });
+        face._n = normal;
+        cube.append(face);
+        return face;
+      });
+    }
+
+    // ---------- Lighting ----------
+    // Light comes from the viewer's upper-left. Each face is darkened by how far
+    // its normal points away from the light after the cube's rotation.
+    const L = (() => { const v = [-0.45, -0.6, 0.66]; const m = Math.hypot(...v); return v.map(c => c / m); })();
+    function shade(faces, rxDeg, ryDeg) {
+      const a = rxDeg * Math.PI / 180, b = ryDeg * Math.PI / 180;
+      const ca = Math.cos(a), sa = Math.sin(a), cb = Math.cos(b), sb = Math.sin(b);
+      for (const f of faces) {
+        const [x, y, z] = f._n;
+        // rotateY(b) then rotateX(a), matching CSS "rotateX(a) rotateY(b)"
+        const x1 = x * cb + z * sb, z1 = -x * sb + z * cb;
+        const y2 = y * ca - z1 * sa, z2 = y * sa + z1 * ca;
+        const lit = Math.max(0, x1 * L[0] + y2 * L[1] + z2 * L[2]);
+        // Facing the viewer at rest = fully lit; turned away = up to 60% darker
+        f.style.setProperty('--shade', clamp(0.6 * (1 - lit / L[2]), 0, 0.6).toFixed(3));
       }
     }
 
-    // ---------- Throw engine ----------
+    // ---------- Die ----------
     // Cube rotation (rotateX, rotateY) that brings each face to the front
     const FACES = [
       { x: 0,   y: 0,   value: 1 },
@@ -977,45 +1063,121 @@
       { x: -90, y: 0,   value: 5 },
       { x: 90,  y: 0,   value: 2 }
     ];
-
-    let rotX = 0, rotY = 0;
-    let isRolling = false;
+    const faceOf = (value) => FACES.find(f => f.value === value);
 
     // Grows the die slightly with height (rigid: uniform scale, anchored at its base)
     const LIFT = 0.12;
 
-    // Highest the die may fly (px above its resting spot) without going under
-    // the name bar or off the top of the screen
-    function ceiling() {
-      const stage = diceStage.getBoundingClientRect();
-      const bar = picker.getBoundingClientRect();
-      const barAbove = bar.top < stage.top && bar.right > stage.left && bar.left < stage.right;
-      const roof = Math.max(0, barAbove ? bar.bottom : 0) + 8;
-      return Math.max(60, (stage.top - roof) / (1 + LIFT));
+    // One die in one lane: its state and how it draws itself. In a duel there are
+    // two; the left one takes my input, the right one replays the other player.
+    function createDie(lane) {
+      const mover  = lane.querySelector('.die-mover');
+      const box    = lane.querySelector('.die-box');
+      const cube   = lane.querySelector('.cube');
+      const shadow = lane.querySelector('.die-shadow');
+      const faces  = buildFaces(cube);
+
+      const die = {
+        lane, box,
+        size: 150,              // px, measured from CSS --die-size so CSS stays the single source
+        rotX: 0, rotY: 0,       // resting rotation
+        rolling: false,
+        replaying: false,       // showing someone else's throw: quieter, no vibration
+        vol: 1,
+        juggle: null,           // while airborne: kicks the die back up; null when grounded
+        stopSome: () => {},
+        bodyAt: 0, fartTimer: 0,
+
+        measure() { die.size = mover.offsetWidth || 150; },
+
+        render(x, h, tiltX, tiltZ, rx, ry, H) {
+          const lift = 1 + (h / die.size) * LIFT;
+          mover.style.transform = `translate(${x}px, ${-h}px) scale(${lift})`;
+          cube.style.transform = `rotateX(${tiltX}deg) rotateZ(${tiltZ}deg) rotateX(${rx}deg) rotateY(${ry}deg)`;
+          const k = H ? Math.min(h / H, 1) : 0;
+          shadow.style.transform = `translateX(${x}px) scale(${1 - k * 0.55})`;
+          shadow.style.opacity = (0.85 - k * 0.6).toFixed(3);
+          shade(faces, rx, ry);
+        },
+
+        // Rest on the target face with no animation
+        snap(target) {
+          die.rotX += mod(target.x - die.rotX, 360);
+          die.rotY += mod(target.y - die.rotY, 360);
+          die.render(0, 0, 0, 0, die.rotX, die.rotY, 0);
+        },
+
+        // Highest the die may fly (px above its resting spot) without going under
+        // the name bar or off the top of the screen
+        ceiling() {
+          const stage = lane.getBoundingClientRect();
+          const bar = picker.getBoundingClientRect();
+          const barAbove = bar.top < stage.top && bar.right > stage.left && bar.left < stage.right;
+          const roof = Math.max(0, barAbove ? bar.bottom : 0) + 8;
+          return Math.max(60, (stage.top - roof) / (1 + LIFT));
+        }
+      };
+      die.measure();
+      die.render(0, 0, 0, 0, 0, 0, 0);
+      return die;
     }
 
-    function render(x, h, tiltX, tiltZ, rx, ry, H) {
-      const lift = 1 + (h / DIE) * LIFT;
-      diceMover.style.transform = `translate(${x}px, ${-h}px) scale(${lift})`;
-      cube.style.transform = `rotateX(${tiltX}deg) rotateZ(${tiltZ}deg) rotateX(${rx}deg) rotateY(${ry}deg)`;
-      const k = H ? Math.min(h / H, 1) : 0;
-      diceShadow.style.transform = `translateX(${x}px) scale(${1 - k * 0.55})`;
-      diceShadow.style.opacity = (0.85 - k * 0.6).toFixed(3);
-      shade(rx, ry);
+    const myDie  = createDie(laneLeft);
+    const oppDie = createDie(laneRight);
+    addEventListener('resize', () => { myDie.measure(); oppDie.measure(); });
+
+    // ---------- Particles and call-outs ----------
+    function bubbles(die, count, x, gold = false) {
+      if (reducedMotion) return;
+      const cx = die.lane.clientWidth / 2 + x;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = gold ? 'particle gold' : 'particle';
+        if (gold) {
+          const ang = Math.random() * Math.PI * 2, dist = 90 + Math.random() * 110;
+          p.style.left = cx + 'px';
+          p.style.top = die.size / 2 + 'px';
+          p.style.setProperty('--bx', `${Math.cos(ang) * dist}px`);
+          p.style.setProperty('--by', `${Math.sin(ang) * dist - 40}px`);
+          p.style.width = p.style.height = `${10 + Math.random() * 16}px`;
+        } else {
+          const spread = die.size * 0.87;
+          p.style.left = cx - spread / 2 + Math.random() * spread + 'px';
+          p.style.top = Math.random() * spread + 'px';
+          p.style.setProperty('--drift', `${(Math.random() - 0.5) * 100}px`);
+          p.style.animationDelay = `${Math.random() * 0.3}s`;
+        }
+        die.lane.appendChild(p);
+        setTimeout(() => p.remove(), 2400);
+      }
     }
 
-    // While a throw is in flight this holds a function that kicks the die back
-    // up (tap it mid-air → "SOME… SOME… SOME… BODY"). null when grounded.
-    let juggle = null;
-    let stopSome = () => {};
+    function somePop(die, x, h, n) {
+      const el = document.createElement('div');
+      el.className = 'some-pop';
+      el.setAttribute('aria-hidden', 'true');
+      el.textContent = n >= 3 ? `SOME… ×${n + 1}` : 'SOME…';
+      // Beside the die (alternating sides) so it never hides under the header
+      const w = die.lane.clientWidth;
+      const side = n % 2 ? 1 : -1;
+      const cx = clamp(w / 2 + x + side * die.size * 0.75, 60, Math.max(60, w - 60));
+      el.style.left = `${cx}px`;
+      el.style.top = `${die.size * 0.27 - h + (Math.random() - 0.5) * 20}px`;
+      el.style.setProperty('--s', String(Math.min(1 + n * 0.06, 1.5)));
+      el.style.setProperty('--r', `${(Math.random() - 0.5) * 16}deg`);
+      die.lane.appendChild(el);
+      setTimeout(() => el.remove(), 800);
+    }
 
+    // ---------- Throw engine ----------
     // One continuous motion: arc up while tumbling, slam down, one small hop,
     // a short rock to rest. Each mid-air tap re-plans the rest of the flight
     // from wherever the die is — but always toward the same pre-chosen target.
-    function animateThrow({ dir, strength, target }) {
-      const k = DIE / 150;                         // tuned at 150px; scale to the real die
-      const maxH = ceiling();                      // highest the die may fly this roll
-      const maxDx = Math.max(0, (diceStage.clientWidth - DIE) / 2 - 6);
+    // onJuggle(ms since the throw began) reports each accepted mid-air tap.
+    function animateThrow(die, { dir, strength, target, onJuggle }) {
+      const k = die.size / 150;                    // tuned at 150px; scale to the real die
+      const maxH = die.ceiling();                  // highest the die may fly this roll
+      const maxDx = Math.max(0, (die.lane.clientWidth - die.size) / 2 - 6);
       const reach = maxDx * clamp(0.45 + strength * 0.45, 0.4, 1);
       const H = Math.min(clamp(95 * strength + 25, 70, 150) * k, maxH);
       const tArc = 480 + 220 * strength;
@@ -1023,9 +1185,10 @@
       const HOP = 150, hopH = Math.min(10, H * 0.07);
       const tSettle = 220;
       const rockDir = Math.random() < 0.5 ? -1 : 1;
+      const tStart = performance.now();
 
       let seg = null, peak = H, boosts = 0, lastBoost = -1e9;
-      const cur = { h: 0, x: 0, rx: rotX, ry: rotY };
+      const cur = { h: 0, x: 0, rx: die.rotX, ry: die.rotY };
 
       // A flight: launched at t0 from height h0 with upward speed v0, travelling
       // sideways along xPath(p), spinning from (sX, sY) to rest on the target.
@@ -1041,14 +1204,15 @@
       }
 
       // Initial throw: straight from the floor, out to the side and back
-      plan(performance.now(), 0, 4 * H / tArc,
+      plan(tStart, 0, 4 * H / tArc,
            p => dir * reach * Math.sin(Math.PI * Math.pow(p, 0.6)),
-           rotX, rotY, 1 + Math.round(strength * 1.6));
+           die.rotX, die.rotY, 1 + Math.round(strength * 1.6));
 
       return new Promise(resolve => {
-        juggle = () => {
+        // Returns true when the tap counted (not debounced, still airborne)
+        die.juggle = () => {
           const now = performance.now();
-          if (now - lastBoost < 90) return;          // ignore accidental double-fires
+          if (now - lastBoost < 90) return false;    // ignore accidental double-fires
           lastBoost = now;
           boosts++;
 
@@ -1062,12 +1226,14 @@
                cur.rx, cur.ry, 1);
 
           // "SOME…" again, a touch higher-pitched each time
-          stopSome();
-          stopSome = play('some', 1, 1 + Math.min(boosts, 8) * 0.04);
-          clack(0.22, 1.4);
-          vibrate(12);
-          bubbles(4, x0);
-          somePop(x0, cur.h, boosts);
+          die.stopSome();
+          die.stopSome = play('some', die.vol, 1 + Math.min(boosts, 8) * 0.04);
+          clack(0.22 * die.vol, 1.4);
+          if (!die.replaying) vibrate(12);
+          bubbles(die, 4, x0);
+          somePop(die, x0, cur.h, boosts);
+          onJuggle?.(now - tStart);
+          return true;
         };
 
         function frame(now) {
@@ -1079,8 +1245,8 @@
           if (t < s.tAir) h = Math.max(0, s.h0 + s.v0 * t - 0.5 * g * t * t);
           else if (t < s.tLand) { const u = (t - s.tAir) / HOP; h = 4 * hopH * u * (1 - u); }
           // Juggling ends at the first floor hit, so "BODY" plays once per roll
-          if (!s.landed && t >= s.tAir) { s.landed = true; juggle = null; onImpact('floor', strength); }
-          if (!s.hopped && t >= s.tLand) { s.hopped = true; onImpact('hop', strength); }
+          if (!s.landed && t >= s.tAir) { s.landed = true; die.juggle = null; onImpact(die, 'floor', strength); }
+          if (!s.hopped && t >= s.tLand) { s.hopped = true; onImpact(die, 'hop', strength); }
 
           const p = Math.min(t / s.tLand, 1);
           const x = s.xPath(p);
@@ -1100,13 +1266,13 @@
           }
 
           Object.assign(cur, { h, x, rx, ry });
-          render(x, h, tiltX, tiltZ, rx, ry, peak);
+          die.render(x, h, tiltX, tiltZ, rx, ry, peak);
 
           if (t < s.tLand + tSettle) requestAnimationFrame(frame);
           else {
-            juggle = null;
-            rotX = s.eX; rotY = s.eY;
-            render(0, 0, 0, 0, rotX, rotY, H);
+            die.juggle = null;
+            die.rotX = s.eX; die.rotY = s.eY;
+            die.render(0, 0, 0, 0, die.rotX, die.rotY, H);
             resolve();
           }
         }
@@ -1114,40 +1280,65 @@
       });
     }
 
-    function somePop(x, h, n) {
-      const el = document.createElement('div');
-      el.className = 'some-pop';
-      el.setAttribute('aria-hidden', 'true');
-      el.textContent = n >= 3 ? `SOME… ×${n + 1}` : 'SOME…';
-      // Beside the die (alternating sides) so it never hides under the header
-      const side = n % 2 ? 1 : -1;
-      const cx = clamp(diceStage.clientWidth / 2 + x + side * DIE * 0.75, 60, diceStage.clientWidth - 60);
-      el.style.left = `${cx}px`;
-      el.style.top = `${DIE * 0.27 - h + (Math.random() - 0.5) * 20}px`;
-      el.style.setProperty('--s', String(Math.min(1 + n * 0.06, 1.5)));
-      el.style.setProperty('--r', `${(Math.random() - 0.5) * 16}deg`);
-      diceStage.appendChild(el);
-      setTimeout(() => el.remove(), 800);
-    }
-
-    function onImpact(kind, strength) {
+    function onImpact(die, kind, strength) {
       if (kind === 'floor') {
-        playBody();                         // "SOME…BODY" lands on the first hit
-        vibrate(Math.round(20 + 20 * strength));
-        flash(diceStage, strength > 0.9 ? 'thud-hard' : 'thud');
-        if (strength > 1) flash(rollsPanel, 'bump');
+        playBody(die);                      // "SOME…BODY" lands on the first hit
+        flash(die.lane, strength > 0.9 ? 'thud-hard' : 'thud');
+        if (!die.replaying) {
+          vibrate(Math.round(20 + 20 * strength));
+          if (strength > 1) flash(rollsPanel, 'bump');
+        }
       } else {
-        clack(0.18, 1.2);
+        clack(0.18 * die.vol, 1.2);
       }
     }
 
+    // Throws a die onto a pre-chosen target and plays the landing feedback.
+    // replay: someone else's throw. instant: just show the face (stale replays).
+    async function throwDie(die, { dir, strength, target, replay = false, instant = false, onJuggle }) {
+      die.rolling = true;
+      die.replaying = replay;
+      die.vol = replay ? 0.6 : 1;           // the other player's die is a little quieter
+      cancelFart(die);
+      die.box.classList.add('airborne');
+      die.box.classList.remove('max', 'sad');
+
+      if (instant) {
+        die.snap(target);
+      } else {
+        die.stopSome = play('some', die.vol);
+        bubbles(die, 12, 0);
+        if (reducedMotion) {
+          die.snap(target);
+          await wait(250);
+          playBody(die);
+        } else {
+          await animateThrow(die, { dir, strength, target, onJuggle });
+        }
+        landingFeedback(die, target.value);
+      }
+
+      die.box.classList.remove('airborne');
+      die.rolling = false;
+    }
+
+    // Gold for a 6, droop and fart for a 1
+    function landingFeedback(die, value) {
+      if (value === 6) {
+        flash(die.box, 'max');
+        bubbles(die, 30, 0, true);
+        if (!die.replaying) vibrate([30, 60, 30]);
+      } else if (value === 1) {
+        flash(die.box, 'sad');
+        fartAfterBody(die);
+      }
+    }
+
+    // ---------- My roll ----------
     async function roll({ dir, strength = 1 } = {}) {
-      if (isRolling) return;
-      isRolling = true;
+      if (myDie.rolling) return;
+      if (inDuel() && !canDuelRoll()) { nudgeDuel(); return; }
       initAudio();
-      cancelFart();                         // a quick re-roll shouldn't fart over the new "SOME"
-      diceContainer.classList.add('airborne');
-      diceContainer.classList.remove('max', 'sad');
       rollHint.style.opacity = '0';
       result.textContent = '';
       result.className = '';
@@ -1156,64 +1347,484 @@
       strength = clamp(strength, 0.5, 1.6);
       const target = FACES[randInt(FACES.length)];
 
-      stopSome = play('some');
-      bubbles(12, 0);
-
-      if (reducedMotion) {
-        rotX += mod(target.x - rotX, 360);
-        rotY += mod(target.y - rotY, 360);
-        render(0, 0, 0, 0, rotX, rotY, 0);
-        await wait(250);
-        playBody();
-      } else {
-        await animateThrow({ dir, strength, target });
-      }
+      // In a duel the throw is streamed as it starts, juggles as they happen
+      const duelThrow = inDuel() ? beginDuelThrow(target.value, dir, strength) : null;
+      await throwDie(myDie, { dir, strength, target, onJuggle: duelThrow?.juggle });
 
       const { value } = target;
       result.textContent = `${plural(value)}!`;
       void result.offsetWidth;
       result.classList.add(value === 1 ? 'min' : 'pop');
-      if (value === 6) {
-        result.classList.add('max');
-        flash(diceContainer, 'max');
-        bubbles(30, 0, true);
-        vibrate([30, 60, 30]);
-      } else if (value === 1) {
-        flash(diceContainer, 'sad');
-        fartAfterBody();
-      }
-      diceContainer.setAttribute('aria-label', `Rolled ${plural(value)}. Roll again`);
+      if (value === 6) result.classList.add('max');
+      myBox.setAttribute('aria-label', `Rolled ${plural(value)}. Roll again`);
 
       saveRoll(value);
-      diceContainer.classList.remove('airborne');
-      isRolling = false;
+      duelThrow?.landed();
     }
+
+    // ---------- Duel state ----------
+    // A two-player session shared through Firebase at sessions/{id}:
+    //   players.{p1|p2} = { user, ready }   ready = highest round that player has agreed to
+    //   rounds.{n}.{p1|p2} = { value, dir, strength, time, juggles: { key: ms } }
+    // A round is open once both players are ready for it; each player gets one throw.
+    const SLOTS = ['p1', 'p2'];
+    const REPLAY_DELAY = 250;   // ms of buffer so streamed juggle taps arrive before they're due
+    const STALE_MS = 8000;      // throws older than this snap into place instead of replaying
+    const JUGGLE_WINDOW = 15000;
+
+    const freshDuel = () => ({
+      id: null,
+      me: null,          // 'p1' | 'p2', or null when watching a full duel
+      players: {},
+      rounds: {},
+      playback: {},      // `${round}:${slot}` -> 'flying' | 'landed' on this screen
+      announced: 0,      // last round whose result was shown
+      round: 0,          // round the screen is showing, to notice when a new one starts
+      creating: false,
+      joining: false,
+      note: '',          // short-lived message, e.g. "Link copied"
+      problem: ''        // '' | 'offline' | 'missing' | 'unavailable' | 'rejected'
+    });
+    const duel = freshDuel();
+    const replays = {};  // `${round}:${slot}` -> { start, die, instant, done: Set of juggle keys }
+    let duelRef = null, tieTimer = 0, noteTimer = 0;
+
+    const inDuel     = () => duel.id !== null;
+    const other      = (s) => (s === 'p1' ? 'p2' : 'p1');
+    const leftSlot   = () => duel.me || 'p1';
+    const dieFor     = (s) => (s === leftSlot() ? myDie : oppDie);
+    const readyOf    = (s) => duel.players[s]?.ready ?? 0;
+    const nameOf     = (s) => duel.players[s]?.user || '';
+    const throwOf    = (r, s) => duel.rounds[r]?.[s] || null;
+    const landedOn   = (r, s) => duel.playback[`${r}:${s}`] === 'landed';
+    const currentRound = () => Math.max(...SLOTS.map(readyOf));
+    const roundOpen  = (r) => r >= 1 && !!duel.players.p2 && SLOTS.every(s => readyOf(s) >= r);
+    const hasPlayed  = () => Object.keys(duel.rounds).length > 0;
+
+    // What the duel is doing right now
+    function duelPhase() {
+      if (duel.problem) return 'problem';
+      if (!duel.players.p2) return 'waiting';
+      const r = currentRound();
+      if (!roundOpen(r)) return 'lobby';
+      if (SLOTS.every(s => throwOf(r, s) && landedOn(r, s))) return 'result';
+      return 'rolling';
+    }
+
+    // 'p1', 'p2' or 'tie' for a round where both have thrown
+    function winnerOf(r) {
+      const a = throwOf(r, 'p1').value, b = throwOf(r, 'p2').value;
+      return a === b ? 'tie' : a > b ? 'p1' : 'p2';
+    }
+    const isShrollOff = (r) => r > 1 && !!throwOf(r - 1, 'p1') && !!throwOf(r - 1, 'p2') && winnerOf(r - 1) === 'tie';
+
+    const canDuelRoll = () => !!duel.me && duelPhase() === 'rolling' && !throwOf(currentRound(), duel.me);
+    const canTapReady = () => {
+      if (!duel.me) return false;
+      const phase = duelPhase();
+      if (phase === 'result') return winnerOf(currentRound()) !== 'tie';
+      return (phase === 'waiting' || phase === 'lobby') && readyOf(duel.me) < Math.max(currentRound(), 1);
+    };
+
+    // ---------- Duel data cleaning (the database is shared, so trust nothing) ----------
+    function cleanPlayer(raw) {
+      if (!raw || typeof raw !== 'object' || typeof raw.user !== 'string' || !raw.user.trim()) return null;
+      const ready = Number(raw.ready);
+      return { user: raw.user.trim().slice(0, 40), ready: Number.isInteger(ready) && ready >= 0 ? ready : 0 };
+    }
+
+    function cleanThrow(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      const value = Number(raw.value), time = Number(raw.time);
+      if (!Number.isInteger(value) || value < 1 || value > 6 || !Number.isFinite(time)) return null;
+      const juggles = Object.entries(raw.juggles || {})
+        .map(([key, ms]) => ({ key, ms: Number(ms) }))
+        .filter(j => Number.isFinite(j.ms) && j.ms >= 0 && j.ms < JUGGLE_WINDOW)
+        .sort((a, b) => a.ms - b.ms);
+      return {
+        value, time, juggles,
+        dir: Number(raw.dir) < 0 ? -1 : 1,
+        strength: clamp(Number(raw.strength) || 1, 0.5, 1.6)
+      };
+    }
+
+    // Firebase may hand back numbered children as an array, so read entries either way
+    function cleanSession(raw) {
+      const players = {}, rounds = {};
+      for (const s of SLOTS) { const p = cleanPlayer(raw.players?.[s]); if (p) players[s] = p; }
+      for (const [n, round] of Object.entries(raw.rounds || {})) {
+        if (!/^\d{1,3}$/.test(n) || !round) continue;
+        const entry = {};
+        for (const s of SLOTS) { const t = cleanThrow(round[s]); if (t) entry[s] = t; }
+        if (Object.keys(entry).length) rounds[Number(n)] = entry;
+      }
+      return { players, rounds };
+    }
+
+    // Which seat this tab holds in a duel (survives reloads, not shared across tabs)
+    const seatKey = (id) => `shrekDuelSeat:${id}`;
+    const recallSeat = (id) => { try { return sessionStorage.getItem(seatKey(id)); } catch { return null; } };
+    const rememberSeat = (id, s) => { try { sessionStorage.setItem(seatKey(id), s); } catch {} };
+
+    const duelIdFromHash = () => (location.hash.match(/^#duel-([-\w]{10,40})$/) || [])[1] || null;
+
+    // ---------- Duel logic ----------
+    const duelDb = (path = '') => db.ref(`sessions/${duel.id}${path ? '/' + path : ''}`);
+    const TIMESTAMP = () => firebase.database.ServerValue.TIMESTAMP;
+
+    function duelWriteFailed(err) {
+      console.warn('Duel write failed:', err?.message);
+      duel.problem = 'rejected';
+      renderDuel();
+    }
+
+    // Starts a new duel with me as player 1
+    function createDuel() {
+      if (!db) return;
+      const ref = db.ref('sessions').push();      // unguessable key, made on this device
+      rememberSeat(ref.key, 'p1');
+      history.replaceState(null, '', `#duel-${ref.key}`);
+      duel.creating = true;
+      enterDuel(ref.key);
+      ref.update({ created: TIMESTAMP(), 'players/p1/user': userId, 'players/p1/ready': 0 })
+        .then(() => { duel.creating = false; })
+        .catch(duelWriteFailed);
+    }
+
+    // Opens a duel by id and listens for everything that happens in it
+    function enterDuel(id) {
+      duel.id = id;
+      duel.me = recallSeat(id);
+      if (!db) duel.problem = 'offline';
+      else {
+        duelRef = duelDb();
+        duelRef.on('value', onSessionData, (err) => {
+          console.warn('Duel closed:', err?.message);
+          duel.problem = 'unavailable';
+          renderDuel();
+        });
+      }
+      applyStageMode();
+      renderDuel();
+    }
+
+    function leaveDuel() {
+      duelRef?.off();
+      duelRef = null;
+      clearTimeout(tieTimer);
+      Object.assign(duel, freshDuel());
+      history.replaceState(null, '', location.pathname + location.search);
+      result.textContent = '';
+      result.className = '';
+      applyStageMode();
+      renderDuel();
+    }
+
+    function onSessionData(snap) {
+      const raw = snap.val();
+      if (!raw) {
+        if (!duel.creating) duel.problem = 'missing';
+        renderDuel();
+        return;
+      }
+      if (duel.problem !== 'rejected') duel.problem = '';
+      Object.assign(duel, cleanSession(raw));
+      if (!duel.me && !duel.joining) claimSeat();
+      syncPlayback();
+      onDuelProgress();
+    }
+
+    // Takes the empty player-2 seat; if someone beats us to it, we watch instead
+    async function claimSeat() {
+      if (duel.players.p2 || !duel.players.p1) return;
+      duel.joining = true;
+      try {
+        await duelDb().update({ 'players/p2/user': userId, 'players/p2/ready': 0 });
+        duel.me = 'p2';
+        rememberSeat(duel.id, 'p2');
+      } catch {
+        // seat taken: stay a spectator
+      }
+      duel.joining = false;
+      applyStageMode();
+      renderDuel();
+    }
+
+    // Moves my "ready" up to round n (rules only allow +1 steps)
+    function setReady(n) {
+      if (!duel.me || readyOf(duel.me) !== n - 1) return;
+      duelDb(`players/${duel.me}/ready`).set(n).catch(duelWriteFailed);
+    }
+
+    // Sends my throw for the current round; returns hooks for juggles and landing
+    function beginDuelThrow(value, dir, strength) {
+      const r = currentRound(), key = `${r}:${duel.me}`;
+      const ref = duelDb(`rounds/${r}/${duel.me}`);
+      duel.playback[key] = 'flying';
+      ref.set({ value, dir, strength: Math.round(strength * 1000) / 1000, time: TIMESTAMP() })
+        .catch(duelWriteFailed);
+      renderDuel();
+      return {
+        juggle: (ms) => { ref.child('juggles').push(Math.round(ms)).catch(() => {}); },
+        landed: () => { duel.playback[key] = 'landed'; onDuelProgress(); }
+      };
+    }
+
+    // Makes each die show its player's throw for the current round
+    function syncPlayback() {
+      const r = currentRound();
+      if (!roundOpen(r)) return;
+      for (const s of SLOTS) {
+        const t = throwOf(r, s), key = `${r}:${s}`;
+        if (!t) continue;
+        if (!duel.playback[key]) {
+          if (s === duel.me) {                       // my own throw, from before a reload
+            dieFor(s).snap(faceOf(t.value));
+            duel.playback[key] = 'landed';
+          } else {
+            startReplay(r, s, t);
+          }
+        } else if (replays[key]) {
+          scheduleJuggles(key, t);
+        }
+      }
+    }
+
+    // Replays someone's throw on their die, slightly behind real time
+    function startReplay(r, s, t) {
+      const key = `${r}:${s}`;
+      const die = dieFor(s);
+      const instant = serverNow() - t.time > STALE_MS || die.rolling;
+      const rep = { start: performance.now() + (instant ? 0 : REPLAY_DELAY), die, instant, done: new Set() };
+      replays[key] = rep;
+      duel.playback[key] = 'flying';
+      setTimeout(async () => {
+        await throwDie(die, { dir: t.dir, strength: t.strength, target: faceOf(t.value), replay: true, instant });
+        delete replays[key];
+        duel.playback[key] = 'landed';
+        onDuelProgress();
+      }, rep.start - performance.now());
+      scheduleJuggles(key, t);
+    }
+
+    // Queues each juggle tap at the same moment it happened in the original throw
+    function scheduleJuggles(key, t) {
+      const rep = replays[key];
+      if (!rep || rep.instant) return;
+      for (const j of t.juggles) {
+        if (rep.done.has(j.key)) continue;
+        rep.done.add(j.key);
+        setTimeout(() => rep.die.juggle?.(), Math.max(0, rep.start + j.ms - performance.now()));
+      }
+    }
+
+    // After any change: clear the old call-out when a new round starts, announce a
+    // finished round once, and roll a tie straight into a shroll-off
+    function onDuelProgress() {
+      const r = currentRound();
+      if (r !== duel.round) {
+        if (duel.round) clearResultLine();
+        duel.round = r;
+      }
+      if (duelPhase() === 'result' && duel.announced !== r) {
+        duel.announced = r;
+        const w = winnerOf(r);
+        showOutcome(w);
+        if (w === 'tie' && duel.me) {
+          clearTimeout(tieTimer);
+          tieTimer = setTimeout(() => setReady(r + 1), 1800);
+        }
+      }
+      renderDuel();
+    }
+
+    function showDuelNote(text) {
+      duel.note = text;
+      clearTimeout(noteTimer);
+      noteTimer = setTimeout(() => { duel.note = ''; renderDuel(); }, 2500);
+      renderDuel();
+    }
+
+    // Phone share sheet if there is one, else copy the link
+    async function shareDuel() {
+      const url = location.href;
+      if (navigator.share) {
+        try { await navigator.share({ title: 'Shrek Dice duel', text: 'Shroll me, ogre.', url }); return; }
+        catch (err) { if (err?.name === 'AbortError') return; }
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        showDuelNote('Link copied. Send it to a friend.');
+      } catch {
+        window.prompt('Copy this duel link:', url);
+      }
+    }
+
+    // Tapping my die when it isn't my turn points at the duel box instead
+    function nudgeDuel() {
+      flash(duelStatus, 'bump');
+      vibrate(8);
+    }
+
+    // ---------- Duel rendering ----------
+    // Solo: one full-width lane. Duel: two smaller lanes with labels.
+    function applyStageMode() {
+      const on = inDuel();
+      diceStage.classList.toggle('duel', on);
+      laneRight.hidden = !on;
+      for (const lane of [laneLeft, laneRight]) lane.querySelector('.lane-label').hidden = !on;
+      rollHint.hidden = on;
+      for (const die of [myDie, oppDie]) { die.measure(); die.render(0, 0, 0, 0, die.rotX, die.rotY, 0); }
+      const watching = on && !duel.me;
+      myBox.setAttribute('aria-label', watching ? `${nameOf('p1') || 'Player 1'}'s die` : 'Roll the Shrek die');
+    }
+
+    const PROBLEM_TEXT = {
+      offline:     'Duels need the swamp connection. Shrolling solo for now.',
+      missing:     'That duel link has gone stale.',
+      unavailable: "Couldn't reach the duel.",
+      rejected:    "The swamp didn't accept that. Try a new duel."
+    };
+
+    // Words under the duel box for the current phase
+    function duelStatusText() {
+      if (duel.note) return duel.note;
+      const phase = duelPhase(), r = currentRound();
+      const opp = duel.me ? nameOf(other(duel.me)) : '';
+      switch (phase) {
+        case 'problem': return PROBLEM_TEXT[duel.problem];
+        case 'waiting':
+          if (!duel.me) return 'Waiting for a second shrekker.';
+          return readyOf(duel.me) >= 1 ? "You're ready. Send the link to a friend." : 'Send the link to a friend, then tap Ready.';
+        case 'lobby':
+          if (!duel.me) return 'Waiting for both shrekkers to get ready.';
+          if (readyOf(duel.me) < Math.max(r, 1)) return readyOf(other(duel.me)) >= Math.max(r, 1)
+            ? `${opp} is ready${hasPlayed() ? ' for a rematch' : ''}. Are you?`
+            : `Tap ${hasPlayed() ? 'Rematch' : 'Ready'} when you are.`;
+          return `Waiting for ${opp}…`;
+        case 'rolling':
+          if (!duel.me) return isShrollOff(r) ? 'SHROLL-OFF!' : 'Shrolling…';
+          if (!throwOf(r, duel.me)) return isShrollOff(r) ? 'SHROLL-OFF! Your shroll.' : 'Your shroll! Tap, flick or juggle.';
+          return throwOf(r, other(duel.me)) ? 'Landing…' : `Waiting for ${opp} to shroll…`;
+        case 'result': {
+          const w = winnerOf(r);
+          if (w === 'tie') return 'Tie! Sudden-death shroll-off coming up…';
+          if (!duel.me) return `${nameOf(w)} wins.`;
+          return w === duel.me ? 'You out-shrekked them. Rematch?' : `${opp} wins this one. Rematch?`;
+        }
+      }
+      return '';
+    }
+
+    // Name + state under one lane's die
+    function renderLaneLabel(lane, s) {
+      const label = lane.querySelector('.lane-label');
+      const r = currentRound(), t = roundOpen(r) ? throwOf(r, s) : null;
+      const phase = duelPhase();
+      let state;
+      if (!duel.players[s]) state = 'not here yet';
+      else if (t && landedOn(r, s)) state = plural(t.value);
+      else if (t) state = 'shrolling…';
+      else if (phase === 'rolling') state = 'up to shroll';
+      else state = readyOf(s) >= Math.max(r, 1) ? 'ready' : 'not ready';
+
+      const name = document.createElement('span');
+      name.className = 'name';
+      name.textContent = s === duel.me ? 'You' : (nameOf(s) || 'Waiting for a friend…');
+      const st = document.createElement('span');
+      st.className = 'state';
+      st.textContent = state;
+      label.replaceChildren(name, st);
+      label.classList.toggle('win', phase === 'result' && winnerOf(r) === s);
+    }
+
+    function renderDuel() {
+      const on = inDuel();
+      duelBtn.hidden = on;
+      duelBtn.disabled = !db;
+      duelBtn.title = db ? '' : 'Duels need the swamp connection';
+      duelInfo.hidden = !on;
+      if (!on) return;
+
+      const me = duel.me;
+      duelVs.textContent = me
+        ? `You vs ${nameOf(other(me)) || '…'}`
+        : `${nameOf('p1') || '…'} vs ${nameOf('p2') || '…'} (watching)`;
+      duelStatus.textContent = duelStatusText();
+
+      const showAction = canTapReady();
+      duelAction.hidden = !showAction;
+      duelAction.textContent = hasPlayed() ? 'Rematch' : 'Ready';
+      duelShare.hidden = duel.problem === 'missing';
+
+      renderLaneLabel(laneLeft, leftSlot());
+      renderLaneLabel(laneRight, other(leftSlot()));
+    }
+
+    function clearResultLine() {
+      result.textContent = '';
+      result.className = '';
+    }
+
+    // Big call-out in the result line when a round is decided
+    function showOutcome(w) {
+      result.className = '';
+      void result.offsetWidth;
+      if (w === 'tie') {
+        result.textContent = 'SHROLL-OFF!';
+        result.classList.add('pop');
+        return;
+      }
+      bubbles(dieFor(w), 24, 0, true);
+      if (!duel.me) {
+        result.textContent = `${nameOf(w)} WINS!`;
+        result.classList.add('pop');
+      } else if (w === duel.me) {
+        result.textContent = 'YOU WIN!';
+        result.classList.add('pop', 'max');
+        vibrate([30, 60, 30, 60, 30]);
+      } else {
+        result.textContent = 'OUT-SHREKKED!';
+        result.classList.add('min');
+      }
+    }
+
+    duelBtn.addEventListener('click', () => { initAudio(); createDuel(); shareDuel(); });
+    duelAction.addEventListener('click', () => {
+      initAudio();
+      if (canTapReady()) setReady(readyOf(duel.me) + 1);
+    });
+    duelShare.addEventListener('click', shareDuel);
+    duelLeave.addEventListener('click', leaveDuel);
+    // Opening a different duel link in this tab starts fresh
+    addEventListener('hashchange', () => { if (duelIdFromHash() !== duel.id) location.reload(); });
 
     // ---------- Input: tap, hold-to-shake, flick-to-throw ----------
     let hold = null;
 
-    // Mid-roll taps anywhere on the die or its floor keep it in the air
-    diceStage.addEventListener('pointerdown', (e) => {
-      if (!juggle || (e.button !== undefined && e.button !== 0)) return;
+    // Mid-roll taps anywhere on my die or its floor keep it in the air
+    laneLeft.addEventListener('pointerdown', (e) => {
+      if (!myDie.juggle || myDie.replaying || (e.button !== undefined && e.button !== 0)) return;
       e.preventDefault();
-      juggle();
+      myDie.juggle();
     });
 
-    diceContainer.addEventListener('pointerdown', (e) => {
-      if (isRolling || (e.button !== undefined && e.button !== 0)) return;
+    myBox.addEventListener('pointerdown', (e) => {
+      if (myDie.rolling || (e.button !== undefined && e.button !== 0)) return;
+      if (inDuel() && !canDuelRoll()) { nudgeDuel(); return; }
       initAudio();
-      diceContainer.setPointerCapture?.(e.pointerId);
+      myBox.setPointerCapture?.(e.pointerId);
       hold = { id: e.pointerId, t0: performance.now(), samples: [{ x: e.clientX, t: e.timeStamp }], rattle: null, shaking: false };
       // Start shaking only if they keep holding (a quick tap shouldn't rattle)
       hold.timer = setTimeout(() => {
         if (!hold) return;
         hold.shaking = true;
-        diceContainer.classList.add('holding');
+        myBox.classList.add('holding');
         hold.rattle = setInterval(() => clack(0.08 + Math.random() * 0.08, 0.8 + Math.random() * 0.6), 95);
       }, 160);
     });
 
-    diceContainer.addEventListener('pointermove', (e) => {
+    myBox.addEventListener('pointermove', (e) => {
       if (!hold || e.pointerId !== hold.id) return;
       hold.samples.push({ x: e.clientX, t: e.timeStamp });
       while (hold.samples.length > 2 && e.timeStamp - hold.samples[0].t > 100) hold.samples.shift();
@@ -1223,13 +1834,13 @@
       if (!hold) return null;
       clearTimeout(hold.timer);
       clearInterval(hold.rattle);
-      diceContainer.classList.remove('holding');
+      myBox.classList.remove('holding');
       const h = hold;
       hold = null;
       return h;
     }
 
-    diceContainer.addEventListener('pointerup', (e) => {
+    myBox.addEventListener('pointerup', (e) => {
       const h = endHold();
       if (!h || e.pointerId !== h.id) return;
       const s = h.samples, a = s[0], b = s[s.length - 1];
@@ -1242,24 +1853,29 @@
       });
     });
 
-    diceContainer.addEventListener('pointercancel', endHold);
-    diceContainer.addEventListener('lostpointercapture', () => { if (hold) endHold(); });
+    myBox.addEventListener('pointercancel', endHold);
+    myBox.addEventListener('lostpointercapture', () => { if (hold) endHold(); });
 
-    diceContainer.addEventListener('keydown', (e) => {
+    // Enter/Space rolls, or juggles while my die is in the air
+    const rollOrJuggle = () => (myDie.juggle && !myDie.replaying ? myDie.juggle() : roll());
+    myBox.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter' && e.key !== ' ') return;
       e.preventDefault();
-      if (!e.repeat) juggle ? juggle() : roll();   // holding a key shouldn't spam juggles
+      if (!e.repeat) rollOrJuggle();               // holding a key shouldn't spam juggles
     });
     document.addEventListener('keydown', (e) => {
       if (e.key !== ' ' || e.repeat) return;
       const tag = (document.activeElement?.tagName || '').toLowerCase();
-      if (['select', 'button', 'input', 'textarea'].includes(tag) || document.activeElement === diceContainer) return;
+      if (['select', 'button', 'input', 'textarea'].includes(tag) || document.activeElement === myBox) return;
       e.preventDefault();
-      juggle ? juggle() : roll();
+      rollOrJuggle();
     });
 
-    render(0, 0, 0, 0, rotX, rotY, 0);
+    // ---------- Start ----------
     updateUsername();
+    const linkedDuel = duelIdFromHash();
+    if (linkedDuel) enterDuel(linkedDuel);
+    else renderDuel();
   </script>
 </body>
 </html>

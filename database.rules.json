@@ -24,6 +24,72 @@
           ".validate": false
         }
       }
+    },
+
+    "sessions": {
+      "$id": {
+        ".read": true,
+
+        "created": {
+          ".write": "!data.exists()",
+          ".validate": "newData.isNumber() && newData.val() === now"
+        },
+
+        "players": {
+          "$slot": {
+            ".validate": "($slot === 'p1' || $slot === 'p2') && newData.hasChildren(['user', 'ready'])",
+
+            "user": {
+              ".write": "!data.exists() && newData.parent().parent().parent().child('created').exists()",
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+            },
+            "ready": {
+              ".write": "(!data.exists() && newData.val() === 0) || (data.exists() && newData.val() === data.val() + 1)",
+              ".validate": "newData.isNumber() && newData.val() <= 999"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+
+        "rounds": {
+          "$round": {
+            ".validate": "$round.matches(/^[0-9][0-9]?[0-9]?$/)",
+
+            "$slot": {
+              ".write": "!data.exists() && newData.exists() && root.child('sessions').child($id).child('players').child($slot).exists()",
+              ".validate": "($slot === 'p1' || $slot === 'p2') && newData.hasChildren(['value', 'dir', 'strength', 'time'])",
+
+              "value": {
+                ".validate": "newData.isNumber() && (newData.val() === 1 || newData.val() === 2 || newData.val() === 3 || newData.val() === 4 || newData.val() === 5 || newData.val() === 6)"
+              },
+              "dir": {
+                ".validate": "newData.isNumber() && (newData.val() === 1 || newData.val() === -1)"
+              },
+              "strength": {
+                ".validate": "newData.isNumber() && newData.val() >= 0.5 && newData.val() <= 1.6"
+              },
+              "time": {
+                ".validate": "newData.isNumber() && newData.val() === now"
+              },
+              "juggles": {
+                "$j": {
+                  ".write": "!data.exists() && newData.exists() && data.parent().parent().child('time').exists() && now - data.parent().parent().child('time').val() < 15000",
+                  ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 15000"
+                }
+              },
+              "$other": {
+                ".validate": false
+              }
+            }
+          }
+        },
+
+        "$other": {
+          ".validate": false
+        }
+      }
     }
   }
 }
