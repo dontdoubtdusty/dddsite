@@ -1,6 +1,9 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Instruction Builder</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Instructionizer v1.00</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
@@ -35,10 +38,15 @@ body {
   background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.5;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 20px 40px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 20px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px);
+  margin: 0;
 }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
 .wrap { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
 header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+h1 .ver { font-size: 0.8rem; font-weight: 500; color: var(--muted); font-family: var(--font-mono); margin-left: 6px; letter-spacing: 0; }
 h1 { font-size: 1.6rem; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
 header p { margin: 2px 0 0; color: var(--muted); max-width: 60ch; }
 .tabs { display: inline-flex; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 3px; }
@@ -112,11 +120,12 @@ pre#output {
 .confirm { display: flex; gap: 6px; align-items: center; font-size: 0.82rem; }
 @media (prefers-reduced-motion: no-preference) { .btn, .opts label { transition: border-color .15s, background .15s; } }
 </style>
-
+</head>
+<body>
 <div class="wrap">
   <header>
     <div>
-      <h1>Instruction Builder</h1>
+      <h1>Instructionizer<span class="ver">v1.00</span></h1>
       <p>Fill in the form and copy the result. Personal preferences go in your account settings once; project instructions go in each new project.</p>
     </div>
     <div class="tabs" role="tablist">
@@ -534,5 +543,5 @@ writeProject(saved?.project || { ...PRESETS.blank, ...PRESETS.birb });
 writePersonal({ ...PERSONAL_DEFAULTS, ...(saved?.personal || {}) });
 setView(saved?.view === "personal" ? "personal" : "project");
 </script>
-
-</body></html>
+</body>
+</html>
