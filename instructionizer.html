@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Instructionizer v1.00</title>
+<title>Instructionizer v1.01</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
@@ -119,13 +119,42 @@ pre#output {
 }
 .confirm { display: flex; gap: 6px; align-items: center; font-size: 0.82rem; }
 @media (prefers-reduced-motion: no-preference) { .btn, .opts label { transition: border-color .15s, background .15s; } }
+.presets .sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 4px; }
+/* Guided setup wizard: a modal that walks through one section per step, then fills the form */
+dialog#wizard {
+  border: 1px solid var(--line); border-radius: 10px; padding: 0; background: var(--panel); color: var(--ink);
+  width: min(560px, calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow: auto;
+}
+dialog#wizard::backdrop { background: rgb(0 0 0 / 0.45); }
+.wz-head { padding: 14px 18px 10px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.wz-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.wz-step { font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.wz-bar { height: 4px; border-radius: 2px; background: var(--accent-soft); overflow: hidden; }
+.wz-bar i { display: block; height: 100%; background: var(--accent); }
+.wz-close { border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 4px; border-radius: 6px; display: inline-flex; }
+.wz-close svg { width: 18px; height: 18px; }
+.wz-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+.wz-body h2 { font-size: 1.15rem; margin: 0; text-wrap: balance; }
+.wz-body > p { margin: -6px 0 0; color: var(--muted); font-size: 0.86rem; }
+.wz-foot { padding: 12px 18px 16px; display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); }
+.cards { display: flex; flex-direction: column; gap: 8px; }
+.cards label {
+  display: flex; gap: 10px; align-items: flex-start; cursor: pointer; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--code-bg);
+}
+.cards label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.cards input { accent-color: var(--accent); margin-top: 4px; }
+.cards b { display: block; font-size: 0.92rem; }
+.cards small { color: var(--muted); font-size: 0.82rem; }
+.blank-row { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 8px; align-items: center; font-size: 0.88rem; font-weight: 600; }
+@media (max-width: 480px) { .blank-row { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div>
-      <h1>Instructionizer<span class="ver">v1.00</span></h1>
+      <h1>Instructionizer<span class="ver">v1.01</span></h1>
       <p>Fill in the form and copy the result. Personal preferences go in your account settings once; project instructions go in each new project.</p>
     </div>
     <div class="tabs" role="tablist">
@@ -138,11 +167,15 @@ pre#output {
     <!-- PROJECT FORM -->
     <form class="form" id="form-project" autocomplete="off">
       <div class="presets">
+        <button type="button" class="btn primary" id="wizard-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          New project (guided)
+        </button>
+        <span class="sep" aria-hidden="true"></span>
         <span>Start from</span>
-        <button type="button" class="btn" data-preset="birb">Birb Box</button>
-        <button type="button" class="btn" data-preset="maury">Maury Sim</button>
-        <button type="button" class="btn" data-preset="shrek">Shrek Dice</button>
-        <button type="button" class="btn" data-preset="juicy">Big Juicy app</button>
+        <button type="button" class="btn" data-preset="webapp">Web app</button>
+        <button type="button" class="btn" data-preset="backend">Web app + backend</button>
+        <button type="button" class="btn" data-preset="game">Game</button>
         <span class="confirm" id="clear-wrap">
           <button type="button" class="btn" id="clear-btn">Blank</button>
         </span>
@@ -157,6 +190,7 @@ pre#output {
 
       <fieldset>
         <legend>Tech</legend>
+        <span class="hint">{name} in any field is replaced with the project name.</span>
         <label class="f">Stack <textarea id="p-stack" rows="2"></textarea></label>
         <div class="row">
           <label class="f">Build or run <input type="text" id="p-build"></label>
@@ -276,57 +310,56 @@ pre#output {
 </div>
 <div class="toast" id="toast" hidden></div>
 
+<!-- GUIDED SETUP: steps are rendered into .wz-body by renderStep() -->
+<dialog id="wizard" aria-labelledby="wz-title">
+  <div class="wz-head">
+    <div class="wz-top">
+      <span class="wz-step" id="wz-count"></span>
+      <button type="button" class="wz-close" id="wz-close" aria-label="Close guided setup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="wz-bar"><i id="wz-bar"></i></div>
+  </div>
+  <div class="wz-body" id="wz-body"></div>
+  <div class="wz-foot">
+    <button type="button" class="btn" id="wz-back">Back</button>
+    <button type="button" class="btn primary" id="wz-next">Next</button>
+  </div>
+</dialog>
+
 <script>
-// Preset data for the four existing projects plus a blank start
+// Generic starters plus a blank start. {name} is swapped for the project name in the output.
+// "data" is only used by the guided setup to pick its default answer; it is never saved.
 const PRESETS = {
   blank: {
     name: "", me: "", stack: "", build: "", host: "", cloud: "local", smoke: "", doc: "claude/vision.md",
     verloc: "", verfmt: "", techx: "", git: "never", readme: false, never: "", migr: false, exc: "", vision: ""
   },
-  birb: {
-    name: "Birb Box", me: "I built the frame of this game.",
-    stack: "C# with Raylib-cs, ImGui.NET, rlImGui-cs. Stay in Raylib unless I say otherwise. Build only the engine pieces this game needs.",
-    build: "\"Build Birb Box.bat\"", host: "", cloud: "local", smoke: "claude/qa-plan.md section 3", doc: "claude/vision.md",
-    verloc: "GameEngine.Version", verfmt: "Birb Box 4.41 Alpha",
-    techx: "ImGui is a temporary stand-in for player-facing UI. Replace each piece with in-world controls over time. Dev and debug tools can stay in ImGui.\nNever install the .NET SDK or build in the cloud.",
-    git: "never", readme: false, never: "Keep update logic and drawing separate.", migr: false, exc: "",
-    vision: "Birb Box is a cozy simulation, not a game with goals. The player sits in a spaceship cabin at a holographic bird terrarium: futuristic hologram tech mixed with rustic brass buttons and dials. The world is bigger than the hologram volume, birds keep simulating out of view, and fog hides every edge so birds never look trapped. Visual style is subtle: glow and fog do the work. Names follow a Medieval-futurist flavor (a future company's idea of Ye Olden times), for example Emberwing, Dusk Dove, Gilded Granary."
+  webapp: {
+    label: "Single-file web app", blurb: "One HTML file with inline CSS and JS, hosted as a static page.",
+    stack: "One self-contained HTML file: inline CSS and JS. No build step, no npm, no framework.",
+    build: "Open index.html", host: "GitHub Pages", cloud: "cloud",
+    smoke: "375px and desktop, light and dark mode; main flows work; no console errors",
+    verloc: "HTML <title> and header", verfmt: "v0.01", git: "push", readme: true, data: "browser"
   },
-  maury: {
-    name: "Maury Sim", me: "I built the engine this game starts from (taken from Birb Box).",
-    stack: "C# with Raylib-cs, ImGui.NET, rlImGui-cs. Stay in Raylib unless I say otherwise. Build only the engine pieces this game needs.",
-    build: "\"Build Maury Sim.bat\"", host: "", cloud: "local", smoke: "claude/qa-plan.md section 3", doc: "claude/vision.md",
-    verloc: "GameEngine.Version", verfmt: "Maury Sim 0.01 Alpha",
-    techx: "Engine parts come from the Birb Box repo (D:\\My Documents\\rpret\\GitHub\\birb-box): copy only what's needed into this repo and adapt it here.\nImGui is a temporary stand-in for player-facing UI. Replace each piece with in-world elements (on-screen TV graphics, lower-thirds, title cards). Dev and debug tools can stay in ImGui.",
-    git: "never", readme: false, never: "Never edit Birb Box files.\nNo real people's names or likenesses in-game.", migr: false, exc: "",
-    vision: "Maury Sim is a self-running simulation of a 90s/00s daytime talk show. The player watches; there are no goals. It plays as a continuous broadcast: segments chain forever, separated by title cards and bumpers, each generated from hand-built templates of guests, accusations, twists and reveals. A studio audience of 100-200 low-poly bodies reacts live, dialogue shows as captions with a synthesized babble voice, and the 3D studio is styled straight as 90s/00s daytime TV. The host and show are fictional; \"Maury Simulator\" is only the project nickname."
+  backend: {
+    label: "Web app with backend", blurb: "A web page plus a shared database (Firebase or similar) that every user reads and writes.",
+    stack: "One HTML file with plain JS and CSS, plus Firebase Realtime Database. No build step, no framework.",
+    build: "Open index.html", host: "GitHub Pages; Firebase Realtime Database", cloud: "cloud",
+    smoke: "375px and desktop, light and dark mode; main flows work; offline fallback renders; no console errors",
+    verloc: "HTML <title> and header", verfmt: "v0.01", git: "push", readme: true, data: "shared"
   },
-  shrek: {
-    name: "Shrek Dice", me: "I built the starting version of Shrek Dice.",
-    stack: "One self-contained dice.html: inline CSS and one <script type=\"module\">. No build step, no npm, no framework.",
-    build: "Open dice.html", host: "GitHub Pages (dontdoubtdusty/dddsite, served at dontdoubtdusty.com/dice.html); Firebase Realtime Database", cloud: "cloud",
-    smoke: "Design doc section 6: tap, hold and flick all roll; announced value matches the face; works at 375px; offline fallback renders; no console errors",
-    doc: "claude/shrek-dice-design-doc.md", verloc: "", verfmt: "",
-    techx: "Assets live in the repo root.\nExplain JavaScript, CSS, Web Audio and Firebase patterns with C# comparisons.",
-    git: "never", readme: false,
-    never: "crypto.getRandomValues roll with rejection sampling\nAnimation lands on the pre-chosen target\nprefers-reduced-motion support\ntextContent for all database strings\nlocalStorage keys shrekDiceUser, shrekDiceMuted and shrekDiceMyRolls\nThe Firebase data shape (it affects everyone's feed)",
-    migr: false, exc: "Emojis in in-page text are allowed only when I ask.",
-    vision: "Shrek Dice is a toy for friends, not a product. Tap, shake or flick a 3D die; it tumbles, lands with a \"SOME...BODY\" sting, and posts to a shared \"Last 6 Shrolls\" feed. Feel and fun matter more than features. Mobile-first, since most rolls happen on phones. Keep the \"shroll\" and \"SHREKS\" voice."
-  },
-  juicy: {
-    name: "Big Juicy Suite", me: "",
-    stack: "One index.html, plain JS and CSS. No frameworks, no build step, no npm.",
-    build: "Open index.html", host: "GitHub repos under dontdoubtdusty; Big Minty (dontdoubtdusty/budget) is the reference", cloud: "cloud",
-    smoke: "Phone width, light and dark mode, no console errors; destructive actions have Undo or a confirm", doc: "claude/Big Juicy Starter.md",
-    verloc: "", verfmt: "",
-    techx: "Match Big Minty: file layout, code structure, style, wording and Settings order. When unclear, do what Big Minty does.\nEvery app uses the white citrus-slice icon on its own brand color, and the three-tone citrus logo in the header.\nStarting a new app: read claude/Big Juicy Starter.md in full and follow its kickoff steps.",
-    git: "push", readme: true,
-    never: "sync.js and feedback.js stay identical across repos. Change them everywhere or nowhere.",
-    migr: true, exc: "Commit and push every change (overrides my default of asking first).",
-    vision: "The Big apps are small, single-file web apps that share one design and codebase pattern. Keep them bloat-free. Big Minty is the original and the reference for everything."
+  game: {
+    label: "Desktop / engine game", blurb: "Compiled locally; Claude reads and edits code but never builds it.",
+    stack: "C# with Raylib-cs. Build only the engine pieces this game needs.",
+    build: "\"Build {name}.bat\"", host: "", cloud: "local", smoke: "claude/qa-plan.md section 3",
+    verloc: "GameEngine.Version", verfmt: "{name} 0.01 Alpha",
+    techx: "Never install SDKs or build in the cloud.", git: "never", readme: false,
+    never: "Keep update logic and drawing separate.", data: "none"
   }
 };
-
+const STARTER_KEYS = ["webapp", "backend", "game"];
 const PERSONAL_DEFAULTS = {
   lang: "C#", goal: "a finished, working result and learning along the way",
   ask: "matter", noedit: true, emoji: "never", scope: "code", explain: true, tryit: true, detangle: 5, bump: "0.01"
@@ -414,7 +447,7 @@ function buildProject(p) {
   if (ex.length) out.push("", "EXCEPTIONS TO MY DEFAULTS", bullets(ex));
 
   out.push("", "VISION (summary" + (p.doc ? "; full version in " + p.doc : "") + ")", p.vision || "[3-5 sentences: what it is, what it isn't, tone, visual style, naming flavor.]");
-  return out.join("\n");
+  return out.join("\n").replaceAll("{name}", p.name || "[project name]");
 }
 
 // Build the personal preferences text
@@ -519,9 +552,10 @@ $("copy-btn").addEventListener("click", () => {
   } catch (e) { fallback(); }
 });
 
-// Preset buttons, with an inline confirm before wiping the form
+// Starter buttons keep the name and "who I am"; the Blank button confirms before wiping the form
 document.querySelectorAll("[data-preset]").forEach(b => b.addEventListener("click", () => {
-  writeProject({ ...PRESETS.blank, ...PRESETS[b.dataset.preset] });
+  const cur = readProject();
+  writeProject({ ...PRESETS.blank, ...PRESETS[b.dataset.preset], name: cur.name, me: cur.me });
   setView("project");
   toast("Loaded " + b.textContent);
 }));
@@ -537,9 +571,165 @@ document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click
 document.addEventListener("input", render);
 document.addEventListener("change", render);
 
-// Start from the saved draft, or the Birb Box example
+// ---- Guided setup ----
+// Answers live in `wz` while the dialog is open; nothing touches the form until "Fill the form".
+const DATA_LINES = {
+  none: [],
+  browser: ["Browser storage keys and their saved shape: {keys}"],
+  shared: ["The database data shape (it affects every user){keys}", "textContent for every string read from the database"]
+};
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let wz = null, wzStep = 0;
+
+// Fresh answers for a starter, keeping anything typed that the starter doesn't own
+function wzFromStarter(key, keep = {}) {
+  const s = PRESETS[key];
+  return {
+    starter: key, name: keep.name || "", me: keep.me || "",
+    stack: s.stack || "", build: s.build || "", host: s.host || "",
+    cloud: s.cloud || "local", smoke: s.smoke || "", verloc: s.verloc || "", verfmt: s.verfmt || "",
+    git: s.git || "never", readme: !!s.readme,
+    data: s.data || "none", keys: "", migr: s.data === "shared", never: s.never || "",
+    v: keep.v || { what: "", who: "", not: "", tone: "", naming: "" }
+  };
+}
+
+// One entry per step: the HTML for its body, and how to read its inputs back into `wz`
+const STEPS = [
+  {
+    html: () => `<h2 id="wz-title">What kind of project is it?</h2><p>This sets sensible defaults for every later step.</p>
+      <div class="cards">${STARTER_KEYS.map(k => `<label><input type="radio" name="wz-starter" value="${k}"${wz.starter === k ? " checked" : ""}>
+        <span><b>${esc(PRESETS[k].label)}</b><small>${esc(PRESETS[k].blurb)}</small></span></label>`).join("")}</div>`,
+    read: () => {
+      const k = document.querySelector('input[name="wz-starter"]:checked')?.value || wz.starter;
+      if (k !== wz.starter) wz = wzFromStarter(k, wz);
+    }
+  },
+  {
+    html: () => `<h2 id="wz-title">What's it called?</h2>
+      <label class="f">Project name <input type="text" id="wz-name" value="${esc(wz.name)}"></label>
+      <label class="f">Who you are on this one <small>Optional. What you built or know here.</small><input type="text" id="wz-me" value="${esc(wz.me)}"></label>`,
+    read: () => { wz.name = $("wz-name").value.trim(); wz.me = $("wz-me").value.trim(); }
+  },
+  {
+    html: () => `<h2 id="wz-title">What's it built with?</h2><p>Pre-filled from the starter. Edit anything that's different.</p>
+      <label class="f">Stack <textarea id="wz-stack" rows="3">${esc(wz.stack)}</textarea></label>
+      <label class="f">Build or run <input type="text" id="wz-build" value="${esc(wz.build)}"></label>
+      <label class="f">Hosting / backend <small>Optional.</small><input type="text" id="wz-host" value="${esc(wz.host)}"></label>`,
+    read: () => { wz.stack = $("wz-stack").value.trim(); wz.build = $("wz-build").value.trim(); wz.host = $("wz-host").value.trim(); }
+  },
+  {
+    html: () => `<h2 id="wz-title">Can Claude build and test it?</h2>
+      <div class="cards">
+        <label><input type="radio" name="wz-cloud" value="cloud"${wz.cloud === "cloud" ? " checked" : ""}><span><b>Yes, in the cloud</b><small>Claude runs and tests changes before handing them over.</small></span></label>
+        <label><input type="radio" name="wz-cloud" value="local"${wz.cloud === "local" ? " checked" : ""}><span><b>No, I build locally</b><small>Claude re-reads its changes and you paste errors back.</small></span></label>
+      </div>
+      <label class="f">Smoke test <small>What "it still works" means. Optional.</small><input type="text" id="wz-smoke" value="${esc(wz.smoke)}"></label>
+      <div class="row">
+        <label class="f">Version shown in <input type="text" id="wz-verloc" value="${esc(wz.verloc)}"></label>
+        <label class="f">Version format <input type="text" id="wz-verfmt" value="${esc(wz.verfmt)}"></label>
+      </div>`,
+    read: () => {
+      wz.cloud = document.querySelector('input[name="wz-cloud"]:checked')?.value || wz.cloud;
+      wz.smoke = $("wz-smoke").value.trim(); wz.verloc = $("wz-verloc").value.trim(); wz.verfmt = $("wz-verfmt").value.trim();
+    }
+  },
+  {
+    html: () => `<h2 id="wz-title">How should commits work?</h2>
+      <div class="cards">
+        <label><input type="radio" name="wz-git" value="push"${wz.git === "push" ? " checked" : ""}><span><b>Claude commits and pushes to main</b><small>One focused commit per change. No branches or PRs.</small></span></label>
+        <label><input type="radio" name="wz-git" value="never"${wz.git === "never" ? " checked" : ""}><span><b>Never commit</b><small>You commit yourself (e.g. GitHub Desktop).</small></span></label>
+      </div>
+      <label class="check"><input type="checkbox" id="wz-readme"${wz.readme ? " checked" : ""}> Update the README in the same commit when features change</label>`,
+    read: () => { wz.git = document.querySelector('input[name="wz-git"]:checked')?.value || wz.git; wz.readme = $("wz-readme").checked; }
+  },
+  {
+    html: () => `<h2 id="wz-title">What does it save, and what must never break?</h2>
+      <div class="cards">
+        <label><input type="radio" name="wz-data" value="none"${wz.data === "none" ? " checked" : ""}><span><b>Nothing</b><small>No saved data.</small></span></label>
+        <label><input type="radio" name="wz-data" value="browser"${wz.data === "browser" ? " checked" : ""}><span><b>Browser only</b><small>localStorage or similar, per user.</small></span></label>
+        <label><input type="radio" name="wz-data" value="shared"${wz.data === "shared" ? " checked" : ""}><span><b>A shared database</b><small>Every user reads and writes the same data.</small></span></label>
+      </div>
+      <label class="f">Storage keys or data paths <small>Optional, e.g. myAppSettings, /posts.</small><input type="text" id="wz-keys" value="${esc(wz.keys)}"></label>
+      <label class="check"><input type="checkbox" id="wz-migr"${wz.migr ? " checked" : ""}> Saved data uses migrations (append only, never edit old ones)</label>
+      <label class="f">Anything else Claude must never break <small>One per line. Optional.</small><textarea id="wz-never" rows="3">${esc(wz.never)}</textarea></label>`,
+    read: () => {
+      wz.data = document.querySelector('input[name="wz-data"]:checked')?.value || wz.data;
+      wz.keys = $("wz-keys").value.trim(); wz.migr = $("wz-migr").checked; wz.never = $("wz-never").value;
+    }
+  },
+  {
+    html: () => `<h2 id="wz-title">Describe it in a few blanks</h2><p>Each blank becomes one sentence of the vision summary. Skip any you like.</p>
+      ${[["what", "It's a"], ["who", "Made for"], ["not", "It is not"], ["tone", "Tone and style"], ["naming", "Names feel"]]
+        .map(([k, l]) => `<label class="blank-row">${l} <input type="text" id="wz-v-${k}" value="${esc(wz.v[k])}"></label>`).join("")}
+      <p class="hint" style="margin:0">Finishing replaces what's in the form now.</p>`,
+    read: () => { for (const k of Object.keys(wz.v)) wz.v[k] = $("wz-v-" + k).value.trim().replace(/[.\s]+$/, ""); }
+  }
+];
+
+// Turn the vision blanks into sentences
+function wzVision(v, name) {
+  const who = name || "It";
+  const out = [];
+  if (v.what) out.push(`${who} is ${/^(a|an|the)\s/i.test(v.what) ? "" : "a "}${v.what}${v.who ? " for " + v.who : ""}.`);
+  else if (v.who) out.push(`${who} is made for ${v.who}.`);
+  if (v.not) out.push(`It is not ${v.not}.`);
+  if (v.tone) out.push(`Tone and style: ${v.tone}.`);
+  if (v.naming) out.push(`Names should feel ${v.naming}.`);
+  return out.join(" ");
+}
+
+// Convert the answers into the saved form shape
+function wzToProject() {
+  const s = PRESETS[wz.starter];
+  const keys = wz.keys;
+  const dataLines = DATA_LINES[wz.data].map(l => l.replace("{keys}", wz.data === "shared" ? (keys ? ": " + keys : "") : (keys || "(list them)")));
+  if (wz.data === "browser" && !keys) dataLines.length = 0;
+  return {
+    ...PRESETS.blank,
+    name: wz.name, me: wz.me, stack: wz.stack, build: wz.build, host: wz.host, cloud: wz.cloud,
+    smoke: wz.smoke, verloc: wz.verloc, verfmt: wz.verfmt, techx: s.techx || "",
+    git: wz.git, readme: wz.readme, migr: wz.migr,
+    never: [...dataLines, ...lines(wz.never)].join("\n"),
+    vision: wzVision(wz.v, wz.name)
+  };
+}
+
+function renderStep() {
+  $("wz-body").innerHTML = STEPS[wzStep].html();
+  $("wz-count").textContent = `Step ${wzStep + 1} of ${STEPS.length}`;
+  $("wz-bar").style.width = ((wzStep + 1) / STEPS.length * 100) + "%";
+  $("wz-back").style.visibility = wzStep === 0 ? "hidden" : "visible";
+  $("wz-next").textContent = wzStep === STEPS.length - 1 ? "Fill the form" : "Next";
+  const first = $("wz-body").querySelector("input:checked, input[type=text], textarea");
+  if (first) first.focus();
+}
+
+function openWizard() {
+  wz = wzFromStarter("webapp"); wzStep = 0;
+  renderStep();
+  $("wizard").showModal();
+}
+
+$("wizard-btn").addEventListener("click", openWizard);
+$("wz-close").addEventListener("click", () => $("wizard").close());
+$("wz-back").addEventListener("click", () => { STEPS[wzStep].read(); wzStep--; renderStep(); });
+$("wz-next").addEventListener("click", () => {
+  STEPS[wzStep].read();
+  if (wzStep < STEPS.length - 1) { wzStep++; renderStep(); return; }
+  writeProject(wzToProject());
+  $("wizard").close();
+  setView("project");
+  toast("Form filled. Edit anything below.");
+});
+// Enter in a single-line field moves to the next step
+$("wz-body").addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.matches("input[type=text]")) { e.preventDefault(); $("wz-next").click(); }
+});
+
+// Start from the saved draft, or the single-file web app starter
 const saved = load();
-writeProject(saved?.project || { ...PRESETS.blank, ...PRESETS.birb });
+writeProject(saved?.project || { ...PRESETS.blank, ...PRESETS.webapp });
 writePersonal({ ...PERSONAL_DEFAULTS, ...(saved?.personal || {}) });
 setView(saved?.view === "personal" ? "personal" : "project");
 </script>
