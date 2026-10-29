@@ -1,0 +1,538 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Instruction Builder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: two-pane workbench. Form on the left, live plain-text output on the right; stacks on phones. */
+:root {
+  --bg: #eef1f2;
+  --panel: #ffffff;
+  --ink: #17201f;
+  --muted: #5b6766;
+  --line: #d4dbdb;
+  --accent: #1f6f6a;
+  --accent-ink: #ffffff;
+  --accent-soft: #dcecea;
+  --code-bg: #f6f8f8;
+  --font-ui: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111716; --panel: #182120; --ink: #e3ebea; --muted: #94a3a1; --line: #2c3a38;
+    --accent: #5cc0b6; --accent-ink: #0c1413; --accent-soft: #1e3633; --code-bg: #121a19;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111716; --panel: #182120; --ink: #e3ebea; --muted: #94a3a1; --line: #2c3a38;
+  --accent: #5cc0b6; --accent-ink: #0c1413; --accent-soft: #1e3633; --code-bg: #121a19;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+h1 { font-size: 1.6rem; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 2px 0 0; color: var(--muted); max-width: 60ch; }
+.tabs { display: inline-flex; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 3px; }
+.tabs button {
+  font: inherit; font-weight: 600; font-size: 0.9rem; border: 0; background: transparent; color: var(--muted);
+  padding: 7px 14px; border-radius: 6px; cursor: pointer;
+}
+.tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.form { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+fieldset {
+  border: 1px solid var(--line); background: var(--panel); border-radius: 8px; margin: 0;
+  padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0;
+}
+legend {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);
+  padding: 0 6px; margin-left: -6px;
+}
+label.f { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 0.88rem; }
+label.f small, .hint { font-weight: 400; color: var(--muted); font-size: 0.8rem; }
+input[type="text"], input[type="number"], textarea, select {
+  font: inherit; font-weight: 400; font-size: 0.92rem; color: var(--ink); background: var(--code-bg);
+  border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%;
+}
+textarea { resize: vertical; min-height: 70px; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.5; }
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.choice { display: flex; flex-direction: column; gap: 6px; }
+.choice > span { font-weight: 600; font-size: 0.88rem; }
+.opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.opts label {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.86rem; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; background: var(--code-bg);
+}
+.opts label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opts input { accent-color: var(--accent); margin: 0; }
+.check { display: flex; align-items: flex-start; gap: 8px; font-size: 0.88rem; cursor: pointer; }
+.check input { accent-color: var(--accent); margin-top: 3px; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.presets span { font-size: 0.8rem; color: var(--muted); margin-right: 2px; }
+.btn {
+  font: inherit; font-size: 0.84rem; font-weight: 600; cursor: pointer; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 6px 11px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn svg { width: 15px; height: 15px; }
+.out {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); min-width: 0;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px; display: flex; flex-direction: column;
+}
+.out-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.out-head strong { font-size: 0.92rem; }
+.out-head .meta { font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.out-actions { display: flex; gap: 6px; align-items: center; }
+pre#output {
+  margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.55;
+  white-space: pre-wrap; overflow-wrap: anywhere; background: var(--code-bg); border-radius: 0 0 8px 8px;
+  max-height: calc(100vh - 140px); overflow: auto; min-width: 0;
+}
+.where { padding: 8px 14px; font-size: 0.8rem; color: var(--muted); border-bottom: 1px solid var(--line); }
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+  background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 6px; font-size: 0.86rem; font-weight: 600;
+}
+.confirm { display: flex; gap: 6px; align-items: center; font-size: 0.82rem; }
+@media (prefers-reduced-motion: no-preference) { .btn, .opts label { transition: border-color .15s, background .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Instruction Builder</h1>
+      <p>Fill in the form and copy the result. Personal preferences go in your account settings once; project instructions go in each new project.</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-project" aria-selected="true" data-view="project">Project</button>
+      <button role="tab" id="tab-personal" aria-selected="false" data-view="personal">Personal preferences</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- PROJECT FORM -->
+    <form class="form" id="form-project" autocomplete="off">
+      <div class="presets">
+        <span>Start from</span>
+        <button type="button" class="btn" data-preset="birb">Birb Box</button>
+        <button type="button" class="btn" data-preset="maury">Maury Sim</button>
+        <button type="button" class="btn" data-preset="shrek">Shrek Dice</button>
+        <button type="button" class="btn" data-preset="juicy">Big Juicy app</button>
+        <span class="confirm" id="clear-wrap">
+          <button type="button" class="btn" id="clear-btn">Blank</button>
+        </span>
+      </div>
+
+      <fieldset>
+        <legend>Project</legend>
+        <label class="f">Name <input type="text" id="p-name"></label>
+        <label class="f">Who I am on this one <small>Optional. What you built or know here.</small>
+          <input type="text" id="p-me"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Tech</legend>
+        <label class="f">Stack <textarea id="p-stack" rows="2"></textarea></label>
+        <div class="row">
+          <label class="f">Build or run <input type="text" id="p-build"></label>
+          <label class="f">Hosting / backend <input type="text" id="p-host"></label>
+        </div>
+        <div class="choice">
+          <span>Can Claude build and test?</span>
+          <div class="opts">
+            <label><input type="radio" name="p-cloud" value="local" id="p-cloud-local"> No, I build locally</label>
+            <label><input type="radio" name="p-cloud" value="cloud" id="p-cloud-cloud"> Yes, in the cloud</label>
+          </div>
+        </div>
+        <div class="row">
+          <label class="f">Smoke test <input type="text" id="p-smoke"></label>
+          <label class="f">Design doc <input type="text" id="p-doc"></label>
+        </div>
+        <div class="row">
+          <label class="f">Version location <input type="text" id="p-verloc"></label>
+          <label class="f">Version format <input type="text" id="p-verfmt"></label>
+        </div>
+        <label class="f">Other tech rules <small>One per line.</small><textarea id="p-techx" rows="3"></textarea></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Git</legend>
+        <div class="opts">
+          <label><input type="radio" name="p-git" value="never" id="p-git-never"> Never commit (GitHub Desktop)</label>
+          <label><input type="radio" name="p-git" value="push" id="p-git-push"> Commit and push to main</label>
+        </div>
+        <label class="check"><input type="checkbox" id="p-readme"> Update the README in the same commit when features change</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Never break</legend>
+        <label class="f">Invariants <small>One per line.</small><textarea id="p-never" rows="4"></textarea></label>
+        <label class="check"><input type="checkbox" id="p-migr"> Saved data uses migrations (append only, never edit old ones)</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Exceptions to my defaults</legend>
+        <label class="f">Overrides <small>One per line, e.g. in-page emoji text allowed when I ask.</small><textarea id="p-exc" rows="2"></textarea></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Vision</legend>
+        <label class="f">Summary <small>3 to 5 sentences: what it is, what it isn't, tone, style, naming.</small><textarea id="p-vision" rows="6"></textarea></label>
+      </fieldset>
+    </form>
+
+    <!-- PERSONAL FORM -->
+    <form class="form" id="form-personal" autocomplete="off" hidden>
+      <fieldset>
+        <legend>About me</legend>
+        <label class="f">Languages I know well <input type="text" id="u-lang"></label>
+        <label class="f">Goals <input type="text" id="u-goal"></label>
+      </fieldset>
+      <fieldset>
+        <legend>Asking</legend>
+        <div class="choice">
+          <span>Clarifying questions before non-trivial edits</span>
+          <div class="opts">
+            <label><input type="radio" name="u-ask" value="matter" id="u-ask-matter"> Only what matters</label>
+            <label><input type="radio" name="u-ask" value="two" id="u-ask-two"> Always at least 2</label>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="u-noedit"> Never edit code or docs without my OK</label>
+      </fieldset>
+      <fieldset>
+        <legend>Style</legend>
+        <div class="choice">
+          <span>Emojis</span>
+          <div class="opts">
+            <label><input type="radio" name="u-emoji" value="never" id="u-emoji-never"> Never</label>
+            <label><input type="radio" name="u-emoji" value="ask" id="u-emoji-ask"> Only if I ask</label>
+          </div>
+        </div>
+        <div class="choice">
+          <span>Where the coding rules apply</span>
+          <div class="opts">
+            <label><input type="radio" name="u-scope" value="code" id="u-scope-code"> Only on code or projects</label>
+            <label><input type="radio" name="u-scope" value="all" id="u-scope-all"> Every chat</label>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Learning</legend>
+        <label class="check"><input type="checkbox" id="u-explain"> Name and explain new patterns once</label>
+        <label class="check"><input type="checkbox" id="u-try"> Offer 1-2 "try it yourself" tasks at session end</label>
+      </fieldset>
+      <fieldset>
+        <legend>Bookkeeping</legend>
+        <div class="row">
+          <label class="f">De-tangle reminder every <small>Sessions. 0 turns it off.</small><input type="number" id="u-detangle" min="0" max="50"></label>
+          <label class="f">Version bump per feature <input type="text" id="u-bump"></label>
+        </div>
+      </fieldset>
+    </form>
+
+    <!-- OUTPUT -->
+    <section class="out" aria-live="polite">
+      <div class="out-head">
+        <div>
+          <strong id="out-title">Project instructions</strong>
+          <div class="meta" id="out-meta"></div>
+        </div>
+        <div class="out-actions">
+          <button type="button" class="btn primary" id="copy-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+            Copy
+          </button>
+        </div>
+      </div>
+      <div class="where" id="out-where"></div>
+      <pre id="output" tabindex="0"></pre>
+    </section>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// Preset data for the four existing projects plus a blank start
+const PRESETS = {
+  blank: {
+    name: "", me: "", stack: "", build: "", host: "", cloud: "local", smoke: "", doc: "claude/vision.md",
+    verloc: "", verfmt: "", techx: "", git: "never", readme: false, never: "", migr: false, exc: "", vision: ""
+  },
+  birb: {
+    name: "Birb Box", me: "I built the frame of this game.",
+    stack: "C# with Raylib-cs, ImGui.NET, rlImGui-cs. Stay in Raylib unless I say otherwise. Build only the engine pieces this game needs.",
+    build: "\"Build Birb Box.bat\"", host: "", cloud: "local", smoke: "claude/qa-plan.md section 3", doc: "claude/vision.md",
+    verloc: "GameEngine.Version", verfmt: "Birb Box 4.41 Alpha",
+    techx: "ImGui is a temporary stand-in for player-facing UI. Replace each piece with in-world controls over time. Dev and debug tools can stay in ImGui.\nNever install the .NET SDK or build in the cloud.",
+    git: "never", readme: false, never: "Keep update logic and drawing separate.", migr: false, exc: "",
+    vision: "Birb Box is a cozy simulation, not a game with goals. The player sits in a spaceship cabin at a holographic bird terrarium: futuristic hologram tech mixed with rustic brass buttons and dials. The world is bigger than the hologram volume, birds keep simulating out of view, and fog hides every edge so birds never look trapped. Visual style is subtle: glow and fog do the work. Names follow a Medieval-futurist flavor (a future company's idea of Ye Olden times), for example Emberwing, Dusk Dove, Gilded Granary."
+  },
+  maury: {
+    name: "Maury Sim", me: "I built the engine this game starts from (taken from Birb Box).",
+    stack: "C# with Raylib-cs, ImGui.NET, rlImGui-cs. Stay in Raylib unless I say otherwise. Build only the engine pieces this game needs.",
+    build: "\"Build Maury Sim.bat\"", host: "", cloud: "local", smoke: "claude/qa-plan.md section 3", doc: "claude/vision.md",
+    verloc: "GameEngine.Version", verfmt: "Maury Sim 0.01 Alpha",
+    techx: "Engine parts come from the Birb Box repo (D:\\My Documents\\rpret\\GitHub\\birb-box): copy only what's needed into this repo and adapt it here.\nImGui is a temporary stand-in for player-facing UI. Replace each piece with in-world elements (on-screen TV graphics, lower-thirds, title cards). Dev and debug tools can stay in ImGui.",
+    git: "never", readme: false, never: "Never edit Birb Box files.\nNo real people's names or likenesses in-game.", migr: false, exc: "",
+    vision: "Maury Sim is a self-running simulation of a 90s/00s daytime talk show. The player watches; there are no goals. It plays as a continuous broadcast: segments chain forever, separated by title cards and bumpers, each generated from hand-built templates of guests, accusations, twists and reveals. A studio audience of 100-200 low-poly bodies reacts live, dialogue shows as captions with a synthesized babble voice, and the 3D studio is styled straight as 90s/00s daytime TV. The host and show are fictional; \"Maury Simulator\" is only the project nickname."
+  },
+  shrek: {
+    name: "Shrek Dice", me: "I built the starting version of Shrek Dice.",
+    stack: "One self-contained dice.html: inline CSS and one <script type=\"module\">. No build step, no npm, no framework.",
+    build: "Open dice.html", host: "GitHub Pages (dontdoubtdusty/dddsite, served at dontdoubtdusty.com/dice.html); Firebase Realtime Database", cloud: "cloud",
+    smoke: "Design doc section 6: tap, hold and flick all roll; announced value matches the face; works at 375px; offline fallback renders; no console errors",
+    doc: "claude/shrek-dice-design-doc.md", verloc: "", verfmt: "",
+    techx: "Assets live in the repo root.\nExplain JavaScript, CSS, Web Audio and Firebase patterns with C# comparisons.",
+    git: "never", readme: false,
+    never: "crypto.getRandomValues roll with rejection sampling\nAnimation lands on the pre-chosen target\nprefers-reduced-motion support\ntextContent for all database strings\nlocalStorage keys shrekDiceUser, shrekDiceMuted and shrekDiceMyRolls\nThe Firebase data shape (it affects everyone's feed)",
+    migr: false, exc: "Emojis in in-page text are allowed only when I ask.",
+    vision: "Shrek Dice is a toy for friends, not a product. Tap, shake or flick a 3D die; it tumbles, lands with a \"SOME...BODY\" sting, and posts to a shared \"Last 6 Shrolls\" feed. Feel and fun matter more than features. Mobile-first, since most rolls happen on phones. Keep the \"shroll\" and \"SHREKS\" voice."
+  },
+  juicy: {
+    name: "Big Juicy Suite", me: "",
+    stack: "One index.html, plain JS and CSS. No frameworks, no build step, no npm.",
+    build: "Open index.html", host: "GitHub repos under dontdoubtdusty; Big Minty (dontdoubtdusty/budget) is the reference", cloud: "cloud",
+    smoke: "Phone width, light and dark mode, no console errors; destructive actions have Undo or a confirm", doc: "claude/Big Juicy Starter.md",
+    verloc: "", verfmt: "",
+    techx: "Match Big Minty: file layout, code structure, style, wording and Settings order. When unclear, do what Big Minty does.\nEvery app uses the white citrus-slice icon on its own brand color, and the three-tone citrus logo in the header.\nStarting a new app: read claude/Big Juicy Starter.md in full and follow its kickoff steps.",
+    git: "push", readme: true,
+    never: "sync.js and feedback.js stay identical across repos. Change them everywhere or nowhere.",
+    migr: true, exc: "Commit and push every change (overrides my default of asking first).",
+    vision: "The Big apps are small, single-file web apps that share one design and codebase pattern. Keep them bloat-free. Big Minty is the original and the reference for everything."
+  }
+};
+
+const PERSONAL_DEFAULTS = {
+  lang: "C#", goal: "a finished, working result and learning along the way",
+  ask: "matter", noedit: true, emoji: "never", scope: "code", explain: true, tryit: true, detangle: 5, bump: "0.01"
+};
+
+const $ = id => document.getElementById(id);
+const STORE_KEY = "instructionBuilder.v1";
+let view = "project";
+
+// Read and write the project form
+function readProject() {
+  return {
+    name: $("p-name").value.trim(), me: $("p-me").value.trim(), stack: $("p-stack").value.trim(),
+    build: $("p-build").value.trim(), host: $("p-host").value.trim(),
+    cloud: document.querySelector('input[name="p-cloud"]:checked')?.value || "local",
+    smoke: $("p-smoke").value.trim(), doc: $("p-doc").value.trim(),
+    verloc: $("p-verloc").value.trim(), verfmt: $("p-verfmt").value.trim(), techx: $("p-techx").value,
+    git: document.querySelector('input[name="p-git"]:checked')?.value || "never",
+    readme: $("p-readme").checked, never: $("p-never").value, migr: $("p-migr").checked,
+    exc: $("p-exc").value, vision: $("p-vision").value.trim()
+  };
+}
+function writeProject(p) {
+  ["name","me","stack","build","host","smoke","doc","verloc","verfmt","techx","never","exc","vision"].forEach(k => { $("p-" + k).value = p[k] || ""; });
+  $("p-cloud-" + (p.cloud || "local")).checked = true;
+  $("p-git-" + (p.git || "never")).checked = true;
+  $("p-readme").checked = !!p.readme;
+  $("p-migr").checked = !!p.migr;
+}
+
+// Read and write the personal form
+function readPersonal() {
+  return {
+    lang: $("u-lang").value.trim(), goal: $("u-goal").value.trim(),
+    ask: document.querySelector('input[name="u-ask"]:checked')?.value || "matter",
+    noedit: $("u-noedit").checked,
+    emoji: document.querySelector('input[name="u-emoji"]:checked')?.value || "never",
+    scope: document.querySelector('input[name="u-scope"]:checked')?.value || "code",
+    explain: $("u-explain").checked, tryit: $("u-try").checked,
+    detangle: Math.max(0, parseInt($("u-detangle").value, 10) || 0), bump: $("u-bump").value.trim()
+  };
+}
+function writePersonal(u) {
+  $("u-lang").value = u.lang; $("u-goal").value = u.goal;
+  $("u-ask-" + u.ask).checked = true; $("u-noedit").checked = u.noedit;
+  $("u-emoji-" + u.emoji).checked = true; $("u-scope-" + u.scope).checked = true;
+  $("u-explain").checked = u.explain; $("u-try").checked = u.tryit;
+  $("u-detangle").value = u.detangle; $("u-bump").value = u.bump;
+}
+
+const lines = s => (s || "").split("\n").map(l => l.trim()).filter(Boolean);
+const bullets = arr => arr.map(l => "- " + l.replace(/^[-*]\s*/, "")).join("\n");
+
+// Build the project instructions text
+function buildProject(p) {
+  const out = [];
+  out.push(p.name ? p.name.toUpperCase() : "[PROJECT NAME]");
+  if (p.me) out.push("", "Me on this project: " + p.me);
+
+  const tech = [];
+  if (p.stack) tech.push("Stack: " + p.stack);
+  if (p.build) tech.push("Build/run: " + p.build);
+  tech.push(p.cloud === "local"
+    ? "Never build or install SDKs in the cloud. I build locally and will paste errors back. Re-read your changes for compile errors before handing them over, and list the files you touched."
+    : "You can run and test in the cloud. Test before handing changes over.");
+  if (p.host) tech.push("Hosting/backend: " + p.host);
+  if (p.smoke) tech.push("Smoke test: " + p.smoke);
+  if (p.doc) tech.push("Design doc: " + p.doc);
+  if (p.verloc || p.verfmt) tech.push("Version: " + (p.verloc || "[location]") + (p.verfmt ? ', format "' + p.verfmt + '"' : ""));
+  tech.push(...lines(p.techx));
+  out.push("", "TECH", bullets(tech));
+
+  const git = p.git === "never"
+    ? ["Never commit. I commit with GitHub Desktop."]
+    : ["Attach the repo with push access. One focused commit per change, pushed straight to main. No branches or PRs."];
+  if (p.readme) git.push("Update the README in the same commit when features change.");
+  out.push("", "GIT", bullets(git));
+
+  const nb = lines(p.never);
+  nb.push("Flag any change to saved data or a shared data shape before making it.");
+  if (p.migr) nb.push("Data changes need a new migration added to the end of the list. Never edit old migrations.");
+  out.push("", "NEVER BREAK", bullets(nb));
+
+  const ex = lines(p.exc);
+  if (ex.length) out.push("", "EXCEPTIONS TO MY DEFAULTS", bullets(ex));
+
+  out.push("", "VISION (summary" + (p.doc ? "; full version in " + p.doc : "") + ")", p.vision || "[3-5 sentences: what it is, what it isn't, tone, visual style, naming flavor.]");
+  return out.join("\n");
+}
+
+// Build the personal preferences text
+function buildPersonal(u) {
+  const always = [
+    "Challenge my ideas. Don't sugarcoat problems. Tell me when a plan is bad.",
+    u.emoji === "never"
+      ? "No emojis, ever: messages, code, comments, docs, UI text, placeholders. If something needs an icon, use inline SVG."
+      : "No emojis unless I ask: messages, code, comments, docs, UI text, placeholders.",
+    "When you need to ask me something, use clickable multiple choice (max 4 per round), recommended option first, labeled \"(Recommended)\". If the answer is obvious or easy to change later, decide and tell me what you chose."
+  ];
+  const head = u.scope === "code" ? "WHEN WE'RE WORKING ON CODE OR A PROJECT" : "WORKING TOGETHER";
+  const me = "Me: " + (u.lang ? "I know " + u.lang + " well. " : "") + "I burn out building piece by piece, so you do the building." + (u.goal ? " My goals are " + u.goal + "." : "");
+
+  const before = [];
+  if (u.noedit) before.push("Never edit code or docs without my OK.");
+  before.push(u.ask === "matter"
+    ? "For non-trivial changes, ask only the questions that actually change what you'll build. For trivial fixes (a typo, a value I named), one confirmation is enough."
+    : "Before any non-trivial edit, ask at least two clarifying questions. For trivial fixes (a typo, a value I named), one confirmation is enough.");
+
+  const building = [
+    "Build features all the way through. Don't hand me pieces to write.",
+    "Keep code readable for me to explore: one comment per method or block saying what it does, not how. I'll ask for more.",
+    "Keep state and logic separate from rendering."
+  ];
+  const after = ["A few lines: what changed, why, and which files you touched."];
+  if (u.explain) after.push("If you used a language, library or framework pattern I may not have seen, name it and explain it in one or two sentences, once." + (u.lang ? " Comparisons to " + u.lang + " are welcome." : ""));
+  if (u.tryit) after.push("At session end, optionally list 1-2 small \"try it yourself\" tasks. Never block on them.");
+
+  const books = [
+    "At session start, read claude/file-map.md, claude/session-log.md and the project's design/vision doc before searching the code. The code wins if they disagree; flag the mismatch.",
+    "Update file-map.md when a file is added, split, renamed or deleted.",
+    "When a change makes the design doc wrong or finishes a backlog item, propose an update.",
+    u.detangle > 0
+      ? "At session end, add 1 to the session counter in session-log.md. Every " + ordinal(u.detangle) + " session, remind me to do a de-tangling pass at the start of the next one."
+      : "At session end, add 1 to the session counter in session-log.md."
+  ];
+  if (u.bump) books.push("Bump the version by " + u.bump + " each time a feature is finished. Bigger jumps only when I say.");
+
+  return [
+    "ALWAYS", bullets(always), "",
+    head, me, "",
+    "Before editing:", bullets(before), "",
+    "While building:", bullets(building), "",
+    "After each change:", bullets(after), "",
+    "Verification:", "- If you can't run or compile the code, re-read your changes carefully for errors before handing them over.", "",
+    "Bookkeeping (when the project has these files):", bullets(books), "",
+    "When something isn't decided:", "- If a task touches \"Open decisions\" or \"Out of scope\" in the design doc, or isn't covered by it, ask instead of guessing.", "",
+    "Project instructions override these when they conflict."
+  ].join("\n");
+}
+function ordinal(n) {
+  if (n === 1) return "";
+  const s = ["th","st","nd","rd"], v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+// Render output for the current view and save the draft
+function render() {
+  const text = view === "project" ? buildProject(readProject()) : buildPersonal(readPersonal());
+  $("output").textContent = text.replace(/Every  session/, "Every session");
+  $("out-title").textContent = view === "project" ? "Project instructions" : "Personal preferences";
+  $("out-where").textContent = view === "project"
+    ? "Paste into the new project's instructions."
+    : "Paste once into Settings, under personal preferences.";
+  $("out-meta").textContent = text.length.toLocaleString() + " characters";
+  save();
+}
+
+// Draft storage, per viewer
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({ view, project: readProject(), personal: readPersonal() })); } catch (e) {}
+}
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || "null"); } catch (e) { return null; }
+}
+
+// Switch between the two forms
+function setView(v) {
+  view = v;
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.view === v)));
+  $("form-project").hidden = v !== "project";
+  $("form-personal").hidden = v !== "personal";
+  render();
+}
+
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.timer); toast.timer = setTimeout(() => { t.hidden = true; }, 1600);
+}
+
+// Copy with a select-text fallback
+$("copy-btn").addEventListener("click", () => {
+  const text = $("output").textContent;
+  const fallback = () => {
+    const r = document.createRange(); r.selectNodeContents($("output"));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    toast("Selected. Press Ctrl+C to copy.");
+  };
+  try {
+    navigator.clipboard.writeText(text).then(() => toast("Copied"), fallback);
+  } catch (e) { fallback(); }
+});
+
+// Preset buttons, with an inline confirm before wiping the form
+document.querySelectorAll("[data-preset]").forEach(b => b.addEventListener("click", () => {
+  writeProject({ ...PRESETS.blank, ...PRESETS[b.dataset.preset] });
+  setView("project");
+  toast("Loaded " + b.textContent);
+}));
+$("clear-btn").addEventListener("click", function confirmClear() {
+  const wrap = $("clear-wrap");
+  wrap.innerHTML = '<span>Clear the form?</span><button type="button" class="btn primary" id="clear-yes">Clear</button><button type="button" class="btn" id="clear-no">Cancel</button>';
+  const restore = () => { wrap.innerHTML = '<button type="button" class="btn" id="clear-btn">Blank</button>'; $("clear-btn").addEventListener("click", confirmClear); };
+  $("clear-yes").addEventListener("click", () => { writeProject(PRESETS.blank); render(); restore(); toast("Cleared"); });
+  $("clear-no").addEventListener("click", restore);
+});
+
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+document.addEventListener("input", render);
+document.addEventListener("change", render);
+
+// Start from the saved draft, or the Birb Box example
+const saved = load();
+writeProject(saved?.project || { ...PRESETS.blank, ...PRESETS.birb });
+writePersonal({ ...PERSONAL_DEFAULTS, ...(saved?.personal || {}) });
+setView(saved?.view === "personal" ? "personal" : "project");
+</script>
+
+</body></html>
