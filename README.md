@@ -1,5 +1,37 @@
 # dddsite
 
+My personal projects site, live at [dontdoubtdusty.com](https://dontdoubtdusty.com) (GitHub Pages). It's a flat set of static HTML pages with no build step. `index.html` is the landing page and links to the 8-Ball and the Book of Carp. Everything else is reachable by URL.
+
+## Pages
+
+**Main**
+- `index.html`: landing page.
+- `8ball.html`: Magic 8-Ball that draws its answers from `thebookofcarp.txt` (design notes in `8ball-design-doc.md`).
+- `thebookofcarp.html` and `quotes.html`: the Book of Carp intro and its sayings.
+- `instructionizer.html`: Claude instructions builder (see below).
+- `birbcubemanual.html`: Birb Cube assembly manual.
+
+**Games and tools**
+- `dice.html`: Shrek Dice.
+- `booster.html` (with `names/`): booster pack generator.
+- `mtgadvent.html` (with `draftsets.json`): MTG draft advent calendar.
+- `mtg-random-card.html`: random card from the Scryfall API.
+- `card_game.html` and `cards/`: Eras of Conflict card game.
+- `bookchart.html`: Reading Flow Tool.
+- `shoracle.html`: Shrek tarot reader.
+- `notepad-recreation.html`: Shrekpad.
+- `tierlist.html`, `like_mike.html`: tier list and championship bracket.
+
+**Archives**
+- `fhrquotes.html` and `fhr/`: Full House Revisited recaps.
+- `stepbystep_reviewed.html`, `sbsrposts.json` and `stepbystepreviewed/`: Step By Step Reviewed.
+
+**Calendars and misc**
+- `colorcalendar.html`: 365 Days of New Year's Colors.
+- `cinco-de-mayo-nachos.html`, `recipes.html`, `mybibles.html`.
+- `sun_space_map.html`, `space_transfer.html`, `the_eye.html`, `town/town.html`.
+- `bear.html`, `beards.html`, `donotresist.html`, `hypnotic_with_bg.html`, `usps_mockery.html`, `yawn_pumpkin.html`: one-off jokes and demos.
+
 ## Instructionizer (v1.01)
 
 `instructionizer.html` builds Claude instructions from a short form. Open the page, fill in the fields, and copy the live output.
