@@ -108,10 +108,9 @@ Run after every change.
 - Any backend, Firebase, accounts or a shared feed.
 - Image assets for the ball (it stays CSS).
 - Weighting answers toward yes or no.
-- Touching other pages in the repo, including the older `magic-8ball(1).html`.
+- Touching other pages in the repo.
 
 ## 9. Open questions
 
 - Should the `$username` placeholder in "No, $username, mayonnaise is not an instrument" stay literal, or be filled from something?
-- Is `magic-8ball(1).html` safe to delete, or is it linked from somewhere?
 - When the ball flips back to the "8" side for a new question, should the old answer fade out first, or flip immediately?
