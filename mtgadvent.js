@@ -50,6 +50,7 @@
 
     const HUES = [352, 150, 42, 205, 285]; // red, green, gold, blue, purple doors
     const SVG_NS = 'http://www.w3.org/2000/svg';
+    const MYSTERY_ICON = 'https://svgs.scryfall.io/sets/mb2.svg'; // Mystery Booster symbol stands in for the hidden set
     const BELL_URL = 'christmas-bells-02-439604.mp3';
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -160,10 +161,12 @@
         if (unlocked) frame.appendChild(buildInside(entry));
         const leafL = el('span', 'leaf leaf-l');
         const leafR = el('span', 'leaf leaf-r');
-        if (unlocked) {
+        if (unlocked || state === 'next') {
             // Set symbols sit on the closed doors: one per leaf (a single set repeats).
+            // The next door shows only the first set; the second leaf keeps its secret.
             const sets = setsOf(entry);
-            [[leafL, sets[0]], [leafR, sets[1] || sets[0]]].forEach(([leaf, set]) => {
+            const second = state === 'next' ? { icon: MYSTERY_ICON } : (sets[1] || sets[0]);
+            [[leafL, sets[0]], [leafR, second]].forEach(([leaf, set]) => {
                 const img = el('img', 'leaf-icon');
                 img.src = set.icon;
                 img.alt = '';
@@ -175,14 +178,6 @@
         frame.appendChild(el('span', 'num', String(entry.day)));
 
         if (state === 'next') {
-            const veil = el('span', 'veil');
-            setsOf(entry).forEach((set, i, all) => {
-                const piece = el('span', 'art-piece ' + (all.length === 1 ? 'solo' : i === 0 ? 'a' : 'b'));
-                if (set.art) { piece.dataset.art = set.art; lazyArt(piece); }
-                veil.appendChild(piece);
-            });
-            frame.appendChild(veil);
-            frame.appendChild(el('span', 'teaser', entry.hint || ''));
             frame.appendChild(el('span', 'when', season.phase === 'before' ? 'Dec 1' : 'Tomorrow'));
         }
         if (state === 'locked' || state === 'next') frame.appendChild(lockSvg('lock'));
