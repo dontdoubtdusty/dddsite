@@ -144,6 +144,7 @@ function assignDays(sets, rand) {
     days.forEach(d => {
         d.title = d.sets.map(c => sets[c].name).join(' × ');
         d.description = d.sets.map(c => sets[c].blurb).filter(Boolean).join(' ');
+        d.hint = d.sets.map(c => sets[c].hint).filter(Boolean).join(' + ');
     });
     return days;
 }
@@ -186,7 +187,8 @@ if (shuffleOnly) {
             released: s.released_at,
             icon: s.icon_svg_uri,
             ...(await fetchArt(s.code)),
-            blurb: (oldSets[s.code] && oldSets[s.code].blurb) || ''
+            blurb: (oldSets[s.code] && oldSets[s.code].blurb) || '',
+            hint: (oldSets[s.code] && oldSets[s.code].hint) || ''
         };
         console.log(`  ${s.released_at}  ${s.code.padEnd(4)} ${s.name} (${count} Standard-legal cards)`);
     }

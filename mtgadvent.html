@@ -198,7 +198,9 @@
         .door.state-locked .frame, .door.state-next .frame { opacity: 0.6; }
         .door.state-locked .num, .door.state-next .num { opacity: 0.8; }
 
-        /* Teaser for the next locked door: set symbols only */
+        /* Teaser for the next locked door: a short hint over blurred art */
+        .veil { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+        .veil .art-piece { filter: blur(7px) brightness(0.55); transform: scale(1.2); }
         .teaser {
             position: absolute;
             z-index: 3;
@@ -213,7 +215,7 @@
             opacity: 0.8;
             text-shadow: 0 1px 3px rgba(0,0,0,0.9);
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 4;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -394,7 +396,7 @@
         </div>
     </dialog>
 
-    <script src="draftsets.js"></script>
-    <script src="mtgadvent.js?v=2"></script>
+    <script src="draftsets.js?v=h1"></script>
+    <script src="mtgadvent.js?v=3"></script>
 </body>
 </html>

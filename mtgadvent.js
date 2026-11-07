@@ -175,7 +175,14 @@
         frame.appendChild(el('span', 'num', String(entry.day)));
 
         if (state === 'next') {
-            frame.appendChild(el('span', 'teaser', entry.title));
+            const veil = el('span', 'veil');
+            setsOf(entry).forEach((set, i, all) => {
+                const piece = el('span', 'art-piece ' + (all.length === 1 ? 'solo' : i === 0 ? 'a' : 'b'));
+                if (set.art) { piece.dataset.art = set.art; lazyArt(piece); }
+                veil.appendChild(piece);
+            });
+            frame.appendChild(veil);
+            frame.appendChild(el('span', 'teaser', entry.hint || ''));
             frame.appendChild(el('span', 'when', season.phase === 'before' ? 'Dec 1' : 'Tomorrow'));
         }
         if (state === 'locked' || state === 'next') frame.appendChild(lockSvg('lock'));
