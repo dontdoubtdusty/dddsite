@@ -158,8 +158,20 @@
         const frame = el('span', 'frame');
         const unlocked = state === 'today' || state === 'past';
         if (unlocked) frame.appendChild(buildInside(entry));
-        frame.appendChild(el('span', 'leaf leaf-l'));
-        frame.appendChild(el('span', 'leaf leaf-r'));
+        const leafL = el('span', 'leaf leaf-l');
+        const leafR = el('span', 'leaf leaf-r');
+        if (unlocked) {
+            // Set symbols sit on the closed doors: one per leaf (a single set repeats).
+            const sets = setsOf(entry);
+            [[leafL, sets[0]], [leafR, sets[1] || sets[0]]].forEach(([leaf, set]) => {
+                const img = el('img', 'leaf-icon');
+                img.src = set.icon;
+                img.alt = '';
+                leaf.appendChild(img);
+            });
+        }
+        frame.appendChild(leafL);
+        frame.appendChild(leafR);
         frame.appendChild(el('span', 'num', String(entry.day)));
 
         if (state === 'next') {
@@ -175,7 +187,7 @@
         }
         if (state === 'locked' || state === 'next') frame.appendChild(lockSvg('lock'));
 
-        const done = state === 'past' || (state === 'today' && wasOpened);
+        const done = state === 'today' && wasOpened;
         if (unlocked) {
             if (done) {
                 door.classList.add('open');
@@ -195,7 +207,7 @@
     }
 
     function sparkle(x, y) {
-        if (reduceMotion) return;
+        return; // sparkles removed for performance
         for (let i = 0; i < 10; i++) {
             const dot = el('span', 'spark');
             dot.style.left = x + 'px';
@@ -230,6 +242,11 @@
             sparkle(rect.left + rect.width / 2, rect.top + rect.height / 2);
             ring();
             setTimeout(() => showDetails(entry, door), reduceMotion ? 0 : 700);
+        } else if (!door.classList.contains('open')) {
+            // Earlier days stay shut; swing open to peek, then close again with the dialog.
+            door.classList.add('open');
+            door.dataset.reclose = '1';
+            setTimeout(() => showDetails(entry, door), reduceMotion ? 0 : 500);
         } else {
             showDetails(entry, door);
         }
@@ -270,7 +287,14 @@
     function closeModal() {
         if (modal.open) modal.close();
     }
-    modal.addEventListener('close', () => { if (lastDoor) lastDoor.focus(); });
+    modal.addEventListener('close', () => {
+        if (!lastDoor) return;
+        if (lastDoor.dataset.reclose) {
+            lastDoor.classList.remove('open');
+            delete lastDoor.dataset.reclose;
+        }
+        lastDoor.focus();
+    });
     modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
     document.getElementById('modalClose').appendChild(closeSvg());
     document.getElementById('modalClose').addEventListener('click', closeModal);
@@ -341,7 +365,7 @@
     }
 
     function makeSnow() {
-        if (reduceMotion) return;
+        return; // snow removed for performance
         const frag = document.createDocumentFragment();
         for (let i = 0; i < 36; i++) {
             const flake = el('span', 'snowflake');
