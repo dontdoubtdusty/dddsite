@@ -179,6 +179,39 @@
         25% { margin-left: -6px; } 75% { margin-left: 6px; }
     }
 
+    /* RESIST falls apart into bones */
+    .resist-btn.dead { pointer-events: none; background: transparent; border-color: transparent; box-shadow: none; }
+    .resist-btn.dead .bone { display: inline-block; animation: crumble 1s cubic-bezier(.4, 0, 1, 1) forwards; }
+    @keyframes crumble {
+        to { transform: translate(var(--dx), 220px) rotate(var(--rot)); opacity: 0; }
+    }
+    .resist-btn.rising { animation: rise 0.8s ease-out; }
+    @keyframes rise {
+        from { opacity: 0; filter: grayscale(1) blur(4px); }
+    }
+    .reassemble-btn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 12px 22px;
+        font: bold 1.15rem Arial, sans-serif;
+        letter-spacing: 0.12em;
+        background: linear-gradient(135deg, #1a1420, #3b2f45);
+        color: #e9dcc0;
+        border: 3px solid #8d7aa0;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 0 24px rgba(141, 122, 160, 0.7);
+        z-index: 4;
+        white-space: nowrap;
+    }
+    .reassemble-btn[hidden] { display: none; }
+    .reassemble-btn:hover, .reassemble-btn:focus-visible { border-color: #e9dcc0; outline: none; }
+    .reassemble-btn .ms { height: 1.15em; width: 1.15em; }
+    .arena.graveyard .rotator { filter: grayscale(0.8) brightness(0.6); }
+    .exhibits { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+
     .phase {
         position: absolute;
         left: 50%;
@@ -306,7 +339,7 @@
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
     @media (prefers-reduced-motion: reduce) {
-        .siren, .siren::after, .scanline, .tape-track, .rotator, .caret, .evidence img, .log li.new { animation: none !important; }
+        .siren, .siren::after, .scanline, .tape-track, .rotator, .caret, .evidence img, .log li.new, .resist-btn.rising, .resist-btn.dead .bone { animation: none !important; }
         .scanline { display: none; }
         .resist-btn { transition: none; }
     }
@@ -328,13 +361,20 @@
             <img class="rotator" src="images/starport/art_crop.jpg" width="626" height="457"
                  alt="Starport Security, a tall white security robot, standing over an apprehended suspect">
             <button class="resist-btn" id="resist" type="button">RESIST</button>
+            <button class="reassemble-btn" id="reassemble" type="button" hidden
+                    aria-label="Pay one and black mana: reassemble">
+                <img class="ms" src="images/starport/1.svg" alt=""><img class="ms" src="images/starport/B.svg" alt="">: REASSEMBLE
+            </button>
         </div>
 
         <div class="status" id="status" aria-live="polite">Officer on duty. Remain where you are.</div>
 
         <p class="message" id="msgBot" aria-label="Do not resist apprehension."></p>
 
-        <button class="linkish" id="exhibit" type="button">&#128193; VIEW EXHIBIT A</button>
+        <div class="exhibits">
+            <button class="linkish" id="exhibitA" type="button">&#128193; EXHIBIT A</button>
+            <button class="linkish" id="exhibitB" type="button">&#128193; EXHIBIT B: KNOWN ASSOCIATE</button>
+        </div>
     </section>
 
     <aside class="casefile" aria-label="Case file">
@@ -345,6 +385,7 @@
             <dt>Successful resistances</dt><dd class="zero">0</dd>
             <dt>Escape attempts</dt><dd id="statEscapes">0</dd>
             <dt>Times tapped</dt><dd id="statTapped">0</dd>
+            <dt>Times reassembled</dt><dd id="statReassembled">0</dd>
             <dt>Suspect status</dt><dd id="statStatus">UNTAPPED</dd>
         </dl>
         <ol class="log" id="log"></ol>
@@ -356,11 +397,10 @@
 
 <div class="tape bottom" aria-hidden="true"><span class="tape-track"></span></div>
 
-<div class="evidence" id="evidence" role="dialog" aria-modal="true" aria-label="Exhibit A">
+<div class="evidence" id="evidence" role="dialog" aria-modal="true" aria-labelledby="evidenceCap">
     <figure>
-        <img src="images/starport/normal.jpg" width="488" height="680"
-             alt="Starport Security card. 3 and white mana, tap: Tap another target creature. This ability costs 2 less to activate if you control a creature with a +1/+1 counter on it. Flavor text: You are a suspect in an ongoing investigation. Do not resist apprehension. 1/1.">
-        <figcaption>EXHIBIT A &mdash; click anywhere to return to custody</figcaption>
+        <img id="evidenceImg" src="images/starport/normal.jpg" width="488" height="680" alt="">
+        <figcaption id="evidenceCap"></figcaption>
     </figure>
 </div>
 
@@ -376,7 +416,7 @@
 
     /* ---------- persistent rap sheet ---------- */
     const KEY = 'starport-rapsheet';
-    let sheet = { attempts: 0, escapes: 0, tapped: 0, log: [] };
+    let sheet = { attempts: 0, escapes: 0, tapped: 0, reassembled: 0, log: [] };
     try { Object.assign(sheet, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
     const save = () => { try { localStorage.setItem(KEY, JSON.stringify(sheet)); } catch (e) {} };
 
@@ -401,6 +441,7 @@
         $('statAttempts').textContent = sheet.attempts;
         $('statEscapes').textContent = sheet.escapes;
         $('statTapped').textContent = sheet.tapped;
+        $('statReassembled').textContent = sheet.reassembled;
     }
     function charge(m) {
         sheet.log.unshift({ t: stamp(), m });
@@ -425,6 +466,23 @@
         'Excessive +1/+1 counters (ours are fine).',
         'Said "in response" in a threatening manner.',
         'Attempted to untap during the untap step.',
+        // known associate: Reassembling Skeleton
+        'Chump blocked. Again. And again.',
+        'Loitering in the graveyard.',
+        'Returned from the graveyard without a visa.',
+        'Identified by dental records. Suspect is a 1/1 Skeleton Warrior.',
+        'Possession of a body (partial).',
+        'Reassembled at the scene of the crime.',
+        'Fled to the graveyard. Extradited.',
+        'Resisting apprehension in several pieces.',
+        'Claims none of the bones are original. Same skeleton, same charges.',
+        'Sacrificed itself to a Viscera Seer for a scry. Morally questionable.',
+    ];
+    const RETURNS = [
+        'Paid {1}{B} to come back. Came back tapped. Thanks for saving us the mana.',
+        'Returned from the graveyard tapped. Starport Security did not even get up.',
+        'Reassembled. Entered the battlefield tapped. Already in custody.',
+        'Same skeleton, new bones, old charges.',
     ];
 
     /* ---------- sound (WebAudio, created on first gesture) ---------- */
@@ -446,6 +504,7 @@
         tap:   () => { tone(880, 0, 0.09); tone(440, 0.11, 0.14); },
         deny:  () => { tone(160, 0, 0.25, 'sawtooth', 0.05); },
         untap: () => { tone(520, 0, 0.12, 'triangle', 0.08, 780); },
+        crumble: () => { [0, 0.07, 0.15, 0.22, 0.31].forEach((s, i) => tone(300 - i * 40, s, 0.06, 'square', 0.05)); },
         siren: () => { [0, 0.45].forEach(s => { tone(620, s, 0.22, 'sawtooth', 0.04, 900); tone(900, s + 0.22, 0.22, 'sawtooth', 0.04, 620); }); },
     };
 
@@ -480,6 +539,7 @@
         const cost = costHTML();
         activations++;
         tapped = true;
+        tappedClicks = 0;
         sheet.tapped++;
         btn.classList.add('tapped');
         btn.setAttribute('aria-label', 'Resist (tapped)');
@@ -511,9 +571,62 @@
         }, 2600);
     }
 
+    /* ---------- graveyard + reassemble ---------- */
+    const arena = document.querySelector('.arena'), reBtn = $('reassemble');
+    let inGraveyard = false, tappedClicks = 0;
+
+    function destroy() {
+        clearTimeout(untapTimer); clearTimeout(upkeepTimer);
+        inGraveyard = true;
+        tapped = false;
+        phaseEl.classList.remove('on');
+        btn.innerHTML = [...'RESIST'].map(ch => {
+            const dx = Math.round(Math.random() * 160 - 80), rot = Math.round(Math.random() * 540 - 270);
+            return `<span class="bone" style="--dx:${dx}px;--rot:${rot}deg">${ch}</span>`;
+        }).join('');
+        btn.classList.add('dead');
+        arena.classList.add('graveyard');
+        $('statStatus').textContent = 'IN GRAVEYARD';
+        statusEl.innerHTML = 'Excessive resistance. <em>RESIST was destroyed</em> and put into the graveyard.<br>It will be back. It is always back.';
+        charge('Excessive resistance. Destroyed and put into the graveyard.');
+        sfx.crumble();
+        setTimeout(() => {
+            btn.hidden = true;
+            reBtn.hidden = false;
+            reBtn.focus({ preventScroll: true });
+        }, reduced ? 200 : 1000);
+    }
+
+    reBtn.addEventListener('click', () => {
+        inGraveyard = false;
+        sheet.reassembled++;
+        reBtn.hidden = true;
+        arena.classList.remove('graveyard');
+        btn.textContent = 'RESIST';
+        btn.classList.remove('dead');
+        btn.hidden = false;
+        btn.classList.add('rising');
+        setTimeout(() => btn.classList.remove('rising'), 900);
+        charge(pick(RETURNS));
+        // Reassembling Skeleton returns to the battlefield TAPPED. We didn't even have to activate.
+        tapped = true;
+        tappedClicks = 0;
+        btn.classList.add('tapped');
+        btn.setAttribute('aria-label', 'Resist (tapped)');
+        $('statStatus').textContent = 'TAPPED (reassembled)';
+        statusEl.innerHTML = `${sym(1)}${sym('B')}: Return this card from your graveyard to the battlefield <em>tapped</em>.<br>Starport Security did not even have to activate.`;
+        sfx.untap();
+        sfx.tap();
+        save();
+        renderStats();
+        untapTimer = setTimeout(untap, 5000);
+    });
+
     btn.addEventListener('click', () => {
+        if (inGraveyard) return;
         sheet.attempts++;
         if (tapped) {
+            if (++tappedClicks >= 3) { destroy(); return; }
             charge(`Attempted to activate a tapped creature (attempt #${sheet.attempts}).`);
             statusEl.innerHTML = 'RESIST is already tapped. <em>Tapped creatures can\'t resist.</em> This has been noted.';
             btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('shake');
@@ -557,8 +670,32 @@
 
     /* ---------- exhibit A ---------- */
     const ev = $('evidence');
-    function closeEvidence() { ev.classList.remove('open'); $('exhibit').focus(); }
-    $('exhibit').addEventListener('click', () => { ev.classList.add('open'); });
+    const EXHIBITS = {
+        exhibitA: {
+            src: 'images/starport/normal.jpg',
+            cap: 'EXHIBIT A: THE ARRESTING OFFICER',
+            alt: 'Starport Security card. 3 and white mana, tap: Tap another target creature. This ability costs 2 less to activate if you control a creature with a +1/+1 counter on it. Flavor text: You are a suspect in an ongoing investigation. Do not resist apprehension. 1/1.',
+        },
+        exhibitB: {
+            src: 'images/starport/skeleton.jpg',
+            cap: 'EXHIBIT B: KNOWN ASSOCIATE. PRIOR ARRESTS: TOO MANY',
+            alt: 'Reassembling Skeleton card. 1 and black mana: Return this card from your graveyard to the battlefield tapped. 1/1.',
+        },
+    };
+    let lastExhibit;
+    function closeEvidence() { ev.classList.remove('open'); if (lastExhibit) lastExhibit.focus(); }
+    Object.entries(EXHIBITS).forEach(([id, x]) => {
+        $(id).addEventListener('click', e => {
+            lastExhibit = e.currentTarget;
+            const img = $('evidenceImg');
+            img.src = x.src;
+            img.alt = x.alt;
+            $('evidenceCap').textContent = x.cap + ' (click anywhere to return to custody)';
+            // restart the flip-in animation
+            img.style.animation = 'none'; void img.offsetWidth; img.style.animation = '';
+            ev.classList.add('open');
+        });
+    });
     ev.addEventListener('click', closeEvidence);
 
     /* ---------- expunge (denied) ---------- */
