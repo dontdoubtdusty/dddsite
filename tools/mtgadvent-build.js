@@ -139,12 +139,23 @@ function writeOut(out) {
     fs.writeFileSync(OUT_JS, 'window.MTGADVENT_DATA = ' + JSON.stringify(out) + ';\n');
 }
 
+// Each set's hint is a lowercase noun phrase ("a magic school"), so any pair reads as a sentence
+// in either order. The connector rotates by day number; single-set days get "awaits".
+const CONNECTORS = ['meets', 'collides with', 'crashes into', 'is invaded by', 'crosses paths with'];
+function makeHint(day, hints) {
+    const h = hints.filter(Boolean);
+    if (!h.length) return '';
+    const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+    if (h.length === 1) return cap(h[0]) + ' awaits';
+    return cap(h[0]) + ' ' + CONNECTORS[(day - 1) % CONNECTORS.length] + ' ' + h[1];
+}
+
 function assignDays(sets, rand) {
     const days = buildDays(Object.keys(sets), rand);
     days.forEach(d => {
         d.title = d.sets.map(c => sets[c].name).join(' × ');
         d.description = d.sets.map(c => sets[c].blurb).filter(Boolean).join(' ');
-        d.hint = d.sets.map(c => sets[c].hint).filter(Boolean).join(' + ');
+        d.hint = makeHint(d.day, d.sets.map(c => sets[c].hint));
     });
     return days;
 }
