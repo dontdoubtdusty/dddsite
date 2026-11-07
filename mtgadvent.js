@@ -360,9 +360,13 @@
     async function init() {
         makeSnow();
         try {
-            const res = await fetch('draftsets.json');
-            if (!res.ok) throw new Error(res.status);
-            data = await res.json();
+            if (window.MTGADVENT_DATA) {
+                data = window.MTGADVENT_DATA;
+            } else {
+                const res = await fetch('draftsets.json');
+                if (!res.ok) throw new Error(res.status);
+                data = await res.json();
+            }
         } catch (e) {
             statusEl.textContent = 'Could not load the calendar data (draftsets.json). If you opened this file directly, serve the folder over http instead.';
             return;

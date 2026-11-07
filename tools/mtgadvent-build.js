@@ -18,6 +18,7 @@ const fs = require('fs');
 const path = require('path');
 
 const OUT = path.join(__dirname, '..', 'draftsets.json');
+const OUT_JS = path.join(__dirname, '..', 'draftsets.js');
 const API = 'https://api.scryfall.com';
 const HEADERS = { 'User-Agent': 'dddsite-mtgadvent/2.0', Accept: 'application/json' };
 const DAYS = 25;
@@ -183,5 +184,6 @@ function buildDays(codes, rand) {
 
     const out = { year, exclude, sets, days };
     fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
+    fs.writeFileSync(OUT_JS, 'window.MTGADVENT_DATA = ' + JSON.stringify(out) + ';\n');
     console.log(`Wrote ${path.relative(process.cwd(), OUT)}: ${codes.length} sets, ${days.length} days.`);
 })().catch(e => { console.error(e); process.exit(1); });
