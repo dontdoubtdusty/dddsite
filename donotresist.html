@@ -22,7 +22,17 @@
         overflow-x: hidden;
         color: #fff;
         font-family: "Courier New", Courier, monospace;
-        /* CSS starfield: nothing to download */
+        background: #070b1c;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* ---------- static starfield on its own layer (painted once, never repainted) ---------- */
+    .sky {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
         background-color: #070b1c;
         background-image:
             radial-gradient(1px 1px at 20px 30px, #fff 50%, transparent 51%),
@@ -32,35 +42,24 @@
             radial-gradient(1px 1px at 260px 40px, #fff 50%, transparent 51%),
             radial-gradient(ellipse at 50% 120%, #1d3a7a 0%, transparent 60%),
             linear-gradient(#070b1c, #0d1636);
-        /* co-prime-ish tile sizes so the stars don't line up in a grid */
         background-size: 293px 257px, 419px 373px, 171px 199px, 537px 461px, 233px 311px, 100% 100%, 100% 100%;
-        background-attachment: fixed;
-        display: flex;
-        flex-direction: column;
+        transform: translateZ(0);
     }
 
-    /* ---------- siren wash + scan line (opacity/transform only) ---------- */
-    .siren, .siren::after, .scanline, .flash {
+    /* ---------- siren wash + scan line (opacity/transform only, each on its own layer) ---------- */
+    .siren, .scanline, .flash {
         position: fixed;
         inset: 0;
         pointer-events: none;
     }
-    .siren {
-        background: radial-gradient(ellipse at 0% 0%, var(--siren-red), transparent 60%);
-        animation: siren 2.4s ease-in-out infinite alternate;
-        z-index: 1;
-    }
-    .siren::after {
-        content: "";
-        background: radial-gradient(ellipse at 100% 0%, var(--siren-blue), transparent 60%);
-        animation: siren 2.4s ease-in-out infinite alternate-reverse;
-    }
+    .siren { z-index: 1; will-change: opacity; animation: siren 2.4s ease-in-out infinite alternate; }
+    .siren.red  { background: radial-gradient(ellipse at 0% 0%, var(--siren-red), transparent 60%); }
+    .siren.blue { background: radial-gradient(ellipse at 100% 0%, var(--siren-blue), transparent 60%); animation-direction: alternate-reverse; }
     @keyframes siren { from { opacity: 0.15; } to { opacity: 1; } }
     .scanline {
         inset: 0 0 auto 0;
         height: 3px;
         background: linear-gradient(90deg, transparent, var(--glow), transparent);
-        box-shadow: 0 0 14px var(--glow);
         opacity: 0.35;
         animation: scan 7s linear infinite;
         will-change: transform;
@@ -71,59 +70,27 @@
     .flash.on { animation: flash 0.6s ease-out; }
     @keyframes flash { 0%, 40% { opacity: 1; } 100% { opacity: 0; } }
 
-    /* ---------- police tape ---------- */
-    .tape {
-        position: relative;
-        z-index: 5;
-        overflow: hidden;
-        white-space: nowrap;
-        background: var(--hazard);
-        color: var(--ink);
-        font: 900 0.95rem/1 Arial, sans-serif;
-        letter-spacing: 0.2em;
-        border-block: 6px solid transparent;
-        border-image: repeating-linear-gradient(45deg, var(--ink) 0 12px, var(--hazard) 12px 24px) 6;
-        padding: 8px 0;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
-    }
-    .tape.top { transform: rotate(-1.5deg); margin: 14px -20px 0; }
-    .tape.bottom { transform: rotate(1.2deg); margin: 0 -20px 14px; }
-    .tape-track { display: inline-block; animation: tape 30s linear infinite; will-change: transform; }
-    .tape.bottom .tape-track { animation-direction: reverse; }
-    @keyframes tape { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
     /* ---------- layout ---------- */
     main {
         position: relative;
         z-index: 3;
         flex: 1;
         display: grid;
-        grid-template-columns: 1fr;
-        gap: 18px;
+        gap: 16px;
         align-content: center;
         justify-items: center;
         padding: 20px 16px;
         width: 100%;
-        max-width: 1100px;
+        max-width: 760px;
         margin: 0 auto;
     }
-    @media (min-width: 900px) {
-        main {
-            grid-template-columns: 1fr 320px;
-            grid-template-areas: "stage file";
-            align-items: center;
-        }
-        .stage { grid-area: stage; }
-        .casefile { grid-area: file; }
-    }
-    .stage { display: grid; gap: 16px; justify-items: center; width: 100%; }
 
     .message {
         margin: 0;
         text-align: center;
         font: bold clamp(1rem, 3.6vw, 1.7rem)/1.3 Arial, sans-serif;
         letter-spacing: 0.15em;
-        text-shadow: 0 0 8px var(--glow), 0 0 18px var(--glow);
+        text-shadow: 0 0 10px var(--glow);
         min-height: 2.6em;
         max-width: 44ch;
     }
@@ -132,18 +99,27 @@
 
     /* ---------- art + button ---------- */
     .arena { position: relative; width: var(--art); height: var(--art); }
+    .ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 4px solid var(--hazard);
+        box-shadow: 0 0 0 6px var(--ink), 0 0 30px rgba(127, 255, 212, 0.45);
+        pointer-events: none;
+    }
     .rotator {
         width: 100%;
         height: 100%;
         border-radius: 50%;
         object-fit: cover;
         display: block;
-        border: 4px solid var(--hazard);
-        box-shadow: 0 0 0 6px var(--ink), 0 0 30px rgba(127, 255, 212, 0.45);
         animation: spin 12s linear infinite;
         will-change: transform;
+        transition: opacity 0.4s;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .arena.graveyard .rotator { opacity: 0.4; }
+
     .resist-btn {
         position: absolute;
         top: 50%;
@@ -158,8 +134,8 @@
         border-radius: 8px;
         cursor: pointer;
         text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
-        box-shadow: 0 0 20px rgba(255, 0, 0, 0.6), 0 0 40px rgba(255, 0, 0, 0.4);
-        transition: transform 0.45s cubic-bezier(.5, -0.4, .4, 1.4), background-color 0.3s, filter 0.3s;
+        box-shadow: 0 0 24px rgba(255, 0, 0, 0.6);
+        transition: transform 0.45s cubic-bezier(.5, -0.4, .4, 1.4);
         z-index: 4;
     }
     .resist-btn:hover:not(.tapped) { transform: translate(-50%, -50%) scale(1.05); }
@@ -171,12 +147,12 @@
         color: #aaa;
         text-shadow: none;
         box-shadow: none;
-        filter: grayscale(1);
         cursor: not-allowed;
     }
     .resist-btn.shake { animation: shake 0.35s; }
     @keyframes shake {
-        25% { margin-left: -6px; } 75% { margin-left: 6px; }
+        25% { transform: translate(calc(-50% - 6px), -50%) rotate(90deg); }
+        75% { transform: translate(calc(-50% + 6px), -50%) rotate(90deg); }
     }
 
     /* RESIST falls apart into bones */
@@ -186,9 +162,7 @@
         to { transform: translate(var(--dx), 220px) rotate(var(--rot)); opacity: 0; }
     }
     .resist-btn.rising { animation: rise 0.8s ease-out; }
-    @keyframes rise {
-        from { opacity: 0; filter: grayscale(1) blur(4px); }
-    }
+    @keyframes rise { from { opacity: 0; } }
     .reassemble-btn {
         position: absolute;
         top: 50%;
@@ -209,7 +183,6 @@
     .reassemble-btn[hidden] { display: none; }
     .reassemble-btn:hover, .reassemble-btn:focus-visible { border-color: #e9dcc0; outline: none; }
     .reassemble-btn .ms { height: 1.15em; width: 1.15em; }
-    .arena.graveyard .rotator { filter: grayscale(0.8) brightness(0.6); }
     .exhibits { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 
     .phase {
@@ -255,47 +228,6 @@
     }
     .linkish:hover, .linkish:focus-visible { border-color: var(--hazard); color: var(--hazard); outline: none; }
 
-    /* ---------- case file ---------- */
-    .casefile {
-        width: 100%;
-        max-width: 420px;
-        background: #efe6cf;
-        color: #222;
-        border-radius: 3px;
-        padding: 16px 16px 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-        transform: rotate(1deg);
-        position: relative;
-    }
-    .casefile::before {
-        content: "CONFIDENTIAL";
-        position: absolute;
-        top: 44%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotate(-18deg);
-        font: 900 2.4rem Arial, sans-serif;
-        color: rgba(200, 0, 0, 0.12);
-        border: 4px solid rgba(200, 0, 0, 0.12);
-        padding: 2px 10px;
-        pointer-events: none;
-    }
-    .casefile h2 { margin: 0 0 4px; font-size: 1rem; letter-spacing: 0.15em; }
-    .casefile .meta { font-size: 0.75rem; color: #555; margin-bottom: 10px; }
-    .stats { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: 0.9rem; margin: 0 0 10px; }
-    .stats dt { margin: 0; }
-    .stats dd { margin: 0; font-weight: bold; text-align: right; }
-    .stats .zero { color: #b00; }
-    .log { list-style: none; margin: 0; padding: 8px 0 0; border-top: 1px dashed #999; font-size: 0.8rem; max-height: 11.5em; overflow-y: auto; }
-    .log li { padding: 2px 0; }
-    .log li.new { animation: stamp 0.4s ease-out; }
-    @keyframes stamp { from { background: rgba(245, 197, 24, 0.7); } to { background: transparent; } }
-    .log time { color: #777; margin-right: 6px; }
-    .file-actions { display: flex; justify-content: space-between; margin-top: 10px; gap: 8px; }
-    .file-actions button {
-        font: inherit; font-size: 0.75rem; background: #222; color: #efe6cf;
-        border: 0; padding: 5px 10px; border-radius: 3px; cursor: pointer;
-    }
-
     /* ---------- evidence overlay ---------- */
     .evidence {
         position: fixed;
@@ -336,66 +268,44 @@
         cursor: pointer;
     }
 
-    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
     @media (prefers-reduced-motion: reduce) {
-        .siren, .siren::after, .scanline, .tape-track, .rotator, .caret, .evidence img, .log li.new, .resist-btn.rising, .resist-btn.dead .bone { animation: none !important; }
+        .siren, .scanline, .rotator, .caret, .evidence img, .resist-btn.rising, .resist-btn.dead .bone, .resist-btn.shake { animation: none !important; }
         .scanline { display: none; }
         .resist-btn { transition: none; }
     }
 </style>
 </head>
 <body>
-<div class="siren" aria-hidden="true"></div>
+<div class="sky" aria-hidden="true"></div>
+<div class="siren red" aria-hidden="true"></div>
+<div class="siren blue" aria-hidden="true"></div>
 <div class="scanline" aria-hidden="true"></div>
 <div class="flash" aria-hidden="true"></div>
 
-<div class="tape top" aria-hidden="true"><span class="tape-track"></span></div>
-
 <main>
-    <section class="stage">
-        <p class="message" id="msgTop" aria-label="You are a suspect in an ongoing investigation."></p>
+    <p class="message" id="msgTop" aria-label="You are a suspect in an ongoing investigation."></p>
 
-        <div class="arena">
-            <span class="phase" id="phase">UNTAP STEP</span>
-            <img class="rotator" src="images/starport/art_crop.jpg" width="626" height="457"
-                 alt="Starport Security, a tall white security robot, standing over an apprehended suspect">
-            <button class="resist-btn" id="resist" type="button">RESIST</button>
-            <button class="reassemble-btn" id="reassemble" type="button" hidden
-                    aria-label="Pay one and black mana: reassemble">
-                <img class="ms" src="images/starport/1.svg" alt=""><img class="ms" src="images/starport/B.svg" alt="">: REASSEMBLE
-            </button>
-        </div>
+    <div class="arena">
+        <span class="phase" id="phase">UNTAP STEP</span>
+        <img class="rotator" src="images/starport/art_crop.jpg" width="626" height="457"
+             alt="Starport Security, a tall white security robot, standing over an apprehended suspect">
+        <div class="ring" aria-hidden="true"></div>
+        <button class="resist-btn" id="resist" type="button">RESIST</button>
+        <button class="reassemble-btn" id="reassemble" type="button" hidden
+                aria-label="Pay one and black mana: reassemble">
+            <img class="ms" src="images/starport/1.svg" alt=""><img class="ms" src="images/starport/B.svg" alt="">: REASSEMBLE
+        </button>
+    </div>
 
-        <div class="status" id="status" aria-live="polite">Officer on duty. Remain where you are.</div>
+    <div class="status" id="status" aria-live="polite">Officer on duty. Remain where you are.</div>
 
-        <p class="message" id="msgBot" aria-label="Do not resist apprehension."></p>
+    <p class="message" id="msgBot" aria-label="Do not resist apprehension."></p>
 
-        <div class="exhibits">
-            <button class="linkish" id="exhibitA" type="button">&#128193; EXHIBIT A</button>
-            <button class="linkish" id="exhibitB" type="button">&#128193; EXHIBIT B: KNOWN ASSOCIATE</button>
-        </div>
-    </section>
-
-    <aside class="casefile" aria-label="Case file">
-        <h2>CASE FILE #EOE-0039</h2>
-        <div class="meta">Arresting officer: Starport Security (1/1, Robot Soldier)</div>
-        <dl class="stats">
-            <dt>Resistance attempts</dt><dd id="statAttempts">0</dd>
-            <dt>Successful resistances</dt><dd class="zero">0</dd>
-            <dt>Escape attempts</dt><dd id="statEscapes">0</dd>
-            <dt>Times tapped</dt><dd id="statTapped">0</dd>
-            <dt>Times reassembled</dt><dd id="statReassembled">0</dd>
-            <dt>Suspect status</dt><dd id="statStatus">UNTAPPED</dd>
-        </dl>
-        <ol class="log" id="log"></ol>
-        <div class="file-actions">
-            <button id="expunge" type="button">Expunge record</button>
-        </div>
-    </aside>
+    <div class="exhibits">
+        <button class="linkish" id="exhibitA" type="button">EXHIBIT A</button>
+        <button class="linkish" id="exhibitB" type="button">EXHIBIT B: KNOWN ASSOCIATE</button>
+    </div>
 </main>
-
-<div class="tape bottom" aria-hidden="true"><span class="tape-track"></span></div>
 
 <div class="evidence" id="evidence" role="dialog" aria-modal="true" aria-labelledby="evidenceCap">
     <figure>
@@ -409,81 +319,12 @@
 <script>
 (() => {
     const $ = id => document.getElementById(id);
-    const btn = $('resist'), statusEl = $('status'), phaseEl = $('phase'), logEl = $('log');
+    const btn = $('resist'), statusEl = $('status'), phaseEl = $('phase');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const sym = s => `<img class="ms" src="images/starport/${s}.svg" alt="{${s}}">`;
-    const pick = a => a[Math.floor(Math.random() * a.length)];
-
-    /* ---------- persistent rap sheet ---------- */
-    const KEY = 'starport-rapsheet';
-    let sheet = { attempts: 0, escapes: 0, tapped: 0, reassembled: 0, log: [] };
-    try { Object.assign(sheet, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
-    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(sheet)); } catch (e) {} };
 
     let muted = false;
     try { muted = localStorage.getItem('starport-muted') === '1'; } catch (e) {}
-
-    const stamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    function renderLog(fresh) {
-        logEl.innerHTML = '';
-        sheet.log.slice(0, 40).forEach((entry, i) => {
-            const li = document.createElement('li');
-            if (fresh && i === 0) li.className = 'new';
-            const t = document.createElement('time');
-            t.textContent = entry.t;
-            li.append(t, entry.m);
-            logEl.append(li);
-        });
-        renderStats();
-    }
-    function renderStats() {
-        $('statAttempts').textContent = sheet.attempts;
-        $('statEscapes').textContent = sheet.escapes;
-        $('statTapped').textContent = sheet.tapped;
-        $('statReassembled').textContent = sheet.reassembled;
-    }
-    function charge(m) {
-        sheet.log.unshift({ t: stamp(), m });
-        sheet.log.length = Math.min(sheet.log.length, 40);
-        save();
-        renderLog(true);
-    }
-
-    const CHARGES = [
-        'Attempted to declare attackers.',
-        'Attempted to crew a Vehicle.',
-        'Loitering in the red zone.',
-        'Possession of an untapped creature.',
-        'Attempted to block. Suspicious.',
-        'Activated an ability without a permit.',
-        'Holding priority with intent.',
-        'Failure to remain tapped.',
-        'Conspiracy to combo off.',
-        'Flashed in a creature at end of turn. Rude.',
-        'Unlicensed haste.',
-        'Thinking about vigilance.',
-        'Excessive +1/+1 counters (ours are fine).',
-        'Said "in response" in a threatening manner.',
-        'Attempted to untap during the untap step.',
-        // known associate: Reassembling Skeleton
-        'Chump blocked. Again. And again.',
-        'Loitering in the graveyard.',
-        'Returned from the graveyard without a visa.',
-        'Identified by dental records. Suspect is a 1/1 Skeleton Warrior.',
-        'Possession of a body (partial).',
-        'Reassembled at the scene of the crime.',
-        'Fled to the graveyard. Extradited.',
-        'Resisting apprehension in several pieces.',
-        'Claims none of the bones are original. Same skeleton, same charges.',
-        'Sacrificed itself to a Viscera Seer for a scry. Morally questionable.',
-    ];
-    const RETURNS = [
-        'Paid {1}{B} to come back. Came back tapped. Thanks for saving us the mana.',
-        'Returned from the graveyard tapped. Starport Security did not even get up.',
-        'Reassembled. Entered the battlefield tapped. Already in custody.',
-        'Same skeleton, new bones, old charges.',
-    ];
 
     /* ---------- sound (WebAudio, created on first gesture) ---------- */
     let ctx;
@@ -508,16 +349,21 @@
         siren: () => { [0, 0.45].forEach(s => { tone(620, s, 0.22, 'sawtooth', 0.04, 900); tone(900, s + 0.22, 0.22, 'sawtooth', 0.04, 620); }); },
     };
 
-    /* ---------- typewriter ---------- */
+    /* ---------- typewriter (text node + one caret element, no innerHTML churn) ---------- */
     function typeOut(el, text, delay) {
         return new Promise(res => {
             if (reduced) { el.textContent = text; return res(); }
-            const caret = '<span class="caret" aria-hidden="true">&#9608;</span>';
+            const txt = document.createTextNode('');
+            const caret = document.createElement('span');
+            caret.className = 'caret';
+            caret.setAttribute('aria-hidden', 'true');
+            caret.textContent = '█';
+            el.append(txt, caret);
             let i = 0;
             setTimeout(function step() {
-                el.innerHTML = text.slice(0, ++i) + caret;
+                txt.data = text.slice(0, ++i);
                 if (i < text.length) setTimeout(step, 38 + Math.random() * 40);
-                else { setTimeout(() => { el.textContent = text; }, 900); res(); }
+                else { setTimeout(() => caret.remove(), 900); res(); }
             }, delay);
         });
     }
@@ -525,7 +371,7 @@
         .then(() => typeOut($('msgBot'), 'DO NOT RESIST APPREHENSION', 400));
 
     /* ---------- tap / untap loop ---------- */
-    let tapped = false, activations = 0, untapTimer, upkeepTimer;
+    let tapped = false, activations = 0, attempts = 0, untapTimer, upkeepTimer;
 
     function costHTML() {
         // First activation pays full price; after that we "control a creature with a +1/+1 counter".
@@ -534,39 +380,37 @@
             : `<span class="strike">${sym(3)}</span>${sym(1)}${sym('W')}, ${sym('T')}`;
     }
 
+    function setTapped() {
+        tapped = true;
+        tappedClicks = 0;
+        btn.classList.add('tapped');
+        btn.setAttribute('aria-label', 'Resist (tapped)');
+        untapTimer = setTimeout(untap, 5000);
+    }
+
     function tapIt(reason) {
         clearTimeout(upkeepTimer);
         const cost = costHTML();
         activations++;
-        tapped = true;
-        tappedClicks = 0;
-        sheet.tapped++;
-        btn.classList.add('tapped');
-        btn.setAttribute('aria-label', 'Resist (tapped)');
-        $('statStatus').textContent = 'TAPPED';
         phaseEl.classList.remove('on');
         const discount = activations > 1
             ? `<br><em>This ability costs ${sym(2)} less: Starport Security controls a creature with a +1/+1 counter.</em>`
             : '';
         statusEl.innerHTML = `${reason}<br>${cost}: Tap another target creature. <em>RESIST is tapped.</em>${discount}`;
         sfx.tap();
-        save();
-        renderStats();
-        untapTimer = setTimeout(untap, 5000);
+        setTapped();
     }
 
     function untap() {
         tapped = false;
         btn.classList.remove('tapped');
         btn.removeAttribute('aria-label');
-        $('statStatus').textContent = 'UNTAPPED (for now)';
         phaseEl.textContent = 'UNTAP STEP';
         phaseEl.classList.add('on');
         statusEl.innerHTML = 'Your untap step. RESIST untaps. You feel a brief, foolish flicker of hope.';
         sfx.untap();
         upkeepTimer = setTimeout(() => {
             phaseEl.textContent = 'UPKEEP';
-            charge('Remained untapped into upkeep. Pre-emptively apprehended.');
             tapIt('<em>During your upkeep</em>, Starport Security activates.');
         }, 2600);
     }
@@ -586,9 +430,7 @@
         }).join('');
         btn.classList.add('dead');
         arena.classList.add('graveyard');
-        $('statStatus').textContent = 'IN GRAVEYARD';
         statusEl.innerHTML = 'Excessive resistance. <em>RESIST was destroyed</em> and put into the graveyard.<br>It will be back. It is always back.';
-        charge('Excessive resistance. Destroyed and put into the graveyard.');
         sfx.crumble();
         setTimeout(() => {
             btn.hidden = true;
@@ -599,7 +441,6 @@
 
     reBtn.addEventListener('click', () => {
         inGraveyard = false;
-        sheet.reassembled++;
         reBtn.hidden = true;
         arena.classList.remove('graveyard');
         btn.textContent = 'RESIST';
@@ -607,48 +448,36 @@
         btn.hidden = false;
         btn.classList.add('rising');
         setTimeout(() => btn.classList.remove('rising'), 900);
-        charge(pick(RETURNS));
         // Reassembling Skeleton returns to the battlefield TAPPED. We didn't even have to activate.
-        tapped = true;
-        tappedClicks = 0;
-        btn.classList.add('tapped');
-        btn.setAttribute('aria-label', 'Resist (tapped)');
-        $('statStatus').textContent = 'TAPPED (reassembled)';
         statusEl.innerHTML = `${sym(1)}${sym('B')}: Return this card from your graveyard to the battlefield <em>tapped</em>.<br>Starport Security did not even have to activate.`;
         sfx.untap();
         sfx.tap();
-        save();
-        renderStats();
-        untapTimer = setTimeout(untap, 5000);
+        setTapped();
     });
 
     btn.addEventListener('click', () => {
         if (inGraveyard) return;
-        sheet.attempts++;
+        attempts++;
         if (tapped) {
             if (++tappedClicks >= 3) { destroy(); return; }
-            charge(`Attempted to activate a tapped creature (attempt #${sheet.attempts}).`);
             statusEl.innerHTML = 'RESIST is already tapped. <em>Tapped creatures can\'t resist.</em> This has been noted.';
             btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('shake');
             sfx.deny();
             return;
         }
-        charge(pick(CHARGES));
-        tapIt(`Resistance attempt #${sheet.attempts} detected. In response, Starport Security activates.`);
+        tapIt(`Resistance attempt #${attempts} detected. In response, Starport Security activates.`);
     });
 
     /* ---------- escape attempts ---------- */
     const flashEl = document.querySelector('.flash');
-    function escapeAttempt(msg) {
-        sheet.escapes++;
-        charge(msg);
+    function escapeAttempt() {
         flashEl.classList.remove('on'); void flashEl.offsetWidth; flashEl.classList.add('on');
         sfx.siren();
     }
     document.addEventListener('keydown', e => {
         if (e.key !== 'Escape') return;
         if ($('evidence').classList.contains('open')) { closeEvidence(); return; }
-        escapeAttempt('ESCAPE ATTEMPT RECORDED. Suspect pressed Esc.');
+        escapeAttempt();
         statusEl.innerHTML = '<em>ESCAPE ATTEMPT RECORDED.</em> There is no escape key in a starport.';
     });
 
@@ -656,19 +485,19 @@
     let hiddenAt = 0;
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-            document.title = '\u{1F6A8} RETURN TO CUSTODY';
+            document.title = 'RETURN TO CUSTODY';
             hiddenAt = Date.now();
         } else {
             document.title = baseTitle;
             if (hiddenAt && Date.now() - hiddenAt > 1500) {
-                escapeAttempt('Fled the jurisdiction (left the tab). Returned to custody.');
+                escapeAttempt();
                 statusEl.innerHTML = 'Welcome back. <em>We saw you leave.</em>';
             }
             hiddenAt = 0;
         }
     });
 
-    /* ---------- exhibit A ---------- */
+    /* ---------- exhibits ---------- */
     const ev = $('evidence');
     const EXHIBITS = {
         exhibitA: {
@@ -698,15 +527,6 @@
     });
     ev.addEventListener('click', closeEvidence);
 
-    /* ---------- expunge (denied) ---------- */
-    let expungeTries = 0;
-    $('expunge').addEventListener('click', e => {
-        expungeTries++;
-        charge(expungeTries === 1 ? 'Attempted to expunge records. Denied.' : `Attempted to expunge records again (${expungeTries}x). Denied harder.`);
-        e.currentTarget.textContent = pick(['DENIED', 'REQUEST DENIED', 'Records are permanent', 'Nice try']);
-        sfx.deny();
-    });
-
     /* ---------- mute ---------- */
     const muteBtn = $('mute');
     const paintMute = () => { muteBtn.textContent = muted ? 'SOUND: OFF' : 'SOUND: ON'; muteBtn.setAttribute('aria-pressed', String(muted)); };
@@ -717,14 +537,8 @@
     });
     paintMute();
 
-    /* ---------- police tape text ---------- */
-    const tapeText = 'POLICE LINE · DO NOT RESIST · STARPORT SECURITY · DO NOT CROSS · '.repeat(6);
-    document.querySelectorAll('.tape-track').forEach(t => { t.textContent = tapeText + tapeText; });
-
-    if (!sheet.log.length) charge('Case opened. Suspect identified.');
-    else charge(sheet.attempts
-        ? `Repeat offender returned to the scene. Prior resistance attempts: ${sheet.attempts}.`
-        : 'Suspect returned to the scene. Still suspicious.');
+    // Clear the old rap sheet from earlier versions of this page.
+    try { localStorage.removeItem('starport-rapsheet'); } catch (e) {}
 })();
 </script>
 </body>
