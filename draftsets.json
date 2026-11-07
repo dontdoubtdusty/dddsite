@@ -189,224 +189,223 @@
     {
       "day": 1,
       "sets": [
-        "eoe",
-        "fin"
+        "fdn",
+        "woe"
       ],
-      "title": "Edge of Eternities × Final Fantasy",
-      "description": "Space opera with Station, Warp, Void and Lander tokens out past the edge of the galaxy. Final Fantasy jobs and summons: Job Select equipment, Saga creatures and Towns."
+      "title": "Foundations × Wilds of Eldraine",
+      "description": "The greatest hits: classic creature types and evergreen keywords from across Magic history. Fairy-tale chaos with Roles, Bargain, Adventures and Food in a storybook forest."
     },
     {
       "day": 2,
       "sets": [
-        "dsk",
-        "ecl"
+        "msh",
+        "mkm"
       ],
-      "title": "Duskmourn: House of Horror × Lorwyn Eclipsed",
-      "description": "Haunted-house horror with Rooms, Survival, Impending and Manifest Dread. Lorwyn’s light and shadow with tribal synergies, Changelings, Blight and Vivid."
+      "title": "Marvel Super Heroes × Murders at Karlov Manor",
+      "description": "Heroes versus villains with Power-Up, Teamwork, Plans and transforming legends. A murder-mystery whodunit built on Investigate, Collect Evidence, Disguise and Cases to solve."
     },
     {
       "day": 3,
       "sets": [
-        "lci",
-        "fdn"
+        "dsk",
+        "otj"
       ],
-      "title": "The Lost Caverns of Ixalan × Foundations",
-      "description": "Dinosaurs, pirates, vampires and merfolk hunt for treasure with Discover, Craft and Descend. The greatest hits: classic creature types and evergreen keywords from across Magic history."
+      "title": "Duskmourn: House of Horror × Outlaws of Thunder Junction",
+      "description": "Haunted-house horror with Rooms, Survival, Impending and Manifest Dread. Wild West heists and showdowns with Plot, Spree, Saddle and crimes that pay off."
     },
     {
       "day": 4,
       "sets": [
-        "tla",
-        "mkm"
+        "sos",
+        "ecl"
       ],
-      "title": "Avatar: The Last Airbender × Murders at Karlov Manor",
-      "description": "Four nations, four elements, and Airbending, Earthbending, Firebending and Waterbending. A murder-mystery whodunit built on Investigate, Collect Evidence, Disguise and Cases to solve."
+      "title": "Secrets of Strixhaven × Lorwyn Eclipsed",
+      "description": "Five colleges built around instants and sorceries, with Opus, Increment and Infusion. Lorwyn’s light and shadow with tribal synergies, Changelings, Blight and Vivid."
     },
     {
       "day": 5,
       "sets": [
-        "blb"
+        "tla",
+        "lci"
       ],
-      "title": "Bloomburrow",
-      "description": "Ten woodland-animal tribes brawl with Offspring, Gift, Forage and Valiant."
+      "title": "Avatar: The Last Airbender × The Lost Caverns of Ixalan",
+      "description": "Four nations, four elements, and Airbending, Earthbending, Firebending and Waterbending. Dinosaurs, pirates, vampires and merfolk hunt for treasure with Discover, Craft and Descend."
     },
     {
       "day": 6,
       "sets": [
-        "trk",
-        "sos"
+        "fin",
+        "hob"
       ],
-      "title": "Star Trek × Secrets of Strixhaven",
-      "description": "Starfleet crews and the Beam Me Up mechanic. Plan ahead before you boldly go. Five colleges built around instants and sorceries, with Opus, Increment and Infusion."
+      "title": "Final Fantasy × The Hobbit",
+      "description": "Final Fantasy jobs and summons: Job Select equipment, Saga creatures and Towns. The Battle of Five Armies, with Storied, Hone counters, Adventures, Amass and Landfall."
     },
     {
       "day": 7,
       "sets": [
-        "tdm",
-        "woe"
+        "spm"
       ],
-      "title": "Tarkir: Dragonstorm × Wilds of Eldraine",
-      "description": "Dragons and the five khan clans with Mobilize, Omens, Harmonize and Renew. Fairy-tale chaos with Roles, Bargain, Adventures and Food in a storybook forest."
+      "title": "Marvel's Spider-Man",
+      "description": "Heroes, villains and Spider-people swinging through Marvel’s New York."
     },
     {
       "day": 8,
       "sets": [
-        "hob",
-        "otj"
+        "dft",
+        "eoe"
       ],
-      "title": "The Hobbit × Outlaws of Thunder Junction",
-      "description": "The Battle of Five Armies, with Storied, Hone counters, Adventures, Amass and Landfall. Wild West heists and showdowns with Plot, Spree, Saddle and crimes that pay off."
+      "title": "Aetherdrift × Edge of Eternities",
+      "description": "A high-speed racing set run on Speed, Start Your Engines, Exhaust and Vehicles. Space opera with Station, Warp, Void and Lander tokens out past the edge of the galaxy."
     },
     {
       "day": 9,
       "sets": [
-        "tmt",
-        "msh"
+        "trk",
+        "blb"
       ],
-      "title": "Teenage Mutant Ninja Turtles × Marvel Super Heroes",
-      "description": "Teenage mutants in the shadows: Sneak, Disappear, Alliance and Mutagen tokens. Heroes versus villains with Power-Up, Teamwork, Plans and transforming legends."
+      "title": "Star Trek × Bloomburrow",
+      "description": "Starfleet crews and the Beam Me Up mechanic. Plan ahead before you boldly go. Ten woodland-animal tribes brawl with Offspring, Gift, Forage and Valiant."
     },
     {
       "day": 10,
       "sets": [
-        "dft",
-        "spm"
+        "tdm",
+        "fra"
       ],
-      "title": "Aetherdrift × Marvel's Spider-Man",
-      "description": "A high-speed racing set run on Speed, Start Your Engines, Exhaust and Vehicles. Heroes, villains and Spider-people swinging through Marvel’s New York."
+      "title": "Tarkir: Dragonstorm × Reality Fracture",
+      "description": "Dragons and the five khan clans with Mobilize, Omens, Harmonize and Renew. A multiverse in flux with Heartwood mana tokens, Prepared, Surveil and Threshold."
     },
     {
       "day": 11,
       "sets": [
-        "fra",
-        "spm"
+        "tmt",
+        "dsk"
       ],
-      "title": "Reality Fracture × Marvel's Spider-Man",
-      "description": "A multiverse in flux with Heartwood mana tokens, Prepared, Surveil and Threshold. Heroes, villains and Spider-people swinging through Marvel’s New York."
+      "title": "Teenage Mutant Ninja Turtles × Duskmourn: House of Horror",
+      "description": "Teenage mutants in the shadows: Sneak, Disappear, Alliance and Mutagen tokens. Haunted-house horror with Rooms, Survival, Impending and Manifest Dread."
     },
     {
       "day": 12,
       "sets": [
-        "woe",
-        "mkm"
+        "trk",
+        "tdm"
       ],
-      "title": "Wilds of Eldraine × Murders at Karlov Manor",
-      "description": "Fairy-tale chaos with Roles, Bargain, Adventures and Food in a storybook forest. A murder-mystery whodunit built on Investigate, Collect Evidence, Disguise and Cases to solve."
+      "title": "Star Trek × Tarkir: Dragonstorm",
+      "description": "Starfleet crews and the Beam Me Up mechanic. Plan ahead before you boldly go. Dragons and the five khan clans with Mobilize, Omens, Harmonize and Renew."
     },
     {
       "day": 13,
       "sets": [
-        "fin",
-        "sos"
+        "eoe",
+        "ecl"
       ],
-      "title": "Final Fantasy × Secrets of Strixhaven",
-      "description": "Final Fantasy jobs and summons: Job Select equipment, Saga creatures and Towns. Five colleges built around instants and sorceries, with Opus, Increment and Infusion."
+      "title": "Edge of Eternities × Lorwyn Eclipsed",
+      "description": "Space opera with Station, Warp, Void and Lander tokens out past the edge of the galaxy. Lorwyn’s light and shadow with tribal synergies, Changelings, Blight and Vivid."
     },
     {
       "day": 14,
       "sets": [
-        "tmt",
-        "eoe"
+        "lci"
       ],
-      "title": "Teenage Mutant Ninja Turtles × Edge of Eternities",
-      "description": "Teenage mutants in the shadows: Sneak, Disappear, Alliance and Mutagen tokens. Space opera with Station, Warp, Void and Lander tokens out past the edge of the galaxy."
+      "title": "The Lost Caverns of Ixalan",
+      "description": "Dinosaurs, pirates, vampires and merfolk hunt for treasure with Discover, Craft and Descend."
     },
     {
       "day": 15,
       "sets": [
-        "fdn",
-        "fra"
+        "fin"
       ],
-      "title": "Foundations × Reality Fracture",
-      "description": "The greatest hits: classic creature types and evergreen keywords from across Magic history. A multiverse in flux with Heartwood mana tokens, Prepared, Surveil and Threshold."
+      "title": "Final Fantasy",
+      "description": "Final Fantasy jobs and summons: Job Select equipment, Saga creatures and Towns."
     },
     {
       "day": 16,
       "sets": [
-        "hob",
-        "lci"
+        "spm",
+        "blb"
       ],
-      "title": "The Hobbit × The Lost Caverns of Ixalan",
-      "description": "The Battle of Five Armies, with Storied, Hone counters, Adventures, Amass and Landfall. Dinosaurs, pirates, vampires and merfolk hunt for treasure with Discover, Craft and Descend."
+      "title": "Marvel's Spider-Man × Bloomburrow",
+      "description": "Heroes, villains and Spider-people swinging through Marvel’s New York. Ten woodland-animal tribes brawl with Offspring, Gift, Forage and Valiant."
     },
     {
       "day": 17,
       "sets": [
-        "ecl"
+        "hob",
+        "woe"
       ],
-      "title": "Lorwyn Eclipsed",
-      "description": "Lorwyn’s light and shadow with tribal synergies, Changelings, Blight and Vivid."
+      "title": "The Hobbit × Wilds of Eldraine",
+      "description": "The Battle of Five Armies, with Storied, Hone counters, Adventures, Amass and Landfall. Fairy-tale chaos with Roles, Bargain, Adventures and Food in a storybook forest."
     },
     {
       "day": 18,
       "sets": [
-        "dft",
-        "blb"
+        "sos"
       ],
-      "title": "Aetherdrift × Bloomburrow",
-      "description": "A high-speed racing set run on Speed, Start Your Engines, Exhaust and Vehicles. Ten woodland-animal tribes brawl with Offspring, Gift, Forage and Valiant."
+      "title": "Secrets of Strixhaven",
+      "description": "Five colleges built around instants and sorceries, with Opus, Increment and Infusion."
     },
     {
       "day": 19,
       "sets": [
-        "trk",
-        "otj"
+        "fdn",
+        "dft"
       ],
-      "title": "Star Trek × Outlaws of Thunder Junction",
-      "description": "Starfleet crews and the Beam Me Up mechanic. Plan ahead before you boldly go. Wild West heists and showdowns with Plot, Spree, Saddle and crimes that pay off."
+      "title": "Foundations × Aetherdrift",
+      "description": "The greatest hits: classic creature types and evergreen keywords from across Magic history. A high-speed racing set run on Speed, Start Your Engines, Exhaust and Vehicles."
     },
     {
       "day": 20,
       "sets": [
-        "msh",
-        "tla"
+        "mkm",
+        "fra"
       ],
-      "title": "Marvel Super Heroes × Avatar: The Last Airbender",
-      "description": "Heroes versus villains with Power-Up, Teamwork, Plans and transforming legends. Four nations, four elements, and Airbending, Earthbending, Firebending and Waterbending."
+      "title": "Murders at Karlov Manor × Reality Fracture",
+      "description": "A murder-mystery whodunit built on Investigate, Collect Evidence, Disguise and Cases to solve. A multiverse in flux with Heartwood mana tokens, Prepared, Surveil and Threshold."
     },
     {
       "day": 21,
       "sets": [
-        "tdm",
-        "dsk"
+        "msh",
+        "otj"
       ],
-      "title": "Tarkir: Dragonstorm × Duskmourn: House of Horror",
-      "description": "Dragons and the five khan clans with Mobilize, Omens, Harmonize and Renew. Haunted-house horror with Rooms, Survival, Impending and Manifest Dread."
+      "title": "Marvel Super Heroes × Outlaws of Thunder Junction",
+      "description": "Heroes versus villains with Power-Up, Teamwork, Plans and transforming legends. Wild West heists and showdowns with Plot, Spree, Saddle and crimes that pay off."
     },
     {
       "day": 22,
       "sets": [
-        "lci",
-        "ecl"
+        "tla",
+        "tmt"
       ],
-      "title": "The Lost Caverns of Ixalan × Lorwyn Eclipsed",
-      "description": "Dinosaurs, pirates, vampires and merfolk hunt for treasure with Discover, Craft and Descend. Lorwyn’s light and shadow with tribal synergies, Changelings, Blight and Vivid."
+      "title": "Avatar: The Last Airbender × Teenage Mutant Ninja Turtles",
+      "description": "Four nations, four elements, and Airbending, Earthbending, Firebending and Waterbending. Teenage mutants in the shadows: Sneak, Disappear, Alliance and Mutagen tokens."
     },
     {
       "day": 23,
       "sets": [
-        "spm",
-        "mkm"
+        "dft",
+        "msh"
       ],
-      "title": "Marvel's Spider-Man × Murders at Karlov Manor",
-      "description": "Heroes, villains and Spider-people swinging through Marvel’s New York. A murder-mystery whodunit built on Investigate, Collect Evidence, Disguise and Cases to solve."
+      "title": "Aetherdrift × Marvel Super Heroes",
+      "description": "A high-speed racing set run on Speed, Start Your Engines, Exhaust and Vehicles. Heroes versus villains with Power-Up, Teamwork, Plans and transforming legends."
     },
     {
       "day": 24,
       "sets": [
-        "msh"
+        "mkm",
+        "dsk"
       ],
-      "title": "Marvel Super Heroes",
-      "description": "Heroes versus villains with Power-Up, Teamwork, Plans and transforming legends."
+      "title": "Murders at Karlov Manor × Duskmourn: House of Horror",
+      "description": "A murder-mystery whodunit built on Investigate, Collect Evidence, Disguise and Cases to solve. Haunted-house horror with Rooms, Survival, Impending and Manifest Dread."
     },
     {
       "day": 25,
       "sets": [
-        "trk",
+        "fdn",
         "eoe"
       ],
-      "title": "Star Trek × Edge of Eternities",
-      "description": "Starfleet crews and the Beam Me Up mechanic. Plan ahead before you boldly go. Space opera with Station, Warp, Void and Lander tokens out past the edge of the galaxy."
+      "title": "Foundations × Edge of Eternities",
+      "description": "The greatest hits: classic creature types and evergreen keywords from across Magic history. Space opera with Station, Warp, Void and Lander tokens out past the edge of the galaxy."
     }
   ]
 }
