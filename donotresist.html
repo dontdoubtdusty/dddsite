@@ -2,96 +2,593 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>STARPORT SECURITY</title>
+<link rel="icon" href="images/starport/W.svg">
 <style>
-    body {
-        margin: 0;
-        background: black;
-        background-image: url('https://blogs-images.forbes.com/startswithabang/files/2016/02/mess-1200x965.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden;
-        color: white;
-        font-family: Arial, sans-serif;
+    :root {
+        --hazard: #f5c518;
+        --ink: #0b0f1a;
+        --glow: #7fffd4;
+        --siren-red: rgba(255, 30, 60, 0.22);
+        --siren-blue: rgba(40, 110, 255, 0.24);
+        --art: min(320px, 72vw);
     }
-    .container {
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        color: #fff;
+        font-family: "Courier New", Courier, monospace;
+        /* CSS starfield: nothing to download */
+        background-color: #070b1c;
+        background-image:
+            radial-gradient(1px 1px at 20px 30px, #fff 50%, transparent 51%),
+            radial-gradient(1px 1px at 140px 80px, #cfe 50%, transparent 51%),
+            radial-gradient(1.5px 1.5px at 90px 160px, #fff 50%, transparent 51%),
+            radial-gradient(1px 1px at 210px 210px, #9cf 50%, transparent 51%),
+            radial-gradient(1px 1px at 260px 40px, #fff 50%, transparent 51%),
+            radial-gradient(ellipse at 50% 120%, #1d3a7a 0%, transparent 60%),
+            linear-gradient(#070b1c, #0d1636);
+        /* co-prime-ish tile sizes so the stars don't line up in a grid */
+        background-size: 293px 257px, 419px 373px, 171px 199px, 537px 461px, 233px 311px, 100% 100%, 100% 100%;
+        background-attachment: fixed;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* ---------- siren wash + scan line (opacity/transform only) ---------- */
+    .siren, .siren::after, .scanline, .flash {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+    }
+    .siren {
+        background: radial-gradient(ellipse at 0% 0%, var(--siren-red), transparent 60%);
+        animation: siren 2.4s ease-in-out infinite alternate;
+        z-index: 1;
+    }
+    .siren::after {
+        content: "";
+        background: radial-gradient(ellipse at 100% 0%, var(--siren-blue), transparent 60%);
+        animation: siren 2.4s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes siren { from { opacity: 0.15; } to { opacity: 1; } }
+    .scanline {
+        inset: 0 0 auto 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--glow), transparent);
+        box-shadow: 0 0 14px var(--glow);
+        opacity: 0.35;
+        animation: scan 7s linear infinite;
+        will-change: transform;
+        z-index: 2;
+    }
+    @keyframes scan { from { transform: translateY(-10px); } to { transform: translateY(100vh); } }
+    .flash { background: rgba(255, 0, 40, 0.35); opacity: 0; z-index: 50; }
+    .flash.on { animation: flash 0.6s ease-out; }
+    @keyframes flash { 0%, 40% { opacity: 1; } 100% { opacity: 0; } }
+
+    /* ---------- police tape ---------- */
+    .tape {
         position: relative;
+        z-index: 5;
+        overflow: hidden;
+        white-space: nowrap;
+        background: var(--hazard);
+        color: var(--ink);
+        font: 900 0.95rem/1 Arial, sans-serif;
+        letter-spacing: 0.2em;
+        border-block: 6px solid transparent;
+        border-image: repeating-linear-gradient(45deg, var(--ink) 0 12px, var(--hazard) 12px 24px) 6;
+        padding: 8px 0;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+    }
+    .tape.top { transform: rotate(-1.5deg); margin: 14px -20px 0; }
+    .tape.bottom { transform: rotate(1.2deg); margin: 0 -20px 14px; }
+    .tape-track { display: inline-block; animation: tape 30s linear infinite; will-change: transform; }
+    .tape.bottom .tape-track { animation-direction: reverse; }
+    @keyframes tape { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ---------- layout ---------- */
+    main {
+        position: relative;
+        z-index: 3;
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+        align-content: center;
+        justify-items: center;
+        padding: 20px 16px;
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    @media (min-width: 900px) {
+        main {
+            grid-template-columns: 1fr 320px;
+            grid-template-areas: "stage file";
+            align-items: center;
+        }
+        .stage { grid-area: stage; }
+        .casefile { grid-area: file; }
+    }
+    .stage { display: grid; gap: 16px; justify-items: center; width: 100%; }
+
+    .message {
+        margin: 0;
+        text-align: center;
+        font: bold clamp(1rem, 3.6vw, 1.7rem)/1.3 Arial, sans-serif;
+        letter-spacing: 0.15em;
+        text-shadow: 0 0 8px var(--glow), 0 0 18px var(--glow);
+        min-height: 2.6em;
+        max-width: 44ch;
+    }
+    .message .caret { display: inline-block; width: 0.6em; animation: blink 0.8s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ---------- art + button ---------- */
+    .arena { position: relative; width: var(--art); height: var(--art); }
+    .rotator {
         width: 100%;
         height: 100%;
-    }
-    .rotator {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 350px;
-        height: 350px;
-        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+        border: 4px solid var(--hazard);
+        box-shadow: 0 0 0 6px var(--ink), 0 0 30px rgba(127, 255, 212, 0.45);
         animation: spin 12s linear infinite;
+        will-change: transform;
     }
-    @keyframes spin {
-        from { transform: translate(-50%, -50%) rotate(0deg); }
-        to   { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-    .message {
-        position: absolute;
-        width: 100%;
-        text-align: center;
-        font-size: clamp(1.2rem, 4vw, 2rem);
-        letter-spacing: 0.15em;
-        text-shadow: 0 0 8px #7fffd4, 0 0 18px #7fffd4, 0 0 28px #7fffd4;
-        animation: pulse 3s ease-in-out infinite;
-        padding: 0 20px;
-    }
-    .top {
-        top: clamp(20px, 5vh, 40px);
-    }
-    .bottom {
-        bottom: clamp(20px, 5vh, 40px);
-    }
-    @keyframes pulse {
-        0%, 100% { opacity: 0.85; }
-        50%      { opacity: 1; }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .resist-btn {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        padding: 20px 50px;
-        font-size: 1.8rem;
-        font-weight: bold;
+        padding: 16px 38px;
+        font: bold 1.6rem Arial, sans-serif;
         letter-spacing: 0.2em;
         background: linear-gradient(135deg, #ff0000, #ff6b6b);
-        color: white;
+        color: #fff;
         border: 3px solid #ff0000;
         border-radius: 8px;
         cursor: pointer;
         text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
         box-shadow: 0 0 20px rgba(255, 0, 0, 0.6), 0 0 40px rgba(255, 0, 0, 0.4);
-        transition: all 0.3s ease;
-        z-index: 10;
+        transition: transform 0.45s cubic-bezier(.5, -0.4, .4, 1.4), background-color 0.3s, filter 0.3s;
+        z-index: 4;
     }
-    .resist-btn:hover {
+    .resist-btn:hover:not(.tapped) { transform: translate(-50%, -50%) scale(1.05); }
+    .resist-btn:focus-visible { outline: 3px solid var(--glow); outline-offset: 4px; }
+    .resist-btn.tapped {
+        transform: translate(-50%, -50%) rotate(90deg);
         background: #555;
         border-color: #777;
-        color: #999;
-        cursor: not-allowed;
-        box-shadow: none;
+        color: #aaa;
         text-shadow: none;
+        box-shadow: none;
+        filter: grayscale(1);
+        cursor: not-allowed;
+    }
+    .resist-btn.shake { animation: shake 0.35s; }
+    @keyframes shake {
+        25% { margin-left: -6px; } 75% { margin-left: 6px; }
+    }
+
+    .phase {
+        position: absolute;
+        left: 50%;
+        top: -14px;
+        transform: translate(-50%, 0);
+        background: var(--hazard);
+        color: var(--ink);
+        font: 900 0.8rem Arial, sans-serif;
+        letter-spacing: 0.2em;
+        padding: 4px 10px;
+        border-radius: 3px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: 5;
+        white-space: nowrap;
+    }
+    .phase.on { opacity: 1; }
+
+    .status {
+        min-height: 3.4em;
+        max-width: 34rem;
+        text-align: center;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #dff;
+    }
+    .status em { color: var(--hazard); font-style: normal; }
+    .ms { height: 1.05em; width: 1.05em; vertical-align: -0.15em; margin: 0 1px; }
+    .strike { text-decoration: line-through; opacity: 0.55; }
+
+    .linkish {
+        background: none;
+        border: 1px dashed rgba(255, 255, 255, 0.4);
+        color: #dff;
+        font: inherit;
+        font-size: 0.85rem;
+        letter-spacing: 0.1em;
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    .linkish:hover, .linkish:focus-visible { border-color: var(--hazard); color: var(--hazard); outline: none; }
+
+    /* ---------- case file ---------- */
+    .casefile {
+        width: 100%;
+        max-width: 420px;
+        background: #efe6cf;
+        color: #222;
+        border-radius: 3px;
+        padding: 16px 16px 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        transform: rotate(1deg);
+        position: relative;
+    }
+    .casefile::before {
+        content: "CONFIDENTIAL";
+        position: absolute;
+        top: 44%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-18deg);
+        font: 900 2.4rem Arial, sans-serif;
+        color: rgba(200, 0, 0, 0.12);
+        border: 4px solid rgba(200, 0, 0, 0.12);
+        padding: 2px 10px;
+        pointer-events: none;
+    }
+    .casefile h2 { margin: 0 0 4px; font-size: 1rem; letter-spacing: 0.15em; }
+    .casefile .meta { font-size: 0.75rem; color: #555; margin-bottom: 10px; }
+    .stats { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: 0.9rem; margin: 0 0 10px; }
+    .stats dt { margin: 0; }
+    .stats dd { margin: 0; font-weight: bold; text-align: right; }
+    .stats .zero { color: #b00; }
+    .log { list-style: none; margin: 0; padding: 8px 0 0; border-top: 1px dashed #999; font-size: 0.8rem; max-height: 11.5em; overflow-y: auto; }
+    .log li { padding: 2px 0; }
+    .log li.new { animation: stamp 0.4s ease-out; }
+    @keyframes stamp { from { background: rgba(245, 197, 24, 0.7); } to { background: transparent; } }
+    .log time { color: #777; margin-right: 6px; }
+    .file-actions { display: flex; justify-content: space-between; margin-top: 10px; gap: 8px; }
+    .file-actions button {
+        font: inherit; font-size: 0.75rem; background: #222; color: #efe6cf;
+        border: 0; padding: 5px 10px; border-radius: 3px; cursor: pointer;
+    }
+
+    /* ---------- evidence overlay ---------- */
+    .evidence {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        display: none;
+        place-items: center;
+        background: rgba(0, 0, 0, 0.8);
+        perspective: 1200px;
+        cursor: zoom-out;
+        padding: 16px;
+    }
+    .evidence.open { display: grid; }
+    .evidence figure { margin: 0; text-align: center; }
+    .evidence img {
+        width: min(400px, 86vw);
+        max-height: 80dvh;
+        object-fit: contain;
+        border-radius: 4.5%;
+        box-shadow: 0 0 40px rgba(127, 255, 212, 0.4);
+        animation: flipin 0.7s cubic-bezier(.2, .8, .2, 1);
+    }
+    .evidence figcaption { margin-top: 10px; font-size: 0.85rem; letter-spacing: 0.15em; color: var(--hazard); }
+    @keyframes flipin { from { transform: rotateY(180deg) scale(0.6); opacity: 0; } to { transform: none; opacity: 1; } }
+
+    .mute {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        z-index: 30;
+        font: inherit;
+        font-size: 0.75rem;
+        background: rgba(0, 0, 0, 0.6);
+        color: #dff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+        padding: 5px 9px;
+        cursor: pointer;
+    }
+
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .siren, .siren::after, .scanline, .tape-track, .rotator, .caret, .evidence img, .log li.new { animation: none !important; }
+        .scanline { display: none; }
+        .resist-btn { transition: none; }
     }
 </style>
 </head>
 <body>
-<div class="container">
-    <div class="message top">YOU ARE A SUSPECT IN AN ONGOING INVESTIGATION</div>
-    <img class="rotator" src="https://cards.scryfall.io/art_crop/front/2/3/238cb1db-6c41-4fe1-bc34-340048dfde18.jpg" alt="rotating image">
-    <button class="resist-btn">RESIST</button>
-    <div class="message bottom">DO NOT RESIST APPREHENSION</div>
+<div class="siren" aria-hidden="true"></div>
+<div class="scanline" aria-hidden="true"></div>
+<div class="flash" aria-hidden="true"></div>
+
+<div class="tape top" aria-hidden="true"><span class="tape-track"></span></div>
+
+<main>
+    <section class="stage">
+        <p class="message" id="msgTop" aria-label="You are a suspect in an ongoing investigation."></p>
+
+        <div class="arena">
+            <span class="phase" id="phase">UNTAP STEP</span>
+            <img class="rotator" src="images/starport/art_crop.jpg" width="626" height="457"
+                 alt="Starport Security, a tall white security robot, standing over an apprehended suspect">
+            <button class="resist-btn" id="resist" type="button">RESIST</button>
+        </div>
+
+        <div class="status" id="status" aria-live="polite">Officer on duty. Remain where you are.</div>
+
+        <p class="message" id="msgBot" aria-label="Do not resist apprehension."></p>
+
+        <button class="linkish" id="exhibit" type="button">&#128193; VIEW EXHIBIT A</button>
+    </section>
+
+    <aside class="casefile" aria-label="Case file">
+        <h2>CASE FILE #EOE-0039</h2>
+        <div class="meta">Arresting officer: Starport Security (1/1, Robot Soldier)</div>
+        <dl class="stats">
+            <dt>Resistance attempts</dt><dd id="statAttempts">0</dd>
+            <dt>Successful resistances</dt><dd class="zero">0</dd>
+            <dt>Escape attempts</dt><dd id="statEscapes">0</dd>
+            <dt>Times tapped</dt><dd id="statTapped">0</dd>
+            <dt>Suspect status</dt><dd id="statStatus">UNTAPPED</dd>
+        </dl>
+        <ol class="log" id="log"></ol>
+        <div class="file-actions">
+            <button id="expunge" type="button">Expunge record</button>
+        </div>
+    </aside>
+</main>
+
+<div class="tape bottom" aria-hidden="true"><span class="tape-track"></span></div>
+
+<div class="evidence" id="evidence" role="dialog" aria-modal="true" aria-label="Exhibit A">
+    <figure>
+        <img src="images/starport/normal.jpg" width="488" height="680"
+             alt="Starport Security card. 3 and white mana, tap: Tap another target creature. This ability costs 2 less to activate if you control a creature with a +1/+1 counter on it. Flavor text: You are a suspect in an ongoing investigation. Do not resist apprehension. 1/1.">
+        <figcaption>EXHIBIT A &mdash; click anywhere to return to custody</figcaption>
+    </figure>
 </div>
+
+<button class="mute" id="mute" type="button">SOUND: ON</button>
+
+<script>
+(() => {
+    const $ = id => document.getElementById(id);
+    const btn = $('resist'), statusEl = $('status'), phaseEl = $('phase'), logEl = $('log');
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const sym = s => `<img class="ms" src="images/starport/${s}.svg" alt="{${s}}">`;
+    const pick = a => a[Math.floor(Math.random() * a.length)];
+
+    /* ---------- persistent rap sheet ---------- */
+    const KEY = 'starport-rapsheet';
+    let sheet = { attempts: 0, escapes: 0, tapped: 0, log: [] };
+    try { Object.assign(sheet, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(sheet)); } catch (e) {} };
+
+    let muted = false;
+    try { muted = localStorage.getItem('starport-muted') === '1'; } catch (e) {}
+
+    const stamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    function renderLog(fresh) {
+        logEl.innerHTML = '';
+        sheet.log.slice(0, 40).forEach((entry, i) => {
+            const li = document.createElement('li');
+            if (fresh && i === 0) li.className = 'new';
+            const t = document.createElement('time');
+            t.textContent = entry.t;
+            li.append(t, entry.m);
+            logEl.append(li);
+        });
+        renderStats();
+    }
+    function renderStats() {
+        $('statAttempts').textContent = sheet.attempts;
+        $('statEscapes').textContent = sheet.escapes;
+        $('statTapped').textContent = sheet.tapped;
+    }
+    function charge(m) {
+        sheet.log.unshift({ t: stamp(), m });
+        sheet.log.length = Math.min(sheet.log.length, 40);
+        save();
+        renderLog(true);
+    }
+
+    const CHARGES = [
+        'Attempted to declare attackers.',
+        'Attempted to crew a Vehicle.',
+        'Loitering in the red zone.',
+        'Possession of an untapped creature.',
+        'Attempted to block. Suspicious.',
+        'Activated an ability without a permit.',
+        'Holding priority with intent.',
+        'Failure to remain tapped.',
+        'Conspiracy to combo off.',
+        'Flashed in a creature at end of turn. Rude.',
+        'Unlicensed haste.',
+        'Thinking about vigilance.',
+        'Excessive +1/+1 counters (ours are fine).',
+        'Said "in response" in a threatening manner.',
+        'Attempted to untap during the untap step.',
+    ];
+
+    /* ---------- sound (WebAudio, created on first gesture) ---------- */
+    let ctx;
+    function tone(freq, start, dur, type = 'square', vol = 0.06, endFreq) {
+        if (muted) return;
+        ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + start;
+        o.type = type;
+        o.frequency.setValueAtTime(freq, t);
+        if (endFreq) o.frequency.linearRampToValueAtTime(endFreq, t + dur);
+        g.gain.setValueAtTime(vol, t);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.connect(g).connect(ctx.destination);
+        o.start(t);
+        o.stop(t + dur + 0.02);
+    }
+    const sfx = {
+        tap:   () => { tone(880, 0, 0.09); tone(440, 0.11, 0.14); },
+        deny:  () => { tone(160, 0, 0.25, 'sawtooth', 0.05); },
+        untap: () => { tone(520, 0, 0.12, 'triangle', 0.08, 780); },
+        siren: () => { [0, 0.45].forEach(s => { tone(620, s, 0.22, 'sawtooth', 0.04, 900); tone(900, s + 0.22, 0.22, 'sawtooth', 0.04, 620); }); },
+    };
+
+    /* ---------- typewriter ---------- */
+    function typeOut(el, text, delay) {
+        return new Promise(res => {
+            if (reduced) { el.textContent = text; return res(); }
+            const caret = '<span class="caret" aria-hidden="true">&#9608;</span>';
+            let i = 0;
+            setTimeout(function step() {
+                el.innerHTML = text.slice(0, ++i) + caret;
+                if (i < text.length) setTimeout(step, 38 + Math.random() * 40);
+                else { setTimeout(() => { el.textContent = text; }, 900); res(); }
+            }, delay);
+        });
+    }
+    typeOut($('msgTop'), 'YOU ARE A SUSPECT IN AN ONGOING INVESTIGATION', 300)
+        .then(() => typeOut($('msgBot'), 'DO NOT RESIST APPREHENSION', 400));
+
+    /* ---------- tap / untap loop ---------- */
+    let tapped = false, activations = 0, untapTimer, upkeepTimer;
+
+    function costHTML() {
+        // First activation pays full price; after that we "control a creature with a +1/+1 counter".
+        return activations === 0
+            ? `${sym(3)}${sym('W')}, ${sym('T')}`
+            : `<span class="strike">${sym(3)}</span>${sym(1)}${sym('W')}, ${sym('T')}`;
+    }
+
+    function tapIt(reason) {
+        clearTimeout(upkeepTimer);
+        const cost = costHTML();
+        activations++;
+        tapped = true;
+        sheet.tapped++;
+        btn.classList.add('tapped');
+        btn.setAttribute('aria-label', 'Resist (tapped)');
+        $('statStatus').textContent = 'TAPPED';
+        phaseEl.classList.remove('on');
+        const discount = activations > 1
+            ? `<br><em>This ability costs ${sym(2)} less: Starport Security controls a creature with a +1/+1 counter.</em>`
+            : '';
+        statusEl.innerHTML = `${reason}<br>${cost}: Tap another target creature. <em>RESIST is tapped.</em>${discount}`;
+        sfx.tap();
+        save();
+        renderStats();
+        untapTimer = setTimeout(untap, 5000);
+    }
+
+    function untap() {
+        tapped = false;
+        btn.classList.remove('tapped');
+        btn.removeAttribute('aria-label');
+        $('statStatus').textContent = 'UNTAPPED (for now)';
+        phaseEl.textContent = 'UNTAP STEP';
+        phaseEl.classList.add('on');
+        statusEl.innerHTML = 'Your untap step. RESIST untaps. You feel a brief, foolish flicker of hope.';
+        sfx.untap();
+        upkeepTimer = setTimeout(() => {
+            phaseEl.textContent = 'UPKEEP';
+            charge('Remained untapped into upkeep. Pre-emptively apprehended.');
+            tapIt('<em>During your upkeep</em>, Starport Security activates.');
+        }, 2600);
+    }
+
+    btn.addEventListener('click', () => {
+        sheet.attempts++;
+        if (tapped) {
+            charge(`Attempted to activate a tapped creature (attempt #${sheet.attempts}).`);
+            statusEl.innerHTML = 'RESIST is already tapped. <em>Tapped creatures can\'t resist.</em> This has been noted.';
+            btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('shake');
+            sfx.deny();
+            return;
+        }
+        charge(pick(CHARGES));
+        tapIt(`Resistance attempt #${sheet.attempts} detected. In response, Starport Security activates.`);
+    });
+
+    /* ---------- escape attempts ---------- */
+    const flashEl = document.querySelector('.flash');
+    function escapeAttempt(msg) {
+        sheet.escapes++;
+        charge(msg);
+        flashEl.classList.remove('on'); void flashEl.offsetWidth; flashEl.classList.add('on');
+        sfx.siren();
+    }
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape') return;
+        if ($('evidence').classList.contains('open')) { closeEvidence(); return; }
+        escapeAttempt('ESCAPE ATTEMPT RECORDED. Suspect pressed Esc.');
+        statusEl.innerHTML = '<em>ESCAPE ATTEMPT RECORDED.</em> There is no escape key in a starport.';
+    });
+
+    const baseTitle = document.title;
+    let hiddenAt = 0;
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            document.title = '\u{1F6A8} RETURN TO CUSTODY';
+            hiddenAt = Date.now();
+        } else {
+            document.title = baseTitle;
+            if (hiddenAt && Date.now() - hiddenAt > 1500) {
+                escapeAttempt('Fled the jurisdiction (left the tab). Returned to custody.');
+                statusEl.innerHTML = 'Welcome back. <em>We saw you leave.</em>';
+            }
+            hiddenAt = 0;
+        }
+    });
+
+    /* ---------- exhibit A ---------- */
+    const ev = $('evidence');
+    function closeEvidence() { ev.classList.remove('open'); $('exhibit').focus(); }
+    $('exhibit').addEventListener('click', () => { ev.classList.add('open'); });
+    ev.addEventListener('click', closeEvidence);
+
+    /* ---------- expunge (denied) ---------- */
+    let expungeTries = 0;
+    $('expunge').addEventListener('click', e => {
+        expungeTries++;
+        charge(expungeTries === 1 ? 'Attempted to expunge records. Denied.' : `Attempted to expunge records again (${expungeTries}x). Denied harder.`);
+        e.currentTarget.textContent = pick(['DENIED', 'REQUEST DENIED', 'Records are permanent', 'Nice try']);
+        sfx.deny();
+    });
+
+    /* ---------- mute ---------- */
+    const muteBtn = $('mute');
+    const paintMute = () => { muteBtn.textContent = muted ? 'SOUND: OFF' : 'SOUND: ON'; muteBtn.setAttribute('aria-pressed', String(muted)); };
+    muteBtn.addEventListener('click', () => {
+        muted = !muted;
+        try { localStorage.setItem('starport-muted', muted ? '1' : '0'); } catch (e) {}
+        paintMute();
+    });
+    paintMute();
+
+    /* ---------- police tape text ---------- */
+    const tapeText = 'POLICE LINE · DO NOT RESIST · STARPORT SECURITY · DO NOT CROSS · '.repeat(6);
+    document.querySelectorAll('.tape-track').forEach(t => { t.textContent = tapeText + tapeText; });
+
+    if (!sheet.log.length) charge('Case opened. Suspect identified.');
+    else charge(sheet.attempts
+        ? `Repeat offender returned to the scene. Prior resistance attempts: ${sheet.attempts}.`
+        : 'Suspect returned to the scene. Still suspicious.');
+})();
+</script>
 </body>
 </html>
