@@ -46,26 +46,16 @@
         transform: translateZ(0);
     }
 
-    /* ---------- siren wash + scan line (opacity/transform only, each on its own layer) ---------- */
-    .siren, .scanline, .flash {
+    /* ---------- siren: red/blue swap in hard steps (2 repaints per cycle, not 60/s) ---------- */
+    .siren, .flash {
         position: fixed;
         inset: 0;
         pointer-events: none;
     }
-    .siren { z-index: 1; will-change: opacity; animation: siren 2.4s ease-in-out infinite alternate; }
+    .siren { z-index: 1; animation: siren 1.6s steps(1) infinite; }
     .siren.red  { background: radial-gradient(ellipse at 0% 0%, var(--siren-red), transparent 60%); }
-    .siren.blue { background: radial-gradient(ellipse at 100% 0%, var(--siren-blue), transparent 60%); animation-direction: alternate-reverse; }
-    @keyframes siren { from { opacity: 0.15; } to { opacity: 1; } }
-    .scanline {
-        inset: 0 0 auto 0;
-        height: 3px;
-        background: linear-gradient(90deg, transparent, var(--glow), transparent);
-        opacity: 0.35;
-        animation: scan 7s linear infinite;
-        will-change: transform;
-        z-index: 2;
-    }
-    @keyframes scan { from { transform: translateY(-10px); } to { transform: translateY(100vh); } }
+    .siren.blue { background: radial-gradient(ellipse at 100% 0%, var(--siren-blue), transparent 60%); animation-delay: -0.8s; }
+    @keyframes siren { 0% { opacity: 1; } 50% { opacity: 0.15; } }
     .flash { background: rgba(255, 0, 40, 0.35); opacity: 0; z-index: 50; }
     .flash.on { animation: flash 0.6s ease-out; }
     @keyframes flash { 0%, 40% { opacity: 1; } 100% { opacity: 0; } }
@@ -269,8 +259,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .siren, .scanline, .rotator, .caret, .evidence img, .resist-btn.rising, .resist-btn.dead .bone, .resist-btn.shake { animation: none !important; }
-        .scanline { display: none; }
+        .siren, .rotator, .caret, .evidence img, .resist-btn.rising, .resist-btn.dead .bone, .resist-btn.shake { animation: none !important; }
         .resist-btn { transition: none; }
     }
 </style>
@@ -279,7 +268,6 @@
 <div class="sky" aria-hidden="true"></div>
 <div class="siren red" aria-hidden="true"></div>
 <div class="siren blue" aria-hidden="true"></div>
-<div class="scanline" aria-hidden="true"></div>
 <div class="flash" aria-hidden="true"></div>
 
 <main>
