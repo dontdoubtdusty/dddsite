@@ -113,13 +113,26 @@
 
     function setsOf(entry) { return entry.sets.map(code => data.sets[code]); }
 
+    // Load card art only when its door scrolls near the viewport
+    const artObserver = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            e.target.style.backgroundImage = 'url("' + e.target.dataset.art + '")';
+            artObserver.unobserve(e.target);
+        });
+    }, { rootMargin: '200px' }) : null;
+    function lazyArt(piece) {
+        if (artObserver) artObserver.observe(piece);
+        else piece.style.backgroundImage = 'url("' + piece.dataset.art + '")';
+    }
+
     function buildInside(entry) {
         const sets = setsOf(entry);
         const inside = el('span', 'inside');
         const art = el('span', 'art');
         sets.forEach((set, i) => {
             const piece = el('span', 'art-piece ' + (sets.length === 1 ? 'solo' : i === 0 ? 'a' : 'b'));
-            if (set.art) piece.style.backgroundImage = 'url("' + set.art + '")';
+            if (set.art) { piece.dataset.art = set.art; lazyArt(piece); }
             art.appendChild(piece);
         });
         inside.appendChild(art);
