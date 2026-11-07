@@ -2,6 +2,7 @@
 // Refreshes draftsets.json for the MTG advent calendar from Scryfall.
 //
 //   node tools/mtgadvent-build.js [year] [--reshuffle]
+//   node tools/mtgadvent-build.js --shuffle [--seed=N]   (offline: new day assignments only, no Scryfall)
 //
 // - Finds every core/expansion set that has Standard-legal cards right now
 //   (minus the "exclude" list stored in the JSON, e.g. non-draftable supplements).
@@ -28,6 +29,8 @@ const MIN_LEGAL = 100;
 
 const args = process.argv.slice(2);
 const reshuffle = args.includes('--reshuffle');
+const shuffleOnly = args.includes('--shuffle');
+const seedArg = (args.find(a => a.startsWith('--seed=')) || '').slice(7);
 const year = Number(args.find(a => /^\d{4}$/.test(a))) || new Date().getFullYear();
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -131,6 +134,33 @@ function buildDays(codes, rand) {
     return days;
 }
 
+function writeOut(out) {
+    fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
+    fs.writeFileSync(OUT_JS, 'window.MTGADVENT_DATA = ' + JSON.stringify(out) + ';\n');
+}
+
+function assignDays(sets, rand) {
+    const days = buildDays(Object.keys(sets), rand);
+    days.forEach(d => {
+        d.title = d.sets.map(c => sets[c].name).join(' × ');
+        d.description = d.sets.map(c => sets[c].blurb).filter(Boolean).join(' ');
+    });
+    return days;
+}
+
+// Offline reshuffle: keeps the sets already in draftsets.json and applies the same rules
+// (25 days, ~85% pairs, even set usage, no repeated pair) with a fresh random seed.
+if (shuffleOnly) {
+    if (!fs.existsSync(OUT)) { console.error('No draftsets.json yet; run the full build first.'); process.exit(1); }
+    const data = JSON.parse(fs.readFileSync(OUT, 'utf8'));
+    const seed = seedArg ? Number(seedArg) : Math.floor(Math.random() * 1e9);
+    data.days = assignDays(data.sets, mulberry32(seed));
+    writeOut(data);
+    console.log(`Reshuffled ${data.days.length} days with seed ${seed} (rerun with --seed=${seed} to reproduce).`);
+    data.days.forEach(d => console.log(`  ${String(d.day).padStart(2)}  ${d.sets.join(' + ')}`));
+    process.exit(0);
+}
+
 (async () => {
     const existing = fs.existsSync(OUT) ? JSON.parse(fs.readFileSync(OUT, 'utf8')) : {};
     const exclude = Array.isArray(existing.exclude) ? existing.exclude : [];
@@ -171,11 +201,7 @@ function buildDays(codes, rand) {
         days = existing.days;
         console.log('Kept existing day assignments (use --reshuffle to redo them).');
     } else {
-        days = buildDays(codes, mulberry32(year));
-        days.forEach(d => {
-            d.title = d.sets.map(c => sets[c].name).join(' × ');
-            d.description = d.sets.map(c => sets[c].blurb).filter(Boolean).join(' ');
-        });
+        days = assignDays(sets, mulberry32(year));
         console.log('Generated new day assignments.');
     }
 
@@ -183,7 +209,6 @@ function buildDays(codes, rand) {
     if (missing.length) console.log(`Needs a blurb: ${missing.join(', ')}`);
 
     const out = { year, exclude, sets, days };
-    fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
-    fs.writeFileSync(OUT_JS, 'window.MTGADVENT_DATA = ' + JSON.stringify(out) + ';\n');
+    writeOut(out);
     console.log(`Wrote ${path.relative(process.cwd(), OUT)}: ${codes.length} sets, ${days.length} days.`);
 })().catch(e => { console.error(e); process.exit(1); });
