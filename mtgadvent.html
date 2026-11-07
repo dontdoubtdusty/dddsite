@@ -200,15 +200,22 @@
         .teaser {
             position: absolute;
             z-index: 3;
-            top: 10%;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            opacity: 0.55;
+            top: 8%;
+            left: 8%;
+            right: 8%;
+            text-align: center;
+            font-size: 0.72em;
+            font-weight: bold;
+            line-height: 1.15;
+            color: #ffd700;
+            opacity: 0.8;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
-        .teaser img, .icons img { width: 24px; height: 24px; filter: invert(1); }
+        .icons img { width: 24px; height: 24px; filter: invert(1); }
         .when {
             position: absolute;
             z-index: 3;
@@ -343,7 +350,8 @@
             .num { font-size: 1.9em; }
             .door-title { display: none; }
             .inside { justify-content: center; }
-            .icons img, .teaser img { width: 26px; height: 26px; }
+            .icons img { width: 26px; height: 26px; }
+            .teaser { font-size: 0.6em; }
             .when { font-size: 0.62em; bottom: 21%; }
             .modal-title { font-size: 1.4em; }
         }
@@ -385,6 +393,6 @@
     </dialog>
 
     <script src="draftsets.js"></script>
-    <script src="mtgadvent.js"></script>
+    <script src="mtgadvent.js?v=2"></script>
 </body>
 </html>

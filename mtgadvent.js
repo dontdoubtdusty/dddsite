@@ -175,14 +175,7 @@
         frame.appendChild(el('span', 'num', String(entry.day)));
 
         if (state === 'next') {
-            const icons = el('span', 'teaser');
-            setsOf(entry).forEach(set => {
-                const img = el('img');
-                img.src = set.icon;
-                img.alt = '';
-                icons.appendChild(img);
-            });
-            frame.appendChild(icons);
+            frame.appendChild(el('span', 'teaser', entry.title));
             frame.appendChild(el('span', 'when', season.phase === 'before' ? 'Dec 1' : 'Tomorrow'));
         }
         if (state === 'locked' || state === 'next') frame.appendChild(lockSvg('lock'));
