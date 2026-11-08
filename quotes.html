@@ -4,569 +4,705 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Book of Carp</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="Search 1,700+ sayings of Carp, preserved by the Carp Society. Quote of the day, random quotes, and filters by game and year.">
+    <meta name="theme-color" content="#4a3566">
+
+    <!-- Link previews (iMessage, Discord, etc.). The image URL must be absolute. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="The Book of Carp: The Sayings">
+    <meta property="og:description" content="Search 1,700+ sayings of Carp, preserved by the Carp Society. Quote of the day, random quotes, and filters by game and year.">
+    <meta property="og:url" content="https://dontdoubtdusty.com/quotes.html">
+    <meta property="og:image" content="https://dontdoubtdusty.com/thebookofcarp-preview.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="A parchment page reading The Book of Carp, glowing over a purple sky">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="The Book of Carp: The Sayings">
+    <meta name="twitter:description" content="Search 1,700+ sayings of Carp, preserved by the Carp Society. Quote of the day, random quotes, and filters by game and year.">
+    <meta name="twitter:image" content="https://dontdoubtdusty.com/thebookofcarp-preview.jpg">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='27' cy='32' rx='20' ry='12' fill='%237c3aed'/%3E%3Cpath d='M42 32 58 20v24z' fill='%237c3aed'/%3E%3Ccircle cx='17' cy='29' r='3' fill='%23fff'/%3E%3C/svg%3E">
     <style>
-		body {
-		    background: 
-		        radial-gradient(ellipse at 20% 30%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
-		        radial-gradient(ellipse at 80% 70%, rgba(167, 139, 250, 0.22) 0%, transparent 50%),
-		        linear-gradient(180deg, 
-		          rgba(61, 41, 82, 0.85) 0%,
-		          rgba(74, 53, 102, 0.85) 15%,
-		          rgba(90, 68, 120, 0.85) 35%,
-		          rgba(107, 83, 137, 0.85) 55%,
-		          rgba(124, 98, 154, 0.85) 75%,
-		          rgba(139, 113, 171, 0.85) 100%);
-		    background-attachment: fixed;
-		    min-height: 100vh;
-		    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
-		}
-		.parchment {
-		    background: 
-		        repeating-linear-gradient(
-		            0deg,
-		            rgba(245, 237, 220, 0.03) 0px,
-		            transparent 1px,
-		            transparent 2px,
-		            rgba(245, 237, 220, 0.03) 3px
-		        ),
-		        repeating-linear-gradient(
-		            90deg,
-		            rgba(230, 220, 200, 0.02) 0px,
-		            transparent 1px,
-		            transparent 2px,
-		            rgba(230, 220, 200, 0.02) 3px
-		        ),
-		        linear-gradient(
-		            135deg,
-		            rgba(250, 245, 235, 0.9) 0%,
-		            rgba(245, 238, 225, 0.92) 50%,
-		            rgba(248, 242, 230, 0.88) 100%
-		        );
-		    box-shadow: 
-		        0 16px 40px rgba(61, 27, 82, 0.2),
-		        inset 0 1px 0 rgba(255, 255, 255, 0.6),
-		        inset 0 0 100px rgba(139, 92, 246, 0.03);
-		}
-		h1, .text-purple-900, .text-purple-700, .text-purple-600 {
-		    color: #2d2240 !important;
-		}
-		
-		a.text-purple-600 {
-		    color: #6b4f9a !important;
-		}
-		
-		a.text-purple-600:hover {
-		    color: #3b2a62 !important;
-		}
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(167, 139, 250, 0.22) 0%, transparent 50%),
+                linear-gradient(180deg,
+                    rgba(61, 41, 82, 0.85) 0%,
+                    rgba(74, 53, 102, 0.85) 15%,
+                    rgba(90, 68, 120, 0.85) 35%,
+                    rgba(107, 83, 137, 0.85) 55%,
+                    rgba(124, 98, 154, 0.85) 75%,
+                    rgba(139, 113, 171, 0.85) 100%);
+            background-color: #4a3566;
+            background-attachment: fixed;
+            color: #2d2240;
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+            line-height: 1.5;
+        }
+
+        .page {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        button, input, select { font: inherit; color: inherit; }
+        button { cursor: pointer; }
+
+        /* ---------- Header (sits on the dark purple background) ---------- */
+        .home-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #f3e8ff;
+            font-size: 0.95rem;
+            text-decoration: none;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+        .home-link:hover, .home-link:focus-visible { text-decoration: underline; }
+        h1 {
+            margin: 0 0 8px;
+            padding-bottom: 12px;
+            text-align: center;
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: #faf5ff;
+            text-shadow: 0 2px 6px rgba(30, 15, 50, 0.55), 0 0 24px rgba(167, 139, 250, 0.45);
+        }
+        .rule {
+            width: 96px;
+            height: 4px;
+            margin: 8px auto 24px;
+            border-radius: 9999px;
+            background: #e9d5ff;
+            opacity: 0.8;
+        }
+        .intro, .lost, .about { text-align: center; text-shadow: 0 1px 2px rgba(30, 15, 50, 0.5); }
+        .intro { margin: 0 0 8px; color: #f3e8ff; font-size: 1.05rem; }
+        .lost { margin: 0 0 32px; color: #e9d5ff; font-size: 0.875rem; font-style: italic; }
+        .lost:empty { display: none; }
+        .about { margin: 0 0 32px; font-size: 0.875rem; }
+        .about a { color: #f5d0fe; text-decoration: underline; }
+        .about a:hover, .about a:focus-visible { color: #fff; }
+
+        /* ---------- Panels ---------- */
+        .panel {
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .parchment {
+            background:
+                repeating-linear-gradient(0deg, rgba(245, 237, 220, 0.03) 0px, transparent 1px, transparent 2px, rgba(245, 237, 220, 0.03) 3px),
+                repeating-linear-gradient(90deg, rgba(230, 220, 200, 0.02) 0px, transparent 1px, transparent 2px, rgba(230, 220, 200, 0.02) 3px),
+                linear-gradient(135deg, rgba(250, 245, 235, 0.9) 0%, rgba(245, 238, 225, 0.92) 50%, rgba(248, 242, 230, 0.88) 100%);
+            box-shadow:
+                0 16px 40px rgba(61, 27, 82, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                inset 0 0 100px rgba(139, 92, 246, 0.03);
+        }
+        .featured {
+            border: 2px solid #f9a8d4;
+            background: linear-gradient(to right, #fce7f3, #f3e8ff);
+        }
+        .featured.alt {
+            border-color: #d8b4fe;
+            background: linear-gradient(to right, #f3e8ff, #fce7f3);
+        }
+        .featured h2 { margin: 0 0 12px; font-size: 1.25rem; font-weight: 700; }
+        .featured-text { margin: 0 0 8px; font-size: 1.5rem; line-height: 2rem; font-style: italic; }
+        .featured.alt .featured-text { font-size: 1.25rem; line-height: 1.75rem; }
+        .featured-info { margin: 0; font-size: 0.875rem; }
+        .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .actions:empty { display: none; }
+        .quote .actions { margin-top: 0; }
+        [hidden] { display: none !important; }
+
+        /* ---------- Controls ---------- */
+        .random-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border: 0;
+            border-radius: 8px;
+            background: linear-gradient(to right, #c084fc, #a855f7);
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.15s, background 0.15s;
+        }
+        .random-btn:hover { background: linear-gradient(to right, #a855f7, #9333ea); transform: scale(1.05); }
+        .random-btn img { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
+
+        .field-label { display: block; margin: 0 0 8px; font-size: 0.875rem; }
+        .field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e9d5ff;
+            border-radius: 8px;
+            background: #faf5ff;
+            color: #2d2240;
+        }
+        .field:focus { outline: none; box-shadow: 0 0 0 2px #c084fc; }
+        .field::placeholder { color: #c084fc; }
+
+        .search-wrap { position: relative; margin-bottom: 16px; }
+        .search-wrap svg { position: absolute; left: 12px; top: 13px; color: #c084fc; pointer-events: none; }
+        .search-wrap .field { padding-left: 40px; }
+
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip {
+            padding: 4px 12px;
+            border: 0;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            background: #e9d5ff;
+            color: #2d2240;
+            transition: background-color 0.15s;
+        }
+        .chip:hover { background: #d8b4fe; }
+        .chip[aria-pressed="true"] { background: #c084fc; color: #fff; }
+        .chip.small { font-size: 0.75rem; }
+
+        /* ---------- Results ---------- */
+        .result-count { margin: 0 0 16px; font-weight: 600; }
+        .quotes-list {
+            position: relative; /* so a quote's offsetTop is measured from the list */
+            max-height: 600px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .quote {
+            padding: 16px;
+            border: 1px solid #e9d5ff;
+            border-radius: 8px;
+            background: #faf5ff;
+            transition: background-color 0.15s;
+        }
+        .quote:hover { background: #f3e8ff; }
+        .quote.target {
+            border-color: #c084fc;
+            box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.45);
+            animation: targetPulse 1.6s ease-out 2;
+        }
+        @keyframes targetPulse {
+            0%   { box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.45); }
+            50%  { box-shadow: 0 0 0 8px rgba(192, 132, 252, 0.2); }
+            100% { box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.45); }
+        }
+        mark { background: #fbcfe8; color: inherit; border-radius: 2px; padding: 0 1px; }
+        .quote-text { margin: 0 0 8px; }
+        .quote-num { color: #6b4f9a; font-weight: 600; }
+        .quote-info { margin: 0 0 8px; font-size: 0.875rem; }
+        .gap-note { margin: 0; padding: 12px 0; text-align: center; color: #c084fc; font-style: italic; font-size: 0.875rem; }
+        .empty { text-align: center; margin: 0; }
+
+        .pager { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 24px; }
+        .pager span { font-weight: 600; }
+        .pager button {
+            padding: 8px 16px;
+            border: 0;
+            border-radius: 8px;
+            background: #c084fc;
+            color: #fff;
+            transition: background-color 0.15s;
+        }
+        .pager button:hover { background: #a855f7; }
+        .pager button:disabled { background: #e9d5ff; color: #c084fc; cursor: not-allowed; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { transition: none !important; animation: none !important; }
+            .random-btn:hover { transform: none; }
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 0; }
+            .page { padding: 32px 16px; }
+            .pager { gap: 8px; font-size: 0.875rem; }
+        }
     </style>
 </head>
-<body class="p-6">
-    <div class="max-w-4xl mx-auto" style="max-width: 700px; padding: 60px 24px;">
-	<h1 
-    class="text-4xl font-bold text-purple-900 mb-2 text-center tracking-wide 
-           drop-shadow-md relative block mx-auto pb-3"
-    style="letter-spacing: 0.05em;"
-	>
-    <span class="px-4 py-1"
-          style="border-color: #6b21a8;"
-    >
-        THE BOOK OF CARP
-    </span>
-	</h1>
+<body>
+    <div class="page">
+        <a class="home-link" href="index.html">← Don't Doubt Dusty</a>
+        <h1>THE BOOK OF CARP</h1>
+        <div class="rule"></div>
 
-	<div class="flex justify-center mt-2 mb-6">
-    <div class="h-1 w-24 bg-purple-900 rounded-full opacity-70"></div>
-	</div>
+        <p class="intro" id="quoteCount">Search through quotes</p>
+        <p class="lost" id="lostCount"></p>
+        <p class="about"><a href="thebookofcarp.html">What is the Book of Carp?</a></p>
 
+        <!-- Quote of the Day -->
+        <div class="panel featured">
+            <h2>Quote of the Day</h2>
+            <p class="featured-text" id="quoteOfDayText"></p>
+            <p class="featured-info" id="quoteOfDayInfo"></p>
+            <div class="actions" id="quoteOfDayActions"></div>
+        </div>
 
-        <p class="text-purple-700 text-center mb-2" id="quoteCount">
-		    Search through quotes
-		</p>
-		<p class="text-purple-600 text-center mb-8 text-sm italic" id="lostCount">
-		    
-		</p>
-		<p class="text-purple-600 text-center mb-8 text-sm">
-		    <a href="thebookofcarp.html" class="hover:text-purple-900 underline">What is the Book of Carp?</a>
-		</p>
-				
-		<!-- Quote of the Day -->
-		<div id="quoteOfDayBox"
-		     class="bg-gradient-to-r from-pink-100 to-purple-100 backdrop-blur-lg rounded-lg p-6 mb-6 border-2 border-pink-300 shadow-lg">
-		
-		    <h2 class="text-xl font-bold text-purple-900 mb-3">
-		        Quote of the Day
-		    </h2>
-		
-		    <p class="text-2xl text-purple-900 mb-2 italic" id="quoteOfDayText"></p>
-		    <p class="text-sm text-purple-700" id="quoteOfDayInfo"></p>
-		</div>
-		
-		<!-- Random Quote Button -->
-		<div class="parchment rounded-lg p-6 mb-6 shadow-lg">
-		    <button
-		        id="randomBtn"
-		        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-105 shadow-md"
-		    >
-		        <img src="sleepydice.png" alt="" class="w-5 h-5 object-contain flex-shrink-0" />
-		        Random Quote
-		    </button>
-		</div>
-		
-		<!-- Random Quote Display -->
-		<div id="randomQuoteDisplay" class="hidden bg-gradient-to-r from-purple-100 to-pink-100 backdrop-blur-lg rounded-lg p-6 mb-6 border-2 border-purple-300 shadow-lg">
-		    <p class="text-xl text-purple-900 mb-2 italic" id="randomQuoteText"></p>
-		    <p class="text-sm text-purple-700" id="randomQuoteInfo"></p>
-		</div>
-		
-		<!-- Games Played Dropdown -->
-		<div class="parchment rounded-lg p-6 mb-6 shadow-lg">
-		    <label for="gamesDropdown" class="text-sm text-purple-700 mb-2 block">Filter by game:</label>
-		    <select
-		        id="gamesDropdown"
-		        class="w-full px-4 py-3 bg-purple-50 border border-purple-200 rounded-lg text-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
-		    >
-		        <option value="">All Games</option>
-		    </select>
-		</div>
-		
-		<!-- Search Bar -->
-		<div class="parchment rounded-lg p-6 mb-6 shadow-lg">
-		    <div class="relative mb-4">
-		        <svg class="absolute left-3 top-3 text-purple-400" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-		            <circle cx="11" cy="11" r="8"></circle>
-		            <path d="m21 21-4.35-4.35"></path>
-		        </svg>
-		        <input
-		            type="text"
-		            id="searchInput"
-		            placeholder="Search quotes, games, or dates..."
-		            class="w-full pl-10 pr-4 py-3 bg-purple-50 border border-purple-200 rounded-lg text-purple-900 placeholder-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
-		        />
-		    </div>
-		
-		    <!-- Year Filter -->
-		    <div class="mb-4">
-		        <p class="text-sm text-purple-700 mb-2">Filter by year:</p>
-		        <div class="flex flex-wrap gap-2" id="yearFilters"></div>
-		    </div>
-		</div>
+        <!-- Random Quote Button -->
+        <div class="panel parchment">
+            <button type="button" id="randomBtn" class="random-btn">
+                <img src="sleepydice.png" alt="">
+                Random Quote
+            </button>
+        </div>
+
+        <!-- Random Quote Display -->
+        <div id="randomQuoteDisplay" class="panel featured alt" hidden>
+            <p class="featured-text" id="randomQuoteText"></p>
+            <p class="featured-info" id="randomQuoteInfo"></p>
+            <div class="actions" id="randomQuoteActions"></div>
+        </div>
+
+        <!-- Games Played Dropdown -->
+        <div class="panel parchment">
+            <label for="gamesDropdown" class="field-label">Filter by game:</label>
+            <select id="gamesDropdown" class="field">
+                <option value="">All Games</option>
+            </select>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="panel parchment">
+            <div class="search-wrap">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" id="searchInput" class="field" aria-label="Search quotes"
+                       placeholder="Search quotes, games, or dates...">
+            </div>
+
+            <!-- Year Filter -->
+            <p class="field-label">Filter by year:</p>
+            <div class="chips" id="yearFilters"></div>
+        </div>
 
         <!-- Results -->
-		<div class="parchment rounded-lg p-6 shadow-lg">
-		    <p class="text-purple-900 mb-4 font-semibold" id="resultCount"></p>
-		    
-		    <div class="space-y-4 max-h-[600px] overflow-y-auto" id="quotesList"></div>
-		    
-		    <div id="paginationContainer"></div>
-		</div>
+        <div class="panel parchment">
+            <p class="result-count" id="resultCount" aria-live="polite"></p>
+            <div class="quotes-list" id="quotesList"></div>
+            <div id="paginationContainer"></div>
+        </div>
     </div>
-	<!-- 1) Load the quotes file -->
+
 <script>
-async function loadQuotes() {
-    try {
-        const response = await fetch('thebookofcarp.txt');
-        const text = await response.text();
-
-        // Make this accessible to everything below
-        window.quotesData = text.split('\n').filter(line => line.trim() !== '');
-
-        console.log(`Loaded ${window.quotesData.length} quotes`);
-
-        initQuotes(); // Start the app AFTER file is loaded
-    } 
-    catch (error) {
-        console.error(`Error loading quotes file: ${error}`);
-    }
-}
-
-loadQuotes();
-</script>
-
-
-<!-- 2) All other logic goes inside initQuotes() -->
-<script>
-function initQuotes() {
+(function () {
+    const MONTHS = [
+        'January','February','March','April','May','June',
+        'July','August','September','October','November','December'
+    ];
 
     // -------------------------------
     // PARSE QUOTES
     // -------------------------------
-    const quotes = quotesData.map(line => {
-        const match = line.match(/^(\d+):\s*"([^"]+)"\s*\[([^\]]+)\]\s*\[([^\]]+)\]/);
-        if (match) {
-            return {
-                id: match[1],
-                text: match[2],
-                game: match[3],
-                date: match[4]
-            };
+    // Line format: 123: "Quote text" [Game] [DD/MM/YYYY]
+    // The file is hand-edited, so this tolerates a leading BOM, CRLF, "123." or "123 "
+    // separators, quotes inside the text, curly quotes, and a missing or broken game/date.
+    function parseDate(raw) {
+        const digits = raw.replace(/\D/g, '');
+        if (digits.length === 8) {
+            return { d: +digits.slice(0, 2), m: +digits.slice(2, 4), y: +digits.slice(4, 8) };
         }
+        if (digits.length === 4) return { d: null, m: null, y: +digits };
         return null;
-    }).filter(Boolean);
-
-    window.quotes = quotes; // make global for QOTD
-
-    document.getElementById('quoteCount').textContent = `Search through 1706 memorable moments`;
-	document.getElementById('lostCount').textContent = `103 lost to the depths of time`;
-
-
-    // -------------------------------
-    // DATE FORMATTER
-    // -------------------------------
-    function formatDate(rawDate) {
-        if (!rawDate) return '';
-
-        let clean = rawDate.replace(/\D/g, '');
-        let d, m, y;
-
-        if (clean.length === 8) {
-            d = parseInt(clean.slice(0, 2));
-            m = parseInt(clean.slice(2, 4)) - 1;
-            y = parseInt(clean.slice(4, 8));
-        } else if (rawDate.includes('/')) {
-            const p = rawDate.split('/');
-            d = parseInt(p[0]);
-            m = parseInt(p[1]) - 1;
-            y = parseInt(p[2]);
-        } else {
-            return rawDate;
-        }
-
-        const months = [
-            'January','February','March','April','May','June',
-            'July','August','September','October','November','December'
-        ];
-
-        return `${d} ${months[m]} ${y}`;
     }
 
+    function parseLine(line) {
+        line = line.replace(/^﻿/, '').trim();
+        const idMatch = line.match(/^(\d+)\s*[:.]?\s*/);
+        if (!idMatch) return null;
+        let rest = line.slice(idMatch[0].length);
 
-	// -------------------------------
-    // GAMES PLAYED
-    // -------------------------------
-    const popularTerms = [
-        'Age of Empires II: Definitive Edition',
-        'Animal Crossing: New Horizons',
-        'Apex Legends',
-        'California Orange Tree Simulator',
-        'Citadel: Forged with Fire',
-        'Dead by Daylight',
-        'Deceit',
-        'Dragon Ball: The Breakers',
-        'Dragon Ball: Xenoverse 2',
-        'Dungeon of the Endless',
-        'Evil Dead: The Game',
-        'Extreme Maze Building Simulator',
-        'F-Zero 99',
-        'Fall Guys',
-        'Fortnite',
-        'Gartic',
-        'Jackbox Party Packs',
-        'Just Chatting',
-        'League of Legends',
-        'Little Nightmares',
-        'Luigi\'s Mansion 3',
-        'Mario Golf: Super Rush',
-        'Minecraft',
-        'My Hero Ultra Rumble',
-        'Not the Robots',
-        'Pokémon MMO 3D',
-        'Pokémon Unite',
-        'ROBLOX',
-        'Rumbleverse',
-        'Sea of Thieves',
-        'Special Events',
-        'Spellbreak',
-        'Split or Steal',
-        'Super Animal Royale',
-        'Super Mama Maker 2',
-        'Super Mario Maker 2',
-        'Super Smash Bros. Ultimate',
-        'Super Smash Bros. Ultimate on the Nintendo Switch',
-        'Super Smash Brethren',
-        'Super Spicy Bros',
-        'Supreme Smash Brothers Omega',
-        'Temtem',
-        'The Council',
-        'The Elder Scrolls Online',
-        'The Jackbox Party Pack 2',
-        'The Jackbox Party Pack 3',
-        'The Jackbox Party Pack 4',
-        'The Jackbox Party Pack 6',
-        'Throne of Lies',
-        'VRChat',
-        'Wildermyth',
-        'World of Warcraft',
-        'Yu-Gi-Oh! Master Duel'
-    ];
-
-    let currentSearch = '';
-	let selectedYear = null;
-	let currentPage = 1;
-	const itemsPerPage = 50;
-	
-
-
-    // -------------------------------
-    // YEAR FILTERS
-    // -------------------------------
-    const currentYear = new Date().getFullYear();
-    const years = [...new Set(quotes.map(q => {
-        const m = q.date.match(/\d{4}/);
-        if (m) {
-            const y = parseInt(m[0]);
-            if (y >= 2018 && y <= currentYear) return y.toString();
+        let rawDate = '';
+        const dateMatch = rest.match(/\s*\[([\d\/]+)\]\s*$/);
+        if (dateMatch) {
+            rawDate = dateMatch[1];
+            rest = rest.slice(0, dateMatch.index);
         }
-        return null;
-    }).filter(Boolean))].sort((a, b) => b - a);
 
-    const yearFiltersContainer = document.getElementById('yearFilters');
-
-    const allYearsBtn = document.createElement('button');
-    allYearsBtn.textContent = 'All Years';
-    allYearsBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
-    allYearsBtn.onclick = () => {
-	    selectedYear = null;
-	    currentPage = 1;
-	    updateYearButtons();
-	    renderQuotes();
-	};
-    yearFiltersContainer.appendChild(allYearsBtn);
-
-    years.forEach(year => {
-        const btn = document.createElement('button');
-        btn.textContent = year;
-        btn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-        btn.dataset.year = year;
-        btn.onclick = () => {
-		    selectedYear = year;
-		    currentPage = 1;
-		    updateYearButtons();
-		    renderQuotes();
-		};
-        yearFiltersContainer.appendChild(btn);
-    });
-
-    function updateYearButtons() {
-        const allBtn = yearFiltersContainer.firstChild;
-        const yearBtns = [...yearFiltersContainer.children].slice(1);
-
-        if (selectedYear === null) {
-            allBtn.className = 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors';
-            yearBtns.forEach(btn => btn.className =
-                'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors'
-            );
-        } else {
-            allBtn.className = 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-            yearBtns.forEach(btn => {
-                btn.className = (btn.dataset.year === selectedYear)
-                    ? 'px-3 py-1 bg-purple-400 text-white rounded-full text-sm transition-colors'
-                    : 'px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-sm transition-colors';
-            });
+        let game = '';
+        const gameMatch = rest.match(/\s*\[(\[[^\]]*\]|[^\[\]]*)\]\s*$/);
+        if (gameMatch) {
+            game = gameMatch[1].trim();
+            rest = rest.slice(0, gameMatch.index);
         }
+        if (game.startsWith('[')) game = ''; // e.g. [[API ERROR]]
+
+        const text = rest.trim().replace(/^["“”]/, '').replace(/["“”]$/, '').trim();
+        if (!text) return null;
+
+        const date = parseDate(rawDate);
+        let dateLabel = rawDate;
+        const searchParts = [text, game, rawDate];
+        if (date && date.d) {
+            const dd = String(date.d).padStart(2, '0');
+            const mm = String(date.m).padStart(2, '0');
+            const month = MONTHS[date.m - 1] || '';
+            dateLabel = `${date.d} ${month} ${date.y}`;
+            searchParts.push(`${dd}/${mm}/${date.y}`, `${dd}${mm}${date.y}`, dateLabel, `${month} ${date.y}`);
+        } else if (date) {
+            dateLabel = String(date.y);
+        }
+
+        return {
+            id: +idMatch[1],
+            text,
+            game,
+            year: date ? String(date.y) : '',
+            dateLabel,
+            search: searchParts.join('\n').toLowerCase()
+        };
     }
 
-
-    // -------------------------------
-	// GAMES DROPDOWN
-	// -------------------------------
-	const gamesDropdown = document.getElementById('gamesDropdown');
-	
-	popularTerms.forEach(term => {
-	    const option = document.createElement('option');
-	    option.value = term;
-	    option.textContent = term;
-	    gamesDropdown.appendChild(option);
-	});
-	
-	gamesDropdown.addEventListener('change', (e) => {
-	    const selectedGame = e.target.value;
-	    document.getElementById('searchInput').value = selectedGame;
-	    currentSearch = selectedGame;
-	    currentPage = 1;
-	    renderQuotes();
-	});
-
-
-    // -------------------------------
-    // QUOTE FILTERING
-    // -------------------------------
-    function filterQuotes() {
-        let out = quotes;
-
-        if (selectedYear !== null) {
-            out = out.filter(q => q.date.includes(selectedYear));
-        }
-
-        if (currentSearch) {
-            const s = currentSearch.toLowerCase();
-            out = out.filter(q =>
-                q.text.toLowerCase().includes(s) ||
-                q.game.toLowerCase().includes(s) ||
-                q.date.includes(s)
-            );
-        }
-        return out;
+    function infoLine(q) {
+        return [q.game || 'Unknown game', q.dateLabel].filter(Boolean).join(' • ');
     }
 
-
-    // -------------------------------
-    // RENDER LIST
-    // -------------------------------
-    function renderQuotes() {
-        const filtered = filterQuotes();
-        const list = document.getElementById('quotesList');
-        const resultCount = document.getElementById('resultCount');
-
-        resultCount.textContent = `${filtered.length} result${filtered.length !== 1 ? 's' : ''}`;
-        list.innerHTML = '';
-
-        const totalPages = Math.ceil(filtered.length / itemsPerPage);
-		const startIdx = (currentPage - 1) * itemsPerPage;
-		const endIdx = startIdx + itemsPerPage;
-		const display = filtered.slice(startIdx, endIdx);
-
-        if (!display.length) {
-            list.innerHTML = '<p class="text-center text-purple-600">No quotes found. Try a different search term!</p>';
-            return;
-        }
-
-        display.forEach((q, index) => {
-            // Only show "lost" messages when no search/filter is active
-            if (index > 0 && !currentSearch && selectedYear === null) {
-                const prevId = parseInt(display[index - 1].id);
-                const currentId = parseInt(q.id);
-                const gap = currentId - prevId - 1;
-                
-                if (gap > 0) {
-                    const gapDiv = document.createElement('div');
-                    gapDiv.className = 'text-center py-3 my-2';
-                    gapDiv.innerHTML = `
-                        <p class="text-purple-400 italic text-sm">
-                            ✦ ${gap} moment${gap !== 1 ? 's' : ''} lost to the aether ✦
-                        </p>
-                    `;
-                    list.appendChild(gapDiv);
-                }
-            }
-            
-            // Original quote display code
-            const div = document.createElement('div');
-		    div.className = 'bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition-colors';
-		
-		    const safe = q.text.replace(/'/g, "\\'");
-		    const formatted = formatDate(q.date);
-		
-		    div.innerHTML = `
-		        <p class="text-purple-900 mb-2">
-		            <span class="text-purple-600 font-semibold">#${q.id}:</span>
-		            "${q.text}"
-		        </p>
-		        <p class="text-sm text-purple-700 mb-2">${q.game} • ${formatted}</p>
-		
-		        <button
-		            class="px-3 py-1 bg-purple-200 hover:bg-purple-300 text-purple-900 rounded-full text-xs transition-colors"
-		            onclick="copyQuote('${safe}')">
-		            Copy Quote
-		        </button>
-		    `;
-		    list.appendChild(div);
-		});
-
-        if (totalPages > 1) {
-		    const paginationDiv = document.createElement('div');
-		    paginationDiv.className = 'flex justify-center items-center gap-3 mt-6';
-		    
-		    // Previous button
-		    const prevBtn = document.createElement('button');
-		    prevBtn.textContent = '← Previous';
-		    prevBtn.className = `px-4 py-2 rounded-lg transition-colors ${currentPage === 1 ? 'bg-purple-200 text-purple-400 cursor-not-allowed' : 'bg-purple-400 hover:bg-purple-500 text-white'}`;
-		    prevBtn.disabled = currentPage === 1;
-		    prevBtn.onclick = () => {
-		        if (currentPage > 1) {
-		            currentPage--;
-		            renderQuotes();
-		            document.getElementById('quotesList').scrollIntoView({ behavior: 'smooth' });
-		        }
-		    };
-		    
-		    // Page info
-		    const pageInfo = document.createElement('span');
-		    pageInfo.className = 'text-purple-900 font-semibold';
-		    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-		    
-		    // Next button
-		    const nextBtn = document.createElement('button');
-		    nextBtn.textContent = 'Next →';
-		    nextBtn.className = `px-4 py-2 rounded-lg transition-colors ${currentPage === totalPages ? 'bg-purple-200 text-purple-400 cursor-not-allowed' : 'bg-purple-400 hover:bg-purple-500 text-white'}`;
-		    nextBtn.disabled = currentPage === totalPages;
-		    nextBtn.onclick = () => {
-		        if (currentPage < totalPages) {
-		            currentPage++;
-		            renderQuotes();
-		            document.getElementById('quotesList').scrollIntoView({ behavior: 'smooth' });
-		        }
-		    };
-		    
-		    paginationDiv.appendChild(prevBtn);
-		    paginationDiv.appendChild(pageInfo);
-		    paginationDiv.appendChild(nextBtn);
-		    document.getElementById('paginationContainer').innerHTML = '';
-			document.getElementById('paginationContainer').appendChild(paginationDiv);
-		}
+    function escapeHtml(s) {
+        return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
-
-
-    // -------------------------------
-    // SEARCH LISTENER
-    // -------------------------------
-    document.getElementById('searchInput').addEventListener('input', e => {
-	    currentSearch = e.target.value;
-	    currentPage = 1; // Reset to first page
-	    renderQuotes();
-	});
-
-
-    // -------------------------------
-    // RANDOM QUOTE
-    // -------------------------------
-    document.getElementById('randomBtn').addEventListener('click', () => {
-        const r = quotes[Math.floor(Math.random() * quotes.length)];
-        document.getElementById('randomQuoteText').textContent = `#${r.id}: "${r.text}"`;
-        document.getElementById('randomQuoteInfo').textContent = `${r.game} • ${formatDate(r.date)}`;
-        document.getElementById('randomQuoteDisplay').classList.remove('hidden');
-    });
-
-
-    // -------------------------------
-    // QUOTE OF THE DAY
-    // -------------------------------
-    function getQuoteOfTheDay() {
-        const now = new Date();
-        const start = new Date(now.getFullYear(), 0, 0);
-        const diff = now - start;
-        const oneDay = 86400000;
-        const day = Math.floor(diff / oneDay);
-        const seed = now.getFullYear() * 1000 + day;
-        return quotes[seed % quotes.length];
-    }
-
-    const qod = getQuoteOfTheDay();
-    document.getElementById('quoteOfDayText').textContent = `#${qod.id}: "${qod.text}"`;
-    document.getElementById('quoteOfDayInfo').textContent = `${qod.game} • ${formatDate(qod.date)}`;
-
 
     // -------------------------------
     // CLIPBOARD
     // -------------------------------
-    window.copyQuote = function(text) {
-        navigator.clipboard.writeText(text);
-    };
+    function citation(q) {
+        const details = [`#${q.id}`, q.game, q.dateLabel].filter(Boolean).join(', ');
+        return `"${q.text}" — Carp (${details})`;
+    }
 
+    function quoteUrl(q) {
+        return `${location.origin}${location.pathname}#${q.id}`;
+    }
 
-    // INITIAL RENDER
-    renderQuotes();
-}
+    async function copyText(text, btn) {
+        if (!btn._label) btn._label = btn.textContent;
+        try {
+            await navigator.clipboard.writeText(text);
+            btn.textContent = 'Copied!';
+        } catch (err) {
+            console.error('Copy failed:', err);
+            btn.textContent = 'Couldn’t copy';
+        }
+        clearTimeout(btn._reset);
+        btn._reset = setTimeout(() => { btn.textContent = btn._label; }, 1500);
+    }
+
+    // Fills a container with "Copy Quote" and "Copy Link" buttons for one quote
+    function fillActions(container, q) {
+        container.innerHTML = '';
+        [['Copy Quote', () => citation(q)], ['Copy Link', () => quoteUrl(q)]].forEach(([label, getText]) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'chip small';
+            btn.textContent = label;
+            btn.addEventListener('click', () => copyText(getText(), btn));
+            container.appendChild(btn);
+        });
+    }
+
+    // Escapes text for HTML and wraps every case-insensitive match of `term` in <mark>
+    function highlight(text, term) {
+        if (!term) return escapeHtml(text);
+        const lower = text.toLowerCase();
+        let out = '', i = 0, j;
+        while ((j = lower.indexOf(term, i)) !== -1) {
+            out += escapeHtml(text.slice(i, j)) + '<mark>' + escapeHtml(text.slice(j, j + term.length)) + '</mark>';
+            i = j + term.length;
+        }
+        return out + escapeHtml(text.slice(i));
+    }
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // -------------------------------
+    // LOAD
+    // -------------------------------
+    async function loadQuotes() {
+        try {
+            const response = await fetch('thebookofcarp.txt');
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            const quotes = (await response.text()).split('\n').map(parseLine).filter(Boolean);
+            if (!quotes.length) throw new Error('The quotes file is empty');
+            initQuotes(quotes);
+        } catch (error) {
+            console.error('Error loading quotes file:', error);
+            document.getElementById('quoteCount').textContent = 'The Book of Carp could not be opened. Try reloading the page.';
+        }
+    }
+
+    function initQuotes(quotes) {
+        quotes.sort((a, b) => a.id - b.id);
+
+        // -------------------------------
+        // COUNTS
+        // -------------------------------
+        const maxId = quotes[quotes.length - 1].id;
+        const lost = maxId + 1 - quotes.length; // numbering starts at 0
+        document.getElementById('quoteCount').textContent =
+            `Search through ${quotes.length.toLocaleString()} memorable moments`;
+        document.getElementById('lostCount').textContent =
+            lost > 0 ? `${lost.toLocaleString()} lost to the depths of time` : '';
+
+        let currentSearch = '';
+        let selectedYear = null;
+        let selectedGame = '';
+        let currentPage = 1;
+        let targetId = null; // quote opened from a #123 link, highlighted in the list
+        const itemsPerPage = 50;
+
+        // -------------------------------
+        // YEAR FILTERS
+        // -------------------------------
+        const years = [...new Set(quotes.map(q => q.year).filter(Boolean))].sort((a, b) => b - a);
+        const yearFiltersContainer = document.getElementById('yearFilters');
+
+        function addYearButton(label, year) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'chip';
+            btn.textContent = label;
+            btn.dataset.year = year === null ? '' : year;
+            btn.onclick = () => {
+                selectedYear = year;
+                currentPage = 1;
+                updateYearButtons();
+                renderQuotes();
+            };
+            yearFiltersContainer.appendChild(btn);
+        }
+
+        function updateYearButtons() {
+            [...yearFiltersContainer.children].forEach(btn => {
+                btn.setAttribute('aria-pressed', btn.dataset.year === (selectedYear === null ? '' : selectedYear));
+            });
+        }
+
+        addYearButton('All Years', null);
+        years.forEach(y => addYearButton(y, y));
+        updateYearButtons();
+
+        // -------------------------------
+        // GAMES DROPDOWN (built from the quotes themselves)
+        // -------------------------------
+        const gamesDropdown = document.getElementById('gamesDropdown');
+        const gameCounts = new Map();
+        quotes.forEach(q => {
+            const g = q.game || 'Unknown game';
+            gameCounts.set(g, (gameCounts.get(g) || 0) + 1);
+        });
+        [...gameCounts.keys()]
+            .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+            .forEach(g => {
+                const option = document.createElement('option');
+                option.value = g;
+                option.textContent = `${g} (${gameCounts.get(g)})`;
+                gamesDropdown.appendChild(option);
+            });
+
+        gamesDropdown.addEventListener('change', e => {
+            selectedGame = e.target.value;
+            currentPage = 1;
+            renderQuotes();
+        });
+
+        // -------------------------------
+        // QUOTE FILTERING
+        // -------------------------------
+        function filterQuotes() {
+            const s = currentSearch.trim().toLowerCase();
+            return quotes.filter(q =>
+                (selectedYear === null || q.year === selectedYear) &&
+                (!selectedGame || (q.game || 'Unknown game') === selectedGame) &&
+                (!s || q.search.includes(s))
+            );
+        }
+
+        // -------------------------------
+        // RENDER LIST
+        // -------------------------------
+        function gapNote(gap) {
+            const p = document.createElement('p');
+            p.className = 'gap-note';
+            p.textContent = `✦ ${gap} moment${gap !== 1 ? 's' : ''} lost to the aether ✦`;
+            return p;
+        }
+
+        function renderQuotes() {
+            const filtered = filterQuotes();
+            const list = document.getElementById('quotesList');
+            const pagination = document.getElementById('paginationContainer');
+
+            document.getElementById('resultCount').textContent =
+                `${filtered.length} result${filtered.length !== 1 ? 's' : ''}`;
+            list.innerHTML = '';
+            pagination.innerHTML = '';
+
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            const startIdx = (currentPage - 1) * itemsPerPage;
+            const display = filtered.slice(startIdx, startIdx + itemsPerPage);
+
+            if (!display.length) {
+                list.innerHTML = '<p class="empty">No quotes found. Try a different search term!</p>';
+                return;
+            }
+
+            // Gaps only mean something when the full, unfiltered list is showing
+            const term = currentSearch.trim().toLowerCase();
+            const showGaps = !term && selectedYear === null && !selectedGame;
+
+            display.forEach((q, index) => {
+                if (showGaps) {
+                    const prev = filtered[startIdx + index - 1];
+                    const gap = q.id - (prev ? prev.id : -1) - 1;
+                    if (gap > 0) list.appendChild(gapNote(gap));
+                }
+
+                const div = document.createElement('div');
+                div.className = 'quote' + (q.id === targetId ? ' target' : '');
+                div.id = `q-${q.id}`;
+                div.innerHTML = `
+                    <p class="quote-text"><span class="quote-num">#${q.id}:</span> "${highlight(q.text, term)}"</p>
+                    <p class="quote-info">${highlight(infoLine(q), term)}</p>
+                    <div class="actions"></div>
+                `;
+                fillActions(div.querySelector('.actions'), q);
+                list.appendChild(div);
+            });
+
+            if (totalPages > 1) {
+                const pager = document.createElement('div');
+                pager.className = 'pager';
+
+                function pageButton(label, disabled, targetPage) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = label;
+                    btn.disabled = disabled;
+                    btn.onclick = () => {
+                        currentPage = targetPage;
+                        renderQuotes();
+                        list.scrollTop = 0;
+                        list.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+                    };
+                    return btn;
+                }
+
+                const pageInfo = document.createElement('span');
+                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+                pager.appendChild(pageButton('← Previous', currentPage === 1, currentPage - 1));
+                pager.appendChild(pageInfo);
+                pager.appendChild(pageButton('Next →', currentPage === totalPages, currentPage + 1));
+                pagination.appendChild(pager);
+            }
+        }
+
+        // -------------------------------
+        // SEARCH LISTENER
+        // -------------------------------
+        document.getElementById('searchInput').addEventListener('input', e => {
+            currentSearch = e.target.value;
+            currentPage = 1;
+            renderQuotes();
+        });
+
+        // -------------------------------
+        // RANDOM QUOTE
+        // -------------------------------
+        // Remembers recent picks so the same quote doesn't come up again for a while
+        const recentRandom = [];
+        const recentLimit = Math.min(100, Math.floor(quotes.length / 2));
+        document.getElementById('randomBtn').addEventListener('click', () => {
+            let r;
+            do {
+                r = quotes[Math.floor(Math.random() * quotes.length)];
+            } while (recentRandom.includes(r.id));
+            recentRandom.push(r.id);
+            if (recentRandom.length > recentLimit) recentRandom.shift();
+
+            document.getElementById('randomQuoteText').textContent = `#${r.id}: "${r.text}"`;
+            document.getElementById('randomQuoteInfo').textContent = infoLine(r);
+            fillActions(document.getElementById('randomQuoteActions'), r);
+            document.getElementById('randomQuoteDisplay').hidden = false;
+        });
+
+        // -------------------------------
+        // QUOTE OF THE DAY
+        // -------------------------------
+        // Every quote gets a score from hashing today's date with its number; the top
+        // score wins. Days look random, and adding quotes only changes today's pick
+        // if one of the new quotes happens to score higher.
+        function hash(str) {
+            let h = 0x811c9dc5;
+            for (let i = 0; i < str.length; i++) {
+                h ^= str.charCodeAt(i);
+                h = Math.imul(h, 0x01000193);
+            }
+            h ^= h >>> 15; h = Math.imul(h, 0x2c1b3c6d);
+            h ^= h >>> 12; h = Math.imul(h, 0x297a2d39);
+            h ^= h >>> 15;
+            return h >>> 0;
+        }
+        const now = new Date();
+        const today = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        let qod = quotes[0], best = -1;
+        quotes.forEach(q => {
+            const score = hash(`${today}#${q.id}`);
+            if (score > best) { best = score; qod = q; }
+        });
+        document.getElementById('quoteOfDayText').textContent = `#${qod.id}: "${qod.text}"`;
+        document.getElementById('quoteOfDayInfo').textContent = infoLine(qod);
+        fillActions(document.getElementById('quoteOfDayActions'), qod);
+
+        // -------------------------------
+        // LINKS TO ONE QUOTE (quotes.html#123)
+        // -------------------------------
+        // Clears the filters, jumps to the page holding that quote and highlights it.
+        function openFromHash() {
+            const m = location.hash.match(/^#(?:q-)?(\d+)$/);
+            const index = m ? quotes.findIndex(q => q.id === +m[1]) : -1;
+            if (index === -1) {
+                targetId = null;
+                return false;
+            }
+            targetId = quotes[index].id;
+            currentSearch = '';
+            selectedYear = null;
+            selectedGame = '';
+            document.getElementById('searchInput').value = '';
+            gamesDropdown.value = '';
+            updateYearButtons();
+            currentPage = Math.floor(index / itemsPerPage) + 1;
+            renderQuotes();
+            // Centre the quote inside the scrolling list, then bring the list on screen
+            const list = document.getElementById('quotesList');
+            const el = document.getElementById(`q-${targetId}`);
+            list.scrollTop = el.offsetTop - (list.clientHeight - el.offsetHeight) / 2;
+            const listTop = list.getBoundingClientRect().top + window.scrollY;
+            window.scrollTo({ top: Math.max(0, listTop - 80), behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+            return true;
+        }
+
+        window.addEventListener('hashchange', openFromHash);
+        if (!openFromHash()) renderQuotes();
+    }
+
+    loadQuotes();
+})();
 </script>
 
 </body>
