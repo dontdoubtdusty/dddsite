@@ -28,6 +28,21 @@
             margin: 0;
             padding: 24px;
             min-height: 100vh;
+            background: #4a3566;
+            color: #2d2240;
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+            line-height: 1.5;
+        }
+
+        /* Fixed background on its own layer: painted once, then composited on scroll.
+           (background-attachment: fixed repaints the whole viewport every frame.) */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            will-change: transform;
             background:
                 radial-gradient(ellipse at 20% 30%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 70%, rgba(167, 139, 250, 0.22) 0%, transparent 50%),
@@ -39,10 +54,6 @@
                     rgba(124, 98, 154, 0.85) 75%,
                     rgba(139, 113, 171, 0.85) 100%);
             background-color: #4a3566;
-            background-attachment: fixed;
-            color: #2d2240;
-            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
-            line-height: 1.5;
         }
 
         .page {
