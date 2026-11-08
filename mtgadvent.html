@@ -12,16 +12,26 @@
         body {
             font-family: Georgia, serif;
             background-color: #0f1626;
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Fixed background on its own layer: painted once, then composited on scroll.
+           (background-attachment: fixed repaints the whole viewport every frame.) */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            will-change: transform;
             background-image:
                 linear-gradient(180deg, rgba(26,42,78,0.6) 0%, rgba(15,22,38,0.7) 50%, rgba(45,27,78,0.6) 100%),
                 url('mtgadvent-bg.jpg?v=2');
             background-size: cover, contain;
             background-repeat: no-repeat;
-            background-attachment: fixed;
             background-position: center;
-            min-height: 100vh;
-            color: #fff;
-            overflow-x: hidden;
         }
 
         /* Snow: a fixed set of flakes animated with transforms only */

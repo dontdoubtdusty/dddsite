@@ -13,14 +13,9 @@
 
         body {
             font-family: 'Georgia', serif;
+            --bg-color: #1a1a2e;
+            --bg-image: url('./colors-rocks.jpg');
             background-color: #1a1a2e;
-            background-image: url('./colors-rocks.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            background-blend-mode: multiply;
-            transition: background-color 1.5s ease;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -30,6 +25,27 @@
             position: relative;
             overflow-x: hidden;
         }
+
+        /* Fixed background on its own layer: painted once, then composited on scroll.
+           (background-attachment: fixed repaints the whole viewport every frame.)
+           The script sets --bg-color / --bg-image on body. */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            will-change: transform;
+            background-color: var(--bg-color);
+            background-image: var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-blend-mode: multiply;
+            transition: background-color 1.5s ease;
+        }
+
+        body.no-bg-transition::before { transition: none; }
 
         h1 {
             font-size: 2.8em;
@@ -324,7 +340,7 @@
         // Randomize background image on page load
         const backgrounds = ['colors-rocks.jpg', 'takisbg.jpg', 'spiralbg.jpg', 'sunsetbg.jpg', 'zigzagbg.jpg'];
         const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-        document.body.style.backgroundImage = `url('./${randomBg}')`;
+        document.body.style.setProperty('--bg-image', `url('./${randomBg}')`);
         
        const weeks = [
             // JANUARY - Week 1
@@ -514,7 +530,7 @@
                 
                 // Set background to the last unlocked color
                 if (lastColor) {
-                    document.body.style.backgroundColor = lastColor.hex;
+                    document.body.style.setProperty('--bg-color', lastColor.hex);
                 }
             }
         });
@@ -575,10 +591,10 @@
                         dayCounter++;
                         if (dayCounter === latestFlippedDay) {
                             const latestColor = weeks[weekIndex].colors[dayIndex];
-                            document.body.style.backgroundColor = latestColor.hex;
-                            document.body.style.transition = 'none';
+                            document.body.style.setProperty('--bg-color', latestColor.hex);
+                            document.body.classList.add('no-bg-transition');
                             setTimeout(() => {
-                                document.body.style.transition = 'background-color 1.5s ease';
+                                document.body.classList.remove('no-bg-transition');
                             }, 50);
                             break;
                         }
@@ -649,14 +665,14 @@
                                 this.classList.add('flipped');
                                 saveFlippedState(day, true);
                                 
-                                document.body.style.backgroundColor = color.hex;
+                                document.body.style.setProperty('--bg-color', color.hex);
                                 this.classList.add('revealing');
                                 setTimeout(() => {
                                     this.classList.remove('revealing');
                                 }, 2000);
                             } else {
                                 // Already flipped - just activate the color
-                                document.body.style.backgroundColor = color.hex;
+                                document.body.style.setProperty('--bg-color', color.hex);
                                 this.classList.add('revealing');
                                 setTimeout(() => {
                                     this.classList.remove('revealing');

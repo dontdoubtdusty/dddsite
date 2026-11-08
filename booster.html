@@ -73,21 +73,38 @@
         }
         .card-border.common { background: linear-gradient(135deg, #9d9d9d, #7a7a7a); }
         .card-border.uncommon { background: linear-gradient(135deg, #1eff00, #15c900); }
-        .card-border.rare { 
+        /* Animated rarity borders: the gradient lives on an oversized layer that
+           slides with transform (GPU-composited) instead of animating
+           background-position, which repaints the card every frame. */
+        .card-border.rare,
+        .card-border.epic,
+        .card-border.legendary {
+            overflow: hidden;
+            isolation: isolate;
+        }
+        .card-border.rare::before,
+        .card-border.epic::before,
+        .card-border.legendary::before {
+            content: '';
+            position: absolute;
+            top: -150%;
+            left: 0;
+            width: 400%;
+            height: 400%;
+            z-index: -1;
+            will-change: transform;
+        }
+        .card-border.rare::before {
             background: linear-gradient(135deg, #0070dd, #005bb5, #0070dd, #005bb5);
-            background-size: 400% 400%;
-            animation: rareGlow 3s ease infinite;
+            animation: borderGlow 3s ease infinite;
         }
-        .card-border.epic { 
+        .card-border.epic::before {
             background: linear-gradient(135deg, #a335ee, #8a2ac7, #a335ee, #8a2ac7);
-            background-size: 400% 400%;
-            animation: epicGlow 2s ease infinite;
+            animation: borderGlow 2s ease infinite;
         }
-        
-        .card-border.legendary { 
+        .card-border.legendary::before {
             background: linear-gradient(135deg, #ff8000, #ffd700, #ff8000, #c8a165, #ff8000);
-            background-size: 400% 400%;
-            animation: legendaryGlow 1s ease infinite;
+            animation: borderGlow 1s ease infinite;
         }
         .card-content {
             position: relative;
@@ -289,31 +306,11 @@
             100% { opacity: 0; transform: scale(1.2) rotate(8deg); }
         }
 
-        @keyframes rareGlow {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-
-        @keyframes epicGlow {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-        
-        @keyframes legendaryGlow {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
+        /* Same motion as the old background-position 0% -> 100% -> 0% sweep:
+           100% of a 400%-wide layer is an offset of 3 card widths = 75% of the layer. */
+        @keyframes borderGlow {
+            0%, 100% { transform: translateX(0); }
+            50%      { transform: translateX(-75%); }
         }
         
         .card-back-stack {
@@ -457,7 +454,20 @@
             transition: opacity 0.5s ease 0.7s;    
         }
         
+        /* The rainbow sits on a 500%-wide layer that slides with transform.
+           Only holo cards animate; on the rest the shine is invisible anyway. */
         .holographic-shine {
+            overflow: hidden;
+        }
+        .holographic-shine.is-holo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 500%;
+            height: 100%;
+            will-change: transform;
+            animation: holo-shine 15s linear infinite;
             background: linear-gradient(
                 90deg,
                 rgba(255, 0, 0, 1) 0%,
@@ -471,18 +481,13 @@
                 rgba(200, 30, 150, 1) 80%,
                 rgba(255, 0, 0, 1) 100%
             );
-            background-size: 500% 100%;
-            background-position: 100% 0;
-            animation: holo-shine 15s linear infinite;
         }
-        
+
+        /* Old sweep was background-position 100% -> 0% on a 500% background:
+           an offset of -4 card widths -> 0, i.e. -80% -> 0 of the layer. */
         @keyframes holo-shine {
-            0% {
-                background-position: 100% 0;
-            }
-            100% {
-                background-position: 0% 0;
-            }
+            from { transform: translateX(-80%); }
+            to   { transform: translateX(0); }
         }
 
         @keyframes cardFloat {

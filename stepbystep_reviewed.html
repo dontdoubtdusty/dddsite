@@ -35,14 +35,24 @@
         
         body {
             font-family: 'Comic Sans MS', 'Trebuchet MS', Arial, sans-serif;
-            background-image: url("sbsbg.jpg");
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-attachment: fixed;             
-            background-size: cover;
             background-color: #000;
             color: #fff;
             line-height: 1.6;
+        }
+
+        /* Fixed background on its own layer: painted once, then composited on scroll.
+           (background-attachment: fixed repaints the whole viewport every frame.) */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            will-change: transform;
+            background-image: url("sbsbg.jpg");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
         }
 
         .container {

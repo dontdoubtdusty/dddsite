@@ -20,7 +20,7 @@ My personal projects site, live at [dontdoubtdusty.com](https://dontdoubtdusty.c
 - `bookchart.html`: Reading Flow Tool.
 - `shoracle.html`: Shrek tarot reader.
 - `notepad-recreation.html`: Shrekpad.
-- `tierlist.html`, `like_mike.html`: tier list and championship bracket.
+- `tierlist.html`: tier list.
 
 **Archives**
 - `fhrquotes.html` and `fhr/`: Full House Revisited recaps.
