@@ -23,7 +23,7 @@ My personal projects site, live at [dontdoubtdusty.com](https://dontdoubtdusty.c
 - `tierlist.html`: tier list.
 
 **Archives**
-- `fhrquotes.html` and `fhr/`: Full House Revisited recaps.
+- `fhrquotes.html` and `fhr/`: Full House Revisited recaps. After adding reviews, run `node tools/fhr-build-index.js` to refresh `fhr/index.json`. After changing Tailwind classes in the page, rebuild `fhr/fhrquotes.css` (command in `tools/fhr-tailwind.config.js`).
 - `stepbystep_reviewed.html`, `sbsrposts.json` and `stepbystepreviewed/`: Step By Step Reviewed.
 
 **Calendars and misc**

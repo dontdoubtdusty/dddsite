@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wake Up, San Francisco</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>The FHR Archives</title>
+    <!-- Compiled Tailwind (rebuild command is in tools/fhr-tailwind.config.js). Replaces the cdn.tailwindcss.com dev build. -->
+    <link rel="stylesheet" href="fhr/fhrquotes.css">
     <style>
         body {
             background-color: #f6c7b7;
@@ -50,7 +51,7 @@
             transition: all 0.2s ease;
             border-radius: 4px;
         }
-        
+
         .read-review-btn:hover {
             background-color: #f5f5f5;
             border-color: #999999;
@@ -61,7 +62,7 @@
         #randomBtn, #bottomBtn {
             /* 1. The Image with a Light Overlay (0.8 opacity white) */
             background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('fhr/dark-full-house-fan-theories.jpg') !important;
-            
+
             /* 2. Center and cover the button */
             background-position: center !important;
             background-size: cover !important;
@@ -69,7 +70,7 @@
 
             /* 3. Text Color (Black text looks best on a light overlay) */
             color: #000000 !important;
-            
+
             /* 4. Border to make it look sharp */
             border: 2px solid #000000 !important;
         }
@@ -86,13 +87,14 @@
         }
     </style>
 </head>
+<body class="p-6">
 <header>
   <img src="fhr/fhrbanner.jpg" alt="FHR Archives Banner" style="width: 100%; max-width: 450px; height: auto; display: block; margin: 0 auto;">
 </header>
 
-<!-- This Week in FHR History -->
-<div id="quoteOfDayBox" class="parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
-    <h2 class="text-lg font-bold text-black mb-3">
+<!-- This Week in FHR History (hidden until a review has loaded) -->
+<div id="quoteOfDayBox" class="parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300" style="display: none;">
+    <h2 id="quoteOfDayHeading" class="text-lg font-bold text-black mb-3">
         This Week in FHR History
     </h2>
     <div id="quoteOfDayContent" class="flex flex-col gap-4 text-center"></div>
@@ -101,8 +103,7 @@
         <a id="quoteOfDayLink" href="#" class="read-review-btn">Read Review</a>
     </div>
 </div>
-    
-<body class="p-6">
+
     <div class="max-w-4xl mx-auto" style="max-width: 700px; padding: 60px 24px;">
         <h1 class="text-4xl font-bold mb-2 text-center tracking-wide drop-shadow-md relative block mx-auto pb-3" style="letter-spacing: 0.05em;">
             <span class="px-4 py-1" style="border-color: #000000;">THE FHR ARCHIVES</span>
@@ -126,11 +127,11 @@
 
         <div id="randomQuoteDisplay" class="hidden parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300">
             <div id="randomContentArea" class="flex flex-col gap-6 text-center"></div>
-            
+
             <div id="firstsContainer" class="hidden">
                 <hr class="border-t border-gray-100 my-4"> <p id="randomFirstsInfo" class="text-center text-sm text-gray-500 italic"></p>
             </div>
-            
+
             <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-end">
                 <p class="text-sm text-gray-600" id="randomQuoteInfo"></p>
                 <a id="randomLink" href="#" class="read-review-btn">Read Review</a>
@@ -138,432 +139,262 @@
         </div>
 
         <div id="bottom-button-container" style="display: none; margin-top: 20px;">
-            <button 
-                id="bottomBtn" 
+            <button
+                id="bottomBtn"
                 onclick="generateQuote()"
                 class="w-full flex items-center justify-center gap-2 py-4 rounded-lg transition-all transform hover:scale-105 shadow-md"
             >
                 <span>Get Another Quote</span>
             </button>
         </div>
-        
+
     </div>
 
 <script>
-// --- 1. GLOBAL VARIABLES ---
+// --- 1. SHARED STATE AND HELPERS ---
 const catchphrases = [
     "Cut. It. Out!", "Have Mercy!", "How Rude!", "You Got It, Dude!",
-    "Oh, My Lanta!", "Hola, Tanneritos!", "Watch The Hair!", 
+    "Oh, My Lanta!", "Hola, Tanneritos!", "Watch The Hair!",
     "Pin a Rose on Your Nose!", "Clean is Good, Dirt is Bad."
 ];
+const REVIEW_SITE = 'https://therealfullhousereviewed.wordpress.com/';
+const IMG_CLASS = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
 
-// --- 2. LOAD THE ARCHIVE ---
+let reviews = [];          // every entry from fhr/index.json
+let usable = [];           // entries that contain at least one image/text/image block
+let nextReview = null;     // review already being prefetched for the next click
+const docCache = new Map();
+
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const randomCatchphrase = () => pick(catchphrases);
+
+// Fetch and parse a review once; later calls reuse the result.
+function fetchReviewDoc(filename) {
+    if (!docCache.has(filename)) {
+        const p = fetch(`fhr/${filename}`)
+            .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text(); })
+            .then(t => new DOMParser().parseFromString(t, 'text/html'));
+        p.catch(() => docCache.delete(filename));
+        docCache.set(filename, p);
+    }
+    return docCache.get(filename);
+}
+
+// Every "image, text paragraphs, image(s)" sandwich in a review.
+// NOTE: keep in sync with countBlocks() in tools/fhr-build-index.js.
+function findBlocks(doc) {
+    const nodes = Array.from(doc.querySelectorAll('p')).map(p => {
+        if (p.querySelector('img')) return { type: 'IMG', el: p };
+        const text = p.textContent.trim();
+        if (text && !text.includes('Original Date')
+                 && !text.toLowerCase().includes('source:')
+                 && !text.startsWith('Firsts:')) {
+            return { type: 'TEXT', el: p };
+        }
+        return { type: 'SKIP' };
+    });
+
+    const blocks = [];
+    for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].type !== 'IMG') continue;
+        const texts = [];
+        for (let j = i + 1; j < nodes.length; j++) {
+            if (nodes[j].type === 'TEXT') {
+                texts.push(nodes[j].el);
+            } else if (nodes[j].type === 'IMG') {
+                if (texts.length > 0) {
+                    const endImages = [nodes[j].el];
+                    // Gather consecutive image paragraphs. One that also has text starts a new segment.
+                    for (let k = j + 1; k < nodes.length && nodes[k].type === 'IMG'; k++) {
+                        if (nodes[k].el.textContent.trim().length > 0) break;
+                        endImages.push(nodes[k].el);
+                    }
+                    blocks.push({ start: nodes[i].el, texts, endImages });
+                }
+                break;
+            }
+        }
+    }
+    return blocks;
+}
+
+function renderBlock(container, block, maxTexts) {
+    const img = block.start.querySelector('img').cloneNode(true);
+    img.className = IMG_CLASS;
+    container.appendChild(img);
+
+    const textDiv = document.createElement('div');
+    textDiv.className = "text-black px-2";
+    textDiv.style.fontFamily = "Georgia, 'Bitstream Charter', serif";
+    textDiv.style.fontSize = '16px';
+    textDiv.style.lineHeight = '1.5';
+    block.texts.slice(0, maxTexts).forEach(p => {
+        const clone = p.cloneNode(true);
+        clone.className = "mb-4";
+        textDiv.appendChild(clone);
+    });
+    container.appendChild(textDiv);
+
+    block.endImages.forEach(pTag => {
+        const imgClone = pTag.querySelector('img').cloneNode(true);
+        imgClone.className = IMG_CLASS;
+        container.appendChild(imgClone);
+    });
+}
+
+function reviewUrl(r) {
+    const slug = r.t.toLowerCase()
+        .replace(/['"“”‘’]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    return r.d ? `${REVIEW_SITE}${r.d.replace(/-/g, '/')}/${slug}/` : REVIEW_SITE;
+}
+
+// Start downloading the review the next click will show.
+function prefetchNext() {
+    nextReview = pick(usable);
+    fetchReviewDoc(nextReview.f).catch(() => {});
+}
+
+// --- 2. LOAD THE ARCHIVE INDEX ---
 async function loadFhrArchive() {
     try {
-        const response = await fetch('fhr/filelist.txt');
-        if (!response.ok) throw new Error("Could not find fhr/filelist.txt");
-
-        const listText = await response.text();
-        const files = listText.split('\n')
-            .map(line => line.trim())
-            .filter(line => line.length > 0 && line.endsWith('.html'));
+        const response = await fetch('fhr/index.json');
+        if (!response.ok) throw new Error("Could not find fhr/index.json");
+        reviews = await response.json();
+        usable = reviews.filter(r => r.b > 0);
+        window.quotes = reviews;
 
         document.getElementById('subStatus').textContent = `A permanent tribute to Billy Superstar. No new reviews will be found; he has finally escaped.`;
-
-        window.quotes = files.map((f, i) => ({ id: i, filename: f }));
-        
         initApp();
-    } 
-    catch (error) {
+    } catch (error) {
         document.getElementById('quoteCount').textContent = "Error Loading Archive";
-        document.getElementById('subStatus').textContent = "Make sure filelist.txt exists in the fhr folder.";
+        document.getElementById('subStatus').textContent = "Make sure fhr/index.json exists (run node tools/fhr-build-index.js).";
         console.error(error);
     }
 }
 
 // --- 3. INITIALIZE BUTTONS ---
 function initApp() {
-    document.getElementById('quoteCount').textContent = `A complete codex of 193 reviews.`;
-    
+    document.getElementById('quoteCount').textContent = `A complete codex of ${reviews.length} reviews.`;
+
     const topBtn = document.getElementById('randomBtn');
     topBtn.disabled = false;
     topBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-
-    const startPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    topBtn.querySelector('span').textContent = `◉ ${startPhrase}`;
-
+    topBtn.querySelector('span').textContent = `◉ ${randomCatchphrase()}`;
     topBtn.onclick = generateQuote;
 
     displayQuoteOfTheDay();
+    prefetchNext();
 }
 
-// --- 4. THE MAIN LOGIC ---
+// --- 4. RANDOM QUOTE ---
 async function generateQuote() {
-    const quotes = window.quotes;
     const displayBox = document.getElementById('randomQuoteDisplay');
     const contentArea = document.getElementById('randomContentArea');
     const infoBox = document.getElementById('randomQuoteInfo');
     const linkBox = document.getElementById('randomLink');
-    
-    // NEW ELEMENTS
     const firstsContainer = document.getElementById('firstsContainer');
     const firstsBox = document.getElementById('randomFirstsInfo');
 
-    const topBtn = document.getElementById('randomBtn');
-    const bottomBtn = document.getElementById('bottomBtn');
-
-    // 1. Reset UI
+    // Reset UI
     displayBox.classList.remove('hidden');
-    firstsContainer.classList.add('hidden'); // Hide firsts by default
+    firstsContainer.classList.add('hidden');
     contentArea.innerHTML = '<p class="italic text-gray-500 py-8">Scanning archives...</p>';
     infoBox.textContent = "";
-    firstsBox.textContent = ""; 
+    firstsBox.textContent = "";
 
-    // 2. Update Buttons
-    const newPhrase = catchphrases[Math.floor(Math.random() * catchphrases.length)];
-    // Just set the text span without the icon
-    topBtn.innerHTML = `<span>◉ ${newPhrase}</span>`;
-    if(bottomBtn) bottomBtn.innerHTML = `<span>◉ ${newPhrase}</span>`;
+    const newPhrase = randomCatchphrase();
+    document.getElementById('randomBtn').innerHTML = `<span>◉ ${newPhrase}</span>`;
+    const bottomBtn = document.getElementById('bottomBtn');
+    if (bottomBtn) bottomBtn.innerHTML = `<span>◉ ${newPhrase}</span>`;
 
     try {
-        let validBlock = null;
-        let chosenEpisode = null;
-        let parsedTitle = "Unknown Title";
-        let parsedSeason = "Specials";
-        let parsedDateUrl = ""; 
-        let displayDate = ""; // Store the date text here
-        let firstsText = ""; 
-
-        // Try up to 50 times to find a good image-text block
-        for (let attempt = 0; attempt < 50; attempt++) {
-            chosenEpisode = quotes[Math.floor(Math.random() * quotes.length)];
-            
-            const response = await fetch(`fhr/${chosenEpisode.filename}`);
-            const htmlText = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlText, 'text/html');
-            
-            // --- EXTRACT METADATA ---
-            
-            // 1. Get Title (Restored)
-            parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
-            
-            // 2. Get Season
-            const seasonMatch = parsedTitle.match(/Season\s*(\d+)/i);
-            if(seasonMatch) parsedSeason = "Season " + seasonMatch[1];
-
-            // 3. Get Date (For URL and Display)
-            const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-            if (dateEl) {
-                // Remove "Original Date:" text to get just the date
-                displayDate = dateEl.textContent.replace('Original Date:', '').trim();
-                
-                // Parse numbers for the URL
-                const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
-                if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
-            }
-
-            // 4. Get "Firsts"
-            const firstsEl = Array.from(doc.querySelectorAll('p')).find(p => 
-                p.textContent.trim().startsWith('Firsts:')
-            );
-            if (firstsEl) {
-                // replace('Firsts:', '') removes the label
-                // trim() removes the space that was left behind
-                firstsText = firstsEl.textContent.replace('Firsts:', '').trim();
-            }
-
-            // --- FIND CONTENT SANDWICH ---
-            const allPs = Array.from(doc.querySelectorAll('p'));
-            const nodes = allPs.map(p => {
-                if (p.querySelector('img')) return { type: 'IMG', el: p };
-                const text = p.textContent.trim();
-                
-                if (text && !text.includes('Original Date') 
-                         && !text.toLowerCase().includes('source:')
-                         && !text.startsWith('Firsts:')) { 
-                    return { type: 'TEXT', el: p };
-                }
-                return { type: 'SKIP' };
-            });
-
-            const candidates = [];
-            for (let i = 0; i < nodes.length; i++) {
-                if (nodes[i].type === 'IMG') {
-                    let texts = [];
-                    let j = i + 1;
-                    while (j < nodes.length) {
-                        if (nodes[j].type === 'TEXT') {
-                            texts.push(nodes[j].el);
-                        } else if (nodes[j].type === 'IMG') {
-                            if (texts.length > 0) {
-                                let endImages = [nodes[j].el];
-                                let k = j + 1;
-                                
-                                // Look ahead for more consecutive images
-                                while (k < nodes.length && nodes[k].type === 'IMG') {
-                                    // FIX: Check if this "image" paragraph also has text.
-                                    // If it has text (length > 0), it's the start of a new story segment.
-                                    // So we BREAK the loop and don't add it to the current pile.
-                                    if (nodes[k].el.textContent.trim().length > 0) {
-                                        break;
-                                    }
-
-                                    endImages.push(nodes[k].el);
-                                    k++;
-                                }
-
-                                candidates.push({ start: nodes[i].el, texts: texts, endImages: endImages });
-                            }
-                            break; 
-                        }
-                        j++;
-                    }
-                }
-            }
-
-            if (candidates.length > 0) {
-                validBlock = candidates[Math.floor(Math.random() * candidates.length)];
-                break; 
-            }
+        // The index already says which reviews have a usable block, so this almost never retries.
+        let review = null, block = null;
+        for (let attempt = 0; attempt < 5 && !block; attempt++) {
+            review = nextReview || pick(usable);
+            nextReview = null;
+            const blocks = findBlocks(await fetchReviewDoc(review.f));
+            if (blocks.length) block = pick(blocks);
         }
 
-        // 3. Render Content
         contentArea.innerHTML = '';
-        if (validBlock) {
-            const img1 = validBlock.start.querySelector('img').cloneNode(true);
-            img1.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-            contentArea.appendChild(img1);
-
-            const textDiv = document.createElement('div');
-            textDiv.className = "text-black px-2";
-            
-            // "Twenty Ten" uses Georgia for the main text
-            textDiv.style.fontFamily = "Georgia, 'Bitstream Charter', serif";
-            textDiv.style.fontSize = '16px';
-            textDiv.style.lineHeight = '1.5'; // Adds that nice spacing between lines
-            
-            validBlock.texts.forEach(p => {
-                const clone = p.cloneNode(true);
-                clone.className = "mb-4";
-                textDiv.appendChild(clone);
-            });
-            contentArea.appendChild(textDiv);
-
-            // Loop through all detected end images and append them
-            validBlock.endImages.forEach(pTag => {
-                const imgClone = pTag.querySelector('img').cloneNode(true);
-                imgClone.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-                contentArea.appendChild(imgClone);
-            });
+        if (block) {
+            renderBlock(contentArea, block, Infinity);
         } else {
-            const textDiv = document.createElement('div');
-            textDiv.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
-            contentArea.appendChild(textDiv);
+            contentArea.innerHTML = `<p class="text-lg">Unable to conjure a visual memory.</p>`;
         }
 
-        // 4. Update Footer & Firsts
-        const slug = parsedTitle.toLowerCase()
-            .replace(/['"“”‘’]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-        
-        const realUrl = parsedDateUrl 
-            ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
-            : `https://therealfullhousereviewed.wordpress.com/`;
+        infoBox.innerHTML = '';
+        infoBox.append(review.t);
+        if (review.d) { infoBox.append(document.createElement('br'), `Review Date: ${review.d}`); }
+        linkBox.href = reviewUrl(review);
 
-        const dateString = displayDate ? `<br>Review Date: ${displayDate}` : "";
-        infoBox.innerHTML = `${parsedTitle}${dateString}`;
-        
-        linkBox.href = realUrl; 
-
-        // Show Firsts container ONLY if we found text
-        if (firstsText) {
+        if (review.s) {
             firstsContainer.classList.remove('hidden');
-            // Re-adding the label "Firsts in this episode:" for display purposes
-            firstsBox.textContent = `Firsts in this episode: ${firstsText}`;
-        } else {
-            firstsContainer.classList.add('hidden');
+            firstsBox.textContent = `Firsts in this episode: ${review.s}`;
         }
-
     } catch (e) {
         console.error(e);
         contentArea.innerHTML = '<p class="text-red-600">The archives are dusty. Please try again.</p>';
     }
 
     document.getElementById("bottom-button-container").style.display = "block";
+    prefetchNext();
+}
+
+// --- 5. THIS WEEK IN FHR HISTORY ---
+// Uses only the index to choose a review, then downloads that one file.
+function chooseHistoryReview(today) {
+    // Reviews whose month/day falls on today or one of the previous 6 days.
+    for (let daysBack = 0; daysBack < 7; daysBack++) {
+        const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysBack);
+        const suffix = `-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const matches = reviews.filter(r => r.b > 0 && r.d && r.d.endsWith(suffix));
+        if (matches.length) return { review: pick(matches), exact: true };
+    }
+
+    // Nothing this week: fall back to the closest anniversary (in either direction).
+    const DAY = 86400000, YEAR = 366 * DAY;
+    const todayKey = Date.UTC(2000, today.getMonth(), today.getDate());
+    let best = [], bestDist = Infinity;
+    for (const r of reviews) {
+        if (r.b === 0 || !r.d) continue;
+        const [, m, d] = r.d.split('-').map(Number);
+        let dist = Math.abs(Date.UTC(2000, m - 1, d) - todayKey);
+        dist = Math.min(dist, YEAR - dist);
+        if (dist < bestDist) { bestDist = dist; best = [r]; }
+        else if (dist === bestDist) best.push(r);
+    }
+    return best.length ? { review: pick(best), exact: false } : null;
+}
+
+async function displayQuoteOfTheDay() {
+    const box = document.getElementById('quoteOfDayBox');
+    try {
+        const choice = chooseHistoryReview(new Date());
+        if (!choice) return;
+        const { review, exact } = choice;
+
+        const block = findBlocks(await fetchReviewDoc(review.f))[0];
+        if (!block) return;
+
+        const contentArea = document.getElementById('quoteOfDayContent');
+        renderBlock(contentArea, block, 1);
+
+        if (!exact) {
+            document.getElementById('quoteOfDayHeading').textContent = 'From the FHR Archives';
+        }
+        document.getElementById('quoteOfDayInfo').textContent = review.t + (review.d ? ` • ${review.d}` : "");
+        document.getElementById('quoteOfDayLink').href = reviewUrl(review);
+        box.style.display = '';
+    } catch (e) {
+        console.error('This Week in FHR History failed:', e);
+    }
 }
 
 loadFhrArchive();
-
-// --- THIS WEEK IN FHR HISTORY ---
-async function displayQuoteOfTheDay() {
-    if (!window.quotes || window.quotes.length === 0) return;
-    
-    const today = new Date();
-    const targetMonth = String(today.getMonth() + 1).padStart(2, '0');
-    const targetDay = String(today.getDate()).padStart(2, '0');
-    
-    // Function to parse date from review
-    function parseReviewDate(htmlText) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
-        const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-        if (dateEl) {
-            const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
-            if (match) {
-                return {
-                    year: match[1],
-                    month: match[2],
-                    day: match[3],
-                    full: `${match[1]}-${match[2]}-${match[3]}`
-                };
-            }
-        }
-        return null;
-    }
-    
-    // Try to find a match, going backwards from today's date
-    let chosenFile = null;
-    let daysBack = 0;
-    
-    while (daysBack < 7 && !chosenFile) {
-        const checkDate = new Date(today);
-        checkDate.setDate(today.getDate() - daysBack);
-        const checkMonth = String(checkDate.getMonth() + 1).padStart(2, '0');
-        const checkDay = String(checkDate.getDate()).padStart(2, '0');
-        
-        // Check all files for this date
-        for (const file of window.quotes) {
-            try {
-                const response = await fetch(`fhr/${file.filename}`);
-                const htmlText = await response.text();
-                const reviewDate = parseReviewDate(htmlText);
-                
-                if (reviewDate && reviewDate.month === checkMonth && reviewDate.day === checkDay) {
-                    chosenFile = { file, htmlText, reviewDate };
-                    break;
-                }
-            } catch (e) {
-                console.error(`Error checking ${file.filename}:`, e);
-            }
-        }
-        
-        daysBack++;
-    }
-    
-    // If no match found in past week, hide the box
-    if (!chosenFile) {
-        document.getElementById('quoteOfDayBox').style.display = 'none';
-        return;
-    }
-    
-    try {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(chosenFile.htmlText, 'text/html');
-        
-        // Extract metadata
-        const parsedTitle = doc.querySelector('h1')?.textContent.trim() || "Unknown Title";
-        
-        let displayDate = "";
-        let parsedDateUrl = "";
-        const dateEl = Array.from(doc.querySelectorAll('em')).find(el => el.textContent.includes('Original Date'));
-        if (dateEl) {
-            displayDate = dateEl.textContent.replace('Original Date:', '').trim();
-            const match = dateEl.textContent.match(/(\d{4})-(\d{2})-(\d{2})/);
-            if (match) parsedDateUrl = `${match[1]}/${match[2]}/${match[3]}`;
-        }
-        
-        // Find content
-        const allPs = Array.from(doc.querySelectorAll('p'));
-        const nodes = allPs.map(p => {
-            if (p.querySelector('img')) return { type: 'IMG', el: p };
-            const text = p.textContent.trim();
-            if (text && !text.includes('Original Date') && !text.toLowerCase().includes('source:') && !text.startsWith('Firsts:')) {
-                return { type: 'TEXT', el: p };
-            }
-            return { type: 'SKIP' };
-        });
-        
-        // Find first image-text-image combo
-        let validBlock = null;
-        for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].type === 'IMG') {
-                let texts = [];
-                let j = i + 1;
-                while (j < nodes.length) {
-                    if (nodes[j].type === 'TEXT') {
-                        texts.push(nodes[j].el);
-                    } else if (nodes[j].type === 'IMG') {
-                        if (texts.length > 0) {
-                            let endImages = [nodes[j].el];
-                            let k = j + 1;
-                            
-                            while (k < nodes.length && nodes[k].type === 'IMG') {
-                                if (nodes[k].el.textContent.trim().length > 0) {
-                                    break;
-                                }
-                                endImages.push(nodes[k].el);
-                                k++;
-                            }
-                            
-                            validBlock = { start: nodes[i].el, texts: texts.slice(0, 1), endImages: endImages };
-                            break;
-                        }
-                    }
-                    j++;
-                }
-                if (validBlock) break;
-            }
-        }
-        
-        // Render content
-        const contentArea = document.getElementById('quoteOfDayContent');
-        const infoBox = document.getElementById('quoteOfDayInfo');
-        
-        if (validBlock) {
-            const img = validBlock.start.querySelector('img').cloneNode(true);
-            img.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-            contentArea.appendChild(img);
-            
-            const textDiv = document.createElement('div');
-            textDiv.className = "text-black px-2";
-            textDiv.style.fontFamily = "Georgia, 'Bitstream Charter', serif";
-            textDiv.style.fontSize = '16px';
-            textDiv.style.lineHeight = '1.5';
-            
-            const clone = validBlock.texts[0].cloneNode(true);
-            textDiv.appendChild(clone);
-            contentArea.appendChild(textDiv);
-            
-            // Add ending images
-            validBlock.endImages.forEach(pTag => {
-                const imgClone = pTag.querySelector('img').cloneNode(true);
-                imgClone.className = "max-w-full h-auto mx-auto border border-gray-300 shadow-sm";
-                contentArea.appendChild(imgClone);
-            });
-        }
-        
-        const dateString = displayDate ? ` • ${displayDate}` : "";
-        infoBox.textContent = parsedTitle + dateString;
-        
-        // Create the review link
-        const slug = parsedTitle.toLowerCase()
-            .replace(/['"""'']/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-
-        const realUrl = parsedDateUrl 
-            ? `https://therealfullhousereviewed.wordpress.com/${parsedDateUrl}/${slug}/`
-            : `https://therealfullhousereviewed.wordpress.com/`;
-
-        document.getElementById('quoteOfDayLink').href = realUrl;
-        
-    } catch (e) {
-        console.error('This Week in FHR History failed:', e);
-        document.getElementById('quoteOfDayBox').style.display = 'none';
-    }
-}
 </script>
 </body>
 </html>
