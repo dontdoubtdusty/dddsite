@@ -80,10 +80,91 @@
             background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('fhr/dark-full-house-fan-theories.jpg') !important;
             color: #000000 !important;
         }
-        #quoteOfDayBox {
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
+        /* --- This Week in FHR History --- */
+        .history-card {
+            background: #ffffff;
+            border: 2px solid #000000;
+            border-top: 8px solid #f6c7b7;
+            box-shadow: 4px 4px 0 #f6c7b7;
+            border-radius: 6px;
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+        .history-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: #fdf1ec;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .date-badge {
+            flex: 0 0 auto;
+            width: 64px;
+            text-align: center;
+            background: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 6px;
+            overflow: hidden;
+            line-height: 1;
+        }
+        .date-badge .mon {
+            display: block;
+            background: #000000;
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            padding: 4px 0;
+        }
+        .date-badge .day {
+            display: block;
+            font-size: 1.9rem;
+            font-weight: bold;
+            padding: 6px 0 7px;
+        }
+        .history-kicker {
+            margin: 0 0 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #7a4a3a;
+        }
+        .history-title {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: bold;
+            line-height: 1.25;
+        }
+        .history-meta {
+            margin: 4px 0 0;
+            font-size: 0.85rem;
+            font-style: italic;
+            color: #555555;
+        }
+        .history-body {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .history-body p { margin-bottom: 0; }
+        .history-body > div.text-black {
+            text-align: left;
+            border-left: 4px solid #f6c7b7;
+            padding-left: 14px;
+            font-style: italic;
+        }
+        .history-foot {
+            padding: 0 20px 20px;
+            text-align: center;
+        }
+        @media (max-width: 480px) {
+            .history-head { padding: 14px; gap: 12px; }
+            .history-body { padding: 14px; }
+            .history-foot { padding: 0 14px 16px; }
         }
     </style>
 </head>
@@ -92,19 +173,7 @@
   <img src="fhr/fhrbanner.jpg" alt="FHR Archives Banner" style="width: 100%; max-width: 450px; height: auto; display: block; margin: 0 auto;">
 </header>
 
-<!-- This Week in FHR History (hidden until a review has loaded) -->
-<div id="quoteOfDayBox" class="parchment rounded-lg p-6 mb-6 shadow-lg border border-gray-300" style="display: none;">
-    <h2 id="quoteOfDayHeading" class="text-lg font-bold text-black mb-3">
-        This Week in FHR History
-    </h2>
-    <div id="quoteOfDayContent" class="flex flex-col gap-4 text-center"></div>
-    <div class="mt-4 pt-3 border-t border-gray-200 flex justify-between items-end">
-        <p class="text-sm text-gray-600" id="quoteOfDayInfo"></p>
-        <a id="quoteOfDayLink" href="#" class="read-review-btn">Read Review</a>
-    </div>
-</div>
-
-    <div class="max-w-4xl mx-auto" style="max-width: 700px; padding: 60px 24px;">
+    <div class="max-w-4xl mx-auto" style="max-width: 700px; padding: 32px 0 60px;">
         <h1 class="text-4xl font-bold mb-2 text-center tracking-wide drop-shadow-md relative block mx-auto pb-3" style="letter-spacing: 0.05em;">
             <span class="px-4 py-1" style="border-color: #000000;">THE FHR ARCHIVES</span>
         </h1>
@@ -114,6 +183,25 @@
 
         <p class="text-center mb-2 font-bold" id="quoteCount">Loading Archives...</p>
         <p class="text-center mb-8 text-sm italic text-gray-600" id="subStatus">Fetching scrolls...</p>
+
+        <!-- This Week in FHR History (hidden until a review has loaded) -->
+        <section id="quoteOfDayBox" class="history-card" style="display: none;">
+            <div class="history-head">
+                <div class="date-badge" aria-hidden="true">
+                    <span class="mon" id="histMonth"></span>
+                    <span class="day" id="histDay"></span>
+                </div>
+                <div>
+                    <p class="history-kicker" id="quoteOfDayHeading">This Week in FHR History</p>
+                    <p class="history-title" id="quoteOfDayTitle"></p>
+                    <p class="history-meta" id="quoteOfDayInfo"></p>
+                </div>
+            </div>
+            <div id="quoteOfDayContent" class="history-body"></div>
+            <div class="history-foot">
+                <a id="quoteOfDayLink" href="#" class="read-review-btn">Read Review</a>
+            </div>
+        </section>
 
         <div class="parchment rounded-lg p-6 mb-6 shadow-lg">
             <button
@@ -386,7 +474,18 @@ async function displayQuoteOfTheDay() {
         if (!exact) {
             document.getElementById('quoteOfDayHeading').textContent = 'From the FHR Archives';
         }
-        document.getElementById('quoteOfDayInfo').textContent = review.t + (review.d ? ` • ${review.d}` : "");
+        document.getElementById('quoteOfDayTitle').textContent = review.t;
+        if (review.d) {
+            const [yr, mo, dy] = review.d.split('-').map(Number);
+            const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+            document.getElementById('histMonth').textContent = MONTHS[mo - 1];
+            document.getElementById('histDay').textContent = dy;
+            const ago = new Date().getFullYear() - yr;
+            document.getElementById('quoteOfDayInfo').textContent =
+                ago > 0 ? `Reviewed ${ago} year${ago === 1 ? '' : 's'} ago · ${review.d}` : `Reviewed ${review.d}`;
+        } else {
+            document.querySelector('#quoteOfDayBox .date-badge').style.display = 'none';
+        }
         document.getElementById('quoteOfDayLink').href = reviewUrl(review);
         box.style.display = '';
     } catch (e) {
