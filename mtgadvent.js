@@ -3,7 +3,7 @@
 (function () {
     'use strict';
 
-    const LAST_DAY = 25;
+    const DRAFTS = 5; // four Advent Sundays plus Christmas Day
     const DECEMBER = 11;
     const MS_PER_DAY = 86400000;
 
@@ -11,28 +11,38 @@
         return new Date(d.getFullYear(), d.getMonth(), d.getDate());
     }
 
-    // Where "now" falls relative to the December of `year`.
-    //   before: not December yet; nothing is unlocked
-    //   active: Dec 1-25; `today` is the day number that is unlocked
-    //   after:  Dec 26 onward; the calendar is done for the year
-    function seasonOf(now, year) {
-        const opens = new Date(year, DECEMBER, 1);
-        const closes = new Date(year, DECEMBER, LAST_DAY + 1);
-        if (now < opens) {
-            return { phase: 'before', today: 0, daysUntil: Math.round((opens - startOfDay(now)) / MS_PER_DAY) };
-        }
-        if (now >= closes) return { phase: 'after', today: LAST_DAY + 1, daysUntil: 0 };
-        return { phase: 'active', today: now.getDate(), daysUntil: 0 };
+    // The day each draft unlocks: the four Advent Sundays (the fourth is the last Sunday before
+    // Christmas, so the first can fall in late November), then Christmas Day itself.
+    function unlockDates(year) {
+        const christmas = new Date(year, DECEMBER, 25);
+        const fourth = 25 - (christmas.getDay() || 7);
+        const dates = [21, 14, 7, 0].map(back => new Date(year, DECEMBER, fourth - back));
+        dates.push(christmas);
+        return dates;
     }
 
-    // today: the door that can be opened now. past: earlier days (already done).
+    // Where "now" falls in the Advent of `year`.
+    //   before: before the first Advent Sunday; nothing is unlocked
+    //   active: `current` is the newest unlocked draft (1-5); `daysUntil` counts to the next one
+    //   after:  Dec 26 onward; the calendar is done for the year
+    function seasonOf(now, year) {
+        const dates = unlockDates(year);
+        const closes = new Date(year, DECEMBER, 26);
+        const daysTo = d => Math.round((d - startOfDay(now)) / MS_PER_DAY);
+        if (now < dates[0]) return { phase: 'before', current: 0, dates, daysUntil: daysTo(dates[0]) };
+        if (now >= closes) return { phase: 'after', current: DRAFTS + 1, dates, daysUntil: 0 };
+        const current = dates.filter(d => now >= d).length;
+        return { phase: 'active', current, dates, daysUntil: current < DRAFTS ? daysTo(dates[current]) : 0 };
+    }
+
+    // current: the draft that can be opened now. past: earlier drafts.
     // next: the single locked door that gets a teaser. locked: everything after that.
-    function doorState(day, season) {
-        if (season.phase === 'before') return day === 1 ? 'next' : 'locked';
+    function doorState(n, season) {
+        if (season.phase === 'before') return n === 1 ? 'next' : 'locked';
         if (season.phase === 'after') return 'past';
-        if (day < season.today) return 'past';
-        if (day === season.today) return 'today';
-        if (day === season.today + 1) return 'next';
+        if (n < season.current) return 'past';
+        if (n === season.current) return 'current';
+        if (n === season.current + 1) return 'next';
         return 'locked';
     }
 
@@ -40,7 +50,7 @@
         return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now;
     }
 
-    const logic = { seasonOf, doorState, msUntilNextMidnight, LAST_DAY };
+    const logic = { unlockDates, seasonOf, doorState, msUntilNextMidnight, DRAFTS };
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = logic;
         return;
@@ -48,7 +58,9 @@
 
     // ---- Page behavior (browser only) ----
 
-    const HUES = [352, 150, 42, 205, 285]; // red, green, gold, blue, purple doors
+    // Door colors follow the wreath: purple, purple, rose (third Sunday), purple, gold for Christmas.
+    const HUES = [272, 286, 334, 300, 42];
+    const CANDLES = ['#7b4bb3', '#8a52c2', '#d46a9f', '#9258c4'];
     const SVG_NS = 'http://www.w3.org/2000/svg';
     const MYSTERY_ICON = 'https://svgs.scryfall.io/sets/mb2.svg'; // Mystery Booster symbol stands in for the hidden set
     const BELL_URL = 'christmas-bells-02-439604.mp3';
@@ -96,9 +108,45 @@
         '<path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="2"/>', cls);
     const checkSvg = cls => svg('<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>', cls);
     const closeSvg = cls => svg('<path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>', cls);
+    const starSvg = cls => svg('<path d="M12 2.5l2.8 6.1 6.7.7-5 4.5 1.4 6.6L12 17l-5.9 3.4 1.4-6.6-5-4.5 6.7-.7z" fill="currentColor"/>', cls);
+
+    const isChristmas = n => n === DRAFTS;
+    const shortDate = d => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const longDate = d => d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    // "Week 2" or "Christmas Day", for headings and labels.
+    const draftName = n => isChristmas(n) ? 'Christmas Day' : 'Week ' + n;
+
+    // The Advent wreath in the header: four candles around the ring and the Christmas candle in the middle.
+    // A candle is lit once its draft has unlocked. Drawn once per render, no animation.
+    function drawWreath(season) {
+        const lit = n => season.phase === 'after' || (season.phase === 'active' && season.current >= n);
+        const candle = (x, base, h, color, n) => {
+            let s = '<rect x="' + (x - 7) + '" y="' + (base - h) + '" width="14" height="' + h + '" rx="2" fill="' + color + '"/>' +
+                '<rect x="' + (x - 7) + '" y="' + (base - h) + '" width="4" height="' + h + '" rx="2" fill="#fff" opacity="0.18"/>' +
+                '<path d="M' + x + ' ' + (base - h) + 'v-5" stroke="#2a1d10" stroke-width="1.5"/>';
+            if (lit(n)) {
+                const t = base - h - 5;
+                s += '<circle cx="' + x + '" cy="' + (t - 6) + '" r="13" fill="#ffd700" opacity="0.16"/>' +
+                    '<path d="M' + x + ' ' + (t - 17) + 'c6 7 6 13 0 17c-6-4-6-10 0-17z" fill="#ffc93c"/>' +
+                    '<path d="M' + x + ' ' + (t - 9) + 'c3 4 3 7 0 9c-3-2-3-5 0-9z" fill="#fff3b0"/>';
+            }
+            return s;
+        };
+        const berries = [[52, 104], [96, 113], [148, 113], [190, 104], [72, 86], [170, 86], [120, 82]]
+            .map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r="3.2" fill="#c8323c"/>').join('');
+        const back = candle(86, 88, 40, CANDLES[1], 2) + candle(154, 88, 40, CANDLES[2], 3);
+        const ring = '<ellipse cx="120" cy="98" rx="92" ry="20" fill="none" stroke="#1f4d2b" stroke-width="16"/>' +
+            '<ellipse cx="120" cy="98" rx="92" ry="20" fill="none" stroke="#3f8a4c" stroke-width="7" stroke-dasharray="9 7"/>' + berries;
+        const front = candle(46, 104, 44, CANDLES[0], 1) + candle(194, 104, 44, CANDLES[3], 4) + candle(120, 100, 58, '#f4efe2', 5);
+        const count = [1, 2, 3, 4, 5].filter(lit).length;
+        const wreath = document.getElementById('wreath');
+        wreath.innerHTML = back + ring + front;
+        wreath.setAttribute('aria-label', 'Advent wreath with ' + count + ' of 5 candles lit');
+    }
 
     // Opened state is only a per-device convenience; the page works without it.
-    function storageKey() { return 'mtgadvent-' + data.year + (testMode ? '-test' : '') + '-opened'; }
+    // Its own key, so the old daily calendar's opened days don't carry over.
+    function storageKey() { return 'mtgadvent-' + data.year + '-weekly' + (testMode ? '-test' : '') + '-opened'; }
     function getOpened() {
         try { return JSON.parse(localStorage.getItem(storageKey())) || []; } catch (e) { return []; }
     }
@@ -146,18 +194,23 @@
             icons.appendChild(img);
         });
         inside.appendChild(icons);
-        inside.appendChild(el('span', 'door-title', entry.title));
+        const text = el('span', 'door-text');
+        text.appendChild(el('span', 'door-title', entry.title));
+        text.appendChild(el('span', 'door-date', draftName(entry.day)));
+        inside.appendChild(text);
         return inside;
     }
 
     function buildDoor(entry, state, season, wasOpened) {
-        const door = el('button', 'door state-' + state);
+        const n = entry.day;
+        const door = el('button', 'door state-' + state + (isChristmas(n) ? ' xmas' : ''));
         door.type = 'button';
-        door.style.setProperty('--hue', HUES[(entry.day - 1) % HUES.length]);
-        door.dataset.day = entry.day;
+        door.style.setProperty('--hue', HUES[(n - 1) % HUES.length]);
+        door.dataset.day = n;
+        const date = season.dates[n - 1];
 
         const frame = el('span', 'frame');
-        const unlocked = state === 'today' || state === 'past';
+        const unlocked = state === 'current' || state === 'past';
         if (unlocked) frame.appendChild(buildInside(entry));
         const leafL = el('span', 'leaf leaf-l');
         const leafR = el('span', 'leaf leaf-r');
@@ -175,25 +228,25 @@
         }
         frame.appendChild(leafL);
         frame.appendChild(leafR);
-        frame.appendChild(el('span', 'num', String(entry.day)));
-
-        if (state === 'next') {
-            frame.appendChild(el('span', 'when', season.phase === 'before' ? 'Dec 1' : 'Tomorrow'));
-        }
+        // Closed door: the week number (a star for Christmas) and the date it unlocks.
+        const num = el('span', 'num');
+        if (isChristmas(n)) num.appendChild(starSvg('star'));
+        else num.textContent = String(n);
+        frame.appendChild(num);
+        frame.appendChild(el('span', 'when', shortDate(date)));
         if (state === 'locked' || state === 'next') frame.appendChild(lockSvg('lock'));
 
-        const done = state === 'today' && wasOpened;
+        const done = state === 'current' && wasOpened;
         if (unlocked) {
             if (done) {
                 door.classList.add('open');
                 frame.appendChild(checkSvg('check'));
             }
-            door.setAttribute('aria-label', 'Day ' + entry.day + ': ' + entry.title +
-                (state === 'today' && !wasOpened ? ', open today’s door' : ', view details'));
+            door.setAttribute('aria-label', draftName(n) + ': ' + entry.title +
+                (state === 'current' && !wasOpened ? ', open this draft' : ', view details'));
         } else {
             door.disabled = true;
-            door.setAttribute('aria-label', 'Day ' + entry.day + ', locked' +
-                (state === 'next' ? ', unlocks ' + (season.phase === 'before' ? 'December 1' : 'tomorrow') : ''));
+            door.setAttribute('aria-label', draftName(n) + ', locked, unlocks ' + longDate(date));
         }
 
         door.appendChild(frame);
@@ -227,10 +280,10 @@
     }
 
     function onDoorClick(entry, door, state, e) {
-        if (state === 'today' && !door.classList.contains('open')) {
+        if (state === 'current' && !door.classList.contains('open')) {
             door.classList.add('open');
             door.querySelector('.frame').appendChild(checkSvg('check'));
-            door.setAttribute('aria-label', 'Day ' + entry.day + ': ' + entry.title + ', view details');
+            door.setAttribute('aria-label', draftName(entry.day) + ': ' + entry.title + ', view details');
             markOpened(entry.day);
             statusEl.textContent = statusText(currentSeason, true);
             const rect = door.getBoundingClientRect();
@@ -251,7 +304,7 @@
     function showDetails(entry, door) {
         lastDoor = door;
         modalBody.textContent = '';
-        modalBody.appendChild(el('p', 'modal-day', 'Day ' + entry.day));
+        modalBody.appendChild(el('p', 'modal-day', draftName(entry.day) + ' · ' + longDate(currentSeason.dates[entry.day - 1])));
         const title = el('h2', 'modal-title', entry.title);
         title.id = 'modalTitle';
         modalBody.appendChild(title);
@@ -294,17 +347,20 @@
     document.getElementById('modalClose').appendChild(closeSvg());
     document.getElementById('modalClose').addEventListener('click', closeModal);
 
-    function statusText(season, todayOpened) {
+    // "in 3 days", "tomorrow" or "today", for the countdown to the next unlock.
+    function inDays(n) { return n <= 0 ? 'today' : n === 1 ? 'tomorrow' : 'in ' + n + ' days'; }
+
+    function statusText(season, currentOpened) {
         if (season.phase === 'before') {
-            return season.daysUntil === 1
-                ? 'The calendar opens tomorrow, December 1.'
-                : 'The calendar opens December 1. ' + season.daysUntil + ' days to go.';
+            return 'The first draft opens ' + longDate(season.dates[0]) + ', ' + inDays(season.daysUntil) + '.';
         }
-        if (season.phase === 'after') return 'The ' + data.year + ' calendar has finished. See you next December.';
-        if (season.today === LAST_DAY) return todayOpened ? 'Merry Christmas! That was the last door.' : 'Merry Christmas! Open the last door.';
-        return todayOpened
-            ? 'Day ' + season.today + ' of ' + LAST_DAY + '. Today’s door is open. Come back tomorrow.'
-            : 'Day ' + season.today + ' of ' + LAST_DAY + '. Today’s door is ready to open.';
+        if (season.phase === 'after') return 'The ' + data.year + ' calendar has finished. See you next Advent.';
+        if (isChristmas(season.current)) {
+            return currentOpened ? 'Merry Christmas! That was the last door.' : 'Merry Christmas! The Christmas draft is ready to open.';
+        }
+        const next = isChristmas(season.current + 1) ? 'The Christmas draft' : 'Next draft';
+        return 'Week ' + season.current + ' of 4: ' + (currentOpened ? 'this week’s draft is open. ' : 'this week’s draft is ready to open. ') +
+            next + ' ' + longDate(season.dates[season.current]) + ', ' + inDays(season.daysUntil) + '.';
     }
 
     const testbar = document.getElementById('testbar');
@@ -321,8 +377,10 @@
 
     function setupTestBar() {
         testbar.hidden = false;
+        document.getElementById('testPrevWeek').addEventListener('click', () => shiftTestDay(-7));
         document.getElementById('testPrev').addEventListener('click', () => shiftTestDay(-1));
         document.getElementById('testNext').addEventListener('click', () => shiftTestDay(1));
+        document.getElementById('testNextWeek').addEventListener('click', () => shiftTestDay(7));
         document.getElementById('testReset').addEventListener('click', () => {
             try { localStorage.removeItem(storageKey()); } catch (e) { /* ignore */ }
             render();
@@ -341,6 +399,7 @@
         currentSeason = season;
         const opened = getOpened();
         grid.textContent = '';
+        drawWreath(season);
 
         if (season.phase === 'after') {
             statusEl.textContent = statusText(season, false);
@@ -351,7 +410,7 @@
                 const state = doorState(entry.day, season);
                 grid.appendChild(buildDoor(entry, state, season, opened.includes(entry.day)));
             });
-            statusEl.textContent = statusText(season, opened.includes(season.today));
+            statusEl.textContent = statusText(season, opened.includes(season.current));
         }
 
         // Unlock the next door if the tab is left open past midnight.

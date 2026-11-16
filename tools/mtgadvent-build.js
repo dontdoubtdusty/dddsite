@@ -7,8 +7,8 @@
 // - Finds every core/expansion set that has Standard-legal cards right now
 //   (minus the "exclude" list stored in the JSON, e.g. non-draftable supplements).
 // - Fetches set icon + a piece of card art for each set.
-// - Builds 25 days, ~85% pairs and the rest single sets, using a shuffle seeded by the year
-//   so the same year always gives the same calendar.
+// - Builds 5 drafts (the four Advent Sundays and Christmas Day), each a pair of sets, using a
+//   shuffle seeded by the year so the same year always gives the same calendar.
 // - Keeps anything you've hand-written (set blurbs, day titles/descriptions) on later runs.
 //   Pass --reshuffle to throw the day assignments away and redo them.
 //
@@ -22,7 +22,7 @@ const OUT = path.join(__dirname, '..', 'draftsets.json');
 const OUT_JS = path.join(__dirname, '..', 'draftsets.js');
 const API = 'https://api.scryfall.com';
 const HEADERS = { 'User-Agent': 'dddsite-mtgadvent/2.0', Accept: 'application/json' };
-const DAYS = 25;
+const DAYS = 5; // four Advent Sundays plus Christmas Day
 // A set only counts as Standard if at least this many of its cards are legal. Sets that rotated
 // out still show a handful of legal cards because of reprints in newer sets.
 const MIN_LEGAL = 100;
@@ -99,8 +99,8 @@ function pickArt(cards) {
 }
 
 function buildDays(codes, rand) {
-    // 3 or 4 single-set days out of 25 gives 84-88% pairs.
-    const singles = 3 + Math.floor(rand() * 2);
+    // Every draft is a pair; raise this to mix in single-set drafts.
+    const singles = 0;
     const slots = shuffle([...Array(DAYS).keys()], rand);
     const singleDays = new Set(slots.slice(0, singles));
     const use = Object.fromEntries(codes.map(c => [c, 0]));
@@ -149,7 +149,7 @@ function assignDays(sets, rand) {
 }
 
 // Offline reshuffle: keeps the sets already in draftsets.json and applies the same rules
-// (25 days, ~85% pairs, even set usage, no repeated pair) with a fresh random seed.
+// (5 drafts, all pairs, even set usage, no repeated pair) with a fresh random seed.
 if (shuffleOnly) {
     if (!fs.existsSync(OUT)) { console.error('No draftsets.json yet; run the full build first.'); process.exit(1); }
     const data = JSON.parse(fs.readFileSync(OUT, 'utf8'));
