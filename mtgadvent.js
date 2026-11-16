@@ -58,9 +58,17 @@
 
     // ---- Page behavior (browser only) ----
 
-    // Door colors follow the wreath: purple, purple, rose (third Sunday), purple, gold for Christmas.
+    // Door colors: purple, purple, rose (third Sunday), purple, gold for Christmas.
     const HUES = [272, 286, 334, 300, 42];
-    const CANDLES = ['#7b4bb3', '#8a52c2', '#d46a9f', '#9258c4'];
+    // Wreath candles in WUBRG order, one per draft, placed around the ring like the color pie seen from above:
+    // white at the back, then clockwise blue, black, red, green. x/y is where the candle stands on the ring.
+    const CANDLES = [
+        { color: '#f4efd6', edge: '#b9b294', x: 120, y: 80 },  // W
+        { color: '#1f6fb5', edge: '#5aa3e0', x: 196, y: 94 },  // U
+        { color: '#24201c', edge: '#7a6e64', x: 167, y: 116 }, // B
+        { color: '#d3202a', edge: '#f06a5f', x: 73, y: 116 },  // R
+        { color: '#00733e', edge: '#3fae72', x: 44, y: 94 }    // G
+    ];
     const SVG_NS = 'http://www.w3.org/2000/svg';
     const MYSTERY_ICON = 'https://svgs.scryfall.io/sets/mb2.svg'; // Mystery Booster symbol stands in for the hidden set
     const BELL_URL = 'christmas-bells-02-439604.mp3';
@@ -116,12 +124,15 @@
     // "Week 2" or "Christmas Day", for headings and labels.
     const draftName = n => isChristmas(n) ? 'Christmas Day' : 'Week ' + n;
 
-    // The Advent wreath in the header: four candles around the ring and the Christmas candle in the middle.
+    // The Advent wreath in the header: five candles in WUBRG order around the ring, the green one for Christmas.
     // A candle is lit once its draft has unlocked. Drawn once per render, no animation.
     function drawWreath(season) {
         const lit = n => season.phase === 'after' || (season.phase === 'active' && season.current >= n);
-        const candle = (x, base, h, color, n) => {
-            let s = '<rect x="' + (x - 7) + '" y="' + (base - h) + '" width="14" height="' + h + '" rx="2" fill="' + color + '"/>' +
+        const candle = n => {
+            const c = CANDLES[n - 1];
+            const x = c.x, base = c.y, h = 44;
+            let s = '<rect x="' + (x - 7) + '" y="' + (base - h) + '" width="14" height="' + h + '" rx="2" fill="' + c.color +
+                '" stroke="' + c.edge + '" stroke-width="1"/>' +
                 '<rect x="' + (x - 7) + '" y="' + (base - h) + '" width="4" height="' + h + '" rx="2" fill="#fff" opacity="0.18"/>' +
                 '<path d="M' + x + ' ' + (base - h) + 'v-5" stroke="#2a1d10" stroke-width="1.5"/>';
             if (lit(n)) {
@@ -134,10 +145,11 @@
         };
         const berries = [[52, 104], [96, 113], [148, 113], [190, 104], [72, 86], [170, 86], [120, 82]]
             .map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r="3.2" fill="#c8323c"/>').join('');
-        const back = candle(86, 88, 40, CANDLES[1], 2) + candle(154, 88, 40, CANDLES[2], 3);
+        // Back candles (W, U, G) are drawn before the ring, front ones (B, R) after it.
+        const back = candle(1) + candle(2) + candle(5);
         const ring = '<ellipse cx="120" cy="98" rx="92" ry="20" fill="none" stroke="#1f4d2b" stroke-width="16"/>' +
             '<ellipse cx="120" cy="98" rx="92" ry="20" fill="none" stroke="#3f8a4c" stroke-width="7" stroke-dasharray="9 7"/>' + berries;
-        const front = candle(46, 104, 44, CANDLES[0], 1) + candle(194, 104, 44, CANDLES[3], 4) + candle(120, 100, 58, '#f4efe2', 5);
+        const front = candle(3) + candle(4);
         const count = [1, 2, 3, 4, 5].filter(lit).length;
         const wreath = document.getElementById('wreath');
         wreath.innerHTML = back + ring + front;
