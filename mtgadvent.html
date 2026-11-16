@@ -114,7 +114,6 @@
 
         /* ---- Doors ---- */
         .door {
-            --h: var(--hue, 352);
             position: relative;
             aspect-ratio: 1;
             padding: 0;
@@ -142,15 +141,17 @@
             bottom: 0;
             width: 50%;
             z-index: 2;
-            background: linear-gradient(145deg, hsl(var(--h) 55% 40%), hsl(var(--h) 62% 24%));
-            border: 1px solid hsl(var(--h) 70% 62% / 0.55);
+            /* Each leaf carries one Magic color, set from the script (--top, --bot, --rim) */
+            background: linear-gradient(145deg, var(--top, #3a4a6b), var(--bot, #1c2740));
+            border: 1px solid var(--rim, rgba(255,255,255,0.3));
             transition: transform 0.7s cubic-bezier(.3,.7,.2,1);
         }
         .leaf::before { /* recessed panel */
             content: '';
             position: absolute;
             inset: 12% 14%;
-            border: 1px solid hsl(var(--h) 65% 62% / 0.45);
+            border: 1px solid var(--rim, rgba(255,255,255,0.3));
+            opacity: 0.7;
             border-radius: 3px;
         }
         .leaf::after { /* knob */
@@ -172,6 +173,10 @@
             margin: -14px 0 0 -14px;
             filter: invert(1);
             opacity: 0.85;
+        }
+        .leaf.light .leaf-icon { filter: none; opacity: 0.75; } /* dark symbol on the white leaf */
+        .leaf.light ~ .num, .leaf.light ~ .when { /* keep the number and date readable over white */
+            text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.9);
         }
         .leaf-l { left: 0; transform-origin: left center; border-radius: 8px 0 0 8px; }
         .leaf-r { right: 0; transform-origin: right center; border-radius: 0 8px 8px 0; }
@@ -404,6 +409,6 @@
     </dialog>
 
     <script src="draftsets.js?v=w1"></script>
-    <script src="mtgadvent.js?v=6"></script>
+    <script src="mtgadvent.js?v=7"></script>
 </body>
 </html>

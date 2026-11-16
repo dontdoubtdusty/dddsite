@@ -58,17 +58,23 @@
 
     // ---- Page behavior (browser only) ----
 
-    // Door colors: purple, purple, rose (third Sunday), purple, gold for Christmas.
-    const HUES = [272, 286, 334, 300, 42];
-    // Wreath candles in WUBRG order, one per draft, placed around the ring like the color pie seen from above:
+    // The five Magic colors in WUBRG order. Each one is a wreath candle and a door leaf color.
+    // Candles, one per draft, placed around the ring like the color pie seen from above:
     // white at the back, then clockwise blue, black, red, green. x/y is where the candle stands on the ring.
     const CANDLES = [
-        { color: '#f4efd6', edge: '#b9b294', x: 120, y: 80 },  // W
-        { color: '#1f6fb5', edge: '#5aa3e0', x: 196, y: 94 },  // U
-        { color: '#24201c', edge: '#7a6e64', x: 167, y: 116 }, // B
-        { color: '#d3202a', edge: '#f06a5f', x: 73, y: 116 },  // R
-        { color: '#00733e', edge: '#3fae72', x: 44, y: 94 }    // G
+        { color: '#f4efd6', edge: '#b9b294', x: 120, y: 80, top: '#f1e9c9', bot: '#bfb185', rim: 'rgba(255,248,220,0.8)', light: true }, // W
+        { color: '#1f6fb5', edge: '#5aa3e0', x: 196, y: 94, top: '#2c7cc4', bot: '#0d3a6b', rim: 'rgba(120,180,240,0.6)' },  // U
+        { color: '#24201c', edge: '#7a6e64', x: 167, y: 116, top: '#3d3630', bot: '#14110e', rim: 'rgba(160,148,136,0.5)' }, // B
+        { color: '#d3202a', edge: '#f06a5f', x: 73, y: 116, top: '#cc3440', bot: '#721018', rim: 'rgba(250,140,130,0.55)' }, // R
+        { color: '#00733e', edge: '#3fae72', x: 44, y: 94, top: '#178a52', bot: '#063f26', rim: 'rgba(110,210,150,0.55)' }   // G
     ];
+    // Door n has the allied pair that starts with candle n: WU, UB, BR, RG, and GW for Christmas.
+    function paintLeaf(leaf, c) {
+        leaf.style.setProperty('--top', c.top);
+        leaf.style.setProperty('--bot', c.bot);
+        leaf.style.setProperty('--rim', c.rim);
+        if (c.light) leaf.classList.add('light');
+    }
     const SVG_NS = 'http://www.w3.org/2000/svg';
     const MYSTERY_ICON = 'https://svgs.scryfall.io/sets/mb2.svg'; // Mystery Booster symbol stands in for the hidden set
     const BELL_URL = 'christmas-bells-02-439604.mp3';
@@ -217,7 +223,6 @@
         const n = entry.day;
         const door = el('button', 'door state-' + state + (isChristmas(n) ? ' xmas' : ''));
         door.type = 'button';
-        door.style.setProperty('--hue', HUES[(n - 1) % HUES.length]);
         door.dataset.day = n;
         const date = season.dates[n - 1];
 
@@ -226,6 +231,8 @@
         if (unlocked) frame.appendChild(buildInside(entry));
         const leafL = el('span', 'leaf leaf-l');
         const leafR = el('span', 'leaf leaf-r');
+        paintLeaf(leafL, CANDLES[n - 1]);
+        paintLeaf(leafR, CANDLES[n % CANDLES.length]);
         if (unlocked || state === 'next') {
             // Set symbols sit on the closed doors: one per leaf (a single set repeats).
             // The next door shows only the first set; the second leaf keeps its secret.
