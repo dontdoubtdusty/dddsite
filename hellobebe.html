@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Get Hello Bebe</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap">
+<style>body{margin:0}img{max-width:100%}</style>
+<style>
+/* Layout: one narrow phone-first column; a soft header with Bebe, then five step cards wearing the four friends' colors. */
+:root {
+  --bg: #fff7fa; --card: #ffffff; --ink: #5b3a5e; --ink-soft: #9a7a9c;
+  --pink: #f9c6dc; --pink-strong: #e2558f; --blue: #cfe9f9; --blue-strong: #3f8fcf;
+  --mint: #c6efdb; --mint-strong: #3fae7c; --butter: #fcefb8; --amber: #dd9426;
+  --line: #5b3a5e; --on-strong: #ffffff;
+  --font: "Nunito", "Arial Rounded MT Bold", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #2b1e2d; --card: #3a2a3c; --ink: #fbe9f1; --ink-soft: #c9aecb;
+  --pink: #5a2f45; --pink-strong: #f07aa8; --blue: #24405a; --blue-strong: #79bdea;
+  --mint: #1f4636; --mint-strong: #6fcf9f; --butter: #4d4020; --amber: #f4c95a;
+  --line: #1a111b; --on-strong: #2b1e2d; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #2b1e2d; --card: #3a2a3c; --ink: #fbe9f1; --ink-soft: #c9aecb;
+  --pink: #5a2f45; --pink-strong: #f07aa8; --blue: #24405a; --blue-strong: #79bdea;
+  --mint: #1f4636; --mint-strong: #6fcf9f; --butter: #4d4020; --amber: #f4c95a;
+  --line: #1a111b; --on-strong: #2b1e2d; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 34rem; margin: 0 auto; padding-block: 1.5rem 3rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 1.1rem; }
+
+header { display: flex; align-items: center; gap: 1rem; }
+header img { width: 96px; height: auto; flex: none; filter: drop-shadow(0 4px 0 var(--pink)); }
+h1 { font-size: 2.1rem; font-weight: 900; line-height: 1.05; margin: 0; text-wrap: balance; }
+.sub { margin: .25rem 0 0; color: var(--ink-soft); font-weight: 600; }
+
+.get { display: flex; flex-direction: column; gap: .6rem; background: var(--card); border: 3px solid var(--line);
+  border-radius: 24px; padding: 1.1rem; }
+.btn { display: block; text-align: center; text-decoration: none; background: var(--pink-strong); color: var(--on-strong);
+  font-weight: 900; font-size: 1.25rem; padding: .9rem 1rem; border-radius: 999px; border: 3px solid var(--line);
+  box-shadow: 0 5px 0 var(--line); }
+.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--line); }
+.btn:focus-visible { outline: 3px dashed var(--blue-strong); outline-offset: 4px; }
+.note { margin: 0; font-size: .92rem; color: var(--ink-soft); font-weight: 600; text-align: center; }
+
+ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .8rem; counter-reset: step; }
+li { counter-increment: step; display: grid; grid-template-columns: 2.6rem 1fr; gap: .8rem; align-items: start;
+  background: var(--tint); border: 3px solid var(--line); border-radius: 20px; padding: .9rem 1rem; }
+li::before { content: counter(step); display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 50%;
+  background: var(--strong); color: var(--on-strong); font-weight: 900; font-size: 1.3rem; border: 3px solid var(--line); }
+li > div { min-width: 0; }
+li h2 { font-size: 1.1rem; font-weight: 900; margin: .2rem 0 .15rem; }
+li p { margin: 0; }
+.s-pink { --tint: var(--pink); --strong: var(--pink-strong); }
+.s-blue { --tint: var(--blue); --strong: var(--blue-strong); }
+.s-mint { --tint: var(--mint); --strong: var(--mint-strong); }
+.s-butter { --tint: var(--butter); --strong: var(--amber); }
+.tap { font-weight: 900; white-space: nowrap; }
+
+.extra { background: var(--card); border: 3px dashed var(--ink-soft); border-radius: 20px; padding: 1rem 1.1rem; }
+.extra h2 { font-size: 1.1rem; font-weight: 900; margin: 0 0 .3rem; display: flex; align-items: center; gap: .5rem; }
+.extra p { margin: 0 0 .4rem; }
+.extra p:last-child { margin: 0; }
+.heart { width: 22px; height: 22px; flex: none; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <img src="images/hellobebe-face.png" alt="Bebe the pink kitten">
+    <div>
+      <h1>Get Hello Bebe</h1>
+      <p class="sub">On a Moto G, in about two minutes.</p>
+    </div>
+  </header>
+
+  <section class="get" aria-label="Download">
+    <a class="btn" id="download" href="https://github.com/dontdoubtdusty/hello-bebe-updates/releases/latest/download/HelloBebe.apk">Download Hello Bebe</a>
+    <p class="note">Open this page on the phone itself. About 115 MB, so Wi-Fi is best.</p>
+  </section>
+
+  <ol>
+    <li class="s-pink"><div>
+      <h2>Download it</h2>
+      <p>Tap the pink button above. If Chrome says the file might be harmful, tap <span class="tap">Download anyway</span>. It's only Hello Bebe.</p>
+    </div></li>
+    <li class="s-blue"><div>
+      <h2>Open the file</h2>
+      <p>When it finishes, tap <span class="tap">Open</span>. Missed it? Open the <b>Files</b> app, go to <b>Downloads</b> and tap <b>HelloBebe.apk</b>.</p>
+    </div></li>
+    <li class="s-mint"><div>
+      <h2>Let Chrome install apps</h2>
+      <p>The first time, the phone says it can't install apps from this source. Tap <span class="tap">Settings</span>, switch on <span class="tap">Allow from this source</span>, then go back.</p>
+    </div></li>
+    <li class="s-butter"><div>
+      <h2>Install</h2>
+      <p>Tap <span class="tap">Install</span>. If Play Protect pops up, tap <span class="tap">More details</span>, then <span class="tap">Install anyway</span>. It warns about any app that isn't from the Play Store.</p>
+    </div></li>
+    <li class="s-pink"><div>
+      <h2>Play</h2>
+      <p>Tap <span class="tap">Open</span>, or find Bebe on your home screen. Turn the phone sideways.</p>
+    </div></li>
+  </ol>
+
+  <section class="extra">
+    <h2><svg class="heart" viewBox="0 0 32 30" aria-hidden="true"><path d="M16 29 C6 21 1 15 1 9 A7.5 7.5 0 0 1 16 5 A7.5 7.5 0 0 1 31 9 C31 15 26 21 16 29Z" fill="#ff5c8a" stroke="#5b3a5e" stroke-width="2"/></svg>New versions</h2>
+    <p>When there's an update, the title screen shows a button for it. Tap it, then do steps 2 and 4 again. Your party in progress is kept.</p>
+    <p>If the phone ever says the app conflicts with an existing one, don't uninstall without asking first: that would lose the saved party.</p>
+  </section>
+</div>
+</body>
+</html>
