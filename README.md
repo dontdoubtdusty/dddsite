@@ -14,8 +14,9 @@ My personal projects site, live at [dontdoubtdusty.com](https://dontdoubtdusty.c
 **Games and tools**
 - `dice.html`: Shrek Dice.
 - `booster.html` (with `names/`): booster pack generator.
-- `mtgadvent.html` (with `mtgadvent.js` and `draftsets.json`): MTG draft advent calendar: an Advent wreath with one draft per Advent Sunday plus one on Christmas Day, built from sets legal in Standard that December. Refresh it each year with `node tools/mtgadvent-build.js <year>`; it pulls the set list, icons and art from Scryfall and keeps hand-written blurbs and draft titles. To preview a day before it is live, open `mtgadvent.html?date=2026-12-07`: a test banner appears with day and week buttons, and test mode stores its opened doors separately from real visitors.
+- `mtgadvent.html` (with `mtgadvent.js` and `draftsets.json`): MTG draft advent calendar: an Advent wreath with one draft per Advent Sunday plus one on Christmas Day, built from sets legal in Standard that December. Refresh it each year with `node tools/mtgadvent-build.js <year>`; it pulls the set list, icons and art from Scryfall and keeps hand-written blurbs and draft titles. To preview a day before it is live, open `mtgadvent.html?date=2026-12-07`: a test banner appears with day and week buttons; add `&placeholders` (or use `?placeholders` alone for today) to swap the real sets for invented ones, so you can check the page without spoilers, and test mode stores its opened doors separately from real visitors.
 - `mtg-random-card.html`: random card from the Scryfall API.
+- `dotburg/`: the Dotburg wiki (unlisted, share the link). Written by `Build Dotburg.bat` in dotburg-app; do not edit it here.
 - `card_game.html` and `cards/`: Eras of Conflict card game.
 - `bookchart.html`: Reading Flow Tool.
 - `shoracle.html`: Shrek tarot reader.

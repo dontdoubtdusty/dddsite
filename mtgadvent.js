@@ -92,14 +92,17 @@
 
     // Test mode: mtgadvent.html?date=2026-12-07 (or 2026-12-07T09:30) pretends it is that moment.
     // Time keeps moving from there. Opened doors are stored separately so tests never touch real state.
-    const dateParam = new URLSearchParams(location.search).get('date');
+    // Adding &placeholders swaps every real set for an invented one, so the page can be checked without spoilers.
+    const params = new URLSearchParams(location.search);
+    const dateParam = params.get('date');
+    const placeholders = params.has('placeholders');
     let testTarget = null;
     if (dateParam) {
         const parsed = /^\d{4}-\d{2}-\d{2}$/.test(dateParam) ? new Date(dateParam + 'T12:00:00') : new Date(dateParam);
         if (!isNaN(parsed)) testTarget = parsed;
     }
     let testOffset = testTarget ? testTarget - Date.now() : 0;
-    const testMode = testTarget !== null || dateParam !== null;
+    const testMode = testTarget !== null || dateParam !== null || placeholders;
     function currentNow() { return new Date(Date.now() + testOffset); }
 
     function el(tag, className, text) {
@@ -390,7 +393,7 @@
         const next = new Date(base.getFullYear(), base.getMonth(), base.getDate() + days, 12, 0, 0);
         testOffset = next - Date.now();
         const iso = next.getFullYear() + '-' + String(next.getMonth() + 1).padStart(2, '0') + '-' + String(next.getDate()).padStart(2, '0');
-        history.replaceState(null, '', '?date=' + iso);
+        history.replaceState(null, '', '?date=' + iso + (placeholders ? '&placeholders' : ''));
         render();
     }
 
@@ -407,12 +410,46 @@
         document.getElementById('testExit').href = location.pathname;
     }
 
+    // The calendar with every real set replaced by an invented one (Set A, Set B, ...): same number of drafts,
+    // same pairing pattern, plain lettered symbols and gradient "art", nothing loaded from Scryfall.
+    function placeholderData(real) {
+        const codes = [];
+        real.days.forEach(d => d.sets.forEach(c => { if (!codes.includes(c)) codes.push(c); }));
+        const sets = {};
+        codes.forEach((code, i) => {
+            const letter = String.fromCharCode(65 + (i % 26));
+            const hue = (i * 67) % 360;
+            const icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="#000" stroke-width="2"/>' +
+                '<text x="12" y="16.5" font-family="Georgia,serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#000">' + letter + '</text></svg>';
+            const art = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+                '<stop offset="0" stop-color="hsl(' + hue + ',55%,45%)"/><stop offset="1" stop-color="hsl(' + ((hue + 40) % 360) + ',60%,18%)"/></linearGradient></defs>' +
+                '<rect width="400" height="300" fill="url(#g)"/><circle cx="290" cy="110" r="70" fill="#fff" opacity="0.12"/>' +
+                '<text x="200" y="190" font-family="Georgia,serif" font-size="120" text-anchor="middle" fill="#fff" opacity="0.18">' + letter + '</text></svg>';
+            sets['p' + i] = {
+                name: 'Placeholder Set ' + letter,
+                icon: 'data:image/svg+xml,' + encodeURIComponent(icon),
+                art: 'data:image/svg+xml,' + encodeURIComponent(art),
+                blurb: 'A stand-in set, so the page can be checked without seeing the real drafts.'
+            };
+        });
+        const days = real.days.map(d => {
+            const fake = d.sets.map(c => 'p' + codes.indexOf(c));
+            return {
+                day: d.day,
+                sets: fake,
+                title: fake.map(c => sets[c].name.replace('Placeholder ', '')).join(' × '),
+                description: 'Placeholder draft. The real sets stay hidden until you leave test mode.'
+            };
+        });
+        return { year: real.year, sets, days };
+    }
+
     function render() {
         const now = currentNow();
         if (testMode) {
-            testLabel.textContent = testTarget
-                ? 'TEST MODE: pretending it is ' + now.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
-                : '';
+            testLabel.textContent = (testTarget || !dateParam
+                ? 'TEST MODE: ' + (testTarget ? 'pretending it is ' : 'today is ') + now.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+                : '') + (placeholders ? ' (placeholder sets)' : '');
         }
         const season = seasonOf(now, data.year);
         currentSeason = season;
@@ -468,6 +505,7 @@
             statusEl.textContent = 'Could not load the calendar data (draftsets.json). If you opened this file directly, serve the folder over http instead.';
             return;
         }
+        if (placeholders) data = placeholderData(data);
         yearEl.textContent = data.year;
         document.title = 'MTG Draft Advent Calendar ' + data.year;
         if (testMode) {
@@ -475,7 +513,7 @@
             setupTestBar();
         }
         render();
-        if (testMode && !testTarget) testLabel.textContent = 'TEST MODE: could not read "' + dateParam + '". Use ?date=YYYY-MM-DD. Showing the real date.';
+        if (dateParam && !testTarget) testLabel.textContent = 'TEST MODE: could not read "' + dateParam + '". Use ?date=YYYY-MM-DD. Showing the real date.';
     }
 
     init();
