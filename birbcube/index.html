@@ -48,6 +48,7 @@ p, li { margin:0 0 10px; } ul { padding-left:22px; margin:0 0 12px; } ul li { ma
 #lb { position:fixed; inset:0; z-index:20; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
   padding:16px; background:rgba(4,8,12,.9); cursor:zoom-out; } #lb[hidden] { display:none; }
 #lb .lb-pic img { display:block; margin:0; border:1px solid var(--edge); max-width:92vw; max-height:calc(100vh - 110px); width:auto; height:auto; }
+#lb .lb-pic svg { display:block; margin:0; border:1px solid var(--edge); }
 .lb-cap { color:#e9e0cb; font-size:14px; text-align:center; max-width:90vw; } .lb-cap a { color:#8eeeea; }
 .lb-hint { color:#9aa8b0; font-size:12px; }
 .ib-cap { font-size:13px; color:var(--muted); padding:4px 2px 2px; }
@@ -818,7 +819,7 @@ footer { clear:both; margin-top:28px; padding-top:8px; border-top:1px solid var(
 <ul><li><a href="#cat%3ABirds">Birds</a> (10)</li><li><a href="#cat%3AEvents">Events</a> (6)</li><li><a href="#cat%3AFeathers%20and%20the%20store">Feathers and the store</a> (4)</li><li><a href="#cat%3AFeeding">Feeding</a> (10)</li><li><a href="#cat%3AGetting%20started">Getting started</a> (6)</li><li><a href="#cat%3AHardware">Hardware</a> (2)</li><li><a href="#cat%3AInterface">Interface</a> (5)</li><li><a href="#cat%3AMaking%20birbs">Making birbs</a> (3)</li><li><a href="#cat%3ASound">Sound</a> (3)</li><li><a href="#cat%3ASpecies">Species</a> (6)</li><li><a href="#cat%3AThe%20cabin">The cabin</a> (6)</li><li><a href="#cat%3AThe%20garden">The garden</a> (7)</li><li><a href="#cat%3ATime%20and%20weather">Time and weather</a> (5)</li><li><a href="#cat%3AViews">Views</a> (1)</li><li><a href="#cat%3AWater">Water</a> (3)</li></ul>
 </article>
 <article id="search" hidden><h1 class="title">Search results</h1><div id="results"></div></article>
-<footer>Birb Cube 5.48.0 Alpha &middot; the player's guide to Birb Cube, made from resources/wiki.txt.</footer>
+<footer>Birb Cube 5.48.1 Alpha &middot; the player&#39;s guide to Birb Cube, made from resources/wiki.txt.</footer>
 </main></div>
 <div id="lb" hidden><div class="lb-pic"></div><div class="lb-cap"></div><div class="lb-hint">Click anywhere or press Esc to close</div></div>
 <script>
@@ -873,13 +874,18 @@ document.getElementById('random').onclick = e => {
   e.preventDefault(); const pool = links.map(l => l.dataset.id);
   location.hash = pool[Math.floor(Math.random() * pool.length)];
 };
-// A click on an infobox picture shows it full size over the page (smaller if the window is); a click anywhere or Esc closes it.
+// A click on an infobox picture shows it full size over the page (a screenshot at its own size, smaller if the window
+// is; a drawn picture as large as fits); a click anywhere or Esc closes it.
 const lb = document.getElementById('lb');
 document.addEventListener('click', e => {
   const z = e.target.closest('.zoom');
   if (!z) return;
-  const pic = z.querySelector('img').cloneNode(true);
-  pic.className = '';
+  const src = z.firstElementChild, pic = src.cloneNode(true);
+  pic.removeAttribute('class');
+  if (pic.tagName.toLowerCase() === 'svg') {   // a drawn picture: as large as fits, keeping its shape
+    const vb = src.viewBox.baseVal;
+    pic.style.width = `min(92vw, calc((100vh - 110px) * ${vb.width / vb.height}))`; pic.style.height = 'auto';
+  }
   lb.querySelector('.lb-pic').replaceChildren(pic);
   const cap = z.parentElement.querySelector('.ib-cap');
   lb.querySelector('.lb-cap').innerHTML = cap ? cap.innerHTML : '';
